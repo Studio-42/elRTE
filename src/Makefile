@@ -14,7 +14,7 @@ CONN= ${DST}/connectors
 IMG=  ${DST}/images
 
 # used as ${COMPRESSOR} OUT IN
-COMPRESSOR=    java -jar ../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+COMPRESSOR=    java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
 					--charset utf8 -o
 
 PHONY:     help
