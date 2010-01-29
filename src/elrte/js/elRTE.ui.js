@@ -26,7 +26,7 @@ elRTE.prototype.ui = function(rte) {
 	
 	while (_p--) {
 		pn = panels[_p];
-		panel = $('<ul />').addClass('panel-'.pn+(_p == 0 ? ' first' : '')).prependTo(this.rte.toolbar);
+		panel = $('<ul class="panel-'+pn+(_p == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
 		_k = this.rte.options.panels[pn].length;
 		while (_k--) {
 			var n = this.rte.options.panels[pn][_k],
@@ -102,9 +102,7 @@ elRTE.prototype.ui.prototype.buttons = {
 		this.active = false;
 		this.name    = name;
 		this.val     = null;
-		this.domElem = $('<li />')
-			.addClass(name+' rounded-3')
-			.attr({name : name, title : this.rte.i18n(this.rte.options.buttons[name] || name), unselectable : 'on'})
+		this.domElem = $('<li class="'+name+' rounded-3" name="'+name+'" title="'+this.rte.i18n(this.rte.options.buttons[name] || name)+'" unselectable="on" />')
 			.hover(
 				function() { $(this).addClass('hover'); },
 				function() { $(this).removeClass('hover'); }
