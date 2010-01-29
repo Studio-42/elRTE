@@ -37,15 +37,7 @@
 	<script src="src/ellib/js/jquery.eldirtree.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/ellib/js/jquery.elpaddinginput.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/ellib/js/jquery.elselect.js" type="text/javascript" charset="utf-8"></script>
-	<!-- elFinder -->
-	<script src="src/elfinder2/js/elFinder.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/elfinder2/js/elFinder.view.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/elfinder2/js/elFinder.ui.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/elfinder2/js/elFinder.quickLook.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/elfinder2/js/elFinder.eventsManager.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/elfinder2/js/i18n/elfinder.ru.js" type="text/javascript" charset="utf-8"></script>
 	
-	<link rel="stylesheet" href="src/elfinder2/css/elfinder.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	
 	<!-- elRTE -->
 	<script src="src/elrte/js/elRTE.js" type="text/javascript" charset="utf-8"></script>
@@ -103,14 +95,7 @@
 				height   : 450,
 				toolbar  : 'maxi',
 				cssfiles : ['src/elrte/css/elrte-inner.css'],
-				fmAllow  : true,
-				fmOpen   : function(callback) {
-					jQuery('<div />').elfinder({
-						url : 'src/elfinder2/connectors/php/connector.php',
-						dialog : { width : 900, modal : true, title : 'Files' },
-						editorCallback : callback
-					})
-				}
+				
 			}
 			
 			jQuery('#editor').elrte(opts);

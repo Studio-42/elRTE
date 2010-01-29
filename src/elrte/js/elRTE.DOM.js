@@ -303,18 +303,20 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement||Array
 	 **/
 	this.filter = function(n, filter) {
-		
-		filter = this.regExp[filter] || filter;
-		if (!n.push) {
-			return n.nodeName && filter.test(n.nodeName) ? n : null;
-		}
-		var ret = [];
-		for (var i=0; i < n.length; i++) {
-			if (n[i].nodeName && n[i].nodeName && filter.test(n[i].nodeName)) {
-				ret.push(n[i]);
+		var t = typeof(filter), ret=[], i;
+		if (t=='object' || t == 'string') {
+			filter = this.regExp[filter] || filter;
+			if (!n.push) {
+				return n.nodeName && filter.test(n.nodeName) ? n : null;
 			}
-		};
-		return ret;
+			for (i=0; i < n.length; i++) {
+				if (n[i].nodeName && n[i].nodeName && filter.test(n[i].nodeName)) {
+					ret.push(n[i]);
+				}
+			};
+			return ret;
+		}
+		return null;
 	}
 	
 	
@@ -326,15 +328,15 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Array
 	 **/
 	this.parents = function(n, filter) {
-		var ret = [];
-		filter = filter == '*' ? /.?/ : (this.regExp[filter] || filter);
-			filter = this.regExp[filter] || filter;
+		var t = typeof(filter), ret = [];
+		if (t=='object' || t == 'string') {
+			filter = filter == '*' ? /.?/ : (this.regExp[filter] || filter);
 			while (n && (n = n.parentNode) && n.nodeName != 'BODY' && n.nodeName != 'HTML') {
 				if (filter.test(n.nodeName)) {
 					ret.push(n);
 				}
 			}
-
+		}
 		return ret;
 	}
 	

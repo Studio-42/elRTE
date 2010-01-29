@@ -4,6 +4,8 @@
  * @param  elRTE  rte объект-редактор
  *
  * @author:    Dmitry Levashov (dio) dio@std42.ru
+ * @todo: this.domElem.removeClass('disabled') - move to ui.update;
+ * @todo: add dom and selection as button members
  * Copyright: Studio 42, http://www.std42.ru
  **/
 (function($) {

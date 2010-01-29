@@ -11,16 +11,27 @@
 (function($) {
 elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
+	this.align = this.name == 'justifyfull' ? 'justify' : this.name.replace('justify', '');
 
 	this.command = function() {
 		var s = this.rte.selection.selected({ collapsed:true, blocks : true}),
 			l = s.length;
 		while (l--) {
-			if (this.rte.dom.filter(s[l], 'textNodes')) {
-				$(s[l]).css('text-align', this.name == 'justifyfull' ? 'justify' : this.name.replace('justify', ''))
-			}
+			this.rte.dom.filter(s[l], 'textNodes') && $(s[l]).css('text-align', this.align);
+		}
+		this.rte.ui.update();
+	}
+	
+	this.update = function() {
+		var s = this.rte.selection.getNode(), 
+			n = s.nodeName == 'BODY' ? s : this.rte.dom.selfOrParent(s, 'textNodes');
+		if (n) {
+			this.domElem.removeClass('disabled').toggleClass('active', $(n).css('text-align') == this.align);
+		} else {
+			this.domElem.addClass('disabled');
 		}
 	}
+	
 }
 
 elRTE.prototype.ui.prototype.buttons.justifycenter = elRTE.prototype.ui.prototype.buttons.justifyleft;
