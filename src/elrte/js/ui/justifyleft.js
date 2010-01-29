@@ -13,23 +13,12 @@ elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 
 	this.command = function() {
-		this.constructor.prototype.command.call(this);
-
-		var v = this.name == 'justifyfull' ? 'justify' : this.name.replace('justify', '');
-		// в опере заменяем align на style
-		// if (this.rte.browser.opera || this.rte.browser.msie) {
-			$(this.rte.doc.body).find('[align]').each(function() {
-				$(this).removeAttr('align').css('text-align', v);
-			});
-		// }
-		// в фф убираем пустые дивы
-		if (this.rte.browser.mozilla) {
-			$(this.rte.doc.body).find("div[style]").each(function() {
-				var $this = $(this);
-				if ($this.attr('style') == 'text-align: '+v+';' && !$this.children().length && $.trim($this.text()).length == 0) {
-					$this.remove();
-				}
-			});
+		var s = this.rte.selection.selected({ collapsed:true, blocks : true}),
+			l = s.length;
+		while (l--) {
+			if (this.rte.dom.filter(s[l], 'textNodes')) {
+				$(s[l]).css('text-align', this.name == 'justifyfull' ? 'justify' : this.name.replace('justify', ''))
+			}
 		}
 	}
 }

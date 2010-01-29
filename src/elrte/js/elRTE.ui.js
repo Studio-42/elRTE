@@ -41,10 +41,11 @@ elRTE.prototype.ui = function(rte) {
 	 * Переключает вид редактора между окном редактирования и исходника
 	 **/
 	this.rte.tabsbar.children('.tab').click(function(e) {
-		if (!$(e.currentTarget).hasClass('active')) {
+
+		if (!$(e.target).hasClass('active')) {
 			self.rte.tabsbar.children('.tab').toggleClass('active');
 			self.rte.workzone.children().toggle();
-			if ($(e.currentTarget).hasClass('editor')) {
+			if ($(e.target).hasClass('editor')) {
 				self.rte.updateEditor();
 			} else {
 				self.rte.updateSource();
@@ -53,7 +54,6 @@ elRTE.prototype.ui = function(rte) {
 				});
 				self.rte.source.focus();
 			}
-			
 		}
 	});
 
@@ -67,9 +67,9 @@ elRTE.prototype.ui = function(rte) {
  **/
 elRTE.prototype.ui.prototype.update = function(cleanCache) {
 	cleanCache && this.rte.selection.cleanCache();
-	var n    = this.rte.selection.getNode();
-	var p    = this.rte.dom.parents(n, '*');
-	var path = '';
+	var n    = this.rte.selection.getNode(),
+		p    = this.rte.dom.parents(n, '*'),
+		path = '';
 	if (p.length) {
 		$.each(p.reverse(), function() {
 			path += ' &raquo; '+ this.nodeName.toLowerCase();
@@ -91,7 +91,7 @@ elRTE.prototype.ui.prototype.buttons = {
 	
 	/**
 	 * @class кнопка на toolbar редактора 
-	 * реализует поведение по умолчанию и является родителей для других кнопок
+	 * реализует поведение по умолчанию и является родителем для других кнопок
 	 *
 	 * @param  elRTE  rte   объект-редактор
 	 * @param  String name  название кнопки (команда исполняемая document.execCommand())
@@ -102,7 +102,7 @@ elRTE.prototype.ui.prototype.buttons = {
 		this.active = false;
 		this.name    = name;
 		this.val     = null;
-		this.domElem = $('<li class="'+name+' rounded-3" name="'+name+'" title="'+this.rte.i18n(this.rte.options.buttons[name] || name)+'" unselectable="on" />')
+		this.domElem = $('<li style="-moz-user-select:-moz-none" class="'+name+' rounded-3" name="'+name+'" title="'+this.rte.i18n(this.rte.options.buttons[name] || name)+'" unselectable="on" />')
 			.hover(
 				function() { $(this).addClass('hover'); },
 				function() { $(this).removeClass('hover'); }
@@ -113,6 +113,7 @@ elRTE.prototype.ui.prototype.buttons = {
 				if (!$(this).hasClass('disabled')) {
 					self.command();
 				}
+				self.rte.window.focus();
 			});
 	}
 }
