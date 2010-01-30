@@ -19,6 +19,7 @@ elRTE.prototype.selection = function(rte) {
 			}
 		})
 		.mousedown(function(e) {
+			// self.rte.log(e)
 			if (e.target.nodeName == 'HTML') {
 				start = self.rte.doc.body;
 			} else {
@@ -278,6 +279,7 @@ elRTE.prototype.selection = function(rte) {
 	this.getNode = function() {
 		if (!node) {
 			node = this.rte.dom.findCommonAncestor(this.getStart(), this.getEnd());
+			// self.rte.log(node)
 		}
 		return node;
 	}

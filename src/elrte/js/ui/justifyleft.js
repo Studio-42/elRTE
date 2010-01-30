@@ -14,7 +14,7 @@ elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	this.align = this.name == 'justifyfull' ? 'justify' : this.name.replace('justify', '');
 
 	this.command = function() {
-		var s = this.rte.selection.selected({ collapsed:true, blocks : true}),
+		var s = this.rte.selection.selected({collapsed:true, blocks : true, tag : 'div'}),
 			l = s.length;
 		while (l--) {
 			this.rte.dom.filter(s[l], 'textNodes') && $(s[l]).css('text-align', this.align);
@@ -24,7 +24,7 @@ elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	
 	this.update = function() {
 		var s = this.rte.selection.getNode(), 
-			n = s.nodeName == 'BODY' ? s : this.rte.dom.selfOrParent(s, 'textNodes');
+			n = s.nodeName == 'BODY' ? s : this.rte.dom.selfOrParent(s, 'textNodes')||(s.parentNode.nodeName == 'BODY' ? s.parentNode : null);
 		if (n) {
 			this.domElem.removeClass('disabled').toggleClass('active', $(n).css('text-align') == this.align);
 		} else {

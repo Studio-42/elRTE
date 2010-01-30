@@ -10,34 +10,33 @@
  **/
 (function($) {
 elRTE.prototype.ui = function(rte) {
-	var self      = this;
 	this.rte      = rte;
 	this._buttons = [];
+	var self      = this,
+		tb        = this.rte.options.toolbars[rte.options.toolbar && rte.options.toolbars[rte.options.toolbar] ? rte.options.toolbar : 'normal'],
+		tbl       = tb.length,
+		p, pname, pl, n, c, b, i;
 	
-	for (var i in this.buttons) {
-		if (i != 'button') {
+	// add prototype to all buttons
+	for (i in this.buttons) {
+		if (this.buttons.hasOwnProperty(i) && i != 'button') {
 			this.buttons[i].prototype = this.buttons.button.prototype;
 		}
 	}
 	
-	// создаем панели и кнопки
-	var toolbar = rte.options.toolbar && rte.options.toolbars[rte.options.toolbar] ? rte.options.toolbar : 'normal',
-		panels  = this.rte.options.toolbars[toolbar],
-		_p = panels.length,
-		panel, pn, _k;
-	
-	while (_p--) {
-		pn = panels[_p];
-		panel = $('<ul class="panel-'+pn+(_p == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
-		_k = this.rte.options.panels[pn].length;
-		while (_k--) {
-			var n = this.rte.options.panels[pn][_k],
-				c = this.buttons[n] || this.buttons.button,
-				b = new c(this.rte, n);
-			panel.prepend(b.domElem);
-			this._buttons.push(b);
+	// create buttons and add on toolbar
+	while (tbl--) {
+		pname = tb[tbl];
+		p = $('<ul class="panel-'+pname+(tbl == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
+		pl = this.rte.options.panels[pname].length;
+		while (pl--) {
+			n = this.rte.options.panels[pname][pl];
+			c = this.buttons[n] || this.buttons.button;
+			this._buttons.push((b = new c(this.rte, n)));
+			p.prepend(b.domElem);
 		}
 	}
+	
 
 	/**
 	 * Переключает вид редактора между окном редактирования и исходника
