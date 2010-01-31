@@ -111,76 +111,35 @@ elRTE = function(target, opts) {
 	/* init buttons */
 	this.ui = new this.ui(this);
 	
+	/* bind updateSource to parent form submit */
 	this.target.parents('form').bind('submit', function() {
 		self.source.is(':hidden') && self.updateSource();
 		self.toolbar.find(':hidden').remove();
 	});
 	
-	this.init = function() {
-		this.options.height>0 && this.workzone.height(this.options.height);
-		var src = this.filter(target.nodeName == 'TEXTAREA' ? $(target).val() : $(target).html(), true);
-		this.source.val(src);
-		this.source.attr('name', $(target).attr('name')||$(target).attr('id'));
-		if (this.options.allowSource) {
-			this.tabsbar.append($('<div />').text(self.i18n('Editor')).addClass('tab editor rounded-bottom-7 active'))
-						.append($('<div />').text(self.i18n('Source')).addClass('tab source rounded-bottom-7'))
-						.append($('<div />').addClass('clearfix'));
+	/* update buttons on click and keyup */
+	this.$doc.bind('mouseup', function() {
+		self.ui.update();
+	}).bind('keyup', function(e) {
+		if ((e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {
+			// self.log('keyup '+e.keyCode)
+			self.ui.update();
 		}
-		this.target = $(target).replaceWith(this.editor);
-		this.window = this.iframe.contentWindow;
-		this.doc    = this.iframe.contentWindow.document;
-		
-		html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
-		if (self.options.cssfiles.length) {
-			$.each(self.options.cssfiles, function() {
-				html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
-			});
-		}
-		html = self.options.doctype+html+'</head><body>'+src+'</body></html>';
-		this.doc.open();
-		this.doc.write(html);
-		this.doc.close();
-		if(!this.doc.body.firstChild) {
-			this.doc.body.appendChild(this.doc.createElement('br'));
-		}
-		if (this.browser.msie) {
-			//this.source.attr('rows', parseInt(this.options.height/17));
-			this.doc.body.contentEditable = true;
-		} else {
-			try { this.doc.designMode = "on"; } 
-			catch(e) { }
-			this.doc.execCommand('styleWithCSS', false, this.options.styleWithCSS);
-		}
-		 
-		this.window.focus();
-		this.selection = new this.selection(this);
-		this.ui = new this.ui(this);
-		this.editor.parents('form').eq(0).submit(function(e) {
-			if (self.source.css('display') == 'none') {
-				self.updateSource();
+	}).bind('keydown', function(e) {
+		if ((e.metaKey || e.ctrlKey) && e.keyCode == 65) {
+			self.ui.update();
+		} else if (e.keyCode == 13) {
+			var n = self.selection.getNode();
+			self.log(n)
+			if (self.dom.selfOrParent(n, /^PRE$/)) {
+				self.selection.insertNode(self.doc.createTextNode("\r\n"));
+				return false;
+			} else if ($.browser.safari && e.shiftKey) {
+				self.selection.insertNode(self.doc.createElement('br'))
+				return false;
 			}
-			self.toolbar.find(':hidden').remove();
-		});
-		
-		$(this.doc)
-			.keydown(function(e) {
-				if (self.browser.safari && e.keyCode == 13) {
-			
-					if (e.shiftKey || !self.dom.parent(self.selection.getNode(), /^(P|LI)$/)) {
-						self.selection.insertNode(self.doc.createElement('br'))
-						return false;
-					}
-				}
-			})
-			.bind('keyup mouseup', function(e) {
-				if (e.type == 'mouseup' || e.ctrlKey || e.metaKey || (e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {
-					self.ui.update();
-				}
-			});
-	}
-	
-	// this.init();
-	
+		}
+	})
 	
 
 }
