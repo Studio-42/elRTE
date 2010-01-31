@@ -89,6 +89,10 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
+			$('form').submit(function(e) {
+				window.console.log('submit')
+			})
+
 			var opts = {
 				cssClass : 'el-rte',
 				lang     : 'ru',
@@ -99,10 +103,10 @@
 			}
 			// window.console.log(jQuery('#editor2'))
 			var rte = jQuery('#editor').elrte(opts);
-			window.console.log(rte)
+			// window.console.log(rte)
 			// jQuery('#editor').elrte('close')
 			// window.console.log(rte[0].elrte.val())
-			// jQuery('#editor').elrte().val()
+			jQuery('#editor').elrte('updateSource')
 			// window.console.log(jQuery('#editor').elrte().val())
 			// window.console.log(jQuery('#editor').elrte('val'))
 		})
@@ -114,7 +118,8 @@
 	
 </head>
 <body>
-	<textarea name="Name" rows="8" cols="40" id="editor2">some text here</textarea>
+	<!-- <textarea name="Name" rows="8" cols="40" id="editor2">some text here</textarea> -->
+	<form method="post" action="post.php">
 	<div id="editor">
 		<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
 				DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</h3><div style="text-align: justify; padding-left: 0px;">&nbsp;&nbsp;<span style="background-color: rgb(255, 255, 153);">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color: rgb(255, 255, 153);">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div><br><br><hr style="width: 100%; height: 1px;" noshade="true"><br>
@@ -125,6 +130,15 @@
 				<p style="padding-left: 40px;">The marketing girl soured him with a look.</p>
 				<p style="padding-left: 40px;"><span style="color: rgb(153, 51, 51);">"Alright, Mr. Wiseguy,"</span> she said, <span style="color: rgb(153, 51, 51);">"if you're so clever, you tell us what colour it should be."</span></p>
 				<br>
+				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"And the wheel," <span style="color: rgb(0, 0, 0);">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p>
+				<p style="padding-left: 40px; color: rgb(153, 51, 51);">"Ah," <span style="color: rgb(0, 0, 0);">said the marketing girl, </span>"Well, we're having a little difficulty there."</p>
+				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"Difficulty?"&nbsp;<span style="color: rgb(0, 0, 0);">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p>
+				<p style="padding-left: 40px;">The marketing girl soured him with a look.</p>
+				<p style="padding-left: 40px;"><span style="color: rgb(153, 51, 51);">"Alright, Mr. Wiseguy,"</span> she said, <span style="color: rgb(153, 51, 51);">"if you're so clever, you tell us what colour it should be."</span></p>
+				
 	</div>
+	<input type="submit" name="" value="go" id="">
+	
+	</form>
 </body>
 </html>

@@ -24,7 +24,7 @@ elRTE.prototype.ui = function(rte) {
 		}
 	}
 	
-	// create buttons and add on toolbar
+	// create buttons and put on toolbar
 	while (tbl--) {
 		pname = tb[tbl];
 		p = $('<ul class="panel-'+pname+(tbl == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
@@ -41,24 +41,31 @@ elRTE.prototype.ui = function(rte) {
 	/**
 	 * Переключает вид редактора между окном редактирования и исходника
 	 **/
-	this.rte.tabsbar.children('.tab').click(function(e) {
-
-		if (!$(e.target).hasClass('active')) {
-			self.rte.tabsbar.children('.tab').toggleClass('active');
-			self.rte.workzone.children().toggle();
-			if ($(e.target).hasClass('editor')) {
-				self.rte.updateEditor();
-			} else {
-				self.rte.updateSource();
-				$.each(self._buttons, function() {
-					!this.active && this.domElem.addClass('disabled');
-				});
-				self.rte.source.focus();
-			}
-		}
-	});
+	// this.rte.tabsbar.children('.tab').click(function(e) {
+	// 
+	// 	if (!$(e.target).hasClass('active')) {
+	// 		self.rte.tabsbar.children('.tab').toggleClass('active');
+	// 		self.rte.workzone.children().toggle();
+	// 		if ($(e.target).hasClass('editor')) {
+	// 			self.rte.updateEditor();
+	// 		} else {
+	// 			self.rte.updateSource();
+	// 			$.each(self._buttons, function() {
+	// 				!this.active && this.domElem.addClass('disabled');
+	// 			});
+	// 			self.rte.source.focus();
+	// 		}
+	// 	}
+	// });
 
 	this.update();
+	
+	this.disable = function() {
+		$.each(self._buttons, function() {
+			!this.active && this.domElem.addClass('disabled');
+		});
+	}
+	
 }
 
 /**
