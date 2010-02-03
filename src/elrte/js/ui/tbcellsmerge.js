@@ -40,7 +40,7 @@ elRTE.prototype.ui.prototype.buttons.tbcellsmerge = function(rte, name) {
 			var length   = 0;
 			var target   = null;
 			var html     = '';
-
+			this.rte.history.add();
 			var rows = $($(cells[0]).parents('table').eq(0).find('tr').get().slice(ro, ro+rl))
 				.each( function(i) {
 					var _l = html.length;

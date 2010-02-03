@@ -149,9 +149,9 @@ elRTE.prototype.ui.prototype.buttons.tbcellprops = function(rte, name) {
 	}
 	
 	this.set = function() {
-		
-		var target = this.cell;
-		var apply  = this.src.main.apply.val();
+		$(t).remove();
+		var target = this.cell,
+			apply  = this.src.main.apply.val();
 		switch (this.src.main.apply.val()) {
 			case 'row':
 				target = this.cell.parent('tr').children('td,th');

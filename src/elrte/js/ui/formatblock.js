@@ -67,7 +67,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			}
 			
 		}
-		this.rte.history.add()
+		this.rte.history.add();
 		var tag = v.toUpperCase(),
 			i, n, $n,
 			c = this.rte.selection.collapsed(),

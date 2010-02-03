@@ -13,6 +13,7 @@ elRTE.prototype.ui.prototype.buttons.tbrowbefore = function(rte, name) {
 		var r  = this.rte.dom.selfOrParent(c, /^TR$/);
 		var mx = this.rte.dom.tableMatrix(this.rte.dom.selfOrParent(c, /^TABLE$/));
 		if (c && r && mx) {
+			this.rte.history.add();
 			var before = this.name == 'tbrowbefore';
 			var ro     = $(r).prevAll('tr').length;
 			var cnt    = 0;

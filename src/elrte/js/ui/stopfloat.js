@@ -25,12 +25,14 @@ elRTE.prototype.ui.prototype.buttons.stopfloat = function(rte, name) {
 		var n;
 		if ((n = this.find())) {
 			var n = $(n);
+			this.rte.history.add();
 			if (!n.children().length && !$.trim(n.text()).length) {
 				n.remove();
 			} else {
 				n.removeAttr('clear').css('clear', '');
 			}
 		} else {
+			this.rte.history.add();
 			this.rte.selection.insertNode($(this.rte.dom.create('div')).css('clear', 'both').get(0), true);
 		}
 		this.rte.ui.update(true);

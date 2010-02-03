@@ -67,6 +67,7 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 	}
 	
 	this.set = function() {
+		this.rte.history.add();
 		!this.hr.parentNode && this.rte.selection.insertNode(this.hr.get(0));
 		var attr = {
 			noshade : true,
@@ -91,6 +92,7 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 		if (this.src['class'].val()) {
 			this.hr.attr('class', this.src['class'].val());	
 		}
+		this.rte.ui.update()
 	}
 	
 }

@@ -33,6 +33,7 @@ elRTE.prototype.ui.prototype.buttons.fontsize = function(rte, name) {
 	}
 	
 	this.set = function(size) {
+		this.rte.history.add();
 		var nodes = this.rte.selection.selected({filter : 'textContainsNodes'});
 		$.each(nodes, function() {
 			$this = /^(THEAD|TFOOT|TBODY|COL|COLGROUP|TR)$/.test(this.nodeName) ? $(this).find('td,th') : $(this);

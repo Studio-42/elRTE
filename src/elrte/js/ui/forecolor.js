@@ -27,8 +27,9 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 	
 	this.set = function(c) {
 		if (!this.rte.selection.collapsed()) {
-			var nodes = this.rte.selection.selected({collapse : false, wrap : 'text'});
-			var css   = this.name == 'forecolor' ? 'color' : 'background-color';			
+			this.rte.history.add();
+			var nodes = this.rte.selection.selected({collapse : false, wrap : 'text'}),
+				css   = this.name == 'forecolor' ? 'color' : 'background-color';			
 			$.each(nodes, function() {
 				if (/^(THEAD|TBODY|TFOOT|TR)$/.test(this.nodeName)) {
 					$(this).find('td,th').each(function() {

@@ -219,7 +219,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 			if (r<=0 || c<=0) {
 				return;
 			}
-			
+			this.rte.history.add();
 			var b = $(this.rte.doc.createElement('tbody')).appendTo(this.table);
 			var tr     = $('<tr />');
 			for (var i=0; i < c; i++) {

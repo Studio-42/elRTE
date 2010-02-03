@@ -15,6 +15,7 @@ elRTE.prototype.ui.prototype.buttons.tbcolbefore = function(rte, name) {
 	this.command = function() {
 		var cells = this.rte.dom.tableColumn(this.rte.selection.getNode(), false, true);
 		if (cells.length) {
+			this.rte.history.add();
 			$.each(cells, function() {
 				var $this = $(this);
 				var cp = parseInt($this.attr('colspan')||1)

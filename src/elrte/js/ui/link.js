@@ -346,6 +346,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	this.set = function() {
 		this.updateOnclick();
 		this.rte.browser.msie && this.rte.selection.restoreIERange();
+		this.rte.history.add();
 		var href = this.rte.utils.absoluteURL(this.src.main.href.val());
 		if (!href) {
 			this.link.parents().length && this.rte.doc.execCommand('unlink', false, null);

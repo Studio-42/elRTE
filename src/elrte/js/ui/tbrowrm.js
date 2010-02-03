@@ -13,13 +13,14 @@ elRTE.prototype.ui.prototype.buttons.tbrowrm = function(rte, name) {
 	var self = this;
 	this.command = function() {
 		
-		var n  = this.rte.selection.getNode();
-		var c  = this.rte.dom.selfOrParent(n, /^(TD|TH)$/);
-		var r  = this.rte.dom.selfOrParent(c, /^TR$/);
-		var tb = this.rte.dom.selfOrParent(c, /^TABLE$/);
-		var mx = this.rte.dom.tableMatrix(tb);
+		var n  = this.rte.selection.getNode(),
+			c  = this.rte.dom.selfOrParent(n, /^(TD|TH)$/),
+			r  = this.rte.dom.selfOrParent(c, /^TR$/),
+			tb = this.rte.dom.selfOrParent(c, /^TABLE$/),
+			mx = this.rte.dom.tableMatrix(tb);
 		
 		if (c && r && mx.length) {
+			this.rte.history.add();
 			if (mx.length==1) {
 				$(tb).remove();
 				return this.rte.ui.update();

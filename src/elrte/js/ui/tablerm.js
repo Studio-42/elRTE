@@ -13,7 +13,11 @@ elRTE.prototype.ui.prototype.buttons.tablerm = function(rte, name) {
 	
 	this.command = function() {
 		var t = this.rte.dom.parent(this.rte.selection.getNode(), /^TABLE$/);
-		t && $(t).remove();
+		// t && $(t).remove();
+		if (t) {
+			this.rte.history.add();
+			$(t).remove();
+		}
 		this.rte.ui.update(true);
 	}
 	

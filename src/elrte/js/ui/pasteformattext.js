@@ -56,6 +56,7 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 	this.paste = function() {
 		var html = $.trim($(this.doc.body).html());
 		if (html) {
+			this.rte.history.add();
 			this.rte.browser.msie && this.rte.selection.restoreIERange();
 			this.rte.selection.insertHtml(this.rte.filter(html), true);
 			this.rte.ui.update(true);

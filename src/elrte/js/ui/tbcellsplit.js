@@ -15,6 +15,7 @@ elRTE.prototype.ui.prototype.buttons.tbcellsplit = function(rte, name) {
 	this.command = function() {
 		var n = this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^(TD|TH)$/);
 		if (n) {
+			this.rte.history.add();
 			var colspan = parseInt(this.rte.dom.attr(n, 'colspan'));
 			var rowspan = parseInt(this.rte.dom.attr(n, 'rowspan'));
 			if (colspan>1 || rowspan>1) {

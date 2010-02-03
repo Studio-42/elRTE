@@ -346,7 +346,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	}
 	
 	this.set = function() {
-		
+		this.rte.history.add();
 		if (!this.prevImg || !this.prevImg.attr('width')) {
 			this.img  && this.img.remove();
 			this.link && this.rte.doc.execCommand('unlink', false, null);

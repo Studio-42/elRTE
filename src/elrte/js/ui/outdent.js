@@ -17,6 +17,7 @@ elRTE.prototype.ui.prototype.buttons.outdent = function(rte, name) {
 	this.command = function() {
 		var v = this.find();
 		if (v.node) {
+			this.rte.history.add();
 			$(v.node).css(v.type, (v.val>40 ? v.val-40 : 0)+'px');
 			this.rte.ui.update();
 		}

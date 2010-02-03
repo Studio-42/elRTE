@@ -14,7 +14,9 @@
 elRTE.prototype.ui.prototype.buttons.indent = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var self = this;
+	
 	this.command = function() {
+		this.rte.history.add();
 		var nodes = this.rte.selection.selected({collapsed : true, blocks : true, wrap : 'inline', tag : 'p'});
 
 		function indent(n) {

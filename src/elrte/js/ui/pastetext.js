@@ -34,6 +34,7 @@ elRTE.prototype.ui.prototype.buttons.pastetext = function(rte, name) {
 	this.paste = function() {
 		var txt = $.trim(this.input.val());
 		if (txt) {
+			this.rte.history.add();
 			this.rte.browser.msie && this.rte.selection.restoreIERange();
 			this.rte.selection.insertText(txt.replace(/\r?\n/g, '<br />'), true);
 			this.rte.ui.update(true);

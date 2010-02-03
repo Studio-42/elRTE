@@ -20,6 +20,7 @@ elRTE.prototype.ui.prototype.buttons.unlink = function(rte, name) {
 			link = l[0];
 		}
 		if (link) {
+			this.rte.history.add();
 			this.rte.selection.select(link);
 			this.rte.doc.execCommand('unlink', false, null);
 			this.rte.ui.update(true);

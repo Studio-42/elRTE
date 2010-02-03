@@ -21,6 +21,7 @@ elRTE.prototype.ui.prototype.buttons.tbcolrm = function(rte, name) {
 		var cells = this.rte.dom.tableColumn(n, false, true);
 
 		if (cells.length) {
+			this.rte.history.add();
 			$.each(cells, function() {
 				var $this = $(this);
 				var cp    = parseInt($this.attr('colspan')||1);
