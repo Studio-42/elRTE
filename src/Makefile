@@ -47,37 +47,30 @@ help:
 # define objects
 
 # elLib
-ellib_img_obj=    ${SRC}/ellib/images/eldirtree.png \
-						${SRC}/ellib/images/loading.gif
-ellib_img_obj_dst=${IMG}/eldirtree.png \
-						${IMG}/loading.gif
+ellib_img_obj=		${SRC}/ellib/images/loading.gif
+ellib_img_obj_dst=	${IMG}/loading.gif
 
 
 # elRTE
-elrte_css=        elrte.full.css
-elrte_css_obj=    ${SRC}/ellib/css/elcommon.css \
-						${SRC}/ellib/css/elcolorpicker.css \
-						${SRC}/ellib/css/elcontextmenu.css \
-						${SRC}/ellib/css/eldialogform.css \
-						${SRC}/ellib/css/eldirtree.css \
-						${SRC}/ellib/css/elpaddinginput.css \
-						${SRC}/ellib/css/elselect.css \
-						${SRC}/elrte/css/elrte.css
+elrte_css=        	elrte.full.css
+elrte_css_obj=    	${SRC}/ellib/css/elcommon.css \
+			${SRC}/ellib/css/elcolorpicker.css \
+			${SRC}/ellib/css/eldialogform.css \
+			${SRC}/ellib/css/elpaddinginput.css \
+			${SRC}/ellib/css/elselect.css \
+			${SRC}/elrte/css/elrte.css
 
-elrte_js=         elrte.full.js
-elrte_js_min=     elrte.min.js
-elrte_js_obj=     ${SRC}/ellib/js/elcookie.js \
-						${SRC}/ellib/js/eli18n.js \
-						${SRC}/ellib/js/eldialogform.js \
-						${SRC}/ellib/js/jquery.elcolorpicker.js \
-						${SRC}/ellib/js/jquery.elborderselect.js \
-						${SRC}/ellib/js/jquery.elcontextmenu.js \
-						${SRC}/ellib/js/jquery.eldirtree.js \
-						${SRC}/ellib/js/jquery.elpaddinginput.js \
-						${SRC}/ellib/js/jquery.elselect.js \
-						${SRC}/elrte/js/elRTE.js \
-						${SRC}/elrte/js/elRTE.*.js \
-						${SRC}/elrte/js/ui/*.js
+elrte_js=         	elrte.full.js
+elrte_js_min=     	elrte.min.js
+elrte_js_obj=   	${SRC}/ellib/js/eli18n.js \
+			${SRC}/ellib/js/eldialogform.js \
+			${SRC}/ellib/js/jquery.elcolorpicker.js \
+			${SRC}/ellib/js/jquery.elborderselect.js \
+			${SRC}/ellib/js/jquery.elpaddinginput.js \
+			${SRC}/ellib/js/jquery.elselect.js \
+			${SRC}/elrte/js/elRTE.js \
+			${SRC}/elrte/js/elRTE.*.js \
+			${SRC}/elrte/js/ui/*.js
 
 
 # elLib
