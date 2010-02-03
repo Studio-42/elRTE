@@ -12,29 +12,21 @@
 	<script src="js/jquery.metadata.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<!-- elRTE & elFinder css -->
-	<link rel="stylesheet" href="css/elrtefinder.full.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<link rel="stylesheet" href="css/elrte.full.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<!-- elRTE & elFinder -->
-	<script src="js/elrtefinder.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/elrte.min.js" type="text/javascript" charset="utf-8"></script>
 	<!-- russian message -->
-	<script src="js/i18n/elfinder.ru.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/i18n/elrte.ru.js" type="text/javascript" charset="utf-8"></script>
+
 	<script type="text/javascript" charset="utf-8">
 		$().ready(function() {
-
 			var opts = {
 				cssClass : 'el-rte',
 				// lang     : 'ru',
-				height   : 600,
+				height   : 450,
 				toolbar  : 'eldorado',
 				cssfiles : ['css/elrte-inner.css'],
-				fmAllow  : true,
-				fmOpen   : function(callback) {
-					$('<div />').elfinder({
-						url : 'connectors/php/connector.php',
-						dialog : { width : 900, modal : true, title : 'Files' },
-						editorCallback : callback
-					})
-				}
+				fmAllow  : true
 			}
 			$('#editor').elrte(opts);
 		})
