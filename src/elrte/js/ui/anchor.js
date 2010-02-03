@@ -42,8 +42,8 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 	this.set = function() {
 		var n = $.trim(this.input.val());
 		this.rte.selection.restoreIERange();
-		this.rte.log(this.anchor.parentNode)
 		if (n) {
+			this.rte.history.add()
 			if (!this.anchor.parentNode) {
 				this.rte.selection.insertHtml('<a name="'+n+'" title="'+this.rte.i18n('Bookmark')+': '+n+'" class="el-rte-anchor"></a>');
 			} else {
@@ -51,6 +51,7 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 				this.anchor.title = this.rte.i18n('Bookmark')+': '+n;
 			}
 		} else if (this.anchor.parentNode) {
+			this.rte.history.add()
 			this.anchor.parentNode.removeChild(this.anchor);
 		}
 	}

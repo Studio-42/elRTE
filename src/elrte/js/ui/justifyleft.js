@@ -16,6 +16,7 @@ elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	this.command = function() {
 		var s = this.rte.selection.selected({collapsed:true, blocks : true, tag : 'div'}),
 			l = s.length;
+		l && this.rte.history.add();
 		while (l--) {
 			this.rte.dom.filter(s[l], 'textNodes') && $(s[l]).css('text-align', this.align);
 		}

@@ -106,10 +106,16 @@ elRTE = function(target, opts) {
 		this.doc.execCommand('styleWithCSS', false, this.options.styleWithCSS);
 	}
 	this.window.focus();
+	
+	this.history = new this.history(this)
+	
 	/* init selection object */
 	this.selection = new this.selection(this);
 	/* init buttons */
 	this.ui = new this.ui(this);
+	
+	// this.history.add()
+	
 	
 	/* bind updateSource to parent form submit */
 	this.target.parents('form').bind('submit', function() {
@@ -130,7 +136,7 @@ elRTE = function(target, opts) {
 			self.ui.update();
 		} else if (e.keyCode == 13) {
 			var n = self.selection.getNode();
-			self.log(n)
+			// self.log(n)
 			if (self.dom.selfOrParent(n, /^PRE$/)) {
 				self.selection.insertNode(self.doc.createTextNode("\r\n"));
 				return false;
@@ -139,6 +145,31 @@ elRTE = function(target, opts) {
 				return false;
 			}
 		}
+	})
+	
+	this.typing = false;
+	this.lastKey = null;
+	
+	this.$doc.bind('keydown', function(e) {
+		// self.log(e.keyCode)
+		
+		if ((e.keyCode>=48 && e.keyCode <=57) || e.keyCode==61 || e.keyCode == 109 || (e.keyCode>=65 && e.keyCode<=90) || e.keyCode==188 ||e.keyCode==190 || e.keyCode==191 || (e.keyCode>=219 && e.keyCode<=222)) {
+			if (!self.typing) {
+				self.history.add(true);
+			}
+			self.typing = true;
+			self.lastKey = null;
+		} else if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 32 || e.keyCode == 13) {
+			if (e.keyCode != self.lastKey) {
+				self.history.add(true)
+			}
+			self.lastKey = e.keyCode
+			self.typing = false
+		}
+
+	}).bind('mouseup', function() {
+		self.typing = false;
+		self.lastKey = null;
 	})
 	
 

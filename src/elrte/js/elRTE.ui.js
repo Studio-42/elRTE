@@ -132,11 +132,13 @@ elRTE.prototype.ui.prototype.buttons = {
  * @return void
  **/
 elRTE.prototype.ui.prototype.buttons.button.prototype.command = function() {
+	this.rte.history.add();
 	try {
 		this.rte.doc.execCommand(this.name, false, this.val);
 	} catch(e) {
-		this.rte.log('commands failed: '+this.name);
+		return this.rte.log('commands failed: '+this.name);
 	}
+	
 	this.rte.ui.update(true);
 }
 

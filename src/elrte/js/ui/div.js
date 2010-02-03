@@ -7,7 +7,7 @@
  * @param  String name  название кнопки 
  * 
  * @author:    Dmitry Levashov (dio) dio@std42.ru
- * @copyright: Studio 42, http://www.std42.ru
+ * copyright: Studio 42, http://www.std42.ru
  **/
 (function($) {
 elRTE.prototype.ui.prototype.buttons.div = function(rte, name) {
@@ -15,6 +15,7 @@ elRTE.prototype.ui.prototype.buttons.div = function(rte, name) {
 	
 	this.command = function() {
 		var n, nodes;
+		this.rte.history.add();
 		if (this.rte.selection.collapsed() && (n = this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^DIV$/))) {
 			$(n).replaceWith($(n).html());
 		} else {

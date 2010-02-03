@@ -67,7 +67,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			}
 			
 		}
-
+		this.rte.history.add()
 		var tag = v.toUpperCase(),
 			i, n, $n,
 			c = this.rte.selection.collapsed(),
@@ -98,20 +98,6 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			}
 		}
 		
-		// for (i=0; i<nodes.length; i++) {
-		// 	n = nodes[i];
-		// 	if (tag) {
-		// 		if (/^(THEAD|TBODY|TFOOT|TR)$/.test(n.nodeName)) {
-		// 			$(n).find('td,th').each(function() { format(this, tag); });
-		// 		} else if (n.nodeName != tag) {
-		// 			format(n, tag);
-		// 		}
-		// 	} else {
-		// 		if (/^(H[1-6]|P|ADDRESS|PRE)$/.test(n.nodeName)) {
-		// 			$(n).replaceWith($(this.rte.dom.create('div')).html($(n).html()||''));
-		// 		}
-		// 	}
-		// };
 		self.rte.selection.select(s.next()[0], e.prev()[0]);
 		s.add(e).remove();
 		c && self.rte.selection.collapse(true);
