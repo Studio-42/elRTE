@@ -47,7 +47,7 @@
 /* активная и подсвеченная и неактивная кнопка */
 .el-rte .toolbar ul li.hover    { border:1px solid #54b9bf; }
 .el-rte .toolbar ul li.active   { background-color:#c3dbef; border:1px solid #fff; }
-.el-rte .toolbar ul li.disabled { opacity:alpha(0.3); opacity: 0.3; }
+.el-rte .toolbar ul li.disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30);}
 /*  кнопки  */
 .el-rte .toolbar ul li.save                {background-position:-30px -2px;}
 .el-rte .toolbar ul li.new                 {background-position:-55px -2px}

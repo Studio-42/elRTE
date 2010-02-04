@@ -25,7 +25,7 @@ elRTE.prototype.ui.prototype.buttons.justifyleft = function(rte, name) {
 	
 	this.update = function() {
 		var s = this.rte.selection.getNode(), 
-			n = s.nodeName == 'BODY' ? s : this.rte.dom.selfOrParent(s, 'textNodes')||(s.parentNode.nodeName == 'BODY' ? s.parentNode : null);
+			n = s.nodeName == 'BODY' ? s : this.rte.dom.selfOrParent(s, 'textNodes')||(s.parentNode && s.parentNode.nodeName == 'BODY' ? s.parentNode : null);
 		if (n) {
 			this.domElem.removeClass('disabled').toggleClass('active', $(n).css('text-align') == this.align);
 		} else {
