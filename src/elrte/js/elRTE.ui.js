@@ -38,26 +38,6 @@ elRTE.prototype.ui = function(rte) {
 	}
 	
 
-	/**
-	 * Переключает вид редактора между окном редактирования и исходника
-	 **/
-	// this.rte.tabsbar.children('.tab').click(function(e) {
-	// 
-	// 	if (!$(e.target).hasClass('active')) {
-	// 		self.rte.tabsbar.children('.tab').toggleClass('active');
-	// 		self.rte.workzone.children().toggle();
-	// 		if ($(e.target).hasClass('editor')) {
-	// 			self.rte.updateEditor();
-	// 		} else {
-	// 			self.rte.updateSource();
-	// 			$.each(self._buttons, function() {
-	// 				!this.active && this.domElem.addClass('disabled');
-	// 			});
-	// 			self.rte.source.focus();
-	// 		}
-	// 	}
-	// });
-
 	this.update();
 	
 	this.disable = function() {
@@ -74,7 +54,7 @@ elRTE.prototype.ui = function(rte) {
  * @return void
  **/
 elRTE.prototype.ui.prototype.update = function(cleanCache) {
-	cleanCache && this.rte.selection.cleanCache();
+	// cleanCache && this.rte.selection.cleanCache();
 	var n    = this.rte.selection.getNode(),
 		p    = this.rte.dom.parents(n, '*'),
 		path = '';
@@ -107,7 +87,9 @@ elRTE.prototype.ui.prototype.buttons = {
 	button : function(rte, name) {
 		var self     = this;
 		this.rte     = rte;
-		this.active = false;
+		this.dom     = rte.dom;
+		this.sel     = rte.selection;
+		this.active  = false;
 		this.name    = name;
 		this.val     = null;
 		this.domElem = $('<li style="-moz-user-select:-moz-none" class="'+name+' rounded-3" name="'+name+'" title="'+this.rte.i18n(this.rte.options.buttons[name] || name)+'" unselectable="on" />')

@@ -18,3 +18,11 @@ body.el-rte-structure .el-rte-anchor {
 	background: url('../images/elrte-toolbar.png') -564px -8px no-repeat;
 }
 
+.elrte-bm {
+	border:1px solid #222;
+	width:2px;
+	height:12px;
+	background:#ccc;
+/*	display:none;*/
+}
+

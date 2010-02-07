@@ -92,7 +92,7 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 		if (this.src['class'].val()) {
 			this.hr.attr('class', this.src['class'].val());	
 		}
-		this.rte.ui.update()
+		this.rte.ui.update();
 	}
 	
 }

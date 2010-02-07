@@ -6,6 +6,8 @@
 (function($) {
 elRTE.prototype.dom = function(rte) {
 	this.rte = rte;
+	this.doc = rte.doc;
+	this.body = rte.doc.body
 	var self = this;
 	this.regExp = {
 		textNodes         : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
@@ -13,7 +15,24 @@ elRTE.prototype.dom = function(rte) {
 		block             : /^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TD|TH|TR|UL)$/,
 		selectionBlock    : /^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TD|TH|TR|UL)$/,		
 		header            : /^H[1-6]$/,
-		formElement       : /^(FORM|INPUT|HIDDEN|TEXTAREA|SELECT|BUTTON)$/
+		formElement       : /^(FORM|INPUT|HIDDEN|TEXTAREA|SELECT|BUTTON)$/,
+		all               : /.*/,
+		dummy             : /\s/,
+		body              : /^(BODY|HTML)$/,
+		strong            : /^(STRONG|B)$/
+	};
+	
+	
+	this.filters = {
+		dummy    : [/\s/],
+		all      : [/.*/],
+		body     : [/^(BODY|HTML)$/],
+		headers  : [/^H[1-6]$/],
+		strong   : [/^(STRONG|B)$/, function(n) { return /font\-weight\s*:\s*bold/i.test($(n).attr('style')||'');  }],
+		text     : [/^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/],
+		block    : [/^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TD|TH|TR|UL)$/],
+		selBlock : [/^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TD|TH|TR|UL)$/],
+		form     : [/^(FORM|INPUT|HIDDEN|TEXTAREA|SELECT|BUTTON)$/]
 	};
 	
 	/********************************************************/
@@ -314,7 +333,7 @@ elRTE.prototype.dom = function(rte) {
 					ret.push(n[i]);
 				}
 			};
-			return ret;
+			return ret.length ? ret : null;
 		}
 		return null;
 	}
@@ -329,14 +348,19 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.parents = function(n, filter) {
 		var t = typeof(filter), ret = [];
+		// this.rte.log(n)
 		if (t=='object' || t == 'string') {
 			filter = filter == '*' ? /.?/ : (this.regExp[filter] || filter);
 			while (n && (n = n.parentNode) && n.nodeName != 'BODY' && n.nodeName != 'HTML') {
+				// this.rte.log(n)
 				if (filter.test(n.nodeName)) {
+					
 					ret.push(n);
 				}
 			}
 		}
+		// this.rte.log(ret)
+		// this.rte.log(filter)
 		return ret;
 	}
 	
@@ -359,7 +383,7 @@ elRTE.prototype.dom = function(rte) {
 	* @param  RegExp||String  pf   фильтр условия для родителя
 	 * @return DOMElement
 	 **/
-	this.selfOrParent = function(n, sf, pf) {
+	this.selfOrParent_ = function(n, sf, pf) {
 		return this.filter(n, sf) || this.parent(n, pf||sf);
 	}
 	
@@ -610,6 +634,217 @@ elRTE.prototype.dom = function(rte) {
 		}
 		return !ext ? ret : {column : ret, info : info};
 	}
+
+
+	/********************************************************/
+	/*                       New                            */
+	/********************************************************/
+	
+	function filter(f) {
+		return f = typeof(f) == 'object' ? f : self.regExp[f]||self.regExp.dummy;
+	}
+	
+	/**
+	 * Return true if node matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.is = function(n, f) {
+		switch(typeof(f)) {
+			case 'string':
+				f = this.filters[f]||this.filters['dummy'];
+				return f[0].test(n.nodeName) || (f[1] ? f[1](n) : false);
+				break;
+			case 'object':
+				return f.test(n.nodeName);
+				break;
+			case 'function':
+				return f(n);
+		}
+		return false;
+	}
+
+	/**
+	 * Find in node childs nodes matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Array
+	 **/
+	this.find = function(n, f) {
+		var r = [];
+		$(n).find('*').each(function() {
+			if (self.is(this, f)) {
+				r.push(this);
+			}
+		})
+		return r;
+	}
+	
+	/**
+	 * Return closest parent which is child node of p or body and with node name matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  DOMElement    p  if set, find parents not up one
+	 * @return DOMElement|null
+	 **/
+	this.parent = function(n, f, p) {
+		p = p||this.body;
+		while (n && n.nodeName && n != this.body && (n = n.parentNode) && n != p) {
+			if (this.is(n, f)) {
+				return n;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return parents - childs of p(or body) with node names matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  DOMElement    p  if set, find parents not up one
+	 * @return Array
+	 **/
+	this.parents = function(n, f, p) {
+		var r = [];
+		while ((n = this.parent(n, f, p))) {
+			r.push(n);
+		}
+		return r;
+	}
+	
+	/**
+	 * Return true if selection is matches filter or has parent or child matches filter
+	 *
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.selectionIs = function(f) {
+		var n = this.rte.selection.getNode();
+		return this.is(n, f) || this.parent(n, f) || (!this.rte.selection.collapsed() && this.find(this.rte.selection.cloneContents(), f).length) ? true : false;
+	}
+	
+	/**
+	 * Return nodes matched by filter
+	 *
+	 * @param  Array         n  array of nodes to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Array
+	 **/
+	this.filter = function(n, f) {
+		var l = n.length, r = [];
+		while (l--) {
+			if (this.is(n[l], f)) {
+				r.unshift(n);
+			}
+		}
+		return r;
+	}
+	
+	this.cutNode = function(n, l, r) {
+		var c = n.cloneNode(false), p, nodes;
+		
+		n.nextSibling ? n.parentNode.insertBefore(c, n.nextSibling) : n.parentNode.appendChild(c);
+		n.appendChild($(this.create('span')).addClass('elrte-bm')[0]);
+		nodes = this.traverse(r, n.lastChild);
+		n.removeChild(nodes.pop())
+		nodes.shift();
+
+		$.each(nodes, function() {
+			c.appendChild(this);
+		});
+
+		$.each(this.traverse(l, r), function() {
+			c.parentNode.insertBefore(this, c)
+		});
+	}
+
+	this.moveNodesToRight = function(n, b) {
+		var nodes, i, p = n.parentNode, _n;
+		
+		n.appendChild($(this.create('span')).addClass('elrte-bm')[0]);
+		nodes = this.traverse(b, n.lastChild);
+		n.removeChild(nodes.pop());
+		i = nodes.length;
+		while (i--) {
+			_n = this.cloneParents(nodes[i], n);
+			if (n.nextSibling) {
+				p.insertBefore(_n, n.nextSibling);
+			} else {
+				p.appendChild(_n);
+			}
+		}
+	}
+	
+	this.moveNodesToLeft = function(n, b) {
+		var nodes, p = n.parentNode, _n;
+		
+		n.insertBefore($(this.create('span')).addClass('elrte-bm')[0], n.firstChild);
+		nodes = this.traverse(n.firstChild, b);
+		
+	}
+	
+	this.traverse = function(s, e) {
+		var p = this.findCommonAncestor(s, e), sp = s, ep = e, n=s, res = [], tmp = [e];
+		this.doc.body.normalize();
+		while (sp.parentNode != p) {
+			sp = sp.parentNode;
+		}
+		
+		while (ep.parentNode != p) {
+			ep = ep.parentNode;
+		}
+		
+		res.push(s)
+		while (n != sp) {
+			n!=s && res.push(n);
+			$.merge(res, this.nextAll(n));
+			n = n.parentNode;
+		}
+		
+		while ((n = this.next(n)) && n != ep) {
+			res.push(n);
+		}
+		
+		n = e;
+		while (n != ep) {
+			n != e && tmp.push(n);
+			tmp = tmp.concat(this.prevAll(n));
+			n = n.parentNode;
+		}
+		return res.concat(tmp.reverse());
+	}
+	
+	
+	this.cloneParents = function(n, p) {
+		var ret=null;
+		$.each(this.parents(n, 'all', p), function() {
+			if (!ret) {
+				ret = this.cloneNode(false);
+			} else {
+				ret.appendChild(this.cloneNode(false));
+			}
+		});
+		if (ret) {
+			ret.appendChild(n);
+		} else {
+			ret = n;
+		}
+		return ret;
+	}
+	
+	this.unwrap = function(n) {
+		// $(n).replaceWith($(n).html());
+		while (n.firstChild) {
+			n.parentNode.insertBefore(n.firstChild, n);
+		}
+		n.parentNode.removeChild(n);
+	}
+	
 }
 
 })(jQuery);

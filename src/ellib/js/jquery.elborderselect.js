@@ -59,16 +59,20 @@
 		    	hexDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8","9", "a", "b", "c", "d", "e", "f"];
 		        return !x  ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x% 16];
 		    }
-			var rgb = str.match(/\(([0-9]{1,3}),\s*([0-9]{1,3}),\s*([0-9]{1,3})\)/); 
+			var rgb = str && str.length ? str.match(/\(([0-9]{1,3}),\s*([0-9]{1,3}),\s*([0-9]{1,3})\)/) : ''; 
 			return rgb ? "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]) : '';
 		}
 		
 		function toPixels(num) {
-			var m = num.match(/([0-9]+\.?[0-9]*)\s*(px|pt|em|%)/);
+			window.console.log(num)
+			var m = (num||'').match(/([0-9]+\.?[0-9]*)\s*(px|pt|em|%)/);
+			
 			if (m) {
 				num  = m[1];
 				unit = m[2];
-			} 
+			} else {
+				return 0;
+			}
 			if (num[0] == '.') {
 				num = '0'+num;
 			}
@@ -116,7 +120,7 @@
 				}
 
 				width.val(toPixels(w));
-				var m = s.match(/(solid|dashed|dotted|double|groove|ridge|inset|outset)/i);
+				var m = s ? s.match(/(solid|dashed|dotted|double|groove|ridge|inset|outset)/i) : '';
 				style.val(m ? m[1] : '');
 				color.val(rgb2hex(c));
 				return this;

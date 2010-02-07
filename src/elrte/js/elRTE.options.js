@@ -108,7 +108,7 @@ elRTE.prototype.options   = {
 		fullscreen : ['fullscreen']
 	},
 	toolbars    : {
-		tiny     : ['style'],
+		tiny     : ['style', 'undoredo'],
 		compact  : ['save', 'undoredo', 'style', 'alignment', 'lists', 'links', 'fullscreen'],
 		normal   : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'indent', 'lists', 'links', 'elements', 'images', 'fullscreen'],
 		complite : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'fullscreen'],

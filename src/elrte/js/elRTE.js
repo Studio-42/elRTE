@@ -22,7 +22,7 @@ elRTE = function(target, opts) {
 	}
 	var self     = this, html;
 	this.version = '1.0 RC1';
-	this.build   = '';
+	this.build   = '20100204';
 	this.options = $.extend(true, {}, this.options, opts);
 	this.browser = $.browser;
 	this.target  = $(target);
@@ -41,7 +41,7 @@ elRTE = function(target, opts) {
 	this.window  = null;
 	
 	this.utils     = new this.utils(this);
-	this.dom       = new this.dom(this);
+	
 	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.options.lang] || {}} });	
 
 	
@@ -58,7 +58,7 @@ elRTE = function(target, opts) {
 	this.source.val(this.filter(this.source.val(), true));
 	/* add tabs */
 	if (this.options.allowSource) {
-		this.tabsbar.append('<div class="tab editor rounded-bottom-7 active">'+self.i18n('Editor')+'</div><div class="tab source rounded-bottom-7">'+self.i18n('Source')+'</div><div class="clearfix"/>')
+		this.tabsbar.append('<div class="tab editor rounded-bottom-7 active">'+self.i18n('Editor')+'</div><div class="tab source rounded-bottom-7">'+self.i18n('Source')+'</div><div class="clearfix" style="clear:both"/>')
 			.children('.tab').click(function(e) {
 				if (!$(this).hasClass('active')) {
 					self.tabsbar.children('.tab').toggleClass('active');
@@ -108,14 +108,28 @@ elRTE = function(target, opts) {
 	}
 	this.window.focus();
 	
+	this.dom       = new this.dom(this);
 	this.history = new this.history(this)
 	
 	/* init selection object */
-	this.selection = new this.selection(this);
+	// this.selection = new this.selection(this);
+	this.selection = $.browser.msie ? new this.msSelection(this) : new this.w3cSelection(this)
 	/* init buttons */
 	this.ui = new this.ui(this);
 	
-	// this.history.add()
+	// var n = this.doc.body.firstChild;
+	// this.log(n.nextSibling)
+	// this.selection.getSelection().selectAllChildren(n)
+	// this.selection.selectNode(n)
+	// this.selection.select(n, n.nextSibling)
+	// this.selection.select(n, n.nextSibling)
+	// this.selection.insertNode(this.dom.create('br'))
+	// this.selection.getBookmark()
+	// this.selection.collapse()
+	// this.selection.moveToBookmark()
+	// this.selection.info()
+
+	// this.selection.collapse(true)
 	
 	
 	/* bind updateSource to parent form submit */
