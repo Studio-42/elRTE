@@ -1,15 +1,15 @@
 (function($) {
 	
 	elRTE.prototype.w3cSelection = function(rte) {
-		this.constructor.prototype.constructor.call(this, rte);
+		// this.constructor.prototype.constructor.call(this, rte);
+		this.superclass(rte)
 		var self = this;
-	
-		$(this.rte.doc).bind('mouseup', function(e) {
-			// self.log(e.target)
-			self.node = e.target.nodeName.match(/^(HR|IMG)$/) ? e.target : null;
-		}).bind('keyup', function() {
-			self.node = null;
-		})
+		// $(this.rte.doc).bind('mouseup', function(e) {
+		// 	// self.log(e.target)
+		// 	self.node = e.target.nodeName.match(/^(HR|IMG)$/) ? e.target : null;
+		// }).bind('keyup', function() {
+		// 	self.node = null;
+		// })
 	
 		/**
 		 * @return Selection
@@ -24,6 +24,10 @@
 		this.getRange = function() {
 			var s = this.getSelection();
 			return s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
+		}
+	
+		this.cloneRange = function() {
+			return this.getRange().clone();
 		}
 	
 		/**
@@ -73,18 +77,19 @@
 			return this;
 		}
 	
+		/**
+		 * Return clone of selection contents wrapped in div
+		 *
+		 * @return DOMElement
+		 **/
 		this.cloneContents = function() {
 			var c = this.getRange().cloneContents(),
 				l = c.childNodes.length, i,
 				n = this.dom.create('div');
-			// this.log(c)
 			for (i=0; i<l; i++) {
-				// this.log(c.childNodes[i])
 				n.appendChild(c.childNodes[i].cloneNode(true));
 			}
-			return n
-			
-			return this.getRange().cloneContents();
+			return n;
 		}
 	
 		/**
@@ -92,11 +97,10 @@
 		 * @param  DOMElement
 		 * @return w3cSelection
 		 **/
-		this.insertNode = function(n) {
+		this.insertNode = function(n, r) {
 			var r = this.getRange();
-			r.deleteContents()
-			r.insertNode(n);
-			return this;
+			(r||this.getRange()).insertNode(n);
+			return n;
 		}
 	
 		/**
@@ -116,43 +120,36 @@
 		 * @return String
 		 **/
 		this.getBookmark = function() {
-			$(this.doc.body).find('.elrte-bm').remove();
-			this.win.focus()
-			var s  = this.getSelection(),
-				r  = this.getRange(),
+			this.win.focus();
+			var r  = this.getRange(),
 				r1 = r.cloneRange(),
 				r2 = r.cloneRange(),
-				st = this.dom.create('span'),
-				en = this.dom.create('span');
+				s  = this.dom.createBookmark(),
+				e  = this.dom.createBookmark();
 			
-			r2.collapse(false)
-			r2.insertNode(en)
-			r1.collapse(true)
-			r1.insertNode(st)
-			r.setStartAfter(st);
-			r.setEndBefore(en);
-			s.removeAllRanges();
-			s.addRange(r);
-			$(st).add($(en)).addClass('elrte-bm');
-			return [st, en];
+			r2.collapse(false);
+			r2.insertNode(e);
+			r1.collapse(true);
+			r1.insertNode(s);
+			
+			this.select(s, e);
+			return [s, e];
 		}
 	
 		/**
 		 * Move selection to bookmark
 		 * @return w3cSelection
 		 **/
-		this.moveToBookmark = function() {
-			var s = this.getSelection(),
-				r = this.getRange(),
-				b = $(this.doc.body).find('.elrte-bm');
-			this.win.focus()
-			if (b.length == 2) {
-				r.setStartAfter(b[0]);
-				r.setEndBefore(b[1])
-				s.removeAllRanges();
-				s.addRange(r);
+		this.moveToBookmark = function(b) {
+			var s = b[0] && b[0].nodeName ? b[0] : this.doc.getElementById(b[0]),
+				e = b[1] && b[1].nodeName ? b[1] : this.doc.getElementById(b[1]);
+
+			this.win.focus();
+			if (s.nodeName && e.nodeName) {
+				this.select(s, e);
+				s.parentNode.removeChild(s);
+				e.parentNode.removeChild(e);
 			}
-			b.remove();
 			return this;
 		}
 		
@@ -167,16 +164,16 @@
 	
 		/**
 		 * Return common ancestor for selected nodes
+		 *
 		 * @return DOMElement
 		 **/
 		this.getNode = function() {
+			var n;
 			if (this.node) {
 				return this.node
-			} else {
-				var n = this.getRange().commonAncestorContainer;
-				return n.nodeType == 1 ? n : n.parentNode
-			}
-			return this.node || this.getRange().commonAncestorContainer;
+			} 
+			n = this.getRange().commonAncestorContainer;
+			return n.nodeType == 1 ? n : n.parentNode;
 		}
 		
 		this.info = function() {
@@ -212,5 +209,7 @@
 	
 	
 	elRTE.prototype.w3cSelection.prototype = elRTE.prototype.selection.prototype;
+	
+	elRTE.prototype.w3cSelection.prototype.superclass = elRTE.prototype.selection;
 	
 })(jQuery);

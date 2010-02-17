@@ -1,7 +1,8 @@
 (function($) {
 	
 	elRTE.prototype.msSelection = function(rte) {
-		this.constructor.prototype.constructor.call(this, rte);
+		// this.constructor.prototype.constructor.call(this, rte);
+		this.superclass(rte);
 		var self = this;
 		
 		/**
@@ -153,5 +154,7 @@
 	
 	
 	elRTE.prototype.msSelection.prototype = elRTE.prototype.selection.prototype;
+	
+	elRTE.prototype.msSelection.prototype.superclass = elRTE.prototype.selection;
 	
 })(jQuery);

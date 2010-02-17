@@ -2,7 +2,6 @@
  * @class history  - save/restore editor content
  *
  * @param  elRTE  rte  объект-редактор
- *
  * @author:    Dmitry Levashov (dio) dio@std42.ru
  **/
 (function($) {
@@ -16,13 +15,12 @@ elRTE.prototype.history = function(rte) {
 	 * Add current content and selection to history
 	 **/
 	this.add = function() {
-		return
 		var b = this.rte.selection.getBookmark();
-		// this.rte.log('history')
+
 		if (this.rte.options.historyLength>0 && this._prev.length>= this.rte.options.historyLength) {
 			this._prev.slice(this.rte.options.historyLength);
 		}
-		// this._prev.push([this.body.html(), b]);
+		this._prev.push([this.body.html(), [$(b[0]).attr('id'), $(b[1]).attr('id')]]);
 		this._next = [];
 		this.rte.selection.cleanBookmarks();
 	}
@@ -32,11 +30,11 @@ elRTE.prototype.history = function(rte) {
 	 **/
 	this.back = function() {
 		if (this._prev.length) {
-			var o = this._prev.pop(),
+			var p = this._prev.pop(),
 				b = this.rte.selection.getBookmark();
-			this._next.push([this.body.html(), b]);
-			this.body.html(o[0]);
-			this.rte.selection.moveToBookmark(o[1]);
+			this._next.push([this.body.html(), [$(b[0]).attr('id'), $(b[1]).attr('id')]]);
+			this.body.html(p[0]);
+			this.rte.selection.moveToBookmark(p[1]);
 		}
 	}
 
@@ -45,12 +43,11 @@ elRTE.prototype.history = function(rte) {
 	 **/
 	this.fwd = function() {
 		if (this._next.length) {
-			return
-			var o = this._next.pop(),
+			var p = this._next.pop(),
 				b = this.rte.selection.getBookmark();
-			this._prev.push([this.body.html(), b]);
-			this.body.html(o[0]);
-			this.rte.selection.moveToBookmark(o[1]);
+			this._prev.push([this.body.html(), [$(b[0]).attr('id'), $(b[1]).attr('id')]]);
+			this.body.html(p[0]);
+			this.rte.selection.moveToBookmark(p[1]);
 		}
 	}
 	

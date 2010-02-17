@@ -113,7 +113,7 @@ elRTE = function(target, opts) {
 	
 	/* init selection object */
 	// this.selection = new this.selection(this);
-	this.selection = $.browser.msie ? new this.msSelection(this) : new this.w3cSelection(this)
+	this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this)
 	/* init buttons */
 	this.ui = new this.ui(this);
 	
@@ -340,7 +340,7 @@ elRTE.prototype.filters = {
 				6 : 'x-large',
 				7 : 'xx-large'
 			}
-			
+			return html 
 			html = html.replace(/<font([^>]*)/i, function(str, attr) {
 				var css = '', m = attr.match(/size=('|")(\d)/i);
 				if (m && m[2] && fsize[m[2]]) {

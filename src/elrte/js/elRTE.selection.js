@@ -7,9 +7,228 @@
 		this.dom = rte.dom;
 		this.log = rte.log;
 		this.node = null;
+		var self = this;
+		
+		$(this.rte.doc).bind('mouseup', function(e) {
+			// self.log(e.target)
+			self.node = e.target.nodeName.match(/^(HR|IMG)$/) ? e.target : null;
+		}).bind('keyup', function() {
+			self.node = null;
+		})
+		
 	}
 	
-	elRTE.prototype.selection.prototype.rawSelected = function(collapsed, blocks) {
+	/**
+	 * return true if range is collapsed
+	 * @return Boolean
+	 **/
+	elRTE.prototype.selection.prototype.collapsed = function() {
+		return this.getRange().collapsed;
+	}
+	
+	/**
+	 * collapse range
+	 * @return selection
+	 **/
+	elRTE.prototype.selection.prototype.collapse = function(toStart) {
+		this.getRange().collapse(toStart);
+		return this;
+	}
+	
+	/**
+	 * @return Selection
+	 **/
+	elRTE.prototype.selection.prototype.getSelection = function() {
+		return this.win.getSelection();
+	}
+	
+	/**
+	 * @return Range
+	 **/
+	elRTE.prototype.selection.prototype.getRange = function() {
+		var s = this.getSelection();
+		return s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
+	}
+
+	/**
+	 * @return Range
+	 **/
+	elRTE.prototype.selection.prototype.cloneRange = function() {
+		return this.getRange().clone();
+	}
+	
+	/**
+	 * Return clone of selection contents wrapped in div
+	 *
+	 * @return DOMElement
+	 **/
+	elRTE.prototype.selection.prototype.cloneContents = function() {
+		var c = this.getRange().cloneContents(),
+			l = c.childNodes.length, i,
+			n = this.dom.create('div');
+		for (i=0; i<l; i++) {
+			n.appendChild(c.childNodes[i].cloneNode(true));
+		}
+		return n;
+	}
+	
+	/**
+	 * select from start node to end node
+	 * @param  DOMElement
+	 * @param  DOMElement
+	 * @return w3cSelection
+	 **/
+	elRTE.prototype.selection.prototype.select = function(st, en) {
+		var s = this.getSelection(),
+			r = this.getRange();
+
+		if (en) {
+			r.setStartBefore(st);
+			r.setEndAfter(en);
+		} else {
+			r.selectNode(st);
+		}
+		
+		s.removeAllRanges();
+		s.addRange(r);
+		return this;
+	}
+	
+	/**
+	 * Insert node into begining of selection
+	 * @param  DOMElement
+	 * @return w3cSelection
+	 **/
+	elRTE.prototype.selection.prototype.insertNode = function(n, r) {
+		var r = this.getRange();
+		(r||this.getRange()).insertNode(n);
+		return n;
+	}
+	
+	/**
+	 * Insert html into selection
+	 * @param  String
+	 * @return w3cSelection
+	 **/
+	elRTE.prototype.selection.prototype.insertHtml = function(html) {
+		var n = this.insertNode($(this.dom.create('span')).html(html||''));
+		n.replaceWith(n.html());
+		return this;
+	}
+	
+	/**
+	 * Create bookmark (to store selection)
+	 * @return String
+	 **/
+	elRTE.prototype.selection.prototype.getBookmark = function() {
+		this.win.focus();
+		var r  = this.getRange(),
+			r1 = r.cloneRange(),
+			r2 = r.cloneRange(),
+			s  = this.dom.createBookmark(),
+			e  = this.dom.createBookmark();
+		
+		r2.collapse(false);
+		r2.insertNode(e);
+		r1.collapse(true);
+		r1.insertNode(s);
+		
+		this.select(s, e);
+		return [s, e];
+	}
+	
+	/**
+	 * Move selection to bookmark
+	 * @return w3cSelection
+	 **/
+	elRTE.prototype.selection.prototype.moveToBookmark = function(b) {
+		var s = b[0] && b[0].nodeName ? b[0] : this.doc.getElementById(b[0]),
+			e = b[1] && b[1].nodeName ? b[1] : this.doc.getElementById(b[1]);
+
+		this.win.focus();
+		if (s.nodeName && e.nodeName) {
+			this.select(s, e);
+			s.parentNode.removeChild(s);
+			e.parentNode.removeChild(e);
+		}
+		return this;
+	}
+	
+	/**
+	 * Remove bookmarks nodes
+	 * @return w3cSelection
+	 **/
+	elRTE.prototype.selection.prototype.cleanBookmarks = function() {
+		$(this.doc.body).find('.elrte-bm').remove();
+		return this;
+	}
+	
+	/**
+	 * Return cached node or common ancestor for selected nodes
+	 *
+	 * @return DOMElement
+	 **/
+	elRTE.prototype.selection.prototype.getNode = function() {
+		var n = this.node || this.getRange().commonAncestorContainer;
+		return n.nodeType == 1 ? n : n.parentNode;
+	}
+	
+	
+	elRTE.prototype.selection.prototype.getSelected = function() {
+		var res = [], s, e, c, b;
+
+		if (!this.collapsed()) {
+			this.doc.body.normalize();
+			b = this.getBookmark();
+			s = b[0].nextSibling;
+			e = b[1].previousSibling;
+			this.cleanBookmarks();
+			
+			c = this.dom.commonAncestor(s, e);
+			
+			while (this.dom.is(s, 'first') && s.parentNode != c) {
+				s = s.parentNode; 
+			}
+			while (this.dom.is(e, 'last') && e.parentNode != c) {
+				e = e.parentNode;
+			}
+			if (s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
+				s = e = c;
+			}
+			
+			if (s == this.doc.body) {
+				res = this.doc.body.childNodes
+			} else if (s == e) {
+				res.push(s);
+			} else {
+				res = this.dom.traverse(s, e, c);
+			}
+		}
+		return res;
+	}
+	
+	elRTE.prototype.selection.prototype.filterSelected = function(f) {
+		return this.dom.filter(this.getSelected(), f);
+	}
+	
+	elRTE.prototype.selection.prototype.wrapSelected = function(f, wf, w) {
+		return this.dom.wrapAll(this.filterSelected(f), wf, w);
+	}
+	
+	elRTE.prototype.selection.prototype.selected = function(opts) {
+		var o = $.extend({ filter : '', wrapFilter : '', wrapNode : ''}, opts||{}),
+			s = this.getSelected();
+			
+		if (o.filter) {
+			s = this.dom.filter(s, o.filter);
+		}
+		if (o.wrapFilter && o.wrapNode) {
+			s = this.dom.wrapAll(s, o.wrapFilter, o.wrapNode);
+		}
+		return s;
+	}
+	
+	elRTE.prototype.selection.prototype.rawSelected_ = function(collapsed, blocks) {
 		var res = {so : null, eo : null, nodes : []};
 		var r   = this.getRange();
 		var ca  = r.commonAncestorContainer;
@@ -226,7 +445,7 @@
 	 * @param   Object  o  параметры получения и обработки выбраных нод
 	 * @return  Array
 	 **/
-	elRTE.prototype.selection.prototype.selected = function(o) {
+	elRTE.prototype.selection.prototype.selected_ = function(o) {
 		var opts = {
 			collapsed : false,  // вернуть выделение, даже если оно схлопнуто
 			blocks    : false,  // блочное выделение

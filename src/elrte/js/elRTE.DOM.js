@@ -5,491 +5,456 @@
  */
 (function($) {
 elRTE.prototype.dom = function(rte) {
-	this.rte = rte;
-	this.doc = rte.doc;
-	this.body = rte.doc.body
-	var self = this;
-	this.regExp = {
-		textNodes         : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
-		textContainsNodes : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DL|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|OL|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TABLE|THEAD|TBODY|TFOOT|TD|TH|TR|TT|UL|VAR)$/,
-		block             : /^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TD|TH|TR|UL)$/,
-		selectionBlock    : /^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TD|TH|TR|UL)$/,		
-		header            : /^H[1-6]$/,
-		formElement       : /^(FORM|INPUT|HIDDEN|TEXTAREA|SELECT|BUTTON)$/,
-		all               : /.*/,
-		dummy             : /\s/,
-		body              : /^(BODY|HTML)$/,
-		strong            : /^(STRONG|B)$/
-	};
-	
+	var self  = this;
+	this.rte  = rte;
+	this.doc  = rte.doc;
+	this.body = rte.doc.body;
+	this.html = rte.doc.body.parentNode;
 	
 	this.filters = {
-		dummy    : [/\s/],
-		all      : [/.*/],
-		body     : [/^(BODY|HTML)$/],
-		headers  : [/^H[1-6]$/],
-		strong   : [/^(STRONG|B)$/, function(n) { return /font\-weight\s*:\s*bold/i.test($(n).attr('style')||'');  }],
-		text     : [/^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/],
-		block    : [/^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TD|TH|TR|UL)$/],
-		selBlock : [/^(APPLET|BLOCKQUOTE|BR|CAPTION|CENTER|COL|COLGROUP|DD|DIV|DL|DT|H[1-6]|EMBED|FIELDSET|LI|MARQUEE|NOBR|OBJECT|OL|P|PRE|TD|TH|TR|UL)$/],
-		form     : [/^(FORM|INPUT|HIDDEN|TEXTAREA|SELECT|BUTTON)$/]
-	};
-	
-	/********************************************************/
-	/*                      Утилиты                         */
-	/********************************************************/	
-	
-	/**
-	 * Возвращает body редактируемого документа
-	 *
-	 * @return Element
-	 **/
-	this.root = function() {
-		return this.rte.body;
-	}
-
-	this.create = function(t) {
-		return this.rte.doc.createElement(t);
-	}
-
-	/**
-	 * Вовращает индекс элемента внутри родителя
-	 *
-	 * @param  Element n  нода
-	 * @return integer
-	 **/
-	this.indexOf = function(n) {
-		var ndx = 0;
-		n = $(n);
-		while ((n = n.prev()) && n.length) {
-			ndx++;
-		}
-		return ndx;
-	}
-	
-	/**
-	 * Вовращает значение аттрибута в нижнем регистре (ох уж этот IE)
-	 *
-	 * @param  Element n  нода
-	 * @param  String  attr имя аттрибута
-	 * @return string
-	 **/
-	this.attr = function(n, attr) {
-		var v = '';
-		if (n.nodeType == 1) {
-			v = $(n).attr(attr);
-			if (v && attr != 'src' && attr != 'href') {
-				v = v.toString().toLowerCase();
+		dummy         : { },
+		all           : { regexp : /.*/ },
+		block         : { regexp : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/},
+		inline        : { func : function(n) { return n.nodeType == 3 || !self.filters.block.regexp.test(n.nodeName); } },
+		text          : { 
+			regexp : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
+			func   : function(n) { return n.nodeType == 3; }
+		},
+		notText       : { func : function(n) { return !self.is(n, 'text'); } },
+		blockText     : { func : function(n) { return  self.is(n, 'block')  && self.is(n, 'text');    } },
+		inlineText    : { func : function(n) { return  self.is(n, 'inline') && self.is(n, 'text');    } },
+		body          : { regexp : /^BODY$/ },
+		headers       : { regexp : /^H[1-6]$/	},
+		strong        : {
+			regexp : /^(STRONG|B)$/,
+			func   : function(n) { return /font\-weight\s*:\s*bold/i.test($(n).attr('style')||''); }
+		},
+		textNode      : { func : function(n) { return n.nodeType == 3; } },
+		empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
+		notEmpty      : { func : function(n) { return !self.filters.empty.func(n); } },
+		onlyChild     : { func : function(n) { return self.filters.first.func(n) && self.filters.last.func(n); } },
+		first         : {
+			func : function(n) {
+				while ((n = self.prev(n))) {
+					if (self.filters.notEmpty.func(n)) {
+						return false;
+					}
+				}
+				return true;
 			}
-		} 
-		return v||'';
+		},
+		last          : {
+			func : function(n) {
+				while ((n = self.next(n))) {
+					if (self.filters.notEmpty.func(n)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		
 	}
 	
 	/**
-	 * Вовращает ближайший общий контейнер для 2-х эл-тов
+	 * Create and return DOM Element
 	 *
-	 * @param  Element n  нода1
-	 * @param  Element n  нода2
-	 * @return Element
+	 * @param  String  Node name
+	 * @param  Array   Node attributes
+	 * @return DOMElement
 	 **/
-	this.findCommonAncestor = function(n1, n2) {
-		if (!n1 || !n2) {
-			return this.rte.log('dom.findCommonAncestor invalid arguments');
+	this.create = function(n, a) {
+		var n = this.doc.createElement(n);
+		a && $(n).attr(a);
+		return n;
+	}
+	
+	/**
+	 * Return node for bookmark with unique ID
+	 *
+	 * @return DOMElement
+	 **/
+	this.createBookmark = function() {
+		return this.create('span', { id : 'elrte-bm-'+Math.random().toString().substr(2), 'class' : 'elrte-bm'});
+	}
+	
+	/********************************************************************************/
+	/*                                  SEARCH                                      */
+	/********************************************************************************/
+	
+	/**
+	 * Return true if node matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.is = function(n, f) {
+		
+		if (typeof(f) == 'string' && this.filters[f]) {
+			f = this.filters[f];
+			return f.rule == 'and'
+				?  f.regexp && f.regexp.test(n.nodeName||'')  &&  f.func && f.func(n)
+				: (f.regexp && f.regexp.test(n.nodeName||'')) || (f.func && f.func(n));
+		} else if (f instanceof RegExp) {
+			return f.test(n.nodeName);
+		} else if ($.isFunction(f)) {
+			return f(n);
 		}
-		if (n1 == n2) {
-			return n1;
-		} else if (n1.nodeName == 'BODY' || n2.nodeName == 'BODY') {
-			return this.rte.doc.body;
+		return false;
+	}
+	
+	/**
+	 * Return nodes matched by filter
+	 *
+	 * @param  Array         n  array of nodes to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Array
+	 **/
+	this.filter = function(n, f) {
+		var l = n.length||0, r = [];
+		
+		while (l--) {
+			this.is(n[l], f) && r.unshift(n[l]);
 		}
-		var p1 = $(n1).parents(), p2 = $(n2).parents(), l  = p2.length-1, c  = p2[l];
-		for (var i = p1.length - 1; i >= 0; i--, l--){
-			if (p1[i] == p2[l]) {
-				c = p1[i];
+		return r;
+	}
+	
+	/**
+	 * Return any children nodes matched by filter
+	 *
+	 * @param  DOMElement               node to test
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @param  Boolean                  check parent node before children
+	 * @return Array
+	 **/
+	this.find = function(n, f, addSelf) {
+		var r = addSelf && this.is(n, f) ? [n] : [], c, i;
+
+		if (n.nodeType == 1 && n.childNodes.length) {
+			c = n.childNodes;
+			for (i=0; i < c.length; i++) {
+				this.is(c[i], f) && r.push(c[i]);
+				if (c[i].nodeType == 1 && c[i].childNodes.length) {
+					r = r.concat(this.find(c[i], f));
+				}
+			};
+		}
+		return r;
+	}
+
+	/**
+	 * Return closest common parent node for 2 nodes
+	 *
+	 * @param  DOMElement
+	 * @param  DOMElement
+	 * @return DOMElement
+	 **/
+	this.commonAncestor = function(s, e) {
+		var c = this.body;
+		
+		if (s && e) {
+			if (s == e) {
+				c = s;
 			} else {
-				break;
+				var sp = this.parents(s, 'all', this.html, true).reverse(),
+					ep = this.parents(e, 'all', this.html, true).reverse(),
+					len = Math.min(sp.length, ep.length), i=0;
+				while (i++<len && sp[i] == ep[i]) {
+					c = sp[i];
+				}	
 			}
-		};
-		return c;
+		}
+		return c.nodeType != 1 && this.is(c, 'onlyChild') ? c.parentNode : c;
 	}
-	/**
-	 * Вовращает TRUE, если нода пустая
-	 * пустой считаем ноды:
-	 *  - текстовые эл-ты, содержащие пустую строку или тег br
-	 *  - текстовые ноды с пустой строкой
-	 *
-	 * @param  DOMElement n  нода
-	 * @return bool
-	 **/
-	this.isEmpty = function(n) {
-		if (n.nodeType == 1) {
-			return this.regExp.textNodes.test(n.nodeName) ? $.trim($(n).text()).length == 0 : false;
-		} else if (n.nodeType == 3) {
-			return /^(TABLE|THEAD|TFOOT|TBODY|TR|UL|OL|DL)$/.test(n.parentNode.nodeName)
-				|| n.nodeValue == ''
-				|| ($.trim(n.nodeValue).length== 0 && !(n.nextSibling && n.previousSibling && n.nextSibling.nodeType==1 && n.previousSibling.nodeType==1 && !this.regExp.block.test(n.nextSibling.nodeName) && !this.regExp.block.test(n.previousSibling.nodeName) ));
+	
+	this.isSiblings = function(n) {
+		var l = n.length;
+		while (l--) {
+			if (n[l].parentNode != n[0].parentNode) {
+				return false;
+			}
 		}
 		return true;
 	}
-
-	/********************************************************/
-	/*                  Перемещение по DOM                  */
-	/********************************************************/
-
-	/**
-	 * Вовращает следующую соседнюю ноду (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
-	 *
-	 * @param  DOMElement n  нода
-	 * @return DOMElement
-	 **/
-	this.next = function(n) {
-		while (n.nextSibling && (n = n.nextSibling)) {
-			if (n.nodeType == 1 || (n.nodeType == 3 && !this.isEmpty(n))) {
-				return n;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Вовращает предыдующую соседнюю ноду (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
-	 *
-	 * @param  DOMElement n  нода
-	 * @return DOMElement
-	 **/
-	this.prev = function(n) {
-		while (n.previousSibling && (n = n.previousSibling)) {
-			if (n.nodeType == 1 || (n.nodeType ==3 && !this.isEmpty(n))) {
-				return n;
-			}
-		}
-		return null;
-	}
-
-	this.isPrev = function(n, prev) {
-		while ((n = this.prev(n))) {
-			if (n == prev) {
+	
+	this.has = function(n, f) {
+		n = $.isArray(n) ? n : [n], l = n.length;
+		while (l--) {
+			if (this.descendants(n[l], f).length) {
 				return true;
 			}
 		}
 		return false;
 	}
+	
+	/**
+	 * Return node position number in parent
+	 *
+	 * @param  DOMElement 
+	 * @return Integer
+	 **/
+	this.indexOf = function(n) {
+		var ndx = 0;
+		while ((n = this.prev())) {
+			ndx++;
+		}
+		return ndx;
+	}
+	
+	/********************************************************************************/
+	/*                                TRAVERSING                                    */
+	/********************************************************************************/
 
 	/**
-	 * Вовращает все следующие соседнии ноды (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
+	 * Return direct children nodes matched by filter
 	 *
-	 * @param  DOMElement n  нода
+	 * @param  DOMElement               node to test
+	 * @param  String|RegExp|Function   filter name or RegExp or function
 	 * @return Array
 	 **/
-	this.nextAll = function(n) {
-		var ret = [];
-		while ((n = this.next(n))) {
-			ret.push(n);
-		}
-		return ret;
+	this.children = function(n, f) {
+		return n.nodeType == 1 && n.childNodes.length ? this.filter(n.childNodes, f) : [];
 	}
 	
 	/**
-	 * Вовращает все предыдующие соседнии ноды (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
+	 * Return closest children nodes matched by filter
 	 *
-	 * @param  DOMElement n  нода
+	 * @param  DOMElement               node to test
+	 * @param  String|RegExp|Function   filter name or RegExp or function
 	 * @return Array
 	 **/
-	this.prevAll = function(n) {
-		var ret = [];
-		while ((n = this.prev(n))) {
-			ret.push(n);
-		}
-		return ret;
-	}
-	
-	/**
-	 * Вовращает все следующие соседнии inline ноды (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
-	 *
-	 * @param  DOMElement n  нода
-	 * @return Array
-	 **/
-	this.toLineEnd = function(n) {
-		var ret = [];
-		while ((n = this.next(n)) && n.nodeName != 'BR' && n.nodeName != 'HR' && this.isInline(n)) {
-			ret.push(n);
-		}
-		return ret;
-	}
-	
-	/**
-	 * Вовращает все предыдующие соседнии inline ноды (не включаются текстовые ноды не создающие значимые пробелы между инлайн элементами)
-	 *
-	 * @param  DOMElement n  нода
-	 * @return Array
-	 **/
-	this.toLineStart = function(n) {
-		var ret = [];
-		while ((n = this.prev(n)) && n.nodeName != 'BR' && n.nodeName != 'HR' && this.isInline(n) ) {
-			ret.unshift(n);
-		}
-		return ret;
-	}
-	
-	/**
-	 * Вовращает TRUE, если нода - первый непустой эл-т внутри родителя
-	 *
-	 * @param  Element n  нода
-	 * @return bool
-	 **/
-	this.isFirstNotEmpty = function(n) {
-		while ((n = this.prev(n))) {
-			if (n.nodeType == 1 || (n.nodeType == 3 && $.trim(n.nodeValue)!='' ) ) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * Вовращает TRUE, если нода - последний непустой эл-т внутри родителя
-	 *
-	 * @param  Element n  нода
-	 * @return bool
-	 **/
-	this.isLastNotEmpty = function(n) {
-		while ((n = this.next(n))) {
-			if (!this.isEmpty(n)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * Вовращает TRUE, если нода - единственный непустой эл-т внутри родителя
-	 *
-	 * @param  DOMElement n  нода
-	 * @return bool
-	 **/
-	this.isOnlyNotEmpty = function(n) {
-		return this.isFirstNotEmpty(n) && this.isLastNotEmpty(n);
-	}
-	
-	/**
-	 * Вовращает последний непустой дочерний эл-т ноды или FALSE
-	 *
-	 * @param  Element n  нода
-	 * @return Element
-	 **/
-	this.findLastNotEmpty = function(n) {
-		this.rte.log('findLastNotEmpty Who is here 0_o');
-		if (n.nodeType == 1 && (l = n.lastChild)) {
-			if (!this.isEmpty(l)) {
-				return l;
-			}
-			while (l.previousSibling && (l = l.previousSibling)) {
-				if (!this.isEmpty(l)) {
-					return l;
+	this.descendants = function(n, f) {
+		var r = [], c, i;
+		
+		if (n.nodeType == 1 && n.childNodes.length) {
+			c = n.childNodes;
+			for (i=0; i<c.length; i++) {
+				if (this.is(c[i], f)) {
+					r.push(c[i]);
+				} else if (c[i].nodeType == 1 && c[i].childNodes.length) {
+					r = r.concat(this.descendants(c[i], f));
 				}
+			}
+		}
+		return r;
+	}
+	
+	/**
+	 * Return closest parent matched by filter
+	 *
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  DOMElement    p  if set, find parents not up this
+	 * @return DOMElement|null
+	 **/
+	this.parent = function(n, f, p, addSelf) {
+		p = p && p.nodeType == 1 ? p : this.body;
+		
+		if (addSelf && n!=p && this.is(n, f)) {
+			return n;
+		}
+		while (n && n.parentNode && (n = n.parentNode) && n != p) {
+			if (this.is(n, f)) {
+				return n;
 			}
 		}
 		return false;
 	}
 	
 	/**
-	 * Возвращает TRUE, если нода "inline" 
+	 * Return parents matched by filter
 	 *
-	 * @param  DOMElement n  нода
-	 * @return bool
-	 **/
-	this.isInline = function(n) {
-		if (n.nodeType == 3) {
-			return true;
-		} else if (n.nodeType == 1) {
-			n = $(n);
-			var d = n.css('display');
-			var f = n.css('float');
-			return d == 'inline' || d == 'inline-block' || f == 'left' || f == 'right';
-		}
-		return true;
-	}
-	
-	
-	/********************************************************/
-	/*                  Поиск элементов                     */
-	/********************************************************/
-	
-	/**
-	 * Вовращает элемент(ы) отвечающие условиям поиска
-	 *
-	 * @param  DOMElement||Array  n       нода
-	 * @param  RegExp||String     filter  фильтр условия поиска (RegExp или имя ключа this.regExp или *)
-	 * @return DOMElement||Array
-	 **/
-	this.filter = function(n, filter) {
-		var t = typeof(filter), ret=[], i;
-		if (t=='object' || t == 'string') {
-			filter = this.regExp[filter] || filter;
-			if (!n.push) {
-				return n.nodeName && filter.test(n.nodeName) ? n : null;
-			}
-			for (i=0; i < n.length; i++) {
-				if (n[i].nodeName && n[i].nodeName && filter.test(n[i].nodeName)) {
-					ret.push(n[i]);
-				}
-			};
-			return ret.length ? ret : null;
-		}
-		return null;
-	}
-	
-	
-	/**
-	 * Вовращает массив родительских элементов, отвечающих условиям поиска
-	 *
-	 * @param  DOMElement      n  нода, родителей, которой ищем
-	 * @param  RegExp||String  filter   фильтр условия поиска (RegExp или имя ключа this.regExp или *)
+	 * @param  DOMElement    n  node to test
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  DOMElement    p  if set, find parents not up one
 	 * @return Array
 	 **/
-	this.parents = function(n, filter) {
-		var t = typeof(filter), ret = [];
-		// this.rte.log(n)
-		if (t=='object' || t == 'string') {
-			filter = filter == '*' ? /.?/ : (this.regExp[filter] || filter);
-			while (n && (n = n.parentNode) && n.nodeName != 'BODY' && n.nodeName != 'HTML') {
-				// this.rte.log(n)
-				if (filter.test(n.nodeName)) {
-					
-					ret.push(n);
-				}
-			}
+	this.parents = function(n, f, p, addSelf) {
+		var r = addSelf && this.is(n, f) ? [n] : [];
+		while ((n = this.parent(n, f, p))) {
+			r.push(n);
 		}
-		// this.rte.log(ret)
-		// this.rte.log(filter)
-		return ret;
+		return r;
 	}
 	
 	/**
-	 * Вовращает ближайший родительский эл-т, отвечающий условиям поиска
+	 * Return list of nodes between start and end nodes
 	 *
-	 * @param  DOMElement     n  нода, родителя, которой ищем
-	 * @param  RegExp||String f   фильтр условия поиска (RegExp или имя ключа this.regExp или *)
-	 * @return DOMElement
-	 **/
-	this.parent = function(n, f) { 
-		return this.parents(n, f)[0] || null; 
-	}
-	
-	/**
-	 * Вовращает или саму ноду или ее ближайшего родителя, если выполняются условия sf для самой ноды или pf для родителя
-	 *
-	 * @param  DOMElement     n  нода, родителя, которой ищем
-	 * @param  RegExp||String sf   фильтр условия для самой ноды
-	* @param  RegExp||String  pf   фильтр условия для родителя
-	 * @return DOMElement
-	 **/
-	this.selfOrParent_ = function(n, sf, pf) {
-		return this.filter(n, sf) || this.parent(n, pf||sf);
-	}
-	
-	/**
-	 * Вовращает родительскую ноду - ссылку
-	 *
-	 * @param  Element n  нода
-	 * @return Element
-	 **/
-	this.selfOrParentLink = function(n) {
-		n = this.selfOrParent(n, /^A$/);
-		return n && n.href ? n : null;
-	}
-
-	/**
-	 * Вовращает TRUE, если нода -  anchor
-	 *
-	 * @param  Element n  нода
-	 * @return bool
-	 **/
-	this.selfOrParentAnchor = function(n) {
-		n = this.selfOrParent(n, /^A$/);
-		return n && !n.href && n.name ? n : null;
-	}
-
-	/**
-	 * Вовращает массив дочерних ссылок
-	 *
-	 * @param  DOMElement n  нода
+	 * @param  DOMElement s start node
+	 * @param  DOMElement e end node
 	 * @return Array
 	 **/
-	this.childLinks = function(n) {
-		var res = [];
-		$('a[href]', n).each(function() { res.push(this); });
-		return res;
-	}
-	
-	
-	/********************************************************/
-	/*                    Изменения DOM                     */
-	/********************************************************/
-	
-	/**
-	 * Оборачивает одну ноду другой
-	 *
-	 * @param  DOMElement n  оборачиваемая нода
-	 * @param  DOMElement w  нода обертка или имя тега
-	 * @return DOMElement
-	 **/
-	this.wrap = function(n, w) {
-		n = n.length ? n : [n];
-		w = w.nodeName ? w : this.create(w);
-		w = n[0].parentNode.insertBefore(w, n[0]);
-		$(n).each(function() {
-			if (this!=w) {
-				w.appendChild(this);
-			}
-		})
-		return w;
-	}
-	
-	/**
-	 * Оборачивает все содержимое ноды
-	 *
-	 * @param  DOMElement n  оборачиваемая нода
-	 * @param  DOMElement w  нода обертка или имя тега
-	 * @return DOMElement
-	 **/
-	this.wrapContents = function(n, w) {
-		w = w.nodeName ? w : this.create(w);
-		for (var i=0; i < n.childNodes.length; i++) {
-			w.appendChild(n.childNodes[i]);
-		};
-		n.appendChild(w);
-		return w;
-	}
-	
-	this.cleanNode = function(n) {
+	this.traverse = function(s, e, p) {
+		var p = p||this.commonAncestor(s, e),
+		sp = s, ep = e, n=s, res = [s], tmp = [e];
 
-		if (n.nodeType != 1) {
-			return;
+		while (sp.parentNode != p) {
+			sp = sp.parentNode;
 		}
-		if (/^(P|LI)$/.test(n.nodeName) && (l = this.findLastNotEmpty(n)) && l.nodeName == 'BR') {
-			$(l).remove();
+		
+		while (ep.parentNode != p) {
+			ep = ep.parentNode;
 		}
-		$n = $(n);
-		$n.children().each(function() {
-			this.cleanNode(this);
+
+		while (n != sp) {
+			res = res.concat(this.nextAll(n));
+			n = n.parentNode;
+		}
+		
+		while ((n = this.next(n)) && n != ep) {
+			res.push(n);
+		}
+
+		n = e;
+		while (n != ep) {
+			tmp = tmp.concat(this.prevAll(n));
+			n = n.parentNode;
+		}
+		return res.concat(tmp.reverse());
+	}
+	
+	/**
+	 * Return next sibling node
+	 *
+	 * @param  DOMElement 
+	 * @return DOMElement
+	 **/
+	this.next = function(n) {
+		return n && n.nextSibling ? n.nextSibling : false;
+	}
+	
+	/**
+	 * Return all next siblings
+	 *
+	 * @param  DOMElement 
+	 * @return Array
+	 **/
+	this.nextAll = function(n) {
+		var r = [];
+		while (n && n.nextSibling && (n = n.nextSibling)) {
+			r.push(n);
+		}
+		return r;
+	}
+	
+	/**
+	 * Return next previous node
+	 *
+	 * @param  DOMElement 
+	 * @return DOMElement
+	 **/
+	this.prev = function(n) {
+		return n && n.previousSibling ? n.previousSibling : false;
+	}
+	
+	/**
+	 * Return all previous siblings
+	 *
+	 * @param  DOMElement 
+	 * @return Array
+	 **/
+	this.prevAll = function(n) {
+		var r = [];
+		while (n.previousSibling && (n = n.previousSibling)) {
+			r.push(n);
+		}
+		return r;
+	}
+	
+	
+	/********************************************************************************/
+	/*                             SEARCH IN SELECTION                              */
+	/********************************************************************************/
+	
+	/**
+	 * Return true if selection or any parent or any child matches filter
+	 *
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.selectionMatchAll = function(f) {
+		var n = this.rte.selection.getNode();
+		return this.is(n, f) || this.parent(n, f) || this.find(this.rte.selection.cloneContents(), f).length ? true : false;
+	}
+	
+	/**
+	 * Return true if selection matches filter
+	 *
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.selectionMatch = function(f) {
+		return this.is(this.rte.selection.getNode(), f);
+	}
+	
+	/**
+	 * Return true if any of selection parents matches filter
+	 *
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.selectionHasParent = function(f) {
+		return this.parent(this.rte.selection.getNode(), f) ? true : false;
+	}
+	
+	/**
+	 * Return true if any of selection childs matches filter
+	 *
+	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @return Boolean
+	 **/
+	this.selectionHasChild = function(f) {
+		return this.find(this.rte.selection.cloneContents(), f).length ? true : false;
+	}
+	
+	/********************************************************************************/
+	/*                                MANIPULATION                                  */
+	/********************************************************************************/
+	
+	/**
+	 * Split node by boundary ponit. Return new node.
+	 *
+	 * @param  DOMElement n node to split
+	 * @param  DOMElement b point
+	 * @return DOMElement
+	 **/
+	this.split = function(n, b) {
+		var c = n.cloneNode(false);
+		
+		n.nextSibling 
+			? n.parentNode.insertBefore(c, n.nextSibling) 
+			: n.parentNode.appendChild(c);
+		$.each(this.traverse(b, n.lastChild), function(i) {
+			i>0 && c.appendChild(this);
 		});
-		if (n.nodeName != 'BODY' && !/^(TABLE|TR|TD)$/.test(n) && this.isEmpty(n)) {
-			return $n.remove();
-		}
-		if ($n.attr('style') === '') {
-			$n.removeAttr('style');
-		}
-		if (this.rte.browser.safari && $n.hasClass('Apple-span')) {
-			$n.removeClass('Apple-span');
-		}
-		if (n.nodeName == 'SPAN' && !$n.attr('style') && !$n.attr('class') && !$n.attr('id')) {
-			$n.replaceWith($n.html());
-		}
+		return c;
 	}
 	
-	this.cleanChildNodes = function(n) {
-		var cmd = this.cleanNode;
-		$(n).children().each(function() { cmd(this); });
+	
+	/********************************************************/
+	/*                      Утилиты                         */
+	/********************************************************/	
+	
+	
+	
+
+	
+	
+	/**
+	 * Return attribute value in lower case (stupid IE), src,href,rel,action attributes returns as is.
+	 *
+	 * @param  DOMElement 
+	 * @param  String  
+	 * @return String
+	 **/
+	this.attr = function(n, attr) {
+		var v = '';
+		attr = attr.toLowerCase();
+		if (n.nodeType == 1 && (v = $(n).attr(attr))) {
+			return v.match(/^(src|href|rel|action)$/) ? v : v.toLowerCase();
+		} 
+		return '';
 	}
 	
 	/********************************************************/
@@ -640,188 +605,76 @@ elRTE.prototype.dom = function(rte) {
 	/*                       New                            */
 	/********************************************************/
 	
-	function filter(f) {
-		return f = typeof(f) == 'object' ? f : self.regExp[f]||self.regExp.dummy;
-	}
+	
+	
+	
+	
+	
 	
 	/**
-	 * Return true if node matched by filter
+	 * Unwrap part of node contents between boundary points 
 	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Boolean
+	 * @param  DOMElement n node to split
+	 * @param  DOMElement l left point
+	 * @param  DOMElement r right point
+	 * @return void
 	 **/
-	this.is = function(n, f) {
-		switch(typeof(f)) {
-			case 'string':
-				f = this.filters[f]||this.filters['dummy'];
-				return f[0].test(n.nodeName) || (f[1] ? f[1](n) : false);
-				break;
-			case 'object':
-				return f.test(n.nodeName);
-				break;
-			case 'function':
-				return f(n);
-		}
-		return false;
-	}
-
-	/**
-	 * Find in node childs nodes matched by filter
-	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Array
-	 **/
-	this.find = function(n, f) {
-		var r = [];
-		$(n).find('*').each(function() {
-			if (self.is(this, f)) {
-				r.push(this);
-			}
-		})
-		return r;
-	}
-	
-	/**
-	 * Return closest parent which is child node of p or body and with node name matched by filter
-	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @param  DOMElement    p  if set, find parents not up one
-	 * @return DOMElement|null
-	 **/
-	this.parent = function(n, f, p) {
-		p = p||this.body;
-		while (n && n.nodeName && n != this.body && (n = n.parentNode) && n != p) {
-			if (this.is(n, f)) {
-				return n;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Return parents - childs of p(or body) with node names matched by filter
-	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @param  DOMElement    p  if set, find parents not up one
-	 * @return Array
-	 **/
-	this.parents = function(n, f, p) {
-		var r = [];
-		while ((n = this.parent(n, f, p))) {
-			r.push(n);
-		}
-		return r;
-	}
-	
-	/**
-	 * Return true if selection is matches filter or has parent or child matches filter
-	 *
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Boolean
-	 **/
-	this.selectionIs = function(f) {
-		var n = this.rte.selection.getNode();
-		return this.is(n, f) || this.parent(n, f) || (!this.rte.selection.collapsed() && this.find(this.rte.selection.cloneContents(), f).length) ? true : false;
-	}
-	
-	/**
-	 * Return nodes matched by filter
-	 *
-	 * @param  Array         n  array of nodes to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Array
-	 **/
-	this.filter = function(n, f) {
-		var l = n.length, r = [];
-		while (l--) {
-			if (this.is(n[l], f)) {
-				r.unshift(n);
-			}
-		}
-		return r;
-	}
-	
-	this.cutNode = function(n, l, r) {
-		var c = n.cloneNode(false), p, nodes;
-		
-		n.nextSibling ? n.parentNode.insertBefore(c, n.nextSibling) : n.parentNode.appendChild(c);
-		n.appendChild($(this.create('span')).addClass('elrte-bm')[0]);
-		nodes = this.traverse(r, n.lastChild);
-		n.removeChild(nodes.pop())
-		nodes.shift();
-
-		$.each(nodes, function() {
-			c.appendChild(this);
+	this.unwrapPart = function(n, l, r) {
+		var c = this.split(n, r);
+		$.each(this.traverse(l, n.lastChild), function() {
+			c.parentNode.insertBefore(this, c);
 		});
-
-		$.each(this.traverse(l, r), function() {
-			c.parentNode.insertBefore(this, c)
-		});
+		return this;
 	}
 
-	this.moveNodesToRight = function(n, b) {
-		var nodes, i, p = n.parentNode, _n;
-		
-		n.appendChild($(this.create('span')).addClass('elrte-bm')[0]);
-		nodes = this.traverse(b, n.lastChild);
-		n.removeChild(nodes.pop());
-		i = nodes.length;
-		while (i--) {
-			_n = this.cloneParents(nodes[i], n);
+	/**
+	 * Move all child nodes from the bounding point till end of the node after node. 
+	 *
+	 * @param  DOMElement n node
+	 * @param  DOMElement b bounding point
+	 * @return void
+	 **/
+	this.moveNodesAfter = function(n, b) {
+		var _n, p = n.parentNode;
+
+		$.each(this.traverse(b, n.lastChild).reverse(), function() {
+			_n = self.cloneParents(this, n);
 			if (n.nextSibling) {
 				p.insertBefore(_n, n.nextSibling);
 			} else {
 				p.appendChild(_n);
 			}
-		}
+		});
+		return this;
 	}
 	
-	this.moveNodesToLeft = function(n, b) {
-		var nodes, p = n.parentNode, _n;
-		
-		n.insertBefore($(this.create('span')).addClass('elrte-bm')[0], n.firstChild);
-		nodes = this.traverse(n.firstChild, b);
-		
-	}
-	
-	this.traverse = function(s, e) {
-		var p = this.findCommonAncestor(s, e), sp = s, ep = e, n=s, res = [], tmp = [e];
-		this.doc.body.normalize();
-		while (sp.parentNode != p) {
-			sp = sp.parentNode;
-		}
-		
-		while (ep.parentNode != p) {
-			ep = ep.parentNode;
-		}
-		
-		res.push(s)
-		while (n != sp) {
-			n!=s && res.push(n);
-			$.merge(res, this.nextAll(n));
-			n = n.parentNode;
-		}
-		
-		while ((n = this.next(n)) && n != ep) {
-			res.push(n);
-		}
-		
-		n = e;
-		while (n != ep) {
-			n != e && tmp.push(n);
-			tmp = tmp.concat(this.prevAll(n));
-			n = n.parentNode;
-		}
-		return res.concat(tmp.reverse());
+	/**
+	 * Move all child nodes from the begining of node till bounding point before node. 
+	 *
+	 * @param  DOMElement n node to split
+	 * @param  DOMElement b bounding point
+	 * @return void
+	 **/
+	this.moveNodesBefore = function(n, b) {
+		var _n, p = n.parentNode;
+
+		$.each(this.traverse(n.firstChild, b), function() {
+			p.insertBefore(self.cloneParents(this, n), n);
+		});
+		return this;
 	}
 	
 	
+	
+	/**
+	 * Return clone DOM of node parents till required parent or node itself
+	 *
+	 * @param  DOMElement n node
+	 * @param  DOMElement p parent
+	 * @return DOMElement
+	 **/
 	this.cloneParents = function(n, p) {
-		var ret=null;
+		var ret = null;
 		$.each(this.parents(n, 'all', p), function() {
 			if (!ret) {
 				ret = this.cloneNode(false);
@@ -837,13 +690,170 @@ elRTE.prototype.dom = function(rte) {
 		return ret;
 	}
 	
+	/**
+	 * Replace node with contents
+	 *
+	 * @param  DOMElement n node
+	 * @return void
+	 **/
 	this.unwrap = function(n) {
-		// $(n).replaceWith($(n).html());
 		while (n.firstChild) {
 			n.parentNode.insertBefore(n.firstChild, n);
 		}
 		n.parentNode.removeChild(n);
 	}
+	
+
+	
+	
+	this.wrap = function(n, w) {
+		n = $.isArray(n) ? n : [n], l = n.length;
+		while (l--) {
+			if (this.is(n[l], 'block') || this.is(n[l], 'text') || n[l].nodeName == 'IMG') {
+				n[l].parentNode.insertBefore((w = w.nodeType ? w.cloneNode(false) : this.create(w)), n[l]);
+				w.appendChild(n[l]);
+			}
+		}
+	}
+	
+	this.wrapAll = function(n, w) {
+		if ($.isArray(n) && n.length>0) {
+			for (i=0; i < n.length; i++) {
+				i == 0 && n[i].parentNode.insertBefore((w = w.nodeType ? w : this.create(w)), n[i]);
+				w.appendChild(n[i]);
+			};
+		}
+	}
+	
+	this.wrapInner = function(n, w) {
+		if (n.nodeType == 1 && n.childNodes.length) {
+			n.insertBefore((w = w.nodeType ? w : this.create(w)), n.firstChild);
+			while ((n = this.next(w))) {
+				w.appendChild(n);
+			}
+		}
+	}
+	
+	this.smartWrap = function(n, w) {
+		var bn, n1, n2, bf, ba, i;
+		
+		w = w.nodeType ? w : this.create(w);
+		
+		if (this.is(w, 'blockText')) {
+			// wrap is block text node
+			if (w.nodeName == 'P') {
+				// block nodes not allowed inside paragraph
+				if (this.is(n, 'blockText')) {
+					// wrap contents of text block node
+					this.wrapInner(n, w);
+				} else if (this.is(n, 'inline')) {
+					// wrap any inline node
+					this.wrap(n, w);
+				}
+			} else {
+				// wrap any node
+				this.wrap(n, w);
+			}
+		} else if (this.is(w, 'inlineText')) {
+			// wrap is inline text node
+			if (this.is(n, 'block') && !this.is(n, 'text')) {
+				// node is table or list
+				for (i=0; i<n.childNodes.length; i++) {
+					this.smartWrap(n.childNodes[i], w.cloneNode(false));
+				}
+			} else if (this.is(n, 'text') && !this.is(n, 'empty')) {
+				// node is non empty text node
+				if ((bn = this.descendants(n, 'blockText')).length) {
+					// node has child - block text node. we cannot wrapInner directly
+					n1 = this.traverse(n.firstChild, bn[0]);
+					n2 = this.traverse(bn[0], n.lastChild);
+					n1.pop();
+					n2.shift();
+					// wrap nodes from node start till block child
+					this.smartWrapAll(n1, w.cloneNode(false))
+					// if (this.filter(n1, 'notEmpty').length) {
+					// 	if (this.isSiblings(n1)) {
+					// 		this.wrapAll(n1, w);
+					// 	} else {
+					// 		this.wrap(n1, w);
+					// 	}
+					// }
+					// wrap block node
+					this.smartWrap(bn[0], w.cloneNode(false));
+					this.smartWrapAll(n2, w.cloneNode(false))
+					// wrap nodes from block child till node end
+					// if (this.filter(n2, 'notEmpty').length) {
+					// 	if (bn.length == 1) {
+					// 		// no other block nodes in this node
+					// 		this.smartWrapAll(n2, w.cloneNode(false))
+					// 		// if (this.isSiblings(n2)) {
+					// 		// 	this.wrapAll(n2, w.cloneNode(false));
+					// 		// } else {
+					// 		// 	this.wrap(n2, w);
+					// 		// }
+					// 	} else {
+					// 		this.smartWrapAll(n2, w.cloneNode(false))
+					// 		// for (var i=0; i < n2.length; i++) {
+					// 		// 	this.smartWrap(n2[i], w.cloneNode(false));
+					// 		// };
+					// 	}
+					// }
+				} else {
+					// node does not contains block child
+					if (this.is(n, 'block')) {
+						this.wrapInner(n, w);
+					} else {
+						this.wrap(n, w);
+					}
+				}
+			}
+		}
+	}
+	
+	this.smartWrapAll = function(n, w) {
+		var buffer = [];
+		
+		function dropBuffer() {
+			var empty = true
+			for (var i=0; i < buffer.length; i++) {
+				if (!self.is(buffer[i], 'empty')) {
+					empty = false
+				}
+			};
+			if (!empty) {
+				self.rte.log('fucking shit')
+				self.wrapAll(buffer, w);
+			}
+			buffer = [];
+		}
+		// this.rte.log(n)
+		for (var i=0; i < n.length; i++) {
+			
+			if (!this.is(n[i], 'blockText') && !this.has(n[i], 'blockText') && (!buffer.length || n[i].parentNode == buffer[buffer.length-1].parentNode)) {
+				
+				buffer.push(n[i])
+			} else {
+				this.rte.log('go go')
+				this.rte.log(n[i])
+				this.rte.log(buffer)
+				dropBuffer()
+				this.smartWrap(n[i], w)
+			}
+			
+		};
+		dropBuffer()
+		return
+		if (this.isSiblings(n) && !this.has(n, 'blockText') && this.filter(n, 'notEmpty').length) {
+			this.rte.log('go')
+			this.wrapAll(n, w)
+		} else {
+			for (var i=0; i < n.length; i++) {
+				this.smartWrap(n[i], w)
+				// f(s[i], 'strong')
+			};
+		}
+	}
+	
 	
 }
 
