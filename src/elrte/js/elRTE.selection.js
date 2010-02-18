@@ -176,12 +176,16 @@
 	
 	elRTE.prototype.selection.prototype.getSelected = function() {
 		var res = [], s, e, c, b;
-
+		
+		this.win.focus();
+		
 		if (!this.collapsed()) {
 			this.doc.body.normalize();
 			b = this.getBookmark();
-			s = b[0].nextSibling;
-			e = b[1].previousSibling;
+
+			s = b[0].nextSibling     ? b[0].nextSibling     : b[0].parentNode.insertBefore(this.doc.createTextNode(''), b[0]);
+			e = b[1].previousSibling ? b[1].previousSibling : b[1].parentNode.insertBefore(this.doc.createTextNode(''), b[1]);
+
 			this.cleanBookmarks();
 			
 			c = this.dom.commonAncestor(s, e);
