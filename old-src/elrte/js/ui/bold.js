@@ -2,15 +2,34 @@
 elRTE.prototype.ui.prototype.buttons.bold = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var self = this;
+
+	// this.nodes = {
+	// 	bold : {
+	// 		semantic : 'strong',
+	// 		style    : { name : 'span', css : {'font-weight' : 'bold'}}
+	// 	},
+	// 	italic : {
+	// 		semantic : 'em',
+	// 		style    : { name : 'span', css : {'font-style' : 'italic'}}
+	// 	}
+	// 	
+	// };
+	// 
+	// this.node = this.nodes[this.name]
+
+	this.node = {
+		semantic : 'strong',
+		style    : { name : 'span', css : {'font-weight' : 'bold'}}
+	}
+
+	// this.rte.log(this.node)
+
+	this.test = function(n) {
+		return /^(STRONG|B)$/.test(n.nodeName) || self.dom.findInStyle(n, 'font-weight');
+	}
 	
 	this.command = function() {
 		var s, b, n, l, r;
-		
-		var t = new Date().getMilliseconds()
-		
-		function unwrap(n) {
-			n.nodeName.match(/^(STRONG|B)$/) ? self.dom.unwrap(n) : $(n).css('font-weight', '');
-		}
 		
 		if (this.sel.collapsed()) {
 			/* selection collapsed - remove parent strong if exists */
@@ -27,7 +46,7 @@ elRTE.prototype.ui.prototype.buttons.bold = function(rte, name) {
 				
 				for (var i=0; i < s.length; i++) {
 					$.each(this.dom.find(s[i], 'strong', true), function() {
-						unwrap(this);
+						this.nodeName.match(/^(STRONG|B)$/) ? self.dom.unwrap(this) : $(this).css('font-weight', '');
 					});
 				};
 				l = this.rte.dom.parent(b[0], 'strong');
@@ -45,17 +64,34 @@ elRTE.prototype.ui.prototype.buttons.bold = function(rte, name) {
 				this.sel.moveToBookmark(b);
 			} else {
 				/* not strong in selection - create it */
-				this.dom.smartWrapAll((s = this.sel.selected()), 'strong');
+				s = this.rte.selection.selected();
+				// b = this.rte.selection.getBookmark();
+				this.dom.smartWrapAll(s, this.node.semantic);
+				// this.sel.moveToBookmark(b);
 				this.rte.selection.select(s[0], s[s.length-1]);
 			}
 		}
-		this.rte.log(new Date().getMilliseconds()-t)
 
 		this.rte.ui.update();
 	}
 	
 	this.update = function() {
-		this.domElem.removeClass('disabled').toggleClass('active', this.dom.selectionMatchAll('strong'));
+		this.domElem.removeClass('disabled').toggleClass('active', this.dom.selectionMatchAll( this.test ));
 	}
 }
+
+// elRTE.prototype.ui.prototype.buttons.italic = function(rte, name) {
+// 	this.constructor.prototype.constructor.call(this, rte, name);
+// 	var self = this;
+// 	
+// 	this.node = {
+// 		semantic : 'em',
+// 		style    : { name : 'span', css : {'font-style' : 'italic'}}
+// 	}
+// }
+// 
+// elRTE.prototype.ui.prototype.buttons.italic = elRTE.prototype.ui.prototype.buttons.bold;
+
+
+
 })(jQuery);

@@ -27,6 +27,7 @@ elRTE.prototype.options   = {
 	cssClass        : 'el-rte',
 	cssfiles        : [],
 	height          : null,
+	debug           : true,
 	lang            : 'en',
 	toolbar         : 'normal',
 	absoluteURLs    : true,
@@ -93,7 +94,7 @@ elRTE.prototype.options   = {
 		save       : ['save'],
 		copypaste  : ['copy', 'cut', 'paste', 'pastetext', 'pasteformattext', 'removeformat', 'docstructure'],
 		undoredo   : ['undo', 'redo'],
-		style      : ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+		style      : ['bold', 'italic' /*, 'underline', 'strikethrough', 'subscript', 'superscript' */],
 		colors     : ['forecolor', 'hilitecolor'],
 		alignment  : ['justifyleft', 'justifycenter', 'justifyright', 'justifyfull'],
 		indent     : ['outdent', 'indent'],
@@ -108,7 +109,7 @@ elRTE.prototype.options   = {
 		fullscreen : ['fullscreen']
 	},
 	toolbars    : {
-		tiny     : ['style', 'undoredo'],
+		tiny     : ['style'],
 		compact  : ['save', 'undoredo', 'style', 'alignment', 'lists', 'links', 'fullscreen'],
 		normal   : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'indent', 'lists', 'links', 'elements', 'images', 'fullscreen'],
 		complite : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'fullscreen'],

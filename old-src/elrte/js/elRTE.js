@@ -30,7 +30,7 @@ elRTE = function(target, opts) {
 	
 	this.toolbar   = $('<div class="toolbar"/>');
 	this.iframe    = document.createElement('iframe');
-	this.source    = $('<textarea />').hide();
+	// this.source    = $('<textarea />').hide();
 	this.workzone  = $('<div class="workzone"/>').append(this.iframe).append(this.source);
 	this.statusbar = $('<div class="statusbar"/>');
 	this.tabsbar   = $('<div class="tabsbar"/>');
@@ -49,10 +49,12 @@ elRTE = function(target, opts) {
 	this.editor.insertAfter(target);
 	/* init editor textarea */
 	if (target.nodeName == 'TEXTAREA') {
-		this.source.remove();
-		this.source = this.target.appendTo(this.workzone);
+		this.source = this.target.remove()
+		this.source.insertAfter(this.iframe).hide()
 	} else {
+		this.source = $('<textarea />').insertAfter(this.iframe).hide()
 		this.source.val(this.target.hide().html()).attr('name', this.target.attr('id')||this.target.attr('name'));
+
 	}
 	/* clean content */
 	this.source.val(this.filter(this.source.val(), true));

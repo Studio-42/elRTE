@@ -101,7 +101,13 @@ elRTE.prototype.ui.prototype.buttons = {
 				e.stopPropagation();
 				e.preventDefault();
 				if (!$(this).hasClass('disabled')) {
+					if (self.rte.options.debug) {
+						var t = new Date().getMilliseconds()
+					}
 					self.command();
+					if (self.rte.options.debug) {
+						self.rte.log(self.name+': '+(new Date().getMilliseconds() - t))
+					}
 				}
 				self.rte.window.focus();
 			});

@@ -154,11 +154,19 @@
 		return this;
 	}
 	
+	elRTE.prototype.selection.prototype.removeBookmark = function(b) {
+		var s = b[0] && b[0].nodeName ? b[0] : this.doc.getElementById(b[0]),
+			e = b[1] && b[1].nodeName ? b[1] : this.doc.getElementById(b[1]);
+		s.nodeName && s.parentNode.removeChild(s);
+		e.nodeName && e.parentNode.removeChild(e);
+		return this;
+	}
+	
 	/**
 	 * Remove bookmarks nodes
 	 * @return w3cSelection
 	 **/
-	elRTE.prototype.selection.prototype.cleanBookmarks = function() {
+	elRTE.prototype.selection.prototype.cleanBookmarks = function(b) {
 		$(this.doc.body).find('.elrte-bm').remove();
 		return this;
 	}
@@ -178,36 +186,35 @@
 		var res = [], s, e, c, b;
 		
 		this.win.focus();
-		
+
+		if (this.node) {
+			// return [this.node]
+		}
 		if (!this.collapsed()) {
-			this.doc.body.normalize();
+			
 			b = this.getBookmark();
-
-			s = b[0].nextSibling     ? b[0].nextSibling     : b[0].parentNode.insertBefore(this.doc.createTextNode(''), b[0]);
-			e = b[1].previousSibling ? b[1].previousSibling : b[1].parentNode.insertBefore(this.doc.createTextNode(''), b[1]);
-
-			this.cleanBookmarks();
-			
+			this.doc.body.normalize();
+			s = b[0].nextSibling     ? b[0].nextSibling     : b[0].parentNode.insertBefore(this.doc.createTextNode(' '), b[0]);
+			e = b[1].previousSibling ? b[1].previousSibling : b[1].parentNode.insertBefore(this.doc.createTextNode(' '), b[1]);
+			this.removeBookmark(b);
 			c = this.dom.commonAncestor(s, e);
-			
-			while (this.dom.is(s, 'first') && s.parentNode != c) {
+
+			while (this.dom.is(s, 'first') && s!=c) {
 				s = s.parentNode; 
 			}
-			while (this.dom.is(e, 'last') && e.parentNode != c) {
+			while (this.dom.is(e, 'last') && e!=c) {
 				e = e.parentNode;
 			}
-			if (s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
-				s = e = c;
-			}
-			
 			if (s == this.doc.body) {
 				res = this.doc.body.childNodes
 			} else if (s == e) {
 				res.push(s);
 			} else {
+				c = this.dom.commonAncestor(s, e);
 				res = this.dom.traverse(s, e, c);
 			}
 		}
+
 		return res;
 	}
 	

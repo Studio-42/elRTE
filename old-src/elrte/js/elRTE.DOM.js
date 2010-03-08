@@ -24,10 +24,12 @@ elRTE.prototype.dom = function(rte) {
 		blockText     : { func : function(n) { return  self.is(n, 'block')  && self.is(n, 'text');    } },
 		inlineText    : { func : function(n) { return  self.is(n, 'inline') && self.is(n, 'text');    } },
 		body          : { regexp : /^BODY$/ },
-		headers       : { regexp : /^H[1-6]$/	},
+		headers       : { regexp : /^H[1-6]$/ },
+		table         : { regexp : /^(TABLE|CAPTION|THEAD|TBODY|TFOOT|TR|TH|TD)$/ },
+		lists         : { regexp : /^(UL|OL|DL|LI|DT|DD)$/ },
 		strong        : {
 			regexp : /^(STRONG|B)$/,
-			func   : function(n) { return /font\-weight\s*:\s*bold/i.test($(n).attr('style')||''); }
+			func   : function(n) { return self.findInStyle(n, 'font-weight'); }
 		},
 		textNode      : { func : function(n) { return n.nodeType == 3; } },
 		empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
@@ -182,6 +184,12 @@ elRTE.prototype.dom = function(rte) {
 		return c.nodeType != 1 && this.is(c, 'onlyChild') ? c.parentNode : c;
 	}
 	
+	/**
+	 * Return true, if all nodes in set is one parent childs
+	 *
+	 * @param  Array
+	 * @return Boolean
+	 **/
 	this.isSiblings = function(n) {
 		var l = n.length;
 		while (l--) {
@@ -192,6 +200,13 @@ elRTE.prototype.dom = function(rte) {
 		return true;
 	}
 	
+	/**
+	 * Return true, if node in set has children matched by filter
+	 *
+	 * @param  Array  nodes set
+	 * @param  String|RegExp|Function filter 
+	 * @return Boolean
+	 **/
 	this.has = function(n, f) {
 		n = $.isArray(n) ? n : [n], l = n.length;
 		while (l--) {
@@ -301,7 +316,8 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.traverse = function(s, e, p) {
 		var p = p||this.commonAncestor(s, e), sp = s, ep = e, n=s, res = [s], tmp = [e];
-		
+		// this.rte.log(sp)
+		// this.rte.log(p)
 		while (sp!=p && sp.parentNode != p) {
 			sp = sp.parentNode;
 		}
@@ -639,9 +655,12 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.cloneParents = function(n, p) {
-		var ret = n, _p = this.parents(n, 'all', p), tmp = null;
+		var ret = n, _p = this.parents(n, 'all', p), tmp = null, i;
 		
-		for (var i=0; i < _p.length; i++) {
+		for (i=0; i < _p.length; i++) {
+			if (this.is(_p[i], 'block')) {
+				break;
+			}
 			tmp = _p[i].cloneNode(false);
 			tmp.appendChild(ret);
 			ret = tmp;
@@ -698,13 +717,29 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  String  
 	 * @return String
 	 **/
-	this.attr = function(n, attr) {
-		var v = '';
-		attr = attr.toLowerCase();
-		if (n.nodeType == 1 && (v = $(n).attr(attr))) {
-			return v.match(/^(src|href|rel|action)$/) ? v : v.toLowerCase();
-		} 
+	this.attr = function(n, a, v) {
+		if (n && n.nodeType == 1) {
+			if (typeof(a) == 'object') {
+				return $(n).attr(a)
+			} else if (typeof(a) == 'string') {
+				return typeof(v) == 'undefined' ? $(n).attr(a) : $(n).attr(a, v);
+			}
+			// TODO test letters case in IE
+		}
 		return '';
+	}
+	
+	this.cssMatch = function(n, k, v) {
+		if (n && n.nodeType == 1) {
+			return $(n).css(k) == v;
+		}
+		return false;
+	}
+	
+	this.findInStyle = function(n, k) {
+		var r = new RegExp(k+':\s*([^;\s]+)'),
+			m = ($(n).attr('style')||'').match(r);
+		return  m && m.length && m[1] ? $.trim(m[1]) : '';
 	}
 	
 	/********************************************************/
