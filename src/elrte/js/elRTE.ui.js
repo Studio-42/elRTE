@@ -83,7 +83,7 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 			path += ' &raquo; '+ this.nodeName.toLowerCase();
 		});
 	}
-	if (n.nodeType == 1 && n.nodeName != 'BODY') {
+	if (n && n.nodeType == 1 && n.nodeName != 'BODY') {
 		path += ' &raquo; '+ n.nodeName.toLowerCase();
 	}
 	this.rte.statusbar.html(path)

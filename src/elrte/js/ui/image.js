@@ -91,7 +91,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		this.preview = null;
 		this.prevImg = null;
 		this.link    = null;
-		if (n.nodeName == 'IMG') {
+		if (n.nodeName == 'IMG' && !$(n).hasClass('elrte-swf-placeholder')) {
 			this.img     = $(n);
 		} else {
 			this.img = $(this.rte.doc.createElement('img'));
@@ -412,7 +412,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	this.update = function() {
 		this.domElem.removeClass('disabled');
 		var n = this.rte.selection.getEnd();
-		if (n.nodeName == 'IMG') {
+		if (n.nodeName == 'IMG' && !$(n).hasClass('elrte-swf-placeholder')) {
 			this.domElem.addClass('active');
 		} else {
 			this.domElem.removeClass('active');

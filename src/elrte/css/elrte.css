@@ -1,3 +1,4 @@
+
 /*  контейнер */
 .el-rte { 
 	font-family: Trebuchet MS, Verdana, Geneva,sans-serif;
@@ -10,6 +11,12 @@
 	left:0;
 	z-index:101;
 }
+
+.elrte-swf-placeholder {
+	width:1px;
+	background: url('../images/swf.png') 0 0 no-repeat;	
+}
+
 /* панель инструментов */
 .el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; }
 /* панель кнопок */
@@ -84,7 +91,7 @@
 .el-rte .toolbar ul li.unlink              {background-position:-270px -29px}
 .el-rte .toolbar ul li.anchor              {background-position:-296px -30px} 
 .el-rte .toolbar ul li.image               {background-position:-384px -2px}
-.el-rte .toolbar ul li.media               {background-position:-410px -1px}
+.el-rte .toolbar ul li.flash               {background-position:-410px -1px}
 .el-rte .toolbar ul li.file                {background-position:-436px -3px}
 .el-rte .toolbar ul li.table               {background-position:-421px -30px}
 .el-rte .toolbar ul li.tableprops          {background-position:-602px -29px}

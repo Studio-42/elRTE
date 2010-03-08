@@ -22,7 +22,7 @@ elRTE = function(target, opts) {
 	}
 	var self     = this, html;
 	this.version = '1.0 RC1';
-	this.build   = '';
+	this.build   = '20100204';
 	this.options = $.extend(true, {}, this.options, opts);
 	this.browser = $.browser;
 	this.target  = $(target);
@@ -30,7 +30,7 @@ elRTE = function(target, opts) {
 	
 	this.toolbar   = $('<div class="toolbar"/>');
 	this.iframe    = document.createElement('iframe');
-	this.source    = $('<textarea />').hide();
+	// this.source    = $('<textarea />').hide();
 	this.workzone  = $('<div class="workzone"/>').append(this.iframe).append(this.source);
 	this.statusbar = $('<div class="statusbar"/>');
 	this.tabsbar   = $('<div class="tabsbar"/>');
@@ -49,16 +49,22 @@ elRTE = function(target, opts) {
 	this.editor.insertAfter(target);
 	/* init editor textarea */
 	if (target.nodeName == 'TEXTAREA') {
-		this.source.remove();
-		this.source = this.target.appendTo(this.workzone);
+
+		this.source = this.target.remove()
+		this.source.insertAfter(this.iframe).hide()
+
 	} else {
+		this.source = $('<textarea />').insertAfter(this.iframe).hide()
 		this.source.val(this.target.hide().html()).attr('name', this.target.attr('id')||this.target.attr('name'));
+		this.target.html('')
 	}
 	/* clean content */
 	this.source.val(this.filter(this.source.val(), true));
+	
+
 	/* add tabs */
 	if (this.options.allowSource) {
-		this.tabsbar.append('<div class="tab editor rounded-bottom-7 active">'+self.i18n('Editor')+'</div><div class="tab source rounded-bottom-7">'+self.i18n('Source')+'</div><div class="clearfix"/>')
+		this.tabsbar.append('<div class="tab editor rounded-bottom-7 active">'+self.i18n('Editor')+'</div><div class="tab source rounded-bottom-7">'+self.i18n('Source')+'</div><div class="clearfix" style="clear:both"/>')
 			.children('.tab').click(function(e) {
 				if (!$(this).hasClass('active')) {
 					self.tabsbar.children('.tab').toggleClass('active');
@@ -96,6 +102,7 @@ elRTE = function(target, opts) {
 	});
 	this.doc.open();
 	this.doc.write(self.options.doctype+html+'</head><body>'+(this.source.val()||'&nbsp;')+'</body></html>');
+	// this.doc.write(self.options.doctype+html+'</head><body>&nbsp;</body></html>');
 	this.doc.close();
 	
 	/* make iframe editable */
@@ -115,6 +122,18 @@ elRTE = function(target, opts) {
 	/* init buttons */
 	this.ui = new this.ui(this);
 	
+	// $(window).load(function() {
+		var n = document.createElement('span');
+		$(n).addClass('elrte-swf-placeholder').appendTo(self.statusbar);
+		if (typeof n.currentStyle != "undefined") {
+			url = n.currentStyle['backgroundImage'];
+		} else {
+			url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
+		}
+		self.swfPlaceholder = url ? url.replace(/^url\("?([^"]+)"?\)$/, "$1") : '';
+		$(self.doc).find('img.elrte-swf-placeholder').attr('src', self.swfPlaceholder);
+	// })
+	
 	// this.history.add()
 	
 	
@@ -122,6 +141,7 @@ elRTE = function(target, opts) {
 	this.target.parents('form').bind('submit', function() {
 		self.source.is(':hidden') && self.updateSource();
 		self.toolbar.find(':hidden').remove();
+		
 	});
 	
 	/* update buttons on click and keyup */
@@ -239,6 +259,7 @@ elRTE.prototype.save = function() {
 
 elRTE.prototype.filter = function(v, input) {
 	var html = '';
+	var self = this;
 	var node = $('<span />');
 	if (!v.nodeType) {
 		html = $.trim(v);
@@ -259,6 +280,28 @@ elRTE.prototype.filter = function(v, input) {
 			}
 		});
 		
+		node.find('object[classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"]').each(function() {
+			
+			var t = $(this),
+				url  = t.children('param[name="'+($.browser.msie ? 'Movie' : 'movie')+'"]').attr('value'),
+				st   = t.attr('style')||'',
+				w    = parseInt(t.css('width')||0) || parseInt(t.attr('width')||0) || '',
+				h    = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
+				f    = t.css('float') || t.attr('align'),
+				a    = t.css('vertical-align'),
+				wrap = $('<span />'),
+				img  = $('<img src="'+self.swfPlaceholder+'" class="elrte-swf-placeholder" rel="'+url+'" />').appendTo(wrap);
+				 
+			
+			img.attr('style', st).css({
+				width            : w?(w+'px'):'auto',
+				height           : h?h+'px':'auto',
+				'float'          : f,
+				'vertical-align' : a
+			});
+			$(this).replaceWith(wrap.html());
+		});
+		
 	} else {
 		node.find('a.el-rte-anchor').each(function() {
 			if ($.trim($(this).attr('class')) == 'el-rte-anchor') {
@@ -266,6 +309,12 @@ elRTE.prototype.filter = function(v, input) {
 			} else {
 				$(this).removeClass('el-rte-anchor');
 			}
+		});
+
+		node.find('img.elrte-swf-placeholder').each(function() {
+			var t = $(this),
+				obj = '<object style="'+(t.attr('style')||'')+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
+			t.replaceWith(obj);
 		});
 	}
 
@@ -345,7 +394,7 @@ elRTE.prototype.filters = {
 			.replace(/<\/i\s*>/i, '</em>')
 			.replace(/((class|style)="")/i, '');
 			
-			//.replace(/^(<p[^>]*>(&nbsp;|&#160;|\s|\u00a0|)<\/p>[\r\n]*|<br \/>[\r\n]*)$/, '')
+			
 			if (stripWhiteSpace) {
 				html = html.replace(/\r?\n(\s)*/mg, "\n");
 			}

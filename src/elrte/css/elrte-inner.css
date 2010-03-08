@@ -1,5 +1,7 @@
 /*@import "styling.css";*/
 
+
+
 body.el-rte-structure table, 
 body.el-rte-structure caption,
 body.el-rte-structure td, 
@@ -16,5 +18,13 @@ body.el-rte-structure .el-rte-anchor {
 	height:12px; 
 	border:1px dotted #ccc;
 	background: url('../images/elrte-toolbar.png') -564px -8px no-repeat;
+}
+
+.elrte-swf-placeholder {
+	width:100px;
+	height:75px;
+/*	display:inline-block;*/
+	border:1px solid #ccc;
+/*	background: url('../images/swf.png') center center no-repeat;*/
 }
 

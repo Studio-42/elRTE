@@ -71,6 +71,7 @@ elRTE.prototype.options   = {
 		'unlink'              : 'Delete link',
 		'anchor'              : 'Bookmark',
 		'image'               : 'Image',
+		'flash'               : 'Flash',
 		'table'               : 'Table',
 		'tablerm'             : 'Delete table',
 		'tableprops'          : 'Table properties',
@@ -102,7 +103,7 @@ elRTE.prototype.options   = {
 		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'nbsp'],
 		links      : ['link', 'unlink', 'anchor'],
 		images     : ['image'],
-		media      : ['image'],		
+		media      : ['image', 'flash'],		
 		tables     : ['table', 'tableprops', 'tablerm',  'tbrowbefore', 'tbrowafter', 'tbrowrm', 'tbcolbefore', 'tbcolafter', 'tbcolrm', 'tbcellprops', 'tbcellsmerge', 'tbcellsplit'],
 		elfinder   : ['elfinder'],
 		fullscreen : ['fullscreen']
