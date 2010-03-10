@@ -1,11 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-   "http://www.w3.org/TR/html4/strict.dtd">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>elRTE from source</title>
-	<!--[if lte IE 8]><script src="js/firebug.js" type="text/javascript" charset="utf-8"></script><![endif]-->
+	<!--[if lte IE 9]><script src="js/firebug.js" type="text/javascript" charset="utf-8"></script><![endif]-->
 	<!-- jQuery and plugins -->
 	<script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/jquery-ui-1.7.2.custom.min.js" type="text/javascript" charset="utf-8"></script>
@@ -23,6 +22,9 @@
 	<script src="src/js/elRTE.selection.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.w3cSelection.js" type="text/javascript" charset="utf-8"></script>
 
+	<!-- plugins -->
+	<script src="src/js/plugins/source.js" type="text/javascript" charset="utf-8"></script>
+
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
@@ -31,12 +33,12 @@
 			})
 
 			var opts = {
-				cssClass : 'el-rte',
-				activeDocument : 0,
+				cssClass : 'cupertino',
+				// active : 1,
 				lang     : 'ru',
-				height   : 450,
+				// height   : 420,
 				toolbar  : 'tiny',
-				cssfiles : ['src/elrte/css/elrte-inner.css'],
+				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
 					$('#editor2')[0],
 					// {label : 'doc3', selector : '#editor2'}
@@ -57,10 +59,19 @@
 	
 	<style type="text/css" media="screen">
 		body { padding:20px;}
+/*		textarea {
+			border:2px solid blue;
+			font-size:24px;
+		}
+		div {
+			border:2px solid blue;
+		}*/
 	</style>
 	
 </head>
 <body>
+	<div>div</div>
+	
 	<textarea name="Name" rows="8" cols="40" id="editor2">some text here</textarea>
 	<form method="post" action="post.php">
 	<div id="editor" name="abr" title="document">
