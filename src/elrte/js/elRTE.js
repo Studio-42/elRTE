@@ -321,7 +321,19 @@ elRTE.prototype.filter = function(v, input) {
 	$.each(this.filters.dom, function() {
 		node = this(node);
 	});
-	return node.html();
+	
+	html = node.html();
+	if ($.browser.msie || $.browser.opera) {
+		
+		html = html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
+			arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
+			arg = arg.replace(/([a-z\-]+)="/ig, function(s, a) { return a.toLowerCase()+'="' });
+			return '<'+tag.toLowerCase()+arg+'>';
+		});
+		html = html.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
+	}
+	
+	return html;
 }
 
 
@@ -395,10 +407,12 @@ elRTE.prototype.filters = {
 			.replace(/((class|style)="")/i, '');
 			
 			
+			
 			if (stripWhiteSpace) {
 				html = html.replace(/\r?\n(\s)*/mg, "\n");
 			}
-			return html 
+			
+			return html;
 		}
 	]
 }
