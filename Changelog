@@ -1,0 +1,23 @@
+2010-03-15  Troex Nevelin  <troex@fury.scancode.ru>
+
+	* elRTE (1.0rc3):
+		- [feature] Add Flash button
+		- [bugfix] no more conflict with mootools
+		- [bugfix] text alignment fix
+		- [bugfix] partly fixes block selection
+		- [bugfix] insert new row in table now works
+		- [bugfix] fixed undo/redo
+		- [bugfix] enter/shift+enter fixed in Safari
+		- [bugfix] jquery plugin now contains new commands (open, close,
+		  updateSource, val)
+
+
+2009-11-09  Dmitry Levashov  <dio@std42.ru>
+
+	* elRTE (1.0rc2):
+		- [bugfix] links and images urls converts to lower case
+		- [bugfix] link to anchor not work
+		- [bugfix] new table do not save margins
+		- [bugfix] invalid selection after insert node in Safari
+		- [bugfix] dialog windows under fullscreen editor
+
