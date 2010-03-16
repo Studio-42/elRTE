@@ -23,7 +23,7 @@ elRTE.prototype.ui.prototype.buttons.fullscreen = function(rte, name) {
 			};
 			this.parents = [];
 			this.rte.editor.removeClass('el-fullscreen');
-			this.rte.workzone.height(this.height);
+			this.rte.workzone.add(this.rte.iframe).height(this.height);
 			this.domElem.removeClass('active');
 		} else {
 			this.parents = [];
@@ -37,7 +37,7 @@ elRTE.prototype.ui.prototype.buttons.fullscreen = function(rte, name) {
 			this.height = this.rte.workzone.height();
 			this.rte.editor.addClass('el-fullscreen');
 			var h = parseInt(this.rte.editor.height() - this.rte.toolbar.height() - this.rte.statusbar.height() - this.rte.tabsbar.height() - 17);
-			h>0 && this.rte.workzone.height(h);
+			h>0 && this.rte.workzone.add(this.rte.iframe).height(h);
 			this.domElem.addClass('active');
 		}
 	}

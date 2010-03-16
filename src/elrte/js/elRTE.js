@@ -113,6 +113,13 @@ elRTE = function(target, opts) {
 		catch(e) { }
 		this.doc.execCommand('styleWithCSS', false, this.options.styleWithCSS);
 	}
+	
+	if (this.options.height>0) {
+		this.log(this.options.height)
+		this.workzone.height(this.options.height)
+		$(this.iframe).height(this.options.height)
+	}
+	
 	this.window.focus();
 	
 	this.history = new this.history(this)
