@@ -1,25 +1,31 @@
 (function($) {
 	/**
 	 * @class elRTE plugin
-	 * 
+	 * Show path to selected node in status bar
 	 *
 	 **/
 	elRTE.prototype.plugins.statusbar = function(rte) {
 		this.name        = 'statusbar';
-		this.description = 'Create tabs to toggle between editor and source';
+		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';
 		
 		rte.debug('plugin statusbar loaded');
 		
 		rte.view.statusbar.show();
 		
-		rte.bind('update', function() {
+		rte.bind('update,toggle', function() {
+			rte.view.statusbar.empty();
 			if (rte.wysiwyg) {
-				var n = rte.selection.getNode();
-				var nodes = rte.dom.parents(n, 'all', null, true)
-				rte.log(nodes)
+				var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
+					l = n.length;
+				
+				while (l--) {
+					var link = $('<span>'+n[l].nodeName.toLowerCase()+'</span>')
+						.hover( (function(n) { return function(e) {$(n).toggleClass('highlight', e.type=='mouseenter') } })(n[l]) );
+					rte.view.statusbar.append(link).append(l>0 ? ' &raquo; ' : '');
+				}
 			}
-		})
+		});
 		
 	}
 	

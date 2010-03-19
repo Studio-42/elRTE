@@ -16,20 +16,21 @@
 			var ed  = $('<li class="elrte-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
 				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>');
 			
+			$('<ul class="elrte-togglebar" />')
+				.insertAfter(rte.view.workzone)
+				.append(ed)
+				.append(src)
+			
 			ed.add(src).mousedown(function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				$(this).hasClass('active') ? rte.focus() : rte.toggle();
-			}).appendTo($('<ul class="elrte-togglebar" />').insertAfter(rte.view.workzone));
+			})//.appendTo($('<ul class="elrte-togglebar" />').insertAfter(rte.view.workzone));
 				
 			rte.bind('toggle', function(e) {
-				if ($(e.target.editor).is(':visible')) {
-					src.removeClass('active');
-					ed.addClass('active');
-				} else {
-					ed.removeClass('active');
-					src.addClass('active');
-				}
+				var v = $(e.target.editor).is(':visible');
+				src.toggleClass('active', !v);
+				ed.toggleClass('active', v);
 			});
 			
 		}

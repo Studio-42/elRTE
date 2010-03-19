@@ -14,6 +14,8 @@
 		this.rte.bind('focus', function(e) {
 			self.win = e.target.window;
 			self.doc = e.target.document;
+		}).bind('click', function(e) {
+			self.rte.log(e.target)
 		});
 	
 		/**
@@ -197,7 +199,10 @@
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.collapse = function(toStart) {
-		this.getRange().collapse(toStart);
+		var s = this.getSelection(), r = this.getRange();
+		r.collapse(toStart);
+		s.removeAllRanges();
+		s.addRange(r);
 		return this;
 	}
 	

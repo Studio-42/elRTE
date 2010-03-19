@@ -111,17 +111,20 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Boolean
 	 **/
 	this.is = function(n, f) {
-		
-		if (typeof(f) == 'string' && this.filters[f]) {
-			f = this.filters[f];
-			return f.rule == 'and'
-				?  f.regexp && f.regexp.test(n.nodeName||'')  &&  f.func && f.func(n)
-				: (f.regexp && f.regexp.test(n.nodeName||'')) || (f.func && f.func(n));
-		} else if (f instanceof RegExp) {
-			return f.test(n.nodeName);
-		} else if ($.isFunction(f)) {
-			return f(n);
+		if (n && n.nodeName) {
+			// this.rte.log(n)
+			if (typeof(f) == 'string' && this.filters[f]) {
+				f = this.filters[f];
+				return f.rule == 'and'
+					?  f.regexp && f.regexp.test(n.nodeName||'')  &&  f.func && f.func(n)
+					: (f.regexp && f.regexp.test(n.nodeName||'')) || (f.func && f.func(n));
+			} else if (f instanceof RegExp) {
+				return f.test(n.nodeName);
+			} else if ($.isFunction(f)) {
+				return f(n);
+			}
 		}
+		
 		return false;
 	}
 	

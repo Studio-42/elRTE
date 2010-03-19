@@ -15,7 +15,7 @@
 			.append(this.toolbar)
 			.append(this.tabsbar)
 			.append(this.workzone)
-			.append(this.statusbar.hide())
+			.append(this.statusbar)
 			.insertBefore(t);
 		
 		if (t.nodeName != 'TEXTAREA') {

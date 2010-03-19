@@ -172,11 +172,21 @@
 
 .elrte .elrte-statusbar {
 	margin-top: 7px;
+	padding: 0 12px;
 	clear: both;
-	height: 20px;
-	border: 1px solid #111;
+	height: 22px;
 	background: #eee;
+	border: 1px solid #ccc;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
+/*	font-weight:bold;*/
+	color:#555;
 }
+
+.elrte .elrte-statusbar span { cursor:pointer; }
+
 
 
 /* COLORS */

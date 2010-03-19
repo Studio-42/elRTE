@@ -23,14 +23,14 @@
 		toolbar : 'default',
 		
 		panels : {
-			style      : ['bold', 'italic', 'underline', 'sub', 'sup'],
+			style      : ['bold' /*, 'italic', 'underline', 'sub', 'sup'*/],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
 		
 		panelsNames : {},
 		
 		toolbars : {
-			'default' : [ 'fullscreen']
+			'default' : ['style', 'fullscreen']
 		}
 	}
 	

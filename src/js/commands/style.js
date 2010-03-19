@@ -6,15 +6,16 @@
 	elRTE.prototype.commands.style = function() {
 
 		this.state = function() {
+			// this.rte.log(this.rte.selection.getNode())
 			return this.rte.wysiwyg ? (this.dom.selectionMatchAll(this.test) ? 1 : 0) : -1;
 		}
 		
 		this.exec = function() {
-
+			
 			var self = this, 
 				c = this.sel.collapsed(),
-				s = this.sel.selected(), 
 				b = this.sel.getBookmark(), 
+				s = this.sel.selected(), 
 				n, l, r, i;
 			
 			function unwrap(n) {
@@ -27,7 +28,6 @@
 					unwrap(n);
 				}
 			} else if (this.dom.selectionMatchAll(this.test)) {
-				
 				/* find selection and nodes intersect */
 				l = this.rte.dom.parent(s[0], this.test);
 				r = this.rte.dom.parent(s[s.length-1], this.test);
@@ -68,9 +68,10 @@
 				// this.dom.smartWrapAll(s, this.node);
 				this.wrap(s)
 			}
+
 			this.sel.moveToBookmark(b);
 			c && this.sel.collapse(true);
-			this.rte.trigger('update');
+
 		}
 		
 		this.wrap = function(s) {

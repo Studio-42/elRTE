@@ -108,7 +108,7 @@
 		this.log(new Date().getMilliseconds() - d)
 
 		this.trigger('update');
-		
+		// this.log($.browser)
 	}
 
 
@@ -205,10 +205,36 @@
 			/* set document content from textarea */
 			$(d.document.body).html(d.source.val());
 			
-			$(d.document).bind('mouseup', function(e) {
-				self.trigger('update');
+
+			$(d.document)
+				.bind('mouseup', function(e) {
+					setTimeout( function() { self.trigger('update') }, 5);
+				})
+				.bind('keydown', function(e) {
+					if ((e.keyCode == 65 && e.metaKey||e.ctrlKey) /* ctrl+A meta+A */
+					||  (e.keyCode == 69 && e.ctrlKey)            /* ctrl+E */
+					||  (e.keyCode >= 35 && e.keyCode<=40         /* arrows */
+					||   e.keyCode == 13)                        /* enter*/
+					) {
+						setTimeout( function() { self.trigger('update') }, 5);
+					}
+				});
 				
-			});
+			if ($.browser.webkit) {
+				$(d.document).bind('keydown', function(e) {
+
+					if (e.keyCode == 13) {
+						var n = self.selection.getNode();
+						if (n.nodeName == 'BODY' 
+						|| self.dom.parent(n, /^DIV$/, null, true) 
+						|| (self.dom.parent(n, /^P$/, null, true) && e.shiftKey)) {
+							e.preventDefault();
+							self.selection.select( self.selection.insertNode(this.createElement('br')) ).collapse(false);
+							
+						}
+					}
+				})
+			}
 			
 			this.trigger('open');
 

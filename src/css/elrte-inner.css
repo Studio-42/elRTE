@@ -30,4 +30,7 @@ body.el-rte-structure .el-rte-anchor {
 /*	display:none;*/
 }
 
-
+.highlight {
+	background-color:#eee;
+	border:1px solid #ccc;
+}

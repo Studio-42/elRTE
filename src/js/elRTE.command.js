@@ -26,7 +26,6 @@
 		}
 		
 		this.state = function() {
-			this.rte.log('command state')
 			return this.rte.wysiwyg ? 0 : -1;
 		}
 		
