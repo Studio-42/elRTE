@@ -6,18 +6,6 @@
 	elRTE.prototype.commands.style = function() {
 
 		this.state = function() {
-			// if (this.rte.wysiwyg) {
-			// 			var n = this.sel.getNode();
-			// 			this.rte.log($(n).css('font-weight'))
-			// 			if (this.test(n)) {
-			// 				return 1;
-			// 			} else if (this.dom.cssMatch(n, this.css, '400')) {
-			// 				return 0
-			// 			}
-			// 			return this.dom.selectionMatchAll(this.test) ? 1 : 0
-			// 		}
-			// 		
-			// 		return -1;
 			return this.rte.wysiwyg ? (this.dom.selectionMatchAll(this.test) ? 1 : 0) : -1;
 		}
 		
@@ -67,30 +55,33 @@
 						}
 					}
 				}
-				
+				/* find nodes in selection and unwrap */
 				$.each(s, function() {
 					$.each(self.dom.descendants(this, self.test), function() {
 						unwrap(this);
 					});
 					self.test(this) && unwrap(this);
-				})
+				});
 				
 			} else {
 				/* not required node in selection - create it */
-				this.dom.smartWrapAll(s, this.node);
+				// this.dom.smartWrapAll(s, this.node);
+				this.wrap(s)
 			}
 			this.sel.moveToBookmark(b);
 			c && this.sel.collapse(true);
 			this.rte.trigger('update');
 		}
 		
+		this.wrap = function(s) {
+			this.dom.smartWrapAll(s, this.node);
+		}
+		
 		this._init = function(rte) {
 			this.init(rte);
 			var self  = this;
 			this.test = function(n) { 
-				// self.rte.log(n)
 				return n.nodeName.match(self.find) || self.dom.cssMatch(n, self.css, self.cssval); 
-				// return n.nodeType == 1 && (n.nodeName.match(self.find) || $(n).css(self.css).match(self.cssval)); 
 			};
 		}
 		
@@ -104,7 +95,6 @@
 	 * @param elRTE
 	 */
 	elRTE.prototype.commands.bold = function(rte) {
-		var self    = this;
 		this.name   = 'bold';
 		this.title  = 'Bold';
 		this.find   = /^(STRONG|B)$/;
@@ -122,7 +112,6 @@
 	 * @param elRTE
 	 */
 	elRTE.prototype.commands.italic = function(rte) {
-		var self    = this;
 		this.name   = 'italic';
 		this.title  = 'Italic';
 		this.find   = /^(EM|I)$/;
@@ -142,15 +131,61 @@
 		var self    = this;
 		this.name   = 'underline';
 		this.title  = 'Underline';
-		this.find   = 'U';
+		this.find   = /^U$/;
 		this.css    = 'text-decoration';
 		this.cssval = 'underline';
-		this.node   = 'strong';
+		this.node   = {name : 'span', css : {'text-decoration' : 'underline'}};
+
+		this.wrap = function(s) {
+			$.each(s, function() {
+				if (this.nodeType == 1) {
+					$(this).css(self.css, self.cssval);
+				} else if (this.nodeType == 3) {
+					this.dom.wrap(this, self.node);
+				}
+			});
+		}
 
 		this._init(rte);
 	}
 	
-	elRTE.prototype.commands.bold.prototype = elRTE.prototype.commands.italic.prototype = elRTE.prototype.commands.underline.prototype = new elRTE.prototype.commands.style()
+	/**
+	 * @Class Make text sub
+	 *
+	 * @param elRTE
+	 */
+	elRTE.prototype.commands.sub = function(rte) {
+		this.name   = 'sub';
+		this.title  = 'sub';
+		this.find   = /^SUB$/;
+		this.css    = 'vertical-align';
+		this.cssval = 'sub';
+		this.node   = 'sub';
+
+		this._init(rte);
+	}
+	
+	/**
+	 * @Class Make text sup
+	 *
+	 * @param elRTE
+	 */
+	elRTE.prototype.commands.sup = function(rte) {
+		this.name   = 'sup';
+		this.title  = 'sup';
+		this.find   = /^SUP$/;
+		this.css    = 'vertical-align';
+		this.cssval = 'super';
+		this.node   = 'sup';
+
+		this._init(rte);
+	}
+	
+	elRTE.prototype.commands.bold.prototype = 
+	elRTE.prototype.commands.italic.prototype = 
+	elRTE.prototype.commands.underline.prototype = 
+	elRTE.prototype.commands.sub.prototype =
+	elRTE.prototype.commands.sup.prototype = new elRTE.prototype.commands.style();
 	
 
 
