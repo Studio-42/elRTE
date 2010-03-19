@@ -8,6 +8,8 @@ elRTE.prototype.dom = function(rte) {
 	var self  = this;
 	this.rte  = rte;
 	this.document = null;
+	this.body = null;
+	this.html = null;
 	
 	this.filters = {
 		dummy         : { },
@@ -27,7 +29,7 @@ elRTE.prototype.dom = function(rte) {
 		lists         : { regexp : /^(UL|OL|DL|LI|DT|DD)$/ },
 		strong        : {
 			regexp : /^(STRONG|B)$/,
-			func   : function(n) { return self.findInStyle(n, 'font-weight'); }
+			func   : function(n) { return $(n).css('font-weight').match(/(bold|900)/); }
 		},
 		textNode      : { func : function(n) { return n.nodeType == 3; } },
 		empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
@@ -58,6 +60,8 @@ elRTE.prototype.dom = function(rte) {
 	
 	this.rte.bind('focus', function(e) {
 		self.document = e.target.document;
+		self.body     = self.document.body;
+		self.html     = self.document.body.parentNode;
 	})
 	
 	/**
@@ -72,7 +76,7 @@ elRTE.prototype.dom = function(rte) {
 			o = {name : o}
 		}
 
-		var n = this.doc.createElement(o.name);
+		var n = this.document.createElement(o.name);
 
 		if (o.attr) {
 			$(n).attr(o.attr);
@@ -80,7 +84,7 @@ elRTE.prototype.dom = function(rte) {
 		if (o['class']) {
 			$(n).addClass(o['class']);
 		}
-		if (o.css) {
+		if (typeof(o.css) == 'object') {
 			$(n).css(o.css);
 		}
 		return n;
@@ -93,7 +97,6 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.createBookmark = function() {
 		return this.create({name : 'span', attr : { id : 'elrte-bm-'+Math.random().toString().substr(2) }, 'class' : 'elrte-bm'})
-		return this.create('span', { id : 'elrte-bm-'+Math.random().toString().substr(2), 'class' : 'elrte-bm'});
 	}
 	
 	/********************************************************************************/
@@ -281,11 +284,11 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.parent = function(n, f, p, addSelf) {
 		p = p && p.nodeType == 1 ? p : this.body;
-		
+
 		if (addSelf && n!=p && this.is(n, f)) {
 			return n;
 		}
-		while (n && n.parentNode && (n = n.parentNode) && n != p) {
+		while (n && n.parentNode && n != p && (n = n.parentNode) && n != p) {
 			if (this.is(n, f)) {
 				return n;
 			}
@@ -318,8 +321,7 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.traverse = function(s, e, p) {
 		var p = p||this.commonAncestor(s, e), sp = s, ep = e, n=s, res = [s], tmp = [e];
-		// this.rte.log(sp)
-		// this.rte.log(p)
+
 		while (sp!=p && sp.parentNode != p) {
 			sp = sp.parentNode;
 		}
@@ -327,7 +329,11 @@ elRTE.prototype.dom = function(rte) {
 		while (ep!=p && ep.parentNode != p) {
 			ep = ep.parentNode;
 		}
-
+		
+		if (sp == ep) {
+			return [sp];
+		}
+		
 		while (n != sp) {
 			res = res.concat(this.nextAll(n));
 			n = n.parentNode;
@@ -515,6 +521,7 @@ elRTE.prototype.dom = function(rte) {
 					this.wrapInner(n, w);
 				} else if (this.is(n, 'inline')) {
 					// wrap any inline node
+					// this.rte.log(n)
 					this.wrap(n, w);
 				}
 			} else {
@@ -618,18 +625,39 @@ elRTE.prototype.dom = function(rte) {
 	 *
 	 * @param  DOMElement n node to split
 	 * @param  DOMElement b point
+	 * @param  Boolean    before  if true split before b, by default - after
 	 * @return DOMElement
 	 **/
-	this.split = function(n, b) {
-		var c = n.cloneNode(false);
-		
-		n.nextSibling 
-			? n.parentNode.insertBefore(c, n.nextSibling) 
-			: n.parentNode.appendChild(c);
-		$.each(this.traverse(b, n.lastChild), function(i) {
-			i>0 && c.appendChild(self.cloneParents(this, n));
-		});
+	this.split = function(n, b, before) {
+		var c = n, 		
+			nodes = before 
+				? this.is(b, 'first') ? [] : this.traverse(b, n.lastChild)
+				: this.is(b, 'last')  ? [] : this.traverse(this.next(b), n.lastChild);
+
+		if (nodes.length) {
+			c = n.cloneNode(false);
+			n.nextSibling 
+				? n.parentNode.insertBefore(c, n.nextSibling) 
+				: n.parentNode.appendChild(c);
+			for (var i=0; i < nodes.length; i++) {
+				c.appendChild(nodes[i])
+			};
+		}
 		return c;
+	}
+	
+	/**
+	 * Slice node into 3 nodes by boundary ponits. 
+	 * Return second node.
+	 *
+	 * @param  DOMElement n node to split
+	 * @param  DOMElement l left boundary node
+	 * @param  DOMElement r right boundary node
+	 * @return DOMElement
+	 **/
+	this.slice = function(n, l, r) {
+		this.split(n, r);
+		return this.split(n, l, true);
 	}
 	
 	/**
@@ -678,17 +706,14 @@ elRTE.prototype.dom = function(rte) {
 	 * @return void
 	 **/
 	this.moveNodesAfter = function(n, b) {
-		var _n, p = n.parentNode;
+		var _n, p = n.parentNode, nodes = this.traverse(b, n.lastChild);
 
-		$.each(this.traverse(b, n.lastChild).reverse(), function() {
+		$.each(nodes.reverse(), function() {
 			_n = self.cloneParents(this, n);
-			if (n.nextSibling) {
-				p.insertBefore(_n, n.nextSibling);
-			} else {
-				p.appendChild(_n);
-			}
+			n.nextSibling ? p.insertBefore(_n, n.nextSibling) : p.appendChild(_n);
 		});
-		return this;
+		this.is(n, 'empty') && this.unwrap(n);
+		return nodes;
 	}
 	
 	/**
@@ -699,12 +724,13 @@ elRTE.prototype.dom = function(rte) {
 	 * @return void
 	 **/
 	this.moveNodesBefore = function(n, b) {
-		var _n, p = n.parentNode;
+		var _n, p = n.parentNode, nodes = this.traverse(n.firstChild, b);
 
-		$.each(this.traverse(n.firstChild, b), function() {
+		$.each(nodes, function() {
 			p.insertBefore(self.cloneParents(this, n), n);
 		});
-		return this;
+		this.is(n, 'empty') && this.unwrap(n);
+		return nodes;
 	}
 	
 	
@@ -732,17 +758,14 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	this.cssMatch = function(n, k, v) {
-		if (n && n.nodeType == 1) {
-			return $(n).css(k) == v;
-		}
-		return false;
+		return n && n.nodeType == 1 && $(n).css(k).match(v);
 	}
 	
-	this.findInStyle = function(n, k) {
-		var r = new RegExp(k+':\s*([^;\s]+)'),
-			m = ($(n).attr('style')||'').match(r);
-		return  m && m.length && m[1] ? $.trim(m[1]) : '';
-	}
+	// this.findInStyle = function(n, k) {
+	// 	var r = new RegExp(k+':\s*([^;\s]+)'),
+	// 		m = ($(n).attr('style')||'').match(r);
+	// 	return  m && m.length && m[1] ? $.trim(m[1]) : '';
+	// }
 	
 	/********************************************************/
 	/*                       Таблицы                        */

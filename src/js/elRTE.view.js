@@ -17,7 +17,7 @@
 			.append(this.workzone)
 			.append(this.statusbar)
 			.insertBefore(t);
-			
+		
 		if (t.nodeName != 'TEXTAREA') {
 			$(t).hide()
 		}
@@ -26,13 +26,10 @@
 			this.workzone.height(this.rte.options.height)
 		}
 			
-			
 		$('#'+this.rte.id+' .elrte-tabsbar li').live('click', function(e) {
-			var t = $(this);
-			if (!t.hasClass('active')) {
-				self.rte.focus(self.rte.documentById(t.attr('rel').substr(1)));
-			}
+			self.rte.focus(self.rte.documentById($(this).attr('rel').substr(1)));
 		});
+
 
 			
 	}
@@ -43,14 +40,21 @@
 	 *
 	 * @param Object  elRTE document
 	 */
-	elRTE.prototype.view.prototype.addDocument = function(d) {
-		var doc = $('<div id="'+d.id+'" class="elrte-document" unselectable="on" />')
+	elRTE.prototype.view.prototype.add = function(d) {
+		var doc = $('<div id="'+d.id+'" class="elrte-document"/>')
 			.append($(d.editor).addClass('elrte-editor')).append(d.source.addClass('elrte-source').hide()); 
 		
-		this.rte.options.height>0 && $(d.editor).height(this.rte.options.height);
+		if (this.rte.options.height>0) {
+			$(d.editor).height(this.rte.options.height);
+		}
 		d.source.height(this.workzone.height());
-		this.tabsbar.append('<li class="elrte-tabsbar-tab inline-block active" rel="#'+d.id+'">'+d.title+'</li>').toggle(this.tabsbar.children().length>1);
-		this.workzone.append(doc.hide());
+		
+		this.tabsbar.children('.active')
+			.removeClass('active')
+			.end()
+			.append('<li class="elrte-tab inline-block active" rel="#'+d.id+'">'+d.title+'</li>')
+			.toggle(this.tabsbar.children().length>1);
+		this.workzone.children('.elrte-document:visible').hide().end().append(doc);
 	}
 	
 	/**
@@ -58,7 +62,7 @@
 	 *
 	 * @param String  document id
 	 */
-	elRTE.prototype.view.prototype.removeDocument = function(id) {
+	elRTE.prototype.view.prototype.remove = function(id) {
 		this.tabsbar.find('[rel="#'+id+'"]').remove();
 		this.workzone.find('#'+id).remove();
 	}
@@ -68,7 +72,7 @@
 	 *
 	 * @param String  document id
 	 */
-	elRTE.prototype.view.prototype.focusDocument = function(id) {
+	elRTE.prototype.view.prototype.focus = function(id) {
 		this.tabsbar.children().removeClass('active').filter('[rel="#'+id+'"]').addClass('active');
 		this.workzone.children('.elrte-document').hide().filter('#'+id).show();
 	}
@@ -82,4 +86,18 @@
 		d.children('iframe').add(d.children('textarea')).toggle();
 	}
 	
+	elRTE.prototype.view.prototype.createPanel = function(n) {
+		var p = $('<ul class="elrte-toolbar-panel inline-block" id="'+this.rte.id+'-pahel-'+n+'"><li class="elrte-toolbar-sep inline-block"></li></ul>');
+		if (this.toolbar.children().length == 1) {
+			p.children().eq(0).remove()
+		}
+		return p
+	}
+	
+	elRTE.prototype.view.prototype.addPanel = function(p) {
+		if (p.children('.elrte-button').length) {
+			this.toolbar.append(p);
+		}
+	}
+
 })(jQuery);

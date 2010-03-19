@@ -20,7 +20,7 @@
 		var self = this;
 			
 		
-		this.version   = '1.0 RC2 dev';
+		this.version   = '1.0 RC4 dev';
 		this.build     = '20100204';
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
@@ -30,16 +30,19 @@
 		this.documents = [];
 		/* active(visible) document index */
 		this.active    = 0;
+		this.wysiwyg   = true;
 		/* events listeners */
-		this.listeners    = {
+		this.listeners = {
 			/* called when new document added to editor */
 			'open'   : [], 
-			/* called when document set visible */
+			/* called when document set visible or clicked */
 			'focus'  : [], 
 			/* called when document set invisible */
 			'blur'   : [],
 			/* called when switch fron editor to source or back in active document */
 			'toggle' : [], 
+			/* called after exec command or click */
+			'update' : [],
 			/* called before send form */
 			'save'   : []};
 		/* editor view */
@@ -47,17 +50,19 @@
 		/* DOM manipulation */
 		this.dom       = new this.dom(this);
 		/* selection and text text range */
-		this.selection = null;
-		this.filter    = null;
-		/* pligins loaded in this instance */
-		this.loadedPlugins = []
+		this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
+
+		
+
 		
 		/* on document blur hide source if visible and update editor */
 		this.bind('blur', function(e) {
 			if (self.documents[self.active].source.is(':visible')) {
-				self.view.toggle();
+				self.toggle();
 			}
 		});
+		
+
 		
 		/* load documents */
 		this.options.documents.unshift(t);
@@ -68,14 +73,45 @@
 		/* focus selected or first document */
 		this.focus(this.options.active>=0 && this.documents[this.options.active] ? this.options.active : 0);
 		
-		/* load plugins */
-		$.each(this.plugins, function() {
-			var p = new this(self);
-			self.loadedPlugins[p.name] = p;
-		});
+		/* load plugins and commands */
+		var plugins = [], i, j, p, commands = [], pn, n, cmd;
+		for (i=0; i < this.options.plugins.length; i++) {
+			if ( (p = this.plugins[this.options.plugins[i]]) ) {
+				plugins.push(new p(this));
+			}
+		};
+		this.plugins = plugins;
 		
+		/* load commands */
+		var d = new Date().getMilliseconds()
+		
+		if (!this.options.toolbars[this.options.toolbar]) {
+			this.options.toolbar = 'default';
+		}
+		
+		panels = this.options.toolbars[this.options.toolbar];
+		for (i=0; i < panels.length; i++) {
+			var	pn = panels[i],
+				n  = this.options.panels[pn],
+				p  = this.view.createPanel(pn);
+
+			for (j=0; j < n.length; j++) {
+				this.debug('command '+n[j]+' loaded')
+				if (typeof(this.commands[n[j]]) == 'function') {
+					cmd = new this.commands[n[j]](this);
+					p.append(cmd.button);
+				}
+			};
+			
+			this.view.addPanel(p);
+		};
+		this.log(new Date().getMilliseconds() - d)
+
+		this.trigger('update');
 		
 	}
+
+
 
 	/**
 	 * send message to console log
@@ -111,6 +147,7 @@
 	/**
 	 * Open document (convert node into editor document)
 	 *
+	 * @todo  blur for current opened document
 	 * @param  DOMElement  node to convert into editor document
 	 * @return Number      document index
 	 */
@@ -129,17 +166,18 @@
 			var t;
 			return n && n.nodeName && (t = $(n).attr('title')) ? t : 'Document-'+(self.documents.length+1);
 		}
+		
 		/* add new document */
 		if (n && n.nodeName) {
 			this.documents.push({
 				id     : docId(),
 				title  : docTitle(n),
 				editor : $('<iframe frameborder="0" />'),
-				source : n.nodeName == 'TEXTAREA' ? $(n) : $('<textarea name="'+docName(n)+'" />').val($.trim($(n).html()))
+				source : n.nodeName == 'TEXTAREA' ? $(n) : $('<textarea name="'+docName(n)+'" />').val(this.filter($(n).html(), 'html'))
 			});
 			d = this.documents[this.documents.length-1];
 			/* render document */
-			this.view.addDocument(d);
+			this.view.add(d);
 			
 			d.window   = d.editor[0].contentWindow;
 			d.document = d.editor[0].contentWindow.document;
@@ -163,18 +201,18 @@
 			
 			/* set this document as active */
 			this.active = this.documents.length-1;
-			/* set document content from textarea */
-			(function(rte) { 
-				var d = rte.documents[rte.active];
-				setTimeout(function() {
-					$(d.document.body).html(d.source.val())
-				}, 10);
-			})(this);
 
+			/* set document content from textarea */
+			$(d.document.body).html(d.source.val());
+			
+			$(d.document).bind('mouseup', function(e) {
+				self.trigger('update');
+				
+			});
 			
 			this.trigger('open');
 
-			return this.documents.length-1;
+			return this.active;
 		}
 		
 	}
@@ -186,7 +224,7 @@
 	 */
 	elRTE.prototype.close = function(i) {
 		if (this.documents[i]) {
-			this.view.removeDocument(this.documents[i].id);
+			this.view.remove(this.documents[i].id);
 			var tmp = [];
 			while (this.documents.length >= i) {
 				tmp.push(this.documents.pop())
@@ -204,17 +242,34 @@
 	 * @param Number  document index
 	 */
 	elRTE.prototype.focus = function(i) {
-		if (this.documents[i]) {
-			/* blur if active document changed */
-			if (this.active != i) {
-				this.trigger('blur');
-				this.active = i;
+		var self = this;
+		
+		function focus(i) {
+			if (self.documents[i].editor.is(':visible')) {
+				/* set focus to editor */
+				self.documents[i].editor.focus();
+				self.documents[i].window.focus();
+				
+			} else {
+				/* set focus to textarea */
+				self.documents[i].source[0].focus();
 			}
-			this.view.focusDocument(this.documents[i].id);
-			this.documents[i].window.focus();
-			this.documents[i].editor.focus();
-			this.trigger('focus');
 		}
+		/* if active document changed */
+		if (this.documents[i] && this.active != i) {
+			/* blur active document */
+			this.trigger('blur');
+			/* change active document */
+			this.active = i;
+			/* show active document */
+			this.view.focus(this.documents[i].id);
+			focus(i);
+			
+			this.trigger('focus').trigger('update');
+		} else {
+			focus(this.active)
+		}
+
 	}
 
 	/**
@@ -223,28 +278,19 @@
 	 * @param Number  document index
 	 */
 	elRTE.prototype.toggle = function(n) {
+		var d = this.documents[this.active];
+		
 		this.view.toggle();
 
-		if (this.documents[this.active].editor.is(':visible')) {
-			$(this.documents[this.active].document.body).html(this.documents[this.active].source.val());
-			this.trigger('toggle');
-			this.documents[this.active].window.focus();
-			this.documents[this.active].editor.focus();
-			this.trigger('focus');
+		if (d.editor.is(':visible')) {
+			$(d.document.body).html(this.filter(d.source.val(), 'dom'));
+			this.wysiwyg = true;
 		} else {
-			var html = $(this.documents[this.active].document.body).html();
-			if ($.browser.msie || $.browser.opera) {
-				html = html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
-					arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
-					return '<'+tag.toLowerCase()+arg+'>';
-				});
-				html = html.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
-			}
-			
-			this.documents[this.active].source[0].value = html;
-			this.trigger('toggle');
-			this.documents[this.active].source.focus();
+			d.source[0].value = this.filter($(d.document.body).html(), 'html');
+			this.wysiwyg = false;
 		}
+		this.focus();
+		this.trigger('toggle');
 	}
 
 	/**
@@ -308,14 +354,20 @@
 	 * @param Function  callback
 	 */
 	elRTE.prototype.bind = function(e, c) {
-		if (this.listeners[e]) {
-			this.listeners[e].push(c);
-		} else {
-			$.each(this.documents, function() {
-				$(this.document.body).bind(e, c);
-			})
-		}
+		e = e.split(',');
+		for (var i=0; i < e.length; i++) {
+			e[i] = $.trim(e[i]);
+			if (this.listeners[e[i]]) {
+				this.listeners[e[i]].push(c);
+			} else {
+				$.each(this.documents, function() {
+					$(this.document).bind(e[i], c);
+				})
+			}
+		};
 		
+		
+		return this;
 	} 
 
 	/**
@@ -335,6 +387,56 @@
 			};
 			this.debug('trigger: '+e+' '+this.active);
 		}
+		return this;
+	}
+	
+	elRTE.prototype.filter = function(d, t) {
+		var i;
+		d = $.trim(d);
+		for (i=0; i< this.rules.html.length; i++) {
+			d = this.rules.html[i](d);
+		}
+		d = $('<div/>').html(d);
+		for (i=0; i< this.rules.dom.length; i++) {
+			d = this.rules.dom[i](d);
+		}
+		d = $(d).html();
+		
+		if (t == 'dom') {
+			
+		} else {
+			d = this.rules.tagsLower(d)
+		}
+
+		return d;
+	}
+	
+	elRTE.prototype.rules = {
+		
+		dom : [
+			function(n) {
+				// window.console.log('dom rule')
+				return n
+			}
+		],
+		
+		html : [
+			function(html) {
+				// window.console.log('html rule')
+				return html
+			}
+		],
+		
+		tagsLower : function(html) {
+
+			html = html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
+				arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
+				arg = arg.replace(/([a-z\-]+)="/ig, function(s, a) { return a.toLowerCase()+'="' });
+				return '<'+tag.toLowerCase()+arg+'>';
+			});
+			return html.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
+		}
+		
 	}
 	
 	/**
@@ -342,6 +444,12 @@
 	 *
 	 */
 	elRTE.prototype.plugins = {}
+	
+	/**
+	 * elRTE commands
+	 *
+	 */
+	elRTE.prototype.commands = {}
 
 	/**
 	 * jquery plugin

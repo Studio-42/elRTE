@@ -5,22 +5,22 @@
 	 *
 	 **/
 	elRTE.prototype.plugins.source = function(rte) {
-		this.name = 'source';
+		this.name        = 'source';
 		this.description = 'Create tabs to toggle between editor and source';
-		this.author = 'Dio el Claire, dio@std42.ru';
+		this.author      = 'Dmitry Levashov, dio@std42.ru';
 		
 		rte.debug('plugin source loaded');
 		
 		if (rte.options.allowSource) {
 
-			var ed  = $('<li class="elrte-togglebar-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
-				src = $('<li class="elrte-togglebar-tab inline-block">'+rte.i18n('Source')+'</li>');
-				
-			ed.add(src).click(function() {
-				if (!$(this).hasClass('active')) {
-					rte.toggle();
-				}
-			});
+			var ed  = $('<li class="elrte-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
+				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>');
+			
+			ed.add(src).mousedown(function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				$(this).hasClass('active') ? rte.focus() : rte.toggle();
+			}).appendTo($('<ul class="elrte-togglebar" />').insertAfter(rte.view.workzone));
 				
 			rte.bind('toggle', function(e) {
 				if ($(e.target.editor).is(':visible')) {
@@ -32,10 +32,6 @@
 				}
 			});
 			
-			$('<ul class="elrte-togglebar" />')
-				.append(ed)
-				.append(src)
-				.insertAfter(rte.view.workzone);
 		}
 		
 	}
