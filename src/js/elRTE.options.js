@@ -18,7 +18,7 @@
 		/* interface language */
 		lang     : 'en',
 		/* plugins to load */
-		plugins : ['source', 'dummy'],
+		plugins : ['source', 'dummy', 'statusbar'],
 		
 		toolbar : 'default',
 		
@@ -30,7 +30,7 @@
 		panelsNames : {},
 		
 		toolbars : {
-			'default' : ['style']
+			'default' : [ 'fullscreen']
 		}
 	}
 	

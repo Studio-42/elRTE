@@ -305,7 +305,9 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Array
 	 **/
 	this.parents = function(n, f, p, addSelf) {
-		var r = addSelf && this.is(n, f) ? [n] : [];
+		// var r = addSelf && this.is(n, f) ? [n] : [];
+		var r = addSelf && this.parent(n, f, null, true) ? [n] : [];
+		
 		while ((n = this.parent(n, f, p))) {
 			r.push(n);
 		}

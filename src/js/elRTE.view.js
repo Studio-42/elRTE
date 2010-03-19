@@ -15,7 +15,7 @@
 			.append(this.toolbar)
 			.append(this.tabsbar)
 			.append(this.workzone)
-			.append(this.statusbar)
+			.append(this.statusbar.hide())
 			.insertBefore(t);
 		
 		if (t.nodeName != 'TEXTAREA') {
@@ -88,15 +88,14 @@
 	
 	elRTE.prototype.view.prototype.createPanel = function(n) {
 		var p = $('<ul class="elrte-toolbar-panel inline-block" id="'+this.rte.id+'-pahel-'+n+'"><li class="elrte-toolbar-sep inline-block"></li></ul>');
-		if (this.toolbar.children().length == 1) {
-			p.children().eq(0).remove()
-		}
+		
 		return p
 	}
 	
 	elRTE.prototype.view.prototype.addPanel = function(p) {
 		if (p.children('.elrte-button').length) {
 			this.toolbar.append(p);
+			this.toolbar.children().length == 1 && p.children().eq(0).remove();
 		}
 	}
 

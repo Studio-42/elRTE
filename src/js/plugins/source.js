@@ -1,6 +1,6 @@
 (function($) {
 	/**
-	 * elRTE plugin
+	 * @class elRTE plugin
 	 * Create tabs to toggle between editor and source
 	 *
 	 **/

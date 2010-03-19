@@ -8,7 +8,7 @@
 		this.height = this.view.workzone.height();
 		this.delta  = this.view.toolbar.outerHeight(true)
 			+this.view.tabsbar.outerHeight(true)
-			+this.view.statusbar.outerHeight(true)+34;
+			+(this.view.statusbar.is(':visible') ? this.view.statusbar.outerHeight(true) : 0)+34;
 		
 		this.bind = function() { }
 		
@@ -25,9 +25,9 @@
 			}
 		}
 		
-		this.constructor.prototype.constructor.call(this, rte);
+		this.init(rte);
 	}
 	
-	elRTE.prototype.commands.fullscreen.prototype = elRTE.prototype.command.prototype;
+	elRTE.prototype.commands.fullscreen.prototype = elRTE.prototype.command;
 	
 })(jQuery);
