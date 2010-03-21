@@ -99,11 +99,16 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		
 		var n = this.rte.selection.getNode();
 		var l;
-		if ((l = this.rte.dom.selfOrParentLink(n))) {
-			this.link = l;
-		} else if ((l = this.rte.dom.childLinks(n))) {
-			this.link = l[0];
-		}
+		if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))){
+		    this.link = l;
+		 } else {
+		     this.link = null;
+		 }
+		// if ((l = this.rte.dom.selfOrParentLink(n))) {
+		// 	this.link = l;
+		// } else if ((l = this.rte.dom.childLinks(n))) {
+		// 	this.link = l[0];
+		// }
 		this.link = this.link ? $(this.link) : $(this.rte.doc.createElement('a'));
 
 		this.updatePopup();
@@ -217,9 +222,14 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		var n = this.rte.selection.getNode();
 		if (this.rte.dom.selfOrParentAnchor(n)) {
 			this.domElem.addClass('disabled');	
-		} else if (this.rte.dom.selfOrParentLink(n) || this.rte.dom.childLinks(n).length) {
+		} 
+		else if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))) {
 			this.domElem.removeClass('disabled').addClass('active');
-		} else {
+		}
+		// else if (this.rte.dom.selfOrParentLink(n) || this.rte.dom.childLinks(n).length) {
+		// 	this.domElem.removeClass('disabled').addClass('active');
+		// } 
+		else {
 			this.domElem.removeClass('active');
 			if (!this.rte.selection.collapsed() || (n.nodeType == 1 && /^(IMG|EMBED|OBJECT)$/.test(n.nodeName))) {
 				this.domElem.removeClass('disabled');

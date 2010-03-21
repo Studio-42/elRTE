@@ -78,9 +78,11 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 				wrap      : 'inline',
 				tag       : 'span'
 			})
-			l = nodes.length, 
-			s = $(this.rte.dom.create('span')).insertBefore(nodes[0]), 
-			e = $(this.rte.dom.create('span')).insertAfter(nodes[nodes.length-1]);
+			l = nodes.length,
+			s = $(nodes[0]).prev(),
+			e = $(nodes[nodes.length-1]).next();
+			// s = $(this.rte.dom.create('span')).insertBefore(nodes[0]), 
+			// e = $(this.rte.dom.create('span')).insertAfter(nodes[nodes.length-1]);
 		
 		while (l--) {
 			n = nodes[l];
@@ -97,10 +99,12 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 				}
 			}
 		}
-		
-		self.rte.selection.select(s.next()[0], e.prev()[0]);
-		s.add(e).remove();
-		c && self.rte.selection.collapse(true);
+		if (s.length && e.length) {
+			self.rte.selection.select(s.next()[0], e.prev()[0]);
+		}
+		// self.rte.selection.select(s.next()[0], e.prev()[0]);
+		// s.add(e).remove();
+		// c && self.rte.selection.collapse(true);
 		this.rte.ui.update(true);
 	}
 	

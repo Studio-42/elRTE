@@ -14,11 +14,16 @@
 		this.command = function() {
 			var n = this.rte.selection.getNode();
 			var l, link;
-			if ((l = this.rte.dom.selfOrParentLink(n))) {
-				link = l;
-			} else if ((l = this.rte.dom.childLinks(n))) {
-				link = l[0];
-			}
+			if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))){
+			    this.link = l;
+			 } else {
+			     this.link = null;
+			 }
+			// if ((l = this.rte.dom.selfOrParentLink(n))) {
+			// 	link = l;
+			// } else if ((l = this.rte.dom.childLinks(n))) {
+			// 	link = l[0];
+			// }
 			if (link) {
 				this.rte.history.add();
 				this.rte.selection.select(link);
@@ -30,9 +35,13 @@
 	
 		this.update = function() {
 			var n = this.rte.selection.getNode();
-			if (this.rte.dom.selfOrParentLink(n) || this.rte.dom.childLinks(n).length) {
+			// if (this.rte.dom.selfOrParentLink(n) || this.rte.dom.childLinks(n).length) {
+			// 	this.domElem.removeClass('disabled').addClass('active');
+			// } 
+			if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))) {
 				this.domElem.removeClass('disabled').addClass('active');
-			} else {
+			}
+			else {
 				this.domElem.removeClass('active').addClass('disabled');
 			}
 		}
