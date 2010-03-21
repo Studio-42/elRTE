@@ -20,6 +20,7 @@
 	<script src="src/js/elRTE.view.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.DOM.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.selection.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.msSelection.js" type="text/javascript" charset="utf-8"></script>
 	
 
 	<!-- plugins -->
@@ -29,6 +30,7 @@
 	<!-- commands -->
 	<script src="src/js/elRTE.command.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
 
 
@@ -46,11 +48,12 @@
 				// active : 1,
 				lang     : 'ru',
 				// height   : 420,
-				debug : false,
+				// debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
 					$('#editor2')[0],
+					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}
 				]
 				
@@ -63,6 +66,8 @@
 			// jQuery('#editor').elrte({cmd : 'val'})
 			// window.console.log(rte)
 //			jQuery('#editor').elrte('updateSource')
+
+
 
 		})
 	</script>
@@ -90,9 +95,9 @@
 	
 </head>
 <body>
-	<div>div</div>
+	<div id="editor3">div</div>
 	
-	<textarea name="Name" rows="8" cols="40" id="editor2"><p>some text here<br>dsadfsadf<br>asdfsdafsadf<br></p></textarea>
+	<textarea name="Name" rows="8" cols="40" id="editor2"></textarea>
 	<form method="post" action="post.php">
 	<div id="editor" name="abr" title="document">
 		<div>Полотенце, возможно, самый необходимый <strong> предмет </strong> ! <em>для <strong>межзвездного</strong> путешественника</em>. </div>
@@ -103,7 +108,10 @@
 		<p>
 		(умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); полотенцем можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.
 		</p>		
-		
+		<p>
+			Полотенце, возможно, самый необходимый  предмет  ! для межзвездного путешественника.
+			Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля
+		</p>
 	</div>
 
 	<input type="submit" name="" value="go" id="">

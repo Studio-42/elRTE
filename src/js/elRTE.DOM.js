@@ -7,9 +7,9 @@
 elRTE.prototype.dom = function(rte) {
 	var self  = this;
 	this.rte  = rte;
-	this.document = null;
-	this.body = null;
-	this.html = null;
+	this.document = document;
+	this.body = document.body;
+	this.html = document.body.parentNode;
 	
 	this.filters = {
 		dummy         : { },
@@ -96,7 +96,9 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.createBookmark = function() {
-		return this.create({name : 'span', attr : { id : 'elrte-bm-'+Math.random().toString().substr(2) }, 'class' : 'elrte-bm'})
+		var b = this.create({name : 'span', attr : { id : 'elrte-bm-'+Math.random().toString().substr(2) }, 'class' : 'elrtebm'});
+		// $(b).text('1')
+		return b
 	}
 	
 	/********************************************************************************/
@@ -578,7 +580,7 @@ elRTE.prototype.dom = function(rte) {
 	this.smartWrapAll = function(n, w) {
 		var buffer = [], inline;
 		
-		w = w.nodeType ? w : this.create(w);
+		w = w.nodeType == 1 ? w : this.create(w);
 		inline = this.is(w, 'inline');
 		
 		function dropBuffer() {
@@ -763,7 +765,8 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	this.cssMatch = function(n, k, v) {
-		return n && n.nodeType == 1 && $(n).css(k).match(v);
+		// alert(typeof($(n).css(k)))
+		return n && n.nodeType == 1 && $(n).css(k).toString().match(v);
 	}
 	
 	// this.findInStyle = function(n, k) {

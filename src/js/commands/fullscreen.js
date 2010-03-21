@@ -26,6 +26,7 @@
 		}
 		
 		this.init(rte);
+		this.button.removeClass('disabled');
 	}
 	
 	elRTE.prototype.commands.fullscreen.prototype = elRTE.prototype.command;

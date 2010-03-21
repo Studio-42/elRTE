@@ -9,11 +9,10 @@
 		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';
 		
-		rte.debug('plugin statusbar loaded');
-		
 		rte.view.statusbar.show();
 		
-		rte.bind('update,toggle', function() {
+		rte.bind('update toggle', function(e) {
+			$(e.target.document.body).find('.highlight').removeClass('highlight');
 			rte.view.statusbar.empty();
 			if (rte.wysiwyg) {
 				var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
@@ -21,7 +20,8 @@
 				
 				while (l--) {
 					var link = $('<span>'+n[l].nodeName.toLowerCase()+'</span>')
-						.hover( (function(n) { return function(e) {$(n).toggleClass('highlight', e.type=='mouseenter') } })(n[l]) );
+						.hover( (function(n) { return function(e) { $(n).toggleClass('highlight', e.type=='mouseenter') } })(n[l]) )
+						.blur(function() { rte.log('blur') });
 					rte.view.statusbar.append(link).append(l>0 ? ' &raquo; ' : '');
 				}
 			}

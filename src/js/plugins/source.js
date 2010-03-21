@@ -9,28 +9,29 @@
 		this.description = 'Create tabs to toggle between editor and source';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';
 		
-		rte.debug('plugin source loaded');
-		
 		if (rte.options.allowSource) {
 
 			var ed  = $('<li class="elrte-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
-				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>');
-			
-			$('<ul class="elrte-togglebar" />')
+				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>'),
+				bar = $('<ul class="elrte-togglebar" />').hide()
 				.insertAfter(rte.view.workzone)
 				.append(ed)
-				.append(src)
+				.append(src);
 			
-			ed.add(src).mousedown(function(e) {
+			ed.add(src).click(function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				$(this).hasClass('active') ? rte.focus() : rte.toggle();
-			})//.appendTo($('<ul class="elrte-togglebar" />').insertAfter(rte.view.workzone));
+			});
 				
-			rte.bind('toggle', function(e) {
-				var v = $(e.target.editor).is(':visible');
-				src.toggleClass('active', !v);
-				ed.toggleClass('active', v);
+			rte.bind('focus source', function(e) {
+				bar.show();
+				src.toggleClass('active', !rte.wysiwyg);
+				ed.toggleClass('active', rte.wysiwyg);
+			}).bind('open', function() {
+				bar.show();
+			}).bind('close', function() {
+				bar.toggle(rte.documents.length>0);
 			});
 			
 		}

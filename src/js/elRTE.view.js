@@ -27,6 +27,8 @@
 		}
 			
 		$('#'+this.rte.id+' .elrte-tabsbar li').live('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation()
 			self.rte.focus(self.rte.documentById($(this).attr('rel').substr(1)));
 		});
 
@@ -41,20 +43,21 @@
 	 * @param Object  elRTE document
 	 */
 	elRTE.prototype.view.prototype.add = function(d) {
-		var doc = $('<div id="'+d.id+'" class="elrte-document"/>')
-			.append($(d.editor).addClass('elrte-editor')).append(d.source.addClass('elrte-source').hide()); 
-		
 		if (this.rte.options.height>0) {
 			$(d.editor).height(this.rte.options.height);
 		}
-		d.source.height(this.workzone.height());
-		
+
+		this.workzone//.children('.elrte-document:visible').hide().end()
+		.append(
+			$('<div id="'+d.id+'" class="elrte-document"/>').hide()
+				.append($(d.editor).addClass('elrte-editor'))
+				.append(d.source.height(this.workzone.height()).addClass('elrte-source').hide())
+			);
 		this.tabsbar.children('.active')
 			.removeClass('active')
 			.end()
 			.append('<li class="elrte-tab inline-block active" rel="#'+d.id+'">'+d.title+'</li>')
 			.toggle(this.tabsbar.children().length>1);
-		this.workzone.children('.elrte-document:visible').hide().end().append(doc);
 	}
 	
 	/**
