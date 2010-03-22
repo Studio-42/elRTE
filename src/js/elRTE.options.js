@@ -17,8 +17,11 @@
 		height   : 0,
 		/* interface language */
 		lang     : 'en',
+		
+		allowCloseDocs : true,
+		
 		/* plugins to load */
-		plugins : ['source', 'dummy', 'statusbar'],
+		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
 		
 		toolbar : 'default',
 		

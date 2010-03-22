@@ -133,6 +133,15 @@
 	border-top-right-radius: 3px;
 }
 
+.elrte .elrte-tabsbar .elrte-tab .elrte-tab-close {
+	float:right;
+	width:10px;
+	height:10px;
+	margin:2px -12px 2px 9px;
+
+	border:1px solid #111;
+}
+
 /******************  workzone  *********************/
 .elrte .elrte-workzone {
 	border: 1px solid #ccc;

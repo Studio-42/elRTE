@@ -1,12 +1,14 @@
 (function($) {
 	/**
-	 * @Class Base class for bold,italic etc.
+	 * @Class Parent class for bold,italic etc.
 	 *
 	 */
 	elRTE.prototype.commands.style = function() {
 
+		/**
+		 *
+		 */
 		this.state = function() {
-			// this.rte.log(this.rte.selection.getNode())
 			return this.rte.wysiwyg ? (this.dom.selectionMatchAll(this.test) ? 1 : 0) : -1;
 		}
 		
@@ -66,12 +68,12 @@
 			} else {
 				/* not required node in selection - create it */
 				// this.dom.smartWrapAll(s, this.node);
-				this.wrap(s)
+				this.wrap(s);
 			}
 
 			this.sel.moveToBookmark(b);
 			c && this.sel.collapse(true);
-
+			return true;
 		}
 		
 		this.wrap = function(s) {

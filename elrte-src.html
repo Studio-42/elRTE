@@ -21,11 +21,13 @@
 	<script src="src/js/elRTE.DOM.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.selection.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.msSelection.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.filter.js" type="text/javascript" charset="utf-8"></script>
 	
 
 	<!-- plugins -->
-	<script src="src/js/plugins/source.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/plugins/source.js"    type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/plugins/statusbar.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/plugins/webkit.js"    type="text/javascript" charset="utf-8"></script>
 
 	<!-- commands -->
 	<script src="src/js/elRTE.command.js" type="text/javascript" charset="utf-8"></script>
@@ -48,7 +50,7 @@
 				// active : 1,
 				lang     : 'ru',
 				// height   : 420,
-				// debug : false,
+				debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
@@ -95,11 +97,21 @@
 	
 </head>
 <body>
-	<div id="editor3">div</div>
+	<div id="editor3" style="display:none">div</div>
 	
-	<textarea name="Name" rows="8" cols="40" id="editor2"></textarea>
+	<textarea name="Name" rows="8" cols="40" id="editor2">second</textarea>
 	<form method="post" action="post.php">
 	<div id="editor" name="abr" title="document">
+		<table style="border:1px solid #111">
+			<tr>
+				<td>Полотенце, возможно, самый необходимый <strong> предмет </strong></td>
+				<td>Полотенце, возможно, самый необходимый <strong> предмет </strong></td>
+			</tr>
+			<tr>
+				<td>Полотенце, возможно, самый необходимый <strong> предмет </strong></td>
+				<td>Полотенце, возможно, самый необходимый <strong> предмет </strong></td>
+			</tr>
+		</table>
 		<div>Полотенце, возможно, самый необходимый <strong> предмет </strong> ! <em>для <strong>межзвездного</strong> путешественника</em>. </div>
 		Оно имеет некоторую <span class="bold">практическую</span> ценность  - вы <i>можете</i>: завернуться в него,
 		чтобы согреться, прыгая по холодным лунам <span style="color:red; font-weight: 900 ; font-style:italic; text-decoration:underline">Джаглан-Беты</span>; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий  морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 

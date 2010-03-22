@@ -7,7 +7,7 @@
 elRTE.prototype.dom = function(rte) {
 	var self  = this;
 	this.rte  = rte;
-	this.document = document;
+	this.doc = document;
 	this.body = document.body;
 	this.html = document.body.parentNode;
 	
@@ -59,10 +59,14 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	this.rte.bind('focus', function(e) {
-		self.document = e.target.document;
-		self.body     = self.document.body;
-		self.html     = self.document.body.parentNode;
-	})
+		self.doc  = e.target.document;
+		self.body = self.doc.body;
+		self.html = self.doc.body.parentNode;
+	}).bind('disable', function() {
+		self.doc  = document;
+		self.body = document.body;
+		self.html = document.body.parentNode;
+	});
 	
 	/**
 	 * Create and return DOM Element
@@ -76,7 +80,7 @@ elRTE.prototype.dom = function(rte) {
 			o = {name : o}
 		}
 
-		var n = this.document.createElement(o.name);
+		var n = this.doc.createElement(o.name);
 
 		if (o.attr) {
 			$(n).attr(o.attr);

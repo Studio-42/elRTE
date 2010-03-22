@@ -13,10 +13,11 @@
 
 			var ed  = $('<li class="elrte-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
 				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>'),
-				bar = $('<ul class="elrte-togglebar" />').hide()
-				.insertAfter(rte.view.workzone)
-				.append(ed)
-				.append(src);
+				bar = $('<ul class="elrte-togglebar" />')
+					.hide()
+					.insertAfter(rte.view.workzone)
+					.append(ed)
+					.append(src);
 			
 			ed.add(src).click(function(e) {
 				e.stopPropagation();
@@ -30,8 +31,8 @@
 				ed.toggleClass('active', rte.wysiwyg);
 			}).bind('open', function() {
 				bar.show();
-			}).bind('close', function() {
-				bar.toggle(rte.documents.length>0);
+			}).bind('disable', function() {
+				bar.hide();
 			});
 			
 		}

@@ -1,8 +1,8 @@
 (function($) {
 	/**
 	 * @class elRTE plugin
-	 * Show path to selected node in status bar
-	 *
+	 * Show path to selected node in status bar 
+	 * and highlight node on hever path to it
 	 **/
 	elRTE.prototype.plugins.statusbar = function(rte) {
 		this.name        = 'statusbar';
@@ -11,7 +11,7 @@
 		
 		rte.view.statusbar.show();
 		
-		rte.bind('update toggle', function(e) {
+		rte.bind('focus change toggle', function(e) {
 			$(e.target.document.body).find('.highlight').removeClass('highlight');
 			rte.view.statusbar.empty();
 			if (rte.wysiwyg) {
@@ -21,10 +21,12 @@
 				while (l--) {
 					var link = $('<span>'+n[l].nodeName.toLowerCase()+'</span>')
 						.hover( (function(n) { return function(e) { $(n).toggleClass('highlight', e.type=='mouseenter') } })(n[l]) )
-						.blur(function() { rte.log('blur') });
+						;
 					rte.view.statusbar.append(link).append(l>0 ? ' &raquo; ' : '');
 				}
 			}
+		}).bind('save close', function(e) {
+			$(e.target.document.body).find('.highlight').removeClass('highlight');
 		});
 		
 	}

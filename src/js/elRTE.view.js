@@ -4,7 +4,7 @@
 	 * 
 	 */
 	
-	elRTE.prototype.view = function(rte, t) {
+	elRTE.prototype.view = function(rte) {
 		var self       = this;
 		this.rte       = rte;
 		this.toolbar   = $('<div class="elrte-toolbar" />');
@@ -16,24 +16,16 @@
 			.append(this.tabsbar)
 			.append(this.workzone)
 			.append(this.statusbar)
-			.insertBefore(t);
+			.insertBefore(rte.target);
 		
-		if (t.nodeName != 'TEXTAREA') {
-			$(t).hide()
+		if (rte.target.nodeName != 'TEXTAREA') {
+			$(rte.target).hide();
 		}
 			
 		if (this.rte.options.height>0) {
-			this.workzone.height(this.rte.options.height)
+			this.workzone.height(this.rte.options.height);
 		}
-			
-		$('#'+this.rte.id+' .elrte-tabsbar li').live('click', function(e) {
-			e.preventDefault();
-			e.stopPropagation()
-			self.rte.focus(self.rte.documentById($(this).attr('rel').substr(1)));
-		});
 
-
-			
 	}
 	
 	
@@ -43,21 +35,35 @@
 	 * @param Object  elRTE document
 	 */
 	elRTE.prototype.view.prototype.add = function(d) {
+		var self = this, 
+			t = $('<li class="elrte-tab inline-block active" rel="#'+d.id+'">'+d.title+(this.rte.options.allowCloseDocs ? '<span class="elrte-tab-close" title="Close"/>' : '')+'</li>').click(function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if ($(e.target).hasClass('elrte-tab-close')) {
+					if (confirm('Do you want to close "'+$(this).parent().text()+'"?')) {
+						self.rte.close($(this).attr('rel').substr(1));
+					}
+				} else {
+					self.rte.focus($(this).attr('rel').substr(1));
+				}
+			});
+
+		
 		if (this.rte.options.height>0) {
 			$(d.editor).height(this.rte.options.height);
 		}
 
-		this.workzone//.children('.elrte-document:visible').hide().end()
-		.append(
-			$('<div id="'+d.id+'" class="elrte-document"/>').hide()
+		this.workzone.append(
+			$('<div id="'+d.id+'" class="elrte-document"/>')
+				.hide()
 				.append($(d.editor).addClass('elrte-editor'))
 				.append(d.source.height(this.workzone.height()).addClass('elrte-source').hide())
 			);
 		this.tabsbar.children('.active')
 			.removeClass('active')
 			.end()
-			.append('<li class="elrte-tab inline-block active" rel="#'+d.id+'">'+d.title+'</li>')
-			.toggle(this.tabsbar.children().length>1);
+			.append(t)
+			.toggle(this.rte.options.allowCloseDocs||this.tabsbar.children().length>1);
 	}
 	
 	/**
@@ -85,7 +91,7 @@
 	 *
 	 */
 	elRTE.prototype.view.prototype.toggle = function() {
-		var d = this.workzone.children('#'+this.rte.documents[this.rte.active].id);
+		var d = this.workzone.children(':visible');
 		d.children('iframe').add(d.children('textarea')).toggle();
 	}
 	

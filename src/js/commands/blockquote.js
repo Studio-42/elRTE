@@ -16,23 +16,23 @@
 		
 		
 		this.exec = function() {
-			var //b = this.sel.getBookmark(),
-				// s = this.sel.selected(),
+			var n;
+			if (this.sel.collapsed()) {
+				n = this.dom.parent(this.sel.getNode(), /^BLOCKQUOTE$/, null, true);
+				if (n) {
+					this.dom.unwrap(n);
+					return true
+				}
+			} else {
 				n = this.dom.create('blockquote');
-				
-			// this.rte.log(s)
-			// this.rte.log(this.dom.is(n, 'blockText'))
-			// debugger
-			// this.dom.smartWrapAll(s, 'blockquote')
-			$(n).html($(this.sel.cloneContents()).html())
-			// this.sel.insertNode(n)
-			// var html = '<blockquote>'+$(this.sel.cloneContents()).html()+'</blockquote>'
-			// this.rte.log(html)
-			n = this.sel.insertNode(n)
-			this.sel.select(n)
-			// var r = this.sel.getRange();
-			// r.surroundContents(this.dom.create('blockquote'))
-			// this.sel.moveToBookmark(b)
+				$(n).html($(this.sel.cloneContents()).html())
+				n = this.sel.insertNode(n)
+				this.sel.select(n)
+				return true
+			}
+			
+
+
 		}
 		
 		this.init(rte);

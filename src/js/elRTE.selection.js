@@ -4,8 +4,8 @@
 
 		var self = this;
 		this.rte = rte;
-		this.win = null;
-		this.doc = null;
+		this.win = window;
+		this.doc = document;
 		this.dom = rte.dom;
 		this.log = rte.log;
 		this.node = null;
@@ -13,6 +13,9 @@
 		this.rte.bind('focus', function(e) {
 			self.win = e.target.window;
 			self.doc = e.target.document;
+		}).bind('disable', function() {
+			self.win = window;
+			self.doc = document;
 		}).bind('click', function(e) {
 			// self.rte.log(e.target)
 		});

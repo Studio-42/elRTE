@@ -21,7 +21,6 @@
 				this.view.editor.addClass('fullscreen');
 				this.view.workzone.height($(window).height()-this.delta);
 				this.button.addClass('active');
-				
 			}
 		}
 		
