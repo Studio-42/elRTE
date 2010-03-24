@@ -4,16 +4,16 @@ body {
 /*	background:red;*/
 }
 
-body.el-rte-structure table, 
-body.el-rte-structure caption,
-body.el-rte-structure td, 
-body.el-rte-structure th, 
-body.el-rte-structure p, 
-body.el-rte-structure div,
-body.el-rte-structure blockquote
+body.elrte-structure table, 
+body.elrte-structure caption,
+body.elrte-structure td, 
+body.elrte-structure th, 
+body.elrte-structure p, 
+body.elrte-structure div,
+body.elrte-structure blockquote
 { border:1px dotted #99ccff; }
 
-body.el-rte-structure .el-rte-anchor {
+body.elrte-structure .elrte-anchor {
 	display:inline-block;
 	vertical-align:baseline;
 	width:12px; 
@@ -30,7 +30,7 @@ body.el-rte-structure .el-rte-anchor {
 /*	display:none;*/
 }
 
-.highlight {
+.elrte-highlight {
 	background-color:#eee;
 	border:1px solid #ccc;
 }

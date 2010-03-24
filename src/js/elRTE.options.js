@@ -20,6 +20,14 @@
 		
 		allowCloseDocs : true,
 		
+		allowTags : [],
+		allowAttrs : [],
+		denyTags : ['font', 'b', 'center', 'i', 'big', 'frame', 'iframe', 'nobr'],
+		denyAttrs : [],
+		/* If true - all deny tags will be removed, otherwise - replaced with span with original tag's attributes */
+		removeDenyTags : false,
+		attrsToCss : ['border', 'color', 'align', 'valign', 'background', 'bgcolor', 'size', 'clear'],
+		
 		/* plugins to load */
 		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
 		

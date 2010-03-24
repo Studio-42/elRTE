@@ -196,7 +196,11 @@
 
 .elrte .elrte-statusbar span { cursor:pointer; }
 
-
+.elrte-swf-placeholder {
+	width:10px;
+	height:10px;
+	background: url('../images/swf.png') 0 0 no-repeat;	
+}
 
 /* COLORS */
 .elrte.cupertino {

@@ -103,10 +103,10 @@
 		this.load = true;
 		this.trigger('load').trigger('focus');
 		delete this.listeners.load;
-		this.log(this.listeners)
+		// this.log(this.listeners)
 		window.console.timeEnd('load')
 
-		this.filter.toHtml('')
+		// this.filter.toSource('')
 	}
 
 	/**
@@ -162,7 +162,7 @@
 			d.document.close();
 			
 			/* set document content from textarea */
-			$(d.document.body).html(d.source.val());
+			$(d.document.body).html(this.filter.fromSource(d.source.val()));
 			
 			/* make iframe editable */
 			if ($.browser.msie) {
@@ -239,11 +239,11 @@
 			this.view.toggle();
 			
 			if (d.editor.is(':visible')) {
-				$(d.document.body).html(d.source.val());
+				$(d.document.body).html(this.filter.fromSource(d.source.val()));
 				this.wysiwyg = true;
 				this.focus().trigger('focus');
 			} else {
-				d.source[0].value = $(d.document.body).html();
+				d.source[0].value = this.filter.toSource($(d.document.body).html());
 				this.wysiwyg = false;
 				this.focus().trigger('source');
 			}
@@ -401,70 +401,19 @@
 		}
 	}
 
-	
 
-	
-	
-	elRTE.prototype._filter = function(d, t) {
-		var i;
-		d = $.trim(d);
-		for (i=0; i< this.rules.html.length; i++) {
-			d = this.rules.html[i](d);
-		}
-		d = $('<div/>').html(d);
-		for (i=0; i< this.rules.dom.length; i++) {
-			d = this.rules.dom[i](d);
-		}
-		d = $(d).html();
-		
-		if (t == 'dom') {
-			
-		} else {
-			d = this.rules.tagsLower(d)
-		}
-
-		return d;
-	}
-	
-	elRTE.prototype.rules = {
-		
-		dom : [
-			function(n) {
-				// window.console.log('dom rule')
-				return n
-			}
-		],
-		
-		html : [
-			function(html) {
-				// window.console.log('html rule')
-				return html
-			}
-		],
-		
-		tagsLower : function(html) {
-
-			html = html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
-				arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
-				arg = arg.replace(/([a-z\-]+)="/ig, function(s, a) { return a.toLowerCase()+'="' });
-				return '<'+tag.toLowerCase()+arg+'>';
-			});
-			return html.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
-		}
-		
-	}
 	
 	/**
 	 * elRTE plugins
 	 *
 	 */
-	elRTE.prototype.plugins = {}
+	elRTE.prototype.plugins = {};
 	
 	/**
 	 * elRTE commands
 	 *
 	 */
-	elRTE.prototype.commands = {}
+	elRTE.prototype.commands = {};
 
 	/**
 	 * jquery plugin
