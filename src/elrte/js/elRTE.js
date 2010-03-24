@@ -43,24 +43,22 @@ elRTE = function(target, opts) {
 	this.utils     = new this.utils(this);
 	this.dom       = new this.dom(this);
 	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.options.lang] || {}} });	
-
+	this.filter    = new this.filter(this)
 	
 	/* attach editor to document */
 	this.editor.insertAfter(target);
 	/* init editor textarea */
+	var content = '';
 	if (target.nodeName == 'TEXTAREA') {
 
 		this.source = this.target.remove()
-		this.source.insertAfter(this.iframe).hide()
-
+		this.source.insertAfter(this.iframe).hide();
+		content = this.target.val();
 	} else {
 		this.source = $('<textarea />').insertAfter(this.iframe).hide()
-		this.source.val(this.target.hide().html()).attr('name', this.target.attr('id')||this.target.attr('name'));
-		this.target.html('')
+		this.source.attr('name', this.target.attr('id')||this.target.attr('name'));
+		content = this.target.hide().html();
 	}
-	/* clean content */
-	this.source.val(this.filter(this.source.val(), true));
-	
 
 	/* add tabs */
 	if (this.options.allowSource) {
@@ -101,9 +99,10 @@ elRTE = function(target, opts) {
 		html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
 	});
 	this.doc.open();
-	this.doc.write(self.options.doctype+html+'</head><body>'+(this.source.val()||'&nbsp;')+'</body></html>');
-	// this.doc.write(self.options.doctype+html+'</head><body>&nbsp;</body></html>');
+	this.doc.write(self.options.doctype+html+'</head><body>'+(this.filter.fromSource(content))+'</body></html>');
 	this.doc.close();
+	
+	this.source.val(this.filter.toSource(content));
 	
 	/* make iframe editable */
 	if ($.browser.msie) {
@@ -127,20 +126,6 @@ elRTE = function(target, opts) {
 	this.selection = new this.selection(this);
 	/* init buttons */
 	this.ui = new this.ui(this);
-	
-	// $(window).load(function() {
-		var n = document.createElement('span');
-		$(n).addClass('elrte-swf-placeholder').appendTo(self.statusbar);
-		if (typeof n.currentStyle != "undefined") {
-			url = n.currentStyle['backgroundImage'];
-		} else {
-			url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
-		}
-		self.swfPlaceholder = url ? url.replace(/^url\("?([^"]+)"?\)$/, "$1") : '';
-		$(self.doc).find('img.elrte-swf-placeholder').attr('src', self.swfPlaceholder);
-	// })
-	
-	// this.history.add()
 	
 	
 	/* bind updateSource to parent form submit */
@@ -235,7 +220,7 @@ elRTE.prototype.close = function() {
 
 
 elRTE.prototype.updateSource = function() {
-	this.source.val(this.filter($(this.doc.body).html()));
+	this.source.val(this.filter.toSource($(this.doc.body).html()));
 }
 
 /**
@@ -245,8 +230,7 @@ elRTE.prototype.updateSource = function() {
  **/
 elRTE.prototype.val = function(v) {
 	if (typeof(v) == 'string') {
-		$(this.doc.body).html(this.filter(v, true));
-		// this.source.val(v);
+		$(this.doc.body).html(this.filter.fromSource(v));
 	} else {
 		this.updateSource();
 		return this.source.val();
@@ -262,167 +246,6 @@ elRTE.prototype.save = function() {
 	this.editor.parents('form').submit();
 }
 
-
-elRTE.prototype.filter = function(v, input) {
-	var html = '';
-	var self = this;
-	var node = $('<span />');
-	if (!v.nodeType) {
-		html = $.trim(v);
-	} else {
-		html = $.trim(v.nodeType == 1 ? $(v).html() : v.nodeValue);
-	}
-	var sw = this.options.stripWhiteSpace;
-	$.each(this.filters.html, function() {
-		html = this(html, sw);
-	});
-	
-	node.html(html);
-
-	if (input) {
-		node.find('a').each(function() {
-			if ($(this).attr('name')) {
-				$(this).addClass('el-rte-anchor');
-			}
-		});
-		
-		node.find('object[classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"]').each(function() {
-			
-			var t = $(this),
-				url  = t.children('param[name="'+($.browser.msie ? 'Movie' : 'movie')+'"]').attr('value'),
-				st   = t.attr('style')||'',
-				w    = parseInt(t.css('width')||0) || parseInt(t.attr('width')||0) || '',
-				h    = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
-				f    = t.css('float') || t.attr('align'),
-				a    = t.css('vertical-align'),
-				wrap = $('<span />'),
-				img  = $('<img src="'+self.swfPlaceholder+'" class="elrte-swf-placeholder" rel="'+url+'" />').appendTo(wrap);
-				 
-			
-			img.attr('style', st).css({
-				width            : w?(w+'px'):'auto',
-				height           : h?h+'px':'auto',
-				'float'          : f,
-				'vertical-align' : a
-			});
-			$(this).replaceWith(wrap.html());
-		});
-		
-	} else {
-		node.find('a.el-rte-anchor').each(function() {
-			if ($.trim($(this).attr('class')) == 'el-rte-anchor') {
-				$(this).removeAttr('class');
-			} else {
-				$(this).removeClass('el-rte-anchor');
-			}
-		});
-
-		node.find('img.elrte-swf-placeholder').each(function() {
-			var t = $(this),
-				obj = '<object style="'+(t.attr('style')||'')+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
-			t.replaceWith(obj);
-		});
-	}
-
-	$.each(this.filters.dom, function() {
-		node = this(node);
-	});
-	
-	html = node.html();
-	if ($.browser.msie || $.browser.opera) {
-		
-		html = html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
-			arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
-			arg = arg.replace(/([a-z\-]+)="/ig, function(s, a) { return a.toLowerCase()+'="' });
-			return '<'+tag.toLowerCase()+arg+'>';
-		});
-		html = html.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
-	}
-	
-	return html;
-}
-
-
-
-elRTE.prototype.filters = {
-	dom  : [
-		function(n) { 
-			n.find('[align]').not('tbody,tr').each(function() {
-				var a = ($(this).attr('align')||'').toLowerCase();
-				if ((this.nodeName != 'TD' && this.nodeName != 'TH') || a != 'left') {
-					$(this).css('text-align', a).removeAttr('align');
-				}
-			})
-			.end().end().find('[border],[bordercolor]').each(function() {
-				var w = parseInt($(this).attr('border')) || 1,
-					c = $(this).attr('bordercolor') || '#000';
-				$(this).css('border', w+'px solid '+c).removeAttr('border').removeAttr('bordercolor');
-			})
-			.end().find('[bgcolor]').each(function() {
-				$(this).css('background-color', $(this).attr('bgcolor')).removeAttr('bgcolor');
-			}).end().find('[background]').each(function() {
-				$(this).css('background', 'url('+$(this).attr('background')+')' ).removeAttr('background');
-			})
-			.end().find('img[hspace],[vspace]').each(function() {
-				var v = parseInt($(this).attr('vspace'))||0,
-					h = parseInt($(this).attr('hspace'))||0;
-				if (v>0 || h>0) {
-					$(this).css('margin', (v>0?v:0)+'px '+(h>0?h:0)+'px');
-				}
-				$(this).removeAttr('hspace').removeAttr('vspace');
-			})
-			.end().find('[clear]').each(function() {
-				var c = ($(this).attr('clear')||"").toLowerCase();
-				$(this).css('clear', c == 'all' ? 'both' : c);
-			});
-			
-			if ($.browser.safari) {
-				n.find('.Apple-style-span').removeClass('Apple-style-span');
-			}
-			return n;
-		}
-	],
-	html : [
-		function(html, stripWhiteSpace) { 
-			var fsize = {
-				1 : 'xx-small',
-				2 : 'x-small',
-				3 : 'small',
-				4 : 'medium',
-				5 : 'large',
-				6 : 'x-large',
-				7 : 'xx-large'
-			}
-			
-			html = html.replace(/<font([^>]*)/i, function(str, attr) {
-				var css = '', m = attr.match(/size=('|")(\d)/i);
-				if (m && m[2] && fsize[m[2]]) {
-					css = 'font-size: '+fsize[m[2]]+'; ';
-				}
-				m = attr.match(/face=('|")([a-z0-9\s,]+)/i);
-				if (m && m[2]) {
-					css += 'font-family: '+m[2];
-				}
-				return '<span'+(css ? ' style="'+css+'"' : '');
-			})
-			.replace(/<\/font/i, '</span')
-			.replace(/<b(\s[^>]*)?>/i, '<strong$1>')
-			.replace(/<\/b\s*>/i, '</strong>')
-			.replace(/<i(\s[^>]*)?>/i, '<em$1>')
-			.replace(/<\/i\s*>/i, '</em>')
-			.replace(/((class|style)="")/i, '');
-			
-			
-			
-			if (stripWhiteSpace) {
-				html = html.replace(/\r?\n(\s)*/mg, "\n");
-			}
-			
-			return html;
-		}
-	]
-}
-
 elRTE.prototype.log = function(msg) {
 	if (window.console && window.console.log) {
 		window.console.log(msg);
@@ -432,7 +255,7 @@ elRTE.prototype.log = function(msg) {
 
 elRTE.prototype.i18Messages = {};
 
-$.fn.elrte = function(o) { 
+$.fn.elrte = function(o, v) { 
 	var cmd = typeof(o) == 'string' ? o : '', ret;
 	
 	this.each(function() {
@@ -458,7 +281,7 @@ $.fn.elrte = function(o) {
 		if (!this.length) {
 			return '';
 		} else if (this.length == 1) {
-			return this[0].elrte.val();
+			return v ? this[0].elrte.val(v) : this[0].elrte.val();
 		} else {
 			ret = {}
 			this.each(function() {

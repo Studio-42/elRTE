@@ -31,10 +31,15 @@ elRTE.prototype.options   = {
 	toolbar         : 'normal',
 	absoluteURLs    : true,
 	allowSource     : true,
-	stripWhiteSpace : false,
-	styleWithCSS    : false,
 	fmAllow         : true,
 	fmOpen          : null,
+	allowTags       : [],
+	allowAttrs      : [],
+	denyTags        : ['font', 'b', 'center', 'i', 'big', 'frame', 'iframe', 'nobr'],
+	denyAttrs       : ['face'],
+	/* If true - all deny tags will be removed, otherwise - replaced with span with original tag's attributes */
+	removeDenyTags  : false,
+	attrsToCss      : ['border', 'color', 'align', 'valign', 'background', 'bgcolor', 'size', 'clear'],
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',
