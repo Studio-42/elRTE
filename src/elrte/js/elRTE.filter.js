@@ -14,15 +14,9 @@
 		/* chains of rules */
 		this._chains = {};
 		/* allowed tags/attributes */
-		this._allow  = {
-			tags  : rte.options.allowTags||[],
-			attrs : rte.options.allowAttrs||[]
-		}
-		/* deny tags/attributes */
-		this._deny   = {
-			tags  : rte.options.denyTags||[],
-			attrs : rte.options.denyAttrs||[]
-		}
+		this._allow = rte.options.allowTags||[];
+		this._deny = rte.options.denyTags||[];
+
 		/* swf placeholder class */
 		this.swfClass = 'elrte-swf-placeholder';
 		/* swf placeholder url */
@@ -112,35 +106,136 @@
 	elRTE.prototype.filter.prototype.rules = {
 		/* common cleanup tags and attrs */
 		cleanup : function(f, html) {
-			var at = f._allow.tags.length,
-				dt = f._deny.tags.length,
-				aa = f._allow.attrs.length,
-				da = f._deny.attrs.length;
-				
+			var at    = f._allow.length,
+				dt    = f._deny.length,
+				fsize = ['', 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'],
+				map   = {
+					b      : ['strong'],
+					big    : ['span', 'font-size:large'],
+					center : ['div', 'text-align:center'],
+					font   : ['span'],
+					i      : ['em'],
+					nobr   : ['span', 'white-space:nowrap'],
+					small  : ['span', 'font-size:small'],
+					u      : ['span', 'text-decoration:underline']
+				};
 			
-			if (at || dt || aa || da) {
-				html = html.replace(/\<(\/?)([a-z1-6]+)([^>]*)\>/gi, function(t, s, n, a) {
-					// filter allowed/deny tags
-					n = n.toLowerCase(n);
-					a = a.toLowerCase(a);
-					if ((at && $.inArray(n, f._allow.tags) == -1)
-					|| (dt && $.inArray(n, f._deny.tags) != -1)) {
-						if (f.rte.options.removeDenyTags) {
-							return '';
+			if ($.browser.opera||$.browser.msie) {
+				html = f.rules.tagsToLower(f, html);
+			}
+				
+			/* Replace non-semantic tags */
+			html = html.replace(/\<(\/?)(b|i|u|font|center|nobr|big|small)(\s+[^>]*)?\>/gi, function(t, s, n, a) {
+				n = n.toLowerCase(n);
+				a = (a||'').toLowerCase(a);
+				
+				if (map[n]) {
+					if (!s && map[n][1]) {
+						a = a.indexOf('style="') == -1 ? a+' style="'+map[n][1]+'"' : a.replace('style="', 'style="'+map[n][1]+';');
+					}
+					return '<'+s+map[n][0]+a+'>';
+				}
+				return t;
+			});
+
+			/* Replace non-semantic attributes with css */
+			html = html.replace(/\<([a-z1-6]+)\s+([^>]*(border|bordercolor|color|background|bgcolor|align|valign|hspace|vspace|clear|size|face)=[^>]*)\>/gi, function(t, n, a) {
+				var attrs = {},
+					m = a.match(/([a-z]+)="([^"]*)"/gi), _t, i;
+				
+				function style(v) {
+					if (!attrs.style) {
+						attrs.style = '';
+					}
+					attrs.style = v+';'+attrs.style;
+				}
+				if (m) {
+					for (i=0; i<m.length; i++) {
+						_t = m[i].split('=');
+						attrs[_t[0]] = _t[1].replace(/"/g, '');
+					}
+				} 
+
+				
+				if (attrs.border) {
+					style('border:'+attrs.border+'px solid '+(attrs.bordercolor||'#000'));
+					delete attrs.border;
+					delete attrs.bordercolor;
+				}
+				if (attrs.color) {
+					style('color:'+attrs.color);
+					delete attrs.color
+				}
+				if (attrs.background) {
+					style('background-image:url('+attrs.background+')');
+					delete attrs.background;
+				}
+				if (attrs.bgcolor) {
+					style('background-color:'+attrs.bgcolor);
+					delete attrs.bgcolor;
+				}
+				if (attrs.align) {
+					if (n == 'img') {
+						if (attrs.align.match(/(left|right)/)) {
+							style('float:'+attrs.align);
+						} else {
+							style('vertical-align:'+attrs.align);
 						}
-						n = 'span';
+					} else if (n == 'table') {
+						if (attrs.align == 'center') {
+							style('margin-left:auto;margin-right:auto');
+						} else {
+							style('float:'+attrs.align);
+						}
+					} else {
+						style('text-align:'+attrs.align);
 					}
-					// filter allowed/deny attributes
-					if (a && (aa || da)) {
-						a = a.replace(/([a-z]+)\s*="[^"]*"/gi, function(attr, n) {
-							if ((aa && $.inArray(n, f._allow.attrs) == -1)
-							||  (da && $.inArray(n, f._deny.attrs)  != -1)) {
-								return '';
-							}
-							return attr;
-						});
+					
+					delete attrs.align;
+				}
+				if (attrs.valign) {
+					style('vertical-align:'+attrs.valign);
+					delete attrs.valign;
+				}
+				if (attrs.hspace) {
+					style('margin-left:'+attrs.hspace+'px;margin-right:'+attrs.hspace+'px');
+					delete attrs.hspace;
+				}
+				if (attrs.vspace) {
+					style('margin-top:'+attrs.vspace+'px;margin-bottom:'+attrs.vspace+'px');
+					delete attrs.vspace;
+				}
+				if (attrs.size && n != 'input') {
+					if (n == 'hr') {
+						style('height:'+attrs.size+'px')
+					} else {
+						style('font-size:'+(fsize[attrs.size]||'medium'));
 					}
-					return '<'+s+n+a+'>';
+					delete attrs.size;
+				} 
+				if (attrs.clear) {
+					style('clear:'+(attrs.clear=='all' ? 'both' : attrs.clear));
+					delete attrs.clear;
+				}
+				if (attrs.face) {
+					delete attrs.face;
+				}
+				
+				
+				a = '';
+				for (i in attrs) {
+					if (attrs.hasOwnProperty(i) && attrs[i]) {
+						a += ' '+i+'="'+attrs[i]+'"';
+					}
+				}
+				return '<'+n+a+'>';
+			})
+			
+			/* Remove not allowed tags */
+			if ( at || dt) {
+				html = html.replace(/\<(\/?)([a-z1-6]+)([^>]*)\>/gi, function(t, s, n, a) {
+					n = n.toLowerCase(n);
+					return (at && $.inArray(n, f._allow) == -1) || (dt && $.inArray(n, f._deny) != -1) ? '' : '<'+s+n+a+'>';
 				});
 			}
 			return html;
@@ -208,11 +303,12 @@
 		
 		/* move tags to lowercase in ie and opera */
 		tagsToLower : function(f, html) {
-			return html.replace(/\<([a-z1-6]+)([^\>]*)\>/ig, function(s, tag, arg) { 
+			return html.replace(/\<(\/?)([a-z1-6]+)([^\>]*)\>/ig, function(s, sl, tag, arg) { 
 				arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
-				arg = arg.replace(/([a-z\-]+)="/ig, function(s, a) { return a.toLowerCase()+'="' });
-				return '<'+tag.toLowerCase()+arg+'>';
-			}).replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
+				arg = arg.replace(/([a-z\-]+)=/ig, function(s, a) { return a.toLowerCase()+'=' });
+				arg = arg.replace(/([a-z\-]+)=([a-z1-9\-]+)/ig, function(s, a, v) { return a+'="'+v+'"' })
+				return '<'+sl+tag.toLowerCase()+arg+'>';
+			})//.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
 		},
 		
 		/* make xhtml tags */
@@ -222,22 +318,15 @@
 		
 		/* proccess html for textarea */
 		toSource : function(f, html) { 
+
 			
 			html = f.rules.restore(f, html);
-			
-			
-			/* translate attrs into css if allowed */
-			if (f.rte.options.attrsToCss) {
-				html = f.rules.attrsToCss(f, html);
-			}
-			
+
+
 			/* clean tags & attributes */
 			html = f.rules.cleanup(f, html);
 			
-			/* for ie&opera tags to lower case */
-			if ($.browser.opera||$.browser.msie) {
-				html = f.rules.tagsToLower(f, html);
-			}
+			
 			
 			/* make xhtml tags if required */
 			if (f._xhtml) {
@@ -249,13 +338,9 @@
 		
 		/* proccess html for editor */
 		fromSource : function(f, html) { 
-			
+
 			html = f.rules.replace(f, html);
-			/* translate attrs into css if allowed */
-			if (f.rte.options.attrsToCss) {
-				html = f.rules.attrsToCss(f, html);
-			}
-			
+		
 			/* clean tags & attributes */
 			html = f.rules.cleanup(f, html);
 			

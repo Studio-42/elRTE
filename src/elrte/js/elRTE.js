@@ -116,6 +116,7 @@ elRTE = function(target, opts) {
 	if (this.options.height>0) {
 		this.workzone.height(this.options.height);
 		$(this.iframe).height(this.options.height);
+		this.source.height(this.options.height);
 	}
 	
 	this.window.focus();
