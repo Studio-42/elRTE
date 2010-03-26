@@ -10,7 +10,7 @@
 (function($) {
 elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
-	this.iframe = $(document.createElement('iframe')).addClass('el-rte-paste-input')
+	this.iframe = $(document.createElement('iframe')).addClass('el-rte-paste-input');
 	this.doc    = null;
 	var self    = this;
 	
@@ -54,11 +54,12 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 	}
 	
 	this.paste = function() {
+		$(this.doc.body).find('[class]').removeAttr('class');
 		var html = $.trim($(this.doc.body).html());
 		if (html) {
 			this.rte.history.add();
 			this.rte.browser.msie && this.rte.selection.restoreIERange();
-			this.rte.selection.insertHtml(this.rte.filter(html), true);
+			this.rte.selection.insertHtml(this.rte.filter.fromSource(html));
 			this.rte.ui.update(true);
 		}
 	}
