@@ -16,8 +16,12 @@ elRTE.prototype.ui.prototype.buttons.div = function(rte, name) {
 	this.command = function() {
 		var n, nodes;
 		this.rte.history.add();
-		if (this.rte.selection.collapsed() && (n = this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^DIV$/))) {
-			$(n).replaceWith($(n).html());
+
+		if (this.rte.selection.collapsed()) {
+			n = this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^DIV$/);
+			if (n) {
+				$(n).replaceWith($(n).html());
+			}
 		} else {
 			nodes = this.rte.selection.selected({wrap : 'all', tag : 'div'});
 			nodes.length && this.rte.selection.select(nodes[0], nodes[nodes.length-1]);
@@ -30,10 +34,10 @@ elRTE.prototype.ui.prototype.buttons.div = function(rte, name) {
 			if (this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^DIV$/)) {
 				this.domElem.removeClass('disabled').addClass('active');
 			} else {
-				this.domElem.addClass('disabled').removeClass('active');
+				this.domElem.addClass('disabled active');
 			}
 		} else {
-			this.domElem.removeClass('disabled').removeClass('active');
+			this.domElem.removeClass('disabled active');
 		}
 	}
 }

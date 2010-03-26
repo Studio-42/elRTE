@@ -11,7 +11,7 @@ elRTE.prototype.history = function(rte) {
 		}
 		var b = this.rte.selection.getBookmark();
 		this._prev.push([$(this.rte.doc.body).html(), b]);
-		this.rte.selection.removeBookmark(b);
+		this.rte.selection.moveToBookmark(b);
 		// this._prev.push($(this.rte.doc.body).html());
 		this._next = [];
 	}

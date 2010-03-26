@@ -308,13 +308,14 @@ elRTE.prototype.selection = function(rte) {
 
 	this.moveToBookmark = function(b) {
 		this.rte.window.focus();
+		
 		if (b.length==2) {
 			var s = this.rte.doc.getElementById(b[0]),
 				e = this.rte.doc.getElementById(b[1]);
 			if (s && e) {
 				this.select(s, e);
-				if (s.nextSibling == e) {
-					this.collapse();
+				if (this.rte.dom.next(s) == e) {
+					this.collapse(true);
 				}
 				s.parentNode.removeChild(s);
 				e.parentNode.removeChild(e);
