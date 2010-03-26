@@ -261,6 +261,9 @@ function elDialogForm(o) {
 	 * @return void	
 	**/
 	this.close = function() {
+		if (typeof(this.opts.close) == 'function') {
+			this.opts.close();
+		}
 		this.dialog.dialog('destroy').remove();
 	}
 	

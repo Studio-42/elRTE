@@ -28,6 +28,9 @@ elRTE.prototype.ui = function(rte) {
 	while (tbl--) {
 		pname = tb[tbl];
 		p = $('<ul class="panel-'+pname+(tbl == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
+		p.bind('mousedown', function(e) {
+			e.preventDefault();
+		})
 		pl = this.rte.options.panels[pname].length;
 		while (pl--) {
 			n = this.rte.options.panels[pname][pl];

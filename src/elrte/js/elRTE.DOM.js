@@ -34,6 +34,18 @@ elRTE.prototype.dom = function(rte) {
 	}
 
 	/**
+	 * Return node for bookmark with unique ID
+	 *
+	 * @return DOMElement
+	 **/
+	this.createBookmark = function() {
+		var b = this.rte.doc.createElement('span');
+		b.id = 'elrte-bm-'+Math.random().toString().substr(2);
+		$(b).addClass('elrtebm');
+		return b;
+	}
+
+	/**
 	 * Вовращает индекс элемента внутри родителя
 	 *
 	 * @param  Element n  нода
@@ -295,6 +307,18 @@ elRTE.prototype.dom = function(rte) {
 	/*                  Поиск элементов                     */
 	/********************************************************/
 	
+	this.is = function(n, f) {
+		if (typeof(f) == 'string') {
+			f = this.regExp[f]||/.?/;
+		}
+		if (f instanceof RegExp) {
+			return f.test(n.nodeName);
+		} else if (typeof(f) == 'function') {
+			return f(n);
+		}
+		return false;
+	}
+	
 	/**
 	 * Вовращает элемент(ы) отвечающие условиям поиска
 	 *
@@ -303,20 +327,16 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement||Array
 	 **/
 	this.filter = function(n, filter) {
-		var t = typeof(filter), ret=[], i;
-		if (t=='object' || t == 'string') {
-			filter = this.regExp[filter] || filter;
-			if (!n.push) {
-				return n.nodeName && filter.test(n.nodeName) ? n : null;
-			}
-			for (i=0; i < n.length; i++) {
-				if (n[i].nodeName && n[i].nodeName && filter.test(n[i].nodeName)) {
-					ret.push(n[i]);
-				}
-			};
-			return ret;
+		var ret = [], i;
+		if (!n.push) {
+			return this.is(n, filter) ? n : null;
 		}
-		return null;
+		for (i=0; i < n.length; i++) {
+			if (this.is(n[i], filter)) {
+				ret.push(n[i]);
+			}
+		};
+		return ret;
 	}
 	
 	
@@ -328,13 +348,11 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Array
 	 **/
 	this.parents = function(n, filter) {
-		var t = typeof(filter), ret = [];
-		if (t=='object' || t == 'string') {
-			filter = filter == '*' ? /.?/ : (this.regExp[filter] || filter);
-			while (n && (n = n.parentNode) && n.nodeName != 'BODY' && n.nodeName != 'HTML') {
-				if (filter.test(n.nodeName)) {
-					ret.push(n);
-				}
+		var ret = [];
+
+		while (n && (n = n.parentNode) && n.nodeName != 'BODY' && n.nodeName != 'HTML') {
+			if (this.is(n, filter)) {
+				ret.push(n);
 			}
 		}
 		return ret;
@@ -397,7 +415,24 @@ elRTE.prototype.dom = function(rte) {
 		return res;
 	}
 	
-	
+	this.selectionHas = function(f) {
+		var n = this.rte.selection.cloneContents(), i;
+		if (n && n.childNodes && n.childNodes.length) {
+			for (i=0; i < n.childNodes.length; i++) {
+				if (typeof(f) == 'function') {
+					if (f(n.childNodes[i])) {
+						return true;
+					}
+				} else if (n instanceof RegExp) {
+					if (f.test(n.childNodes[i].nodeName)) {
+						return true;
+					}
+				}
+			};
+		}
+		
+		return false;
+	}
 	/********************************************************/
 	/*                    Изменения DOM                     */
 	/********************************************************/

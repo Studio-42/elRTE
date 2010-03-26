@@ -13,6 +13,7 @@
 		this.constructor.prototype.constructor.call(this, rte, name);
 
 		this.command = function() {
+
 			var n = this.rte.selection.getNode(),
 			l = n.nodeName == "A" ? n : this.rte.dom.selfOrParentLink(n);
 			if (!l && !this.rte.selection.collapsed()) {

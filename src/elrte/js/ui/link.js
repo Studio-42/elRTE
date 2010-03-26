@@ -30,10 +30,10 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			main : {
 				href   : $('<input type="text" />'),
 				title  : $('<input type="text" />'),
-				anchor : $('<select />').attr('name', 'anchor')//,
-				// target : $('<select />')
-				// 	.append($('<option />').text(self.rte.i18n('In this window')).val(''))
-				// 	.append($('<option />').text(self.rte.i18n('In new window (_blank)')).val('_blank'))
+				anchor : $('<select />').attr('name', 'anchor'),
+				target : $('<select />')
+					.append($('<option />').text(self.rte.i18n('In this window')).val(''))
+					.append($('<option />').text(self.rte.i18n('In new window (_blank)')).val('_blank'))
 				// 	.append($('<option />').text(self.rte.i18n('In new parent window (_parent)')).val('_parent'))
 				// 	.append($('<option />').text(self.rte.i18n('In top frame (_top)')).val('_top'))
 			},
@@ -94,21 +94,28 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	}
 	
 	this.command = function() {
+		var n = this.rte.selection.getNode();
 		!this.src && init();
 		this.rte.browser.msie && this.rte.selection.saveIERange();
 		
-		var n = this.rte.selection.getNode();
-		this.link = n.nodeName == "A" ? n : this.rte.dom.selfOrParentLink(n)
-		// if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))){
-		//     this.link = l;
-		//  } else {
-		//      this.link = null;
-		//  }
-		// if ((l = this.rte.dom.selfOrParentLink(n))) {
-		// 	this.link = l;
-		// } else if ((l = this.rte.dom.childLinks(n))) {
-		// 	this.link = l[0];
-		// }
+		function isLink(n) { return n.nodeName == 'A' && n.href; }
+		
+		this.link = this.rte.dom.selfOrParentLink(n);
+		if (!this.link) {
+			var sel = this.rte.selection.selected();
+			if (sel.length) {
+				for (var i=0; i < sel.length; i++) {
+					if (isLink(sel[i])) {
+						this.link = sel[i];
+						break;
+					}
+				};
+				if (!this.link) {
+					this.link = this.rte.dom.parent(sel[0], isLink) || this.rte.dom.parent(sel[sel.length-1], isLink);
+				}
+			}
+		}
+		
 		this.link = this.link ? $(this.link) : $(this.rte.doc.createElement('a'));
 
 		this.updatePopup();
@@ -131,10 +138,12 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		var opts = {
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			tabs : { show : function(e, ui) { if (ui.index==3) { self.updateOnclick(); } } },
+			close : function() {self.rte.browser.msie && self.rte.selection.restoreIERange(); },
 			dialog : {
 				width : 'auto',
 				width : 430,
 				title : this.rte.i18n('Link')
+				
 			}
 		}
 		var d = new elDialogForm(opts);
@@ -191,6 +200,9 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		if (this.src.main.anchor.children().length) {
 			d.append([this.rte.i18n('Bookmark'), this.src.main.anchor.val(href)], 'main', true)
 		}
+		if (!this.rte.options.doctype.match(/xhtml/))
+		d.append([this.rte.i18n('Target'), this.src.main.target.val(this.link.attr('target')||'')], 'main', true);
+
 
 		for (var n in this.src.adv) {
 			this.src.adv[n].val(this.rte.dom.attr(link, n));
@@ -220,18 +232,18 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	
 	this.update = function() {
 		var n = this.rte.selection.getNode();
-		if (this.rte.dom.selfOrParentAnchor(n)) {
-			this.domElem.addClass('disabled');	
-		} 
-		else if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))) {
+		
+		// var t = this.rte.dom.selectionHas(function(n) { return n.nodeName == 'A' && n.href; });
+		// this.rte.log(t)
+		
+		if (this.rte.dom.selfOrParentLink(n)) {
 			this.domElem.removeClass('disabled').addClass('active');
+		} else if (this.rte.dom.selectionHas(function(n) { return n.nodeName == 'A' && n.href; })) {
+			this.domElem.removeClass('disabled').addClass('active');
+		} else if (!this.rte.selection.collapsed() || n.nodeName == 'IMG') {
+			this.domElem.removeClass('disabled active');
 		} else {
-			this.domElem.removeClass('active');
-			if (!this.rte.selection.collapsed() || (n.nodeType == 1 && /^(IMG|EMBED|OBJECT)$/.test(n.nodeName))) {
-				this.domElem.removeClass('disabled');
-			} else {
-				this.domElem.addClass('disabled');
-			}
+			this.domElem.addClass('disabled');
 		}
 	}
 	
@@ -361,7 +373,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 				
 				var fakeURL = '#--el-editor---'+Math.random();
 				var r =this.rte.doc.execCommand('createLink', false, fakeURL);
-				// self.rte.log(r)
+
 				this.link = $('a[href="'+fakeURL+'"]', this.rte.doc);
 				this.link.each(function() {
 					var $this = $(this);
@@ -371,10 +383,12 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 					}
 				});
 			}
+
 			this.src.main.href.val(href);
 			for (var tab in this.src) {
 				if (tab != 'popup') {
 					for (var n in this.src[tab]) {
+
 						if (n != 'anchors') {
 							var v = $.trim(this.src[tab][n].val());
 							if (v) {

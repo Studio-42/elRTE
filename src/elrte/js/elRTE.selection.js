@@ -126,6 +126,24 @@ elRTE.prototype.selection = function(rte) {
 		$.browser.msie && bm && this.getRangeAt().moveToBookmark(bm);
 	}
 	
+	this.cloneContents = function() {
+		var n = this.rte.dom.create('div'), r, c, i;
+		if ($.browser.msie) {
+			try { 
+				r = this.rte.window.document.selection.createRange(); 
+			} catch(e) { 
+				r = this.rte.doc.body.createTextRange(); 
+			}
+			$(n).html(r.htmlText);
+		} else {
+			c = this.getRangeAt().cloneContents();
+			for (i=0; i<c.childNodes.length; i++) {
+				n.appendChild(c.childNodes[i].cloneNode(true));
+			}
+		}
+		return n;
+	}
+	
 	/**
 	 * Выделяет ноды
 	 *
@@ -141,8 +159,8 @@ elRTE.prototype.selection = function(rte) {
 				r1 = r.duplicate(),
 				r2 = r.duplicate();
 			
-			r1.moveToElementText(start);
-			r2.moveToElementText(end||start);
+			r1.moveToElementText(s);
+			r2.moveToElementText(e);
 			r.setEndPoint('StartToStart', r1);
 			r.setEndPoint('EndToEnd',     r2);
 			r.select();
@@ -243,6 +261,61 @@ elRTE.prototype.selection = function(rte) {
 		var n = this.rte.doc.createTextNode(text);
 		return this.insertHtml(n.nodeValue);
 	}
+
+	this.getBookmark = function() {
+		var r, r1, r2, _s, _e,
+			s = this.rte.dom.createBookmark(),
+			e = this.rte.dom.createBookmark();
+			
+		this.rte.window.focus();
+		
+		if ($.browser.msie) {
+			try { 
+				r = this.rte.window.document.selection.createRange(); 
+			} catch(e) { 
+				r = this.rte.doc.body.createTextRange(); 
+			}
+			r1 = r.duplicate();
+			r2 = r.duplicate();
+			_s = this.rte.dom.create('span');
+			_e = this.rte.dom.create('span');
+
+			_s.appendChild(s);
+			_e.appendChild(e);
+
+			r1.collapse(true);
+			r1.pasteHTML(_s.innerHTML);
+			r2.collapse(false);
+			r2.pasteHTML(_e.innerHTML);
+
+			s = this.rte.doc.getElementById($(s).attr('id'));
+			e = this.rte.doc.getElementById($(e).attr('id'));
+		} else {
+			r  = this.getRangeAt();
+			r1 = r.cloneRange();
+			r2 = r.cloneRange();
+
+			r2.collapse(false);
+			r2.insertNode(e);
+			r1.collapse(true);
+			r1.insertNode(s);
+			this.select(s, e);
+
+		}
+		
+		return [s, e];
+	}
+
+	this.moveToBookmark = function(b) {
+		this.rte.window.focus();
+		if (b[0] && b[1] && b[0].nodeName && b[1].nodeName) {
+			this.select(b[0], b[1]);
+			b[0].parentNode.removeChild(b[0]);
+			b[1].parentNode.removeChild(b[1]);
+		}
+		return this;
+	}
+
 
 	/**
 	 * Очищает кэш
@@ -418,10 +491,11 @@ elRTE.prototype.selection = function(rte) {
 			};
 			wrap();
 		}
-		// this.rte.log('buffer')
-		// this.rte.log(buffer)
-		// this.rte.log('ret')
-		// this.rte.log(ret)		
+	
+		if (ret.length) {
+				this.rte.window.focus();
+			this.select(ret[0], ret[ret.length-1]);
+		}	
 		return opts.filter ? this.rte.dom.filter(ret, opts.filter) : ret;
 	}
 
