@@ -288,8 +288,9 @@ elRTE.prototype.selection = function(rte) {
 			r2.collapse(false);
 			r2.pasteHTML(_e.innerHTML);
 
-			s = this.rte.doc.getElementById($(s).attr('id'));
-			e = this.rte.doc.getElementById($(e).attr('id'));
+			// s = this.rte.doc.getElementById($(s).attr('id'));
+			// e = this.rte.doc.getElementById($(e).attr('id'));
+			
 		} else {
 			r  = this.getRangeAt();
 			r1 = r.cloneRange();
@@ -300,22 +301,39 @@ elRTE.prototype.selection = function(rte) {
 			r1.collapse(true);
 			r1.insertNode(s);
 			this.select(s, e);
-
 		}
 		
-		return [s, e];
+		return [s.id, e.id];
 	}
 
 	this.moveToBookmark = function(b) {
 		this.rte.window.focus();
-		if (b[0] && b[1] && b[0].nodeName && b[1].nodeName) {
-			this.select(b[0], b[1]);
-			b[0].parentNode.removeChild(b[0]);
-			b[1].parentNode.removeChild(b[1]);
+		if (b.length==2) {
+			var s = this.rte.doc.getElementById(b[0]),
+				e = this.rte.doc.getElementById(b[1]);
+			if (s && e) {
+				this.select(s, e);
+				if (s.nextSibling == e) {
+					this.collapse();
+				}
+				s.parentNode.removeChild(s);
+				e.parentNode.removeChild(e);
+			}
 		}
-		return this;
+		return this;	
 	}
 
+	this.removeBookmark = function(b) {
+		this.rte.window.focus();
+		if (b.length==2) {
+			var s = this.rte.doc.getElementById(b[0]),
+				e = this.rte.doc.getElementById(b[1]);
+			if (s && e) {
+				s.parentNode.removeChild(s);
+				e.parentNode.removeChild(e);
+			}
+		}
+	}
 
 	/**
 	 * Очищает кэш

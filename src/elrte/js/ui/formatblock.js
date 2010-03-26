@@ -55,13 +55,6 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 				!self.rte.dom.isEmpty(n) && self.rte.dom.wrapContents(replaceChilds(n), tag);
 			} else if (/^(UL|OL|DL|TABLE)$/.test(n.nodeName)) {
 				self.rte.dom.wrap(n, tag);
-				// var html = '';
-				// $(n).children().each(function() {
-				// 	replaceChilds(this);
-				// 	html += $(this).html();
-				// });
-				// $(n).replaceWith($(self.rte.dom.create(tag)).html(html||''));
-				
 			} else {
 				!self.rte.dom.isEmpty(n) && $(replaceChilds(n)).replaceWith( $(self.rte.dom.create(tag)).html($(n).html()));
 			}
@@ -71,6 +64,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 		var tag = v.toUpperCase(),
 			i, n, $n,
 			c = this.rte.selection.collapsed(),
+			bm = this.rte.selection.getBookmark(),
 			nodes = this.rte.selection.selected({
 				collapsed : true,
 				blocks    : true,
@@ -81,9 +75,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			l = nodes.length,
 			s = $(nodes[0]).prev(),
 			e = $(nodes[nodes.length-1]).next();
-			// s = $(this.rte.dom.create('span')).insertBefore(nodes[0]), 
-			// e = $(this.rte.dom.create('span')).insertAfter(nodes[nodes.length-1]);
-		
+		this.rte.log(nodes)
 		while (l--) {
 			n = nodes[l];
 			$n = $(n);
@@ -99,12 +91,9 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 				}
 			}
 		}
-		if (s.length && e.length) {
-			self.rte.selection.select(s.next()[0], e.prev()[0]);
-		}
-		// self.rte.selection.select(s.next()[0], e.prev()[0]);
-		// s.add(e).remove();
-		// c && self.rte.selection.collapse(true);
+
+		this.rte.selection.moveToBookmark(bm);
+
 		this.rte.ui.update(true);
 	}
 	
