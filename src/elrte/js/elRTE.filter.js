@@ -13,21 +13,22 @@
 		this._xhtml  = rte.options.doctype.match(/xhtml/i) ? true : false;
 		/* chains of rules */
 		this._chains = {};
-		/* allowed tags/attributes */
+		/* allowed tags */
 		this._allow = rte.options.allowTags||[];
+		/* deny tags */
 		this._deny = rte.options.denyTags||[];
-
 		/* swf placeholder class */
 		this.swfClass = 'elrte-swf-placeholder';
-		/* swf placeholder url */
-		var n = $('<span />').addClass(this.swfClass).appendTo(rte.editor).text('swf')[0];
+		
+		n = $('<span />').addClass(this.swfClass).appendTo(rte.editor).text('swf')[0];
 		if (typeof n.currentStyle != "undefined") {
 			url = n.currentStyle['backgroundImage'];
 		} else {
 			url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
 		}
-		this.swfSrc = url ? url.replace(/^url\("?([^"]+)"?\)$/, "$1") : '';
 		$(n).remove();
+		/* swf placeholder url */
+		this.swfSrc = url ? url.replace(/^url\("?([^"]+)"?\)$/, "$1") : '';
 		
 		/* create chains */
 		for (chain in this.chains) {
@@ -40,6 +41,7 @@
 				});
 			}
 		}
+		/* check default chains exists */
 		if (!this._chains.toSource || !this._chains.toSource.length) {
 			this._chains.toSource = [this.rules.toSource]
 		}
@@ -240,67 +242,7 @@
 			}
 			return html;
 		},
-		
-		/* translate attributes into css properties, exclude node with service classes */
-		attrsToCss : function(f, html) {
-			if (f.rte.options.attrsToCss.length) {
-				var n     = $('<div/>').html(html||''),
-					attrs = f.rte.options.attrsToCss,
-					fsize = ['xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'];
 
-				$(n).find('*').not('.'+f.swfClass).each(function() {
-					var t = $(this), i, a, v;
-					for (i=0; i < attrs.length; i++) {
-						a = attrs[i];
-						if ((v = t.attr(a))) {
-							switch (a) {
-								case "border":
-									t.css(a, v+'px solid '+(t.attr('bordercolor')||'#000')).removeAttr('bordercolor');
-									break;
-								case "align":
-									if (!f.rte.dom.regExp.block.test(this.nodeName)) {
-										t.css(v.match(/(left|right)/i) ? 'float' : 'text-align', v);
-									} else if (this.nodeName == 'TABLE') {
-										if (v.match(/(left|right)/i)) {
-											t.css('float', v);
-										} else if (v == 'center') {
-											t.css({'margin-left' : 'auto', 'margin-right' : 'auto'});
-										} else {
-											t.css('text-align', v);
-										}
-									} else if (!this.nodeName.match(/^(THEAD|TFOOT|TBODY|TR)$/)) {
-										t.css('text-align', v);
-									}
-									break;
-								case 'valign':
-									t.css('vertical-align', v);
-									break;
-								case 'background':
-									t.css('background-image', 'url("'+v+'")');
-									break;
-								case 'bgcolor':
-									t.css('background-color', v);
-									break;	
-								case 'size':
-									if (fsize[v]) {
-										t.css('font-size', fsize[v]);
-									}
-									break;
-								case 'clear':
-									t.css(a, v=='both'?'all':v);
-									break;
-								default :
-									t.css(a, v);
-							}
-							t.removeAttr(a);
-						}
-					};
-				});
-			}
-			
-			return n.html();
-		},
-		
 		/* move tags to lowercase in ie and opera */
 		tagsToLower : function(f, html) {
 			return html.replace(/\<(\/?)([a-z1-6]+)([^\>]*)\>/ig, function(s, sl, tag, arg) { 

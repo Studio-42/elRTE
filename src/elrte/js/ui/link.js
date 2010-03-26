@@ -98,12 +98,12 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		this.rte.browser.msie && this.rte.selection.saveIERange();
 		
 		var n = this.rte.selection.getNode();
-		var l;
-		if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))){
-		    this.link = l;
-		 } else {
-		     this.link = null;
-		 }
+		this.link = n.nodeName == "A" ? n : this.rte.dom.selfOrParentLink(n)
+		// if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))){
+		//     this.link = l;
+		//  } else {
+		//      this.link = null;
+		//  }
 		// if ((l = this.rte.dom.selfOrParentLink(n))) {
 		// 	this.link = l;
 		// } else if ((l = this.rte.dom.childLinks(n))) {
@@ -225,11 +225,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		} 
 		else if ((n.nodeName == "A") && (l = this.rte.dom.selfOrParentLink(n))) {
 			this.domElem.removeClass('disabled').addClass('active');
-		}
-		// else if (this.rte.dom.selfOrParentLink(n) || this.rte.dom.childLinks(n).length) {
-		// 	this.domElem.removeClass('disabled').addClass('active');
-		// } 
-		else {
+		} else {
 			this.domElem.removeClass('active');
 			if (!this.rte.selection.collapsed() || (n.nodeType == 1 && /^(IMG|EMBED|OBJECT)$/.test(n.nodeName))) {
 				this.domElem.removeClass('disabled');

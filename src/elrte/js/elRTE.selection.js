@@ -135,15 +135,25 @@ elRTE.prototype.selection = function(rte) {
 	 **/
 	this.select = function(s, e) {
 		e = e||s;
-		var r = this.getRangeAt();
-		r.setStartBefore(s);
-		r.setEndAfter(e);
+		
 		if (this.rte.browser.msie) {
+			var r  = this.rte.doc.body.createTextRange(),
+				r1 = r.duplicate(),
+				r2 = r.duplicate();
+			
+			r1.moveToElementText(start);
+			r2.moveToElementText(end||start);
+			r.setEndPoint('StartToStart', r1);
+			r.setEndPoint('EndToEnd',     r2);
 			r.select();
 		} else {
-			var s = selection();
-			s.removeAllRanges();
-			s.addRange(r);
+			
+			var sel = selection(),
+				r = this.getRangeAt();
+			r.setStartBefore(s);
+			r.setEndAfter(e);
+			sel.removeAllRanges();
+			sel.addRange(r);
 		}
 		return this.cleanCache();
 	}

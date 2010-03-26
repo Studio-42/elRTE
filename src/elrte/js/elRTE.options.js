@@ -34,12 +34,7 @@ elRTE.prototype.options   = {
 	fmAllow         : true,
 	fmOpen          : null,
 	allowTags       : [],
-	allowAttrs      : [],
-	denyTags        : ['font', 'b', 'center', 'i', 'big', 'frame', 'iframe', 'nobr'],
-	denyAttrs       : ['face'],
-	/* If true - all deny tags will be removed, otherwise - replaced with span with original tag's attributes */
-	removeDenyTags  : false,
-	attrsToCss      : ['border', 'color', 'align', 'valign', 'background', 'bgcolor', 'size', 'clear'],
+	denyTags        : ['iframe'],
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',
@@ -106,7 +101,7 @@ elRTE.prototype.options   = {
 		indent     : ['outdent', 'indent'],
 		format     : ['formatblock', 'fontsize', 'fontname'],
 		lists      : ['insertorderedlist', 'insertunorderedlist'],
-		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'css', 'nbsp'],
+		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'nbsp'],
 		links      : ['link', 'unlink', 'anchor'],
 		images     : ['image'],
 		media      : ['image', 'flash'],		
