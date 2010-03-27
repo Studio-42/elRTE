@@ -17,9 +17,11 @@
 		};
 			
 		$.each(['left', 'top', 'right', 'bottom'], function() {
+			
 			self[this] = $('<input type="text" />')
 				.attr('size', 3)
 				.css('text-align', 'right')
+				.css('border-'+this, '2px solid red')
 				.bind('change', function() { $(this).val(parseNum($(this).val())); change(); })
 				.attr('name', opts.name+'['+this+']');
 		});
