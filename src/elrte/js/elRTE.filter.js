@@ -325,6 +325,16 @@
 				
 				f.rte.log(t.css('width'))
 				t.replaceWith(obj);
+			})
+			.end().find('.Apple-style-span').removeClass('Apple-style-span')
+			.end().find('*').each(function() {
+				var t = $(this);
+				if (t.attr('class') == '') {
+					t.removeAttr('class')
+				}
+				if (t.attr('style') == '') {
+					t.removeAttr('style')
+				}
 			});
 			return n.html();
 		}
