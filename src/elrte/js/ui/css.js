@@ -42,7 +42,7 @@
 		
 		this.node = function() {
 			var n = this.rte.selection.getNode();
-			if (n.nodeType != 1) {
+			if (n.nodeType == 3) {
 				n = n.parentNode;
 			}
 			return n.nodeType == 1 && n.nodeName != 'BODY' ? n : null;

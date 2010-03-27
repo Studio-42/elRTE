@@ -60,6 +60,11 @@ elRTE = function(target, opts) {
 		content = this.target.hide().html();
 	}
 
+	content = $.trim(content);
+	if (!content) {
+		content = '&nbsp;';
+	}
+
 	/* add tabs */
 	if (this.options.allowSource) {
 		this.tabsbar.append('<div class="tab editor rounded-bottom-7 active">'+self.i18n('Editor')+'</div><div class="tab source rounded-bottom-7">'+self.i18n('Source')+'</div><div class="clearfix" style="clear:both"/>')
@@ -196,7 +201,7 @@ elRTE = function(target, opts) {
 			}
 		});
 	}
-
+	this.window.focus();
 }
 
 /**
