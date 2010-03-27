@@ -11,7 +11,7 @@ body.el-rte-structure div,
 body.el-rte-structure blockquote
 { border:1px dotted #99ccff; }
 
-body.el-rte-structure .el-rte-anchor {
+body.el-rte-structure a[name] {
 	display:inline-block;
 	vertical-align:baseline;
 	width:12px; 

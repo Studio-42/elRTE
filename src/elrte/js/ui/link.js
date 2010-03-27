@@ -102,7 +102,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		
 		this.link = this.rte.dom.selfOrParentLink(n);
 		if (!this.link) {
-			var sel = this.rte.selection.selected();
+			var sel = $.browser.msie ? this.rte.selection.selected() : this.rte.selection.selected({wrap : false});
 			if (sel.length) {
 				for (var i=0; i < sel.length; i++) {
 					if (isLink(sel[i])) {
@@ -228,6 +228,8 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		});
 		this.src.popup.use.change();
 		d.open();
+		setTimeout(function() { self.src.main.href.focus()}, 20);
+		
 	}
 	
 	this.update = function() {
@@ -243,7 +245,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		} else if (!this.rte.selection.collapsed() || n.nodeName == 'IMG') {
 			this.domElem.removeClass('disabled active');
 		} else {
-			this.domElem.addClass('disabled');
+			this.domElem.addClass('disabled').removeClass('active');
 		}
 	}
 	

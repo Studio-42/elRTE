@@ -101,7 +101,7 @@ elRTE.prototype.options   = {
 		indent     : ['outdent', 'indent'],
 		format     : ['formatblock', 'fontsize', 'fontname'],
 		lists      : ['insertorderedlist', 'insertunorderedlist'],
-		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'nbsp'],
+		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'css', 'nbsp'],
 		links      : ['link', 'unlink', 'anchor'],
 		images     : ['image'],
 		media      : ['image', 'flash'],		

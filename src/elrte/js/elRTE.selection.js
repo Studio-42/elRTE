@@ -263,11 +263,12 @@ elRTE.prototype.selection = function(rte) {
 	}
 
 	this.getBookmark = function() {
+		this.rte.window.focus();
 		var r, r1, r2, _s, _e,
 			s = this.rte.dom.createBookmark(),
 			e = this.rte.dom.createBookmark();
 			
-		this.rte.window.focus();
+		
 		
 		if ($.browser.msie) {
 			try { 
@@ -292,10 +293,15 @@ elRTE.prototype.selection = function(rte) {
 			// e = this.rte.doc.getElementById($(e).attr('id'));
 			
 		} else {
-			r  = this.getRangeAt();
+				var sel = selection();
+				var r = sel.rangeCount > 0 ? sel.getRangeAt(0) : this.rte.doc.createRange();
+				
+			// r  = this.getRangeAt();
 			r1 = r.cloneRange();
 			r2 = r.cloneRange();
-
+			
+			// this.insertNode(this.rte.dom.create('hr'))
+			// return
 			r2.collapse(false);
 			r2.insertNode(e);
 			r1.collapse(true);
@@ -309,14 +315,22 @@ elRTE.prototype.selection = function(rte) {
 	this.moveToBookmark = function(b) {
 		this.rte.window.focus();
 		
-		if (b.length==2) {
+		if (b && b.length==2) {
 			var s = this.rte.doc.getElementById(b[0]),
-				e = this.rte.doc.getElementById(b[1]);
+				e = this.rte.doc.getElementById(b[1]),
+				sel, r;
 			if (s && e) {
 				this.select(s, e);
 				if (this.rte.dom.next(s) == e) {
 					this.collapse(true);
 				}
+				if (!$.browser.msie) {
+					sel = selection();
+					r = sel.rangeCount > 0 ? sel.getRangeAt(0) : this.rte.doc.createRange();
+					sel.removeAllRanges();
+					sel.addRange(r);
+				}
+				
 				s.parentNode.removeChild(s);
 				e.parentNode.removeChild(e);
 			}
@@ -512,7 +526,8 @@ elRTE.prototype.selection = function(rte) {
 		}
 	
 		if (ret.length) {
-				this.rte.window.focus();
+			this.rte.window.focus();
+			
 			this.select(ret[0], ret[ret.length-1]);
 		}	
 		return opts.filter ? this.rte.dom.filter(ret, opts.filter) : ret;
@@ -679,7 +694,7 @@ elRTE.prototype.selection = function(rte) {
 		var ep = e;
 //		this.rte.log(ep)
 		while (ep.nodeName != 'BODY' && ep.parentNode !== ca && ep.parentNode.nodeName != 'BODY') {
-			this.rte.log(ep)
+			// this.rte.log(ep)
 			ep = ep.parentNode;
 		}
 		// this.rte.log('end point')

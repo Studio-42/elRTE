@@ -131,9 +131,7 @@ elRTE = function(target, opts) {
 	
 	/* bind updateSource to parent form submit */
 	this.target.parents('form').bind('submit', function() {
-		self.source.is(':hidden') && self.updateSource();
-		self.toolbar.find(':hidden').remove();
-		
+		self.beforeSave();
 	});
 	
 	/* update buttons on click and keyup */
@@ -183,8 +181,21 @@ elRTE = function(target, opts) {
 	}).bind('mouseup', function() {
 		self.typing = false;
 		self.lastKey = null;
-	})
+	}).bind('paste', function(e) {
+		setTimeout( function() { 
+			self.updateSource();
+			$(self.doc.body).html(self.filter.fromSource(self.source.val()));
+		}, 30);
+	});
 	
+	if ($.browser.msie) {
+		this.$doc.bind('keyup', function(e) {
+			if (e.keyCode == 86 && (e.metaKey||e.ctrlKey)) {
+				self.updateSource();
+				$(self.doc.body).html(self.filter.fromSource(self.source.val()));
+			}
+		});
+	}
 
 }
 
@@ -238,12 +249,21 @@ elRTE.prototype.val = function(v) {
 	}
 }
 
+elRTE.prototype.beforeSave = function() {
+	if (this.source.is(':hidden')) {
+		this.updateSource();
+	} else {
+		this.source.val(this.filter.toSource(this.filter.fromSource(this.source.val())));
+	}
+}
+
 /**
  * Submit form
  *
  * @return void
  **/
 elRTE.prototype.save = function() {
+	this.beforeSave();
 	this.editor.parents('form').submit();
 }
 

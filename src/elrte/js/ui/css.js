@@ -3,12 +3,13 @@
 	elRTE.prototype.ui.prototype.buttons.css = function(rte, name) {
 		var self = this;
 		this.constructor.prototype.constructor.call(this, rte, name);
-		this.cssStyle = $('<input type="text" />').attr('name', 'style').css('width', '100%');
-		this.cssClass = $('<input type="text" />').attr('name', 'class').css('width', '100%');
+		this.cssStyle = $('<input type="text" size="42" name="style" />');
+		this.cssClass = $('<input type="text" size="42" name="class" />');
 		
 		
 		this.command = function() {
 			var n = this.node(), opts;
+			this.rte.selection.saveIERange();
 			if (n) {
 				var opts = {
 					
@@ -23,13 +24,15 @@
 				this.cssStyle.val($(n).attr('style'));
 				this.cssClass.val($(n).attr('class'));
 				var d = new elDialogForm(opts);
-				d.append([this.rte.i18n('Css style'), this.cssStyle], null, true).open();
+				d.append([this.rte.i18n('Css style'), this.cssStyle], null, true)
 				d.append([this.rte.i18n('Css class'), this.cssClass], null, true).open();
+				setTimeout(function() { self.cssStyle.focus() }, 20)
 			}
 		}
 		
 		this.set = function() {
 			var n = this.node();
+			this.rte.selection.restoreIERange();
 			if (n) {
 				$(n).attr('style', this.cssStyle.val());
 				$(n).attr('class', this.cssClass.val());

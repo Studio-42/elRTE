@@ -61,6 +61,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			
 		}
 		this.rte.history.add();
+
 		var tag = v.toUpperCase(),
 			i, n, $n,
 			c = this.rte.selection.collapsed(),
@@ -75,7 +76,7 @@ elRTE.prototype.ui.prototype.buttons.formatblock = function(rte, name) {
 			l = nodes.length,
 			s = $(nodes[0]).prev(),
 			e = $(nodes[nodes.length-1]).next();
-		this.rte.log(nodes)
+
 		while (l--) {
 			n = nodes[l];
 			$n = $(n);

@@ -15,6 +15,7 @@ elRTE.prototype.ui.prototype.buttons.blockquote = function(rte, name) {
 	
 	this.command = function() {
 		var n, nodes;
+		this.rte.history.add();
 		if (this.rte.selection.collapsed() && (n = this.rte.dom.selfOrParent(this.rte.selection.getNode(), /^BLOCKQUOTE$/))) {
 			$(n).replaceWith($(n).html());
 		} else {
@@ -32,7 +33,7 @@ elRTE.prototype.ui.prototype.buttons.blockquote = function(rte, name) {
 				this.domElem.addClass('disabled').removeClass('active');
 			}
 		} else {
-			this.domElem.removeClass('disabled').removeClass('active');
+			this.domElem.removeClass('disabled active');
 		}
 	}
 }

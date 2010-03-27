@@ -41,7 +41,7 @@ elRTE.prototype.dom = function(rte) {
 	this.createBookmark = function() {
 		var b = this.rte.doc.createElement('span');
 		b.id = 'elrte-bm-'+Math.random().toString().substr(2);
-		$(b).addClass('elrtebm').text('bm');
+		$(b).addClass('elrtebm')//.text('bm');
 		return b;
 	}
 
@@ -308,14 +308,17 @@ elRTE.prototype.dom = function(rte) {
 	/********************************************************/
 	
 	this.is = function(n, f) {
-		if (typeof(f) == 'string') {
-			f = this.regExp[f]||/.?/;
-		}
-		if (f instanceof RegExp) {
-			return f.test(n.nodeName);
-		} else if (typeof(f) == 'function') {
-			return f(n);
-		}
+		// if (n && n.nodeName) {
+			if (typeof(f) == 'string') {
+				f = this.regExp[f]||/.?/;
+			}
+			if (f instanceof RegExp && n.nodeName) {
+				return f.test(n.nodeName);
+			} else if (typeof(f) == 'function') {
+				return f(n);
+			}
+		// }
+		
 		return false;
 	}
 	

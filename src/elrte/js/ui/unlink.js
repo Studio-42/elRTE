@@ -14,12 +14,27 @@
 
 		this.command = function() {
 
-			var n = this.rte.selection.getNode(),
-			l = n.nodeName == "A" ? n : this.rte.dom.selfOrParentLink(n);
-			if (!l && !this.rte.selection.collapsed()) {
-				l = this.rte.dom.childLinks(n)[0];
+			var n = this.rte.selection.getNode(), 
+				l = this.rte.dom.selfOrParentLink(n);
+
+			function isLink(n) { return n.nodeName == 'A' && n.href; }
+
+			if (!l) {
+
+				var sel = $.browser.msie ? this.rte.selection.selected() : this.rte.selection.selected({wrap : false});
+				if (sel.length) {
+					for (var i=0; i < sel.length; i++) {
+						if (isLink(sel[i])) {
+							l = sel[i];
+							break;
+						}
+					};
+					if (!l) {
+						l = this.rte.dom.parent(sel[0], isLink) || this.rte.dom.parent(sel[sel.length-1], isLink);
+					}
+				}
 			}
-			
+
 			if (l) {
 				this.rte.history.add();
 				this.rte.selection.select(l);
@@ -31,13 +46,12 @@
 	
 		this.update = function() {
 			var n = this.rte.selection.getNode();
-
-			if ((n.nodeName == "A") || this.rte.dom.selfOrParentLink(n) 
-			|| (!this.rte.selection.collapsed() && this.rte.dom.childLinks(n).length)) {
+			if (this.rte.dom.selfOrParentLink(n)) {
 				this.domElem.removeClass('disabled').addClass('active');
-			}
-			else {
-				this.domElem.removeClass('active').addClass('disabled');
+			} else if (this.rte.dom.selectionHas(function(n) { return n.nodeName == 'A' && n.href; })) {
+				this.domElem.removeClass('disabled').addClass('active');
+			} else {
+				this.domElem.addClass('disabled').removeClass('active');
 			}
 		}
 	}
