@@ -59,6 +59,7 @@
 .el-rte .toolbar ul li.save                {background-position:-30px -2px;}
 .el-rte .toolbar ul li.new                 {background-position:-55px -2px}
 .el-rte .toolbar ul li.copy                {background-position:-78px -2px}
+.el-rte .toolbar ul li.css                 {background-position:-801px -5px}
 .el-rte .toolbar ul li.cut                 {background-position:-104px -2px}
 .el-rte .toolbar ul li.paste               {background-position:-128px -2px}
 .el-rte .toolbar ul li.pastetext           {background-position:-534px -2px}
