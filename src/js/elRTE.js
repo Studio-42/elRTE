@@ -15,7 +15,7 @@
 		window.console.time('load')
 		this.version   = '1.0 RC4 dev';
 		this.build     = '20100204';
-		this.target    = t;
+		this.target    = $(t).hide()[0];
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
 		/* editor DOM element id. Used as base part for inner elements ids */
@@ -23,10 +23,8 @@
 		this.load      = false;    
 		/* opened documents */
 		this.documents = [];
-		/* active(visible) document index */
+		/* active(visible) document */
 		this.active    = null;
-		/* is editor in wysiwyg mode */
-		this.wysiwyg   = true;
 		/* events listeners */
 		this.listeners = {
 			/* called after elRTE init and load all documents */
@@ -37,6 +35,8 @@
 			'focus'   : [], 
 			/* called after document set editable in source mode */
 			'source'  : [],
+			/* called after current position changes */
+			'update'  : [],
 			/* called after some changes was made in document */
 			'change'  : [],
 			/* called after document set invisible */
@@ -62,6 +62,8 @@
 
 		this.filter = new this.filter(this)
 
+		this.history = new this.history(this);
+		
 		if (!this.options.toolbars[this.options.toolbar]) {
 			this.options.toolbar = 'default';
 		}
@@ -95,15 +97,17 @@
 		this.plugins = plugins;
 		
 		/* load documents */
-		this.options.documents.unshift(t);
+		this.options.loadTarget && this.options.documents.unshift(t);
 		$.each(this.options.documents, function() { self.open(this); });
 		
+
 		/* focus required or first document */
 		this.focus(this.options.active);
 		this.load = true;
-		this.trigger('load').trigger('focus');
+		this.trigger($.Event('load'));
 		delete this.listeners.load;
-		// this.log(this.listeners)
+		
+		this.log(this.listeners)
 		window.console.timeEnd('load')
 
 		// this.filter.toSource('')
@@ -131,27 +135,42 @@
 	 * @param  DOMElement  node to convert into editor document
 	 * @return Number      document index
 	 */
-	elRTE.prototype.open = function(n) {
-		var self = this, d, 
-			id = this.id+'-document-'+(this.documents.length+1);
-		
-		if (n && n.nodeType == 1) {
+	elRTE.prototype.open = function(doc) {
+
+		if (doc && (doc.nodeType == 1 || typeof(doc.content) == 'string')) {
 			
-			this.documents.push({
+			var self = this,
+				id   = this.id+'-document-'+(this.documents.length+1),
+				e    = $.Event('open'),
+				d, n;
+				
+			if (doc.nodeType == 1) {
+				n = $(doc);
+				doc = {
+					name : n.attr('name'),
+					title : n.attr('title')
+				}
+				if (/^(TEXTAREA|INPUT)$/.test(n[0].nodeName)) {
+					doc.content = n.val();
+					n.attr('name', 'origin-'+doc.name);
+				} else {
+					doc.content = n.html();
+				}
+			}
+			
+			d = {
 				id     : id,
-				title  : $(n).attr('title')||'Document-'+(self.documents.length+1),
-				editor : $('<iframe frameborder="0" />'),
-				source : n.nodeName == 'TEXTAREA' ? $(n) : $('<textarea name="'+($(n).attr('name')||id)+'" />').val($(n).html())
-			});
-			
-			d = this.documents[this.documents.length-1];
-			
+				title  : doc.title||'Document-'+(self.documents.length+1),
+				editor : $('<iframe frameborder="0"/>'),
+				source : $('<textarea name="'+(doc.name||id)+'" />').val($.trim(doc.content))
+			}
+
 			/* render document */
 			this.view.add(d);
-			
 			d.window   = d.editor[0].contentWindow;
 			d.document = d.editor[0].contentWindow.document;
-
+			this.documents.push(d);
+			
 			/* create body in iframe */
 			html = this.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
 			$.each(self.options.cssfiles, function() {
@@ -162,7 +181,10 @@
 			d.document.close();
 			
 			/* set document content from textarea */
-			$(d.document.body).html(this.filter.fromSource(d.source.val()));
+			// $(d.document.body).html(this.filter.fromSource(d.source.val()));
+			setTimeout(function() {
+				$(d.document.body).html(self.filter.fromSource(d.source.val()));
+			}, 2);
 			
 			/* make iframe editable */
 			if ($.browser.msie) {
@@ -171,6 +193,7 @@
 				try { d.document.designMode = "on"; } 
 				catch(e) { }
 			}
+
 
 			/* bind events */
 			$(d.document)
@@ -189,11 +212,11 @@
 				.bind('click keydown keyup', function(e) {
 					self.trigger(e)
 				});
-				
-
 			
 			/* set this document as active */
-			this.trigger('open').focus(id);
+			e.target = d;
+			// this.log(e)
+			this.trigger(e).focus(id);
 
 			return this.active;
 		}
@@ -221,10 +244,10 @@
 				this.view.focus(d.id);
 				t = true;
 			}
-			d.editor.is(':visible') ? d.window.focus() : d.source[0].focus();
+			(d.editor.is(':visible') ? d.window : d.source[0]).focus();
 			t && this.trigger('focus');
 		}
-		return this
+		return this;
 	}
 
 	/**
@@ -240,17 +263,18 @@
 			
 			if (d.editor.is(':visible')) {
 				$(d.document.body).html(this.filter.fromSource(d.source.val()));
-				this.wysiwyg = true;
 				this.focus().trigger('focus');
 			} else {
 				d.source[0].value = this.filter.toSource($(d.document.body).html());
-				this.wysiwyg = false;
 				this.focus().trigger('source');
 			}
 		}
 		return this;
 	}
 
+	this.wysiwyg = function() {
+		return this.active && this.active.editor.is(':visible');
+	}
 	
 	/**
 	 * Close document by index
@@ -281,7 +305,7 @@
 			/* If no docs - call trigger */
 			if (!this.documents.length) {
 				this.active = null;
-				this.trigger('disable');
+				// this.trigger('disable');
 			}
 		}
 		return this;
@@ -313,14 +337,14 @@
 	 */
 	elRTE.prototype.trigger = function(e) {
 		
-		if (this.load) {
-			
+		// if (this.load) {
+
 			if (typeof(e) == 'string') {
 				e = $.Event(e);
 				e.target = this.active;
 			}
 			
-			this.debug(e);
+			this.debug(e.type+' '+(e.target ? e.target.id : ''));
 			if (this.listeners[e.type] && this.listeners[e.type].length) {
 				
 				for (var i=0; i < this.listeners[e.type].length; i++) {
@@ -331,10 +355,16 @@
 					this.listeners[e.type][i](e);
 				};
 			}
-		}
+		// }
 		
 		return this;
 	}
+	
+	elRTE.prototype.canUndo = function() {
+		
+	}
+	
+	
 	
 	/**
 	 * send message to console log

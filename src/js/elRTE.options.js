@@ -3,6 +3,7 @@
 	elRTE.prototype.options = {
 		/* additional nodes to load in editor as documents */
 		documents      : [],
+		loadTarget : true,
 		/* active document index */
 		active  : 0,
 		/* iframe doctype */
@@ -21,12 +22,9 @@
 		allowCloseDocs : true,
 		
 		allowTags : [],
-		allowAttrs : [],
-		denyTags : ['font', 'b', 'center', 'i', 'big', 'frame', 'iframe', 'nobr'],
-		denyAttrs : [],
-		/* If true - all deny tags will be removed, otherwise - replaced with span with original tag's attributes */
-		removeDenyTags : false,
-		attrsToCss : ['border', 'color', 'align', 'valign', 'background', 'bgcolor', 'size', 'clear'],
+		denyTags : ['iframe'],
+		
+		historySize : 3,
 		
 		/* plugins to load */
 		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
@@ -35,13 +33,14 @@
 		
 		panels : {
 			style      : ['bold', 'blockquote' /*, 'italic', 'underline', 'sub', 'sup'*/],
+			history    : ['undo'],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
 		
 		panelsNames : {},
 		
 		toolbars : {
-			'default' : ['style', 'fullscreen']
+			'default' : ['style', 'history', 'fullscreen']
 		}
 	}
 	

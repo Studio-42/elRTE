@@ -22,6 +22,7 @@
 	<script src="src/js/elRTE.selection.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.msSelection.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.filter.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.history.js" type="text/javascript" charset="utf-8"></script>
 	
 
 	<!-- plugins -->
@@ -34,6 +35,7 @@
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/undo.js" type="text/javascript" charset="utf-8"></script>
 
 
 
@@ -41,9 +43,6 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
-			$('form').submit(function(e) {
-				window.console.log('submit')
-			})
 
 			var opts = {
 				// cssClass : 'cupertino',
@@ -51,19 +50,22 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				// height   : 420,
-				debug : false,
+				// debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
-					// $('#editor2')[0],
+					$('#editor2')[0],
+					{content : 'asdf'}
 					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}
 				]
 				
 			}
-			var rte = new elRTE($('#editor')[0], opts)
+			// var rte = new elRTE($('#editor')[0], opts);
 			// rte.closeDocument(1)
-			// var rte = jQuery('#editor').elrte(opts);
+			var rte = jQuery('#editor').elrte(opts);
+			
+			// $('<div/>').appendTo(document.body).elrte(opts);
 			
 			// rte.elrte({cmd : 'open'})
 			// jQuery('#editor').elrte({cmd : 'val'})
@@ -114,7 +116,7 @@
 			</tr>
 		</table>
 		<div>
-			<object style="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high"><param name="movie" value="http://localhost/Lucky_Remix.swf"><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://localhost/Lucky_Remix.swf" type="application/x-shockwave-flash"></object>
+			
 			Полотенце, {xz}возможно, самый необходимый <strong> предмет </strong> ! <em>для <strong>межзвездного</strong> путешественника</em>. </div>
 		Оно имеет некоторую <span class="bold">практическую</span> ценность  - вы <i>можете</i>: завернуться в него,
 		чтобы согреться, прыгая по холодным лунам <span style="color:red; font-weight: 900 ; font-style:italic; text-decoration:underline">Джаглан-Беты</span>; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий  морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 

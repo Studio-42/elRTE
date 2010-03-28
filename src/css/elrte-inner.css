@@ -23,9 +23,9 @@ body.elrte-structure .elrte-anchor {
 }
 
 .elrtebm {
-/*	border:1px solid #222;*/
-/*	width:2px;*/
-/*	height:12px;*/
+	border:1px solid #222;
+	width:2px;
+	height:12px;
 	background:#ccc;
 /*	display:none;*/
 }

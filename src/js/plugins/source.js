@@ -1,7 +1,7 @@
 (function($) {
 	/**
 	 * @class elRTE plugin
-	 * Create tabs to toggle between editor and source
+	 * Create tabs to toggle between editor and source in active document
 	 *
 	 **/
 	elRTE.prototype.plugins.source = function(rte) {
@@ -19,24 +19,22 @@
 					.append(ed)
 					.append(src);
 			
-			ed.add(src).click(function(e) {
+			ed.add(src).mousedown(function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				$(this).hasClass('active') ? rte.focus() : rte.toggle();
 			});
 				
-			rte.bind('focus source', function(e) {
+			rte.bind('open', function() {
 				bar.show();
-				src.toggleClass('active', !rte.wysiwyg);
-				ed.toggleClass('active', rte.wysiwyg);
-			}).bind('open', function() {
-				bar.show();
-			}).bind('disable', function() {
-				bar.hide();
+			}).bind('close', function() {
+				rte.documents.length == 1 && bar.hide();
+			}).bind('focus source', function(e) {
+				src.toggleClass('active', e.type == 'source');
+				ed.toggleClass('active',  e.type == 'focus');
 			});
 			
 		}
-		
 	}
 	
 })(jQuery);

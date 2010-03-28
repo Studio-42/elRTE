@@ -13,13 +13,17 @@
 		}
 		
 		this.exec = function() {
-			
+			var bm = this.sel.getBookmark();
+			this.sel.moveToBookmark(bm);
+			// var bm = this.sel.getBookmark();
+			// this.sel.moveToBookmark(bm);
+			return
 			var self = this, 
 				c = this.sel.collapsed(),
 				b = this.sel.getBookmark(), 
 				s = this.sel.selected(), 
 				n, l, r, i;
-			
+			this.rte.log(c)
 			function unwrap(n) {
 				n.nodeName.match(self.find) ? self.dom.unwrap(n) : $(n).css(self.css, '');
 			}
@@ -30,6 +34,7 @@
 					unwrap(n);
 				}
 			} else if (this.dom.selectionMatchAll(this.test)) {
+				
 				/* find selection and nodes intersect */
 				l = this.rte.dom.parent(s[0], this.test);
 				r = this.rte.dom.parent(s[s.length-1], this.test);
@@ -68,6 +73,7 @@
 			} else {
 				/* not required node in selection - create it */
 				// this.dom.smartWrapAll(s, this.node);
+				// this.rte.history.add();
 				this.wrap(s);
 			}
 

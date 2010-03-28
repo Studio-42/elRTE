@@ -27,16 +27,11 @@
 					}
 				})
 				.hover(function(e) { 
-					!$this.hasClass('disabled') && $(this).toggleClass('hover', e.type == 'mouseenter');
+					 $(this).toggleClass('hover', e.type == 'mouseenter' && !$(this).hasClass('disabled'));
 				});
 		}
 		
-		/**
-		 * @return Number  -1 for disable button, 0 - normal state, 1 - active button 
-		 */
-		this.state = function() {
-			return 0;
-		}
+
 		
 		/**
 		 * Bind to rte events
@@ -44,7 +39,9 @@
 		this.bind = function() {
 			var self = this;
 
-			this.rte.bind('focus change', function() {
+			this.rte.bind('close source blur', function() {
+				self.button.removeClass('active').addClass('disabled');
+			}).bind('focus update change', function() {
 				var s = self.state();
 				if (s == -1) { 
 					self.button.removeClass('active').addClass('disabled');
@@ -52,9 +49,13 @@
 					self.button.removeClass('disabled').toggleClass('active', s>0);
 				}
 			});
-			this.rte.bind('close source', function() {
-				self.button.removeClass('active').addClass('disabled');
-			});
+		}
+		
+		/**
+		 * @return Number  -1 for disable button, 0 - normal state, 1 - active button 
+		 */
+		this.state = function() {
+			return 0;
 		}
 		
 		/**

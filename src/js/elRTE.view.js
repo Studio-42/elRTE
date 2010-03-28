@@ -15,12 +15,10 @@
 			.append(this.toolbar)
 			.append(this.tabsbar)
 			.append(this.workzone)
-			.append(this.statusbar)
+			.append(this.statusbar.hide())
 			.insertBefore(rte.target);
 		
-		if (rte.target.nodeName != 'TEXTAREA') {
-			$(rte.target).hide();
-		}
+
 			
 		if (this.rte.options.height>0) {
 			this.workzone.height(this.rte.options.height);

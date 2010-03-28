@@ -9,26 +9,28 @@
 		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';
 		var cssClass     = 'elrte-highlight';
+		var panel        = $('<div style="float:left"/>').appendTo(rte.view.statusbar);
 		
-		rte.view.statusbar.show();
+		function clean() {
+			panel.children().trigger('mouseleave').end().text('');
+		}
 		
-		rte.bind('focus change toggle', function(e) {
-			$(e.target.document.body).find('.'+this.cssClass).removeClass(this.cssClass);
-			rte.view.statusbar.empty();
-			if (rte.wysiwyg) {
-				var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
-					l = n.length;
-				
-				while (l--) {
-					var link = $('<span>'+n[l].nodeName.toLowerCase()+'</span>')
-						.hover( (function(n) { return function(e) { $(n).toggleClass(cssClass, e.type=='mouseenter') } })(n[l]) );
-					rte.view.statusbar.append(link).append(l>0 ? ' &raquo; ' : '');
-				}
+		rte.bind('load', function() {
+			rte.view.statusbar.show();
+		}).bind('close source blur', function() {
+			clean();
+		}).bind('focus update change', function(e) {
+			var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
+				l = n.length;
+
+			clean();
+
+			while (l--) {
+				panel.append(
+					$('<span>'+n[l].nodeName.toLowerCase()+'</span>').hover( (function(n) { return function(e) { $(n).toggleClass(cssClass, e.type=='mouseenter') } })(n[l]) )
+					).append(l>0 ? ' &raquo; ' : '');
 			}
-		}).bind('save close', function(e) {
-			$(e.target.document.body).find('.'+cssClass).removeClass(cssClass);
 		});
-		
 	}
 	
 })(jQuery);

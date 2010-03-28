@@ -4,29 +4,18 @@
 
 		var self = this;
 		this.rte = rte;
-		this.win = window;
-		this.doc = document;
 		this.dom = rte.dom;
 		this.log = rte.log;
 		this.node = null;
 		
-		this.rte.bind('focus', function(e) {
-			self.win = e.target.window;
-			self.doc = e.target.document;
-		}).bind('disable', function() {
-			self.win = window;
-			self.doc = document;
-		}).bind('click', function(e) {
-			// self.rte.log(e.target)
-		});
-	
 	}
 	
 	/**
 	 * @return Selection
 	 **/
 	elRTE.prototype.selection.prototype.getSelection = function() {
-		return this.win.getSelection();
+		// return this.win.getSelection();
+		return (this.rte.active.window || window).getSelection();
 	}
 
 	/**
@@ -34,7 +23,8 @@
 	 **/
 	elRTE.prototype.selection.prototype.getRange = function() {
 		var s = this.getSelection();
-		return s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
+		return s && s.rangeCount ? s.getRangeAt(0) : (this.rte.active.document || document).createRange();
+		// return s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
 	}
 
 	/**
@@ -127,7 +117,6 @@
 	 * @return Array
 	 **/
 	elRTE.prototype.selection.prototype.getBookmark = function() {
-		this.win.focus();
 		var r  = this.getRange(),
 			r1 = r.cloneRange(),
 			r2 = r.cloneRange(),
@@ -149,12 +138,17 @@
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.moveToBookmark = function(b) {
-		this.win.focus();
-		if (b[0] && b[1] && b[0].nodeName && b[1].nodeName) {
-			this.select(b[0], b[1]);
-			// this.removeBookmark(b);
-			b[0].parentNode.removeChild(b[0]);
-			b[1].parentNode.removeChild(b[1]);
+		var s = typeof(b[0]) == 'string' ? this.doc.getElementById(b[0]) : b[0],
+			e = typeof(b[1]) == 'string' ? this.doc.getElementById(b[1]) : b[1];
+		if (s && e) {
+			this.select(s, e);
+			if ($.browser.mozilla || $.browser.opera) {
+				if (s.nextSibling.nodeType == 3 && s.nextSibling.textContent == '' && s.nextSibling.nextSibling == e) {
+					this.collapse();
+				}
+			}
+			s.parentNode.removeChild(s);
+			e.parentNode.removeChild(e);
 		}
 		return this;
 	}
@@ -166,9 +160,11 @@
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.removeBookmark = function(b) {
-		if (b[0] && b[1] && b[0].nodeName && b[1].nodeName) {
-			b[0].parentNode.removeChild(b[0]);
-			b[1].parentNode.removeChild(b[1]);
+		var s = typeof(b[0]) == 'string' ? this.doc.getElementById(b[0]) : b[0],
+			e = typeof(b[1]) == 'string' ? this.doc.getElementById(b[1]) : b[1];
+		if (s && e) {
+			s.parentNode.removeChild(s);
+			e.parentNode.removeChild(e);
 		}
 		return this;
 	}
@@ -195,9 +191,6 @@
 	elRTE.prototype.selection.prototype.getSelected = function() {
 		var res = [], s, e, c, b;
 		
-		this.win.focus();
-
-
 		if (!this.collapsed()) {
 			
 			b = this.getBookmark();
