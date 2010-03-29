@@ -9,7 +9,7 @@
 		 *
 		 */
 		this.state = function() {
-			return this.rte.wysiwyg ? (this.dom.selectionMatchAll(this.test) ? 1 : 0) : -1;
+			return this.dom.selectionMatchAll(this.test) ? 1 : 0;
 		}
 		
 		this.exec = function() {

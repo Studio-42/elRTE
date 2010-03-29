@@ -20,7 +20,7 @@
 		/* swf placeholder class */
 		this.swfClass = 'elrte-swf-placeholder';
 		/* swf placeholder url */
-		var n = $('<span />').addClass(this.swfClass).appendTo(rte.view.editor).text('swf')[0];
+		var url, n = $('<span />').addClass(this.swfClass).appendTo(rte.view.editor).text('swf')[0];
 		if (typeof n.currentStyle != "undefined") {
 			url = n.currentStyle['backgroundImage'];
 		} else {

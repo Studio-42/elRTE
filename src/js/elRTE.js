@@ -98,16 +98,28 @@
 		
 		/* load documents */
 		this.options.loadTarget && this.options.documents.unshift(t);
-		$.each(this.options.documents, function() { self.open(this); });
+		$.each(this.options.documents, function(i) { 
+			// self.open(this); 
+			var d = this;
+			setTimeout(function() {
+				// self.log(i == self.options.documents.length-1)
+				self.open(d);
+				if (i == self.options.documents.length-1) {
+					self.trigger($.Event('load'));
+					delete self.listeners.load;
+					self.focus(self.options.active);
+				}
+			}, 2)
+		});
 		
 
 		/* focus required or first document */
-		this.focus(this.options.active);
-		this.load = true;
-		this.trigger($.Event('load'));
-		delete this.listeners.load;
+		// this.focus(this.options.active);
+		// this.load = true;
+		// this.trigger($.Event('load'));
+		// delete this.listeners.load;
 		
-		this.log(this.listeners)
+		// this.log(this.listeners)
 		window.console.timeEnd('load')
 
 		// this.filter.toSource('')
@@ -142,7 +154,7 @@
 			var self = this,
 				id   = this.id+'-document-'+(this.documents.length+1),
 				e    = $.Event('open'),
-				d, n;
+				d, n, html;
 				
 			if (doc.nodeType == 1) {
 				n = $(doc);
@@ -181,10 +193,10 @@
 			d.document.close();
 			
 			/* set document content from textarea */
-			// $(d.document.body).html(this.filter.fromSource(d.source.val()));
-			setTimeout(function() {
-				$(d.document.body).html(self.filter.fromSource(d.source.val()));
-			}, 2);
+			$(d.document.body).html(this.filter.fromSource(d.source.val()));
+			// setTimeout(function() {
+				// $(d.document.body).html(self.filter.fromSource(d.source.val()));
+			// }, 2);
 			
 			/* make iframe editable */
 			if ($.browser.msie) {
@@ -196,20 +208,43 @@
 
 
 			/* bind events */
+			/* @todo home/end and other keys from fullsized keyboards */
 			$(d.document)
-				.bind('mouseup', function(e) {
-					setTimeout( function() { self.trigger('change') }, 2);
-				})
 				.bind('keydown', function(e) {
 					if ((e.keyCode == 65 && e.metaKey||e.ctrlKey) /* ctrl+A meta+A */
 					||  (e.keyCode == 69 && e.ctrlKey)            /* ctrl+E */
-					||  (e.keyCode >= 35 && e.keyCode<=40         /* arrows */
-					||   e.keyCode == 13)                         /* enter*/
 					) {
-						setTimeout( function() { self.trigger('change') }, 2);
+						setTimeout( function() { 
+							var ev = $.Event('update');
+							ev.target = d;
+							ev.originalEvent = e;
+							self.trigger(ev);
+						}, 2);
+					} 
+				})
+				.bind('keyup', function(e) {
+					if (self.utils.isArrowKey(e.keyCode) 
+					||  self.utils.isDelKey(e.keyCode)) {
+						var ev = $.Event('update');
+						ev.target = d;
+						ev.originalEvent = e;
+						self.trigger(ev);
+					} else if (e.keyCode == 13) {
+						var ev = $.Event('change');
+						ev.target = d;
+						ev.originalEvent = e;
+						self.trigger(ev);
 					}
 				})
-				.bind('click keydown keyup', function(e) {
+				.bind('mouseup', function(e) {
+					setTimeout( function() { 
+						var ev = $.Event('update');
+						ev.target = d;
+						ev.originalEvent = e;
+						self.trigger(ev);
+					}, 2);
+				})
+				.bind('mousedown mouseup click keydown keyup', function(e) {
 					self.trigger(e)
 				});
 			
@@ -217,8 +252,7 @@
 			e.target = d;
 			// this.log(e)
 			this.trigger(e).focus(id);
-
-			return this.active;
+			return d.id;
 		}
 		
 	}
@@ -272,7 +306,7 @@
 		return this;
 	}
 
-	this.wysiwyg = function() {
+	elRTE.prototype.wysiwyg = function() {
 		return this.active && this.active.editor.is(':visible');
 	}
 	
@@ -335,15 +369,15 @@
 	 *
 	 * @param String event name
 	 */
-	elRTE.prototype.trigger = function(e) {
-		
-		// if (this.load) {
-
+	elRTE.prototype.trigger = function(e, d) {
 			if (typeof(e) == 'string') {
 				e = $.Event(e);
 				e.target = this.active;
 			}
-			
+			if (typeof(e.data) == 'undefined') {
+				e.data = d||{}
+			}
+
 			this.debug(e.type+' '+(e.target ? e.target.id : ''));
 			if (this.listeners[e.type] && this.listeners[e.type].length) {
 				
@@ -355,7 +389,6 @@
 					this.listeners[e.type][i](e);
 				};
 			}
-		// }
 		
 		return this;
 	}

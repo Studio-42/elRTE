@@ -24,7 +24,7 @@
 		allowTags : [],
 		denyTags : ['iframe'],
 		
-		historySize : 3,
+		historySize : 100,
 		
 		/* plugins to load */
 		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
@@ -33,7 +33,7 @@
 		
 		panels : {
 			style      : ['bold', 'blockquote' /*, 'italic', 'underline', 'sub', 'sup'*/],
-			history    : ['undo'],
+			history    : ['undo', 'redo'],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
 		

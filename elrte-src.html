@@ -23,6 +23,7 @@
 	<script src="src/js/elRTE.msSelection.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.filter.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.history.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.utils.js" type="text/javascript" charset="utf-8"></script>
 	
 
 	<!-- plugins -->
@@ -35,7 +36,8 @@
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/undo.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/history.js" type="text/javascript" charset="utf-8"></script>
+
 
 
 
@@ -50,11 +52,11 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				// height   : 420,
-				// debug : false,
+				debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
-					$('#editor2')[0],
+					// $('#editor2')[0],
 					{content : 'asdf'}
 					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}

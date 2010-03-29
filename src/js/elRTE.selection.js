@@ -138,8 +138,9 @@
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.moveToBookmark = function(b) {
-		var s = typeof(b[0]) == 'string' ? this.doc.getElementById(b[0]) : b[0],
-			e = typeof(b[1]) == 'string' ? this.doc.getElementById(b[1]) : b[1];
+		var d = this.rte.active.document,
+			s = typeof(b[0]) == 'string' ? d.getElementById(b[0]) : b[0],
+			e = typeof(b[1]) == 'string' ? d.getElementById(b[1]) : b[1];
 		if (s && e) {
 			this.select(s, e);
 			if ($.browser.mozilla || $.browser.opera) {

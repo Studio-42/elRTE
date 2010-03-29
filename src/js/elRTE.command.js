@@ -41,8 +41,9 @@
 
 			this.rte.bind('close source blur', function() {
 				self.button.removeClass('active').addClass('disabled');
-			}).bind('focus update change', function() {
+			}).bind('focus update change', function(e) {
 				var s = self.state();
+				// self.rte.log(e.type+' '+self.name+' '+s)
 				if (s == -1) { 
 					self.button.removeClass('active').addClass('disabled');
 				} else {
