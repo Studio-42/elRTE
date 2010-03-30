@@ -279,7 +279,7 @@
 				t = true;
 			}
 			(d.editor.is(':visible') ? d.window : d.source[0]).focus();
-			t && this.trigger('focus');
+			t && this.trigger('focus').trigger('update');
 		}
 		return this;
 	}

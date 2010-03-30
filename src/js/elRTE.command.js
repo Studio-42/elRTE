@@ -25,13 +25,18 @@
 					if (!$(this).hasClass('disabled') && self.exec()) {
 						 self.rte.trigger('change');
 					}
-				})
-				.hover(function(e) { 
+				}).hover(function(e) { 
 					 $(this).toggleClass('hover', e.type == 'mouseenter' && !$(this).hasClass('disabled'));
+				}).bind('change', function(e, s) {
+					if (s == 1) {
+						$(this).removeClass('disabled').addClass('active');	
+					} else if (s ==0) {
+						$(this).removeClass('disabled active');	
+					} else {
+						$(this).removeClass('active').addClass('disabled');	
+					}
 				});
 		}
-		
-
 		
 		/**
 		 * Bind to rte events
@@ -40,15 +45,9 @@
 			var self = this;
 
 			this.rte.bind('close source blur', function() {
-				self.button.removeClass('active').addClass('disabled');
-			}).bind('focus update change', function(e) {
-				var s = self.state();
-				// self.rte.log(e.type+' '+self.name+' '+s)
-				if (s == -1) { 
-					self.button.removeClass('active').addClass('disabled');
-				} else {
-					self.button.removeClass('disabled').toggleClass('active', s>0);
-				}
+				self.button.trigger('change', -1);
+			}).bind('update change', function(e) {
+				self.button.trigger('change', self.state())
 			});
 		}
 		

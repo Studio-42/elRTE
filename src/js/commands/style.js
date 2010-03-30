@@ -13,11 +13,6 @@
 		}
 		
 		this.exec = function() {
-			var bm = this.sel.getBookmark();
-			this.sel.moveToBookmark(bm);
-			// var bm = this.sel.getBookmark();
-			// this.sel.moveToBookmark(bm);
-			return
 			var self = this, 
 				c = this.sel.collapsed(),
 				b = this.sel.getBookmark(), 

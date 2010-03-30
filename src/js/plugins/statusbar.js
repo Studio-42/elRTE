@@ -19,7 +19,7 @@
 			rte.view.statusbar.show();
 		}).bind('close source blur', function() {
 			clean();
-		}).bind('focus update change', function(e) {
+		}).bind('update change', function(e) {
 			var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
 				l = n.length;
 

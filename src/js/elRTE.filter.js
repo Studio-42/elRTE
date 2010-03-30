@@ -337,9 +337,11 @@
 
 			n.find('.'+f.swfClass).each(function() {
 				var t = $(this),
-					obj = '<object style="'+(t.attr('style')||'')+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
+					w = parseInt(t.css('width'))||'',
+					h = parseInt(t.css('height'))||'',
+					s = t.attr('style')
+					obj = '<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+t.attr('rel')+'" width="'+w+'" height="'+h+'" style="'+s+'" play="true" loop="true" menu="true"> </embed>';
 				
-				f.rte.log(t.css('width'))
 				t.replaceWith(obj);
 			})
 			.end().find('.Apple-style-span').removeClass('Apple-style-span')
