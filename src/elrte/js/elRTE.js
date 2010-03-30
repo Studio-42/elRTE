@@ -22,7 +22,7 @@ elRTE = function(target, opts) {
 	}
 	var self     = this, html;
 	this.version = '1.0 RC4';
-	this.build   = '20100329';
+	this.build   = '20100330';
 	this.options = $.extend(true, {}, this.options, opts);
 	this.browser = $.browser;
 	this.target  = $(target);

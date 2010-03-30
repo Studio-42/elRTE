@@ -8,6 +8,7 @@
 		- [bugfix] restore selection after undo/redo
 		- [bugfix] links add/remove problem
 		- [bugfix] IE source window height
+		- [bugfix] embed flash problem
 
 
 2010-03-15  Troex Nevelin  <troex@fury.scancode.ru>
