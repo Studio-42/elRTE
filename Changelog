@@ -1,3 +1,15 @@
+2010-03-29  Dmitry Levashov  <dio@std42.ru>
+
+	* elRTE (1.0rc4):
+		- [feature] better display image margin attributes
+		- [feature] new button "CSS" for class and style set
+		- [bugfix] better XHTML support
+		- [bugfix] more unused tags/attributes cleanup and replace
+		- [bugfix] restore selection after undo/redo
+		- [bugfix] links add/remove problem
+		- [bugfix] IE source window height
+
+
 2010-03-15  Troex Nevelin  <troex@fury.scancode.ru>
 
 	* elRTE (1.0rc3):

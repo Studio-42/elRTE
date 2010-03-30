@@ -41,7 +41,7 @@ elRTE.prototype.dom = function(rte) {
 	this.createBookmark = function() {
 		var b = this.rte.doc.createElement('span');
 		b.id = 'elrte-bm-'+Math.random().toString().substr(2);
-		$(b).addClass('elrtebm')//.text('bm');
+		$(b).addClass('elrtebm');
 		return b;
 	}
 
