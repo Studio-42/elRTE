@@ -27,6 +27,8 @@
 	<script src="ellib/js/jquery.elborderselect.js" type="text/javascript" charset="utf-8"></script>
 	<script src="ellib/js/jquery.elpaddinginput.js" type="text/javascript" charset="utf-8"></script>
 	<script src="ellib/js/jquery.elselect.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="../css/elfinder.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
 	
 	<!-- elRTE -->
 	<script src="elrte/js/elRTE.js" type="text/javascript" charset="utf-8"></script>
@@ -80,6 +82,7 @@
 	<script src="elrte/js/ui/unlink.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/ui/undo.js" type="text/javascript" charset="utf-8"></script>
 	
+	<script src="../js/elfinder.full.js" type="text/javascript" charset="utf-8"></script>
 
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
@@ -93,7 +96,16 @@
 				lang     : 'ru',
 				height   : 350,
 				toolbar  : 'maxi',
-				cssfiles : ['elrte/css/elrte-inner.css']
+				cssfiles : ['elrte/css/elrte-inner.css'],
+				fmOpen : function(callback) {
+				       $('<div id="myelfinder"/>').elfinder({
+				          url : '../connectors/php/connector.php',
+				          lang : 'ru',
+				          dialog : { width : 900, modal : true, title : 'Files' }, // открываем в диалоговом окне
+				          closeOnEditorCallback : true, // закрываем после выбора файла
+				          editorCallback : callback // передаем callback файловому менеджеру
+				       })
+				    }
 				
 			}
 			var rte = jQuery('#editor').elrte(opts);
@@ -109,24 +121,15 @@
 	
 </head>
 <body>
+	<!-- <object style="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" height="300" width="500"><param name="quality" value="high"><param name="movie" value="http://localhost/git/elrte-stable/files/flash/500.swf"><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://localhost/git/elrte-stable/files/flash/500.swf" type="application/x-shockwave-flash"></object> -->
 
 
+<!-- <embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://localhost/git/elrte-stable/files/flash/500.swf" style="width: 500px; height: 300px; float: none; vertical-align: baseline;" play="true" loop="true" menu="true" height="" width=""></embed> -->
 	
 	<form method="post" action="post.php?debug=yes">
 	<!-- <textarea name="Name" rows="8" cols="40" id="editor2"></textarea> -->
 	<div id="editor">
-		
-		
-		<table align=center style="border:1px solid blue"  >
-			<tr>
-				<td>ДУГЛАС АДАМС - <b>Путеводитель</b> "<u color="red">Автостопом по Галактике</u>"</td>
-				<td>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</td>
-			</tr>
-			<tr>
-				<td><font color="red"  face="Arial">DOUGLAS ADAMS</font> - <u style="color:green">The Hitchhiker's Guide to the Galaxy</u></td>
-				<td><a href="http://ya.ru">DOUGLAS ADAMS</a> - The Hitchhiker's Guide to the Galaxy</td>
-			</tr>
-		</table>
+<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://localhost/git/elfinder/files/flash/500.swf" style="width: auto; height: auto; float: none; vertical-align: baseline;" play="true" loop="true" menu="true" height="" width=""></embed>
 
 		<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
 				DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>

@@ -62,7 +62,7 @@
 								.attr('title', self.rte.i18n('Open file manger'))
 								.append($('<span />').addClass('ui-icon ui-icon-folder-open'))
 									.click( function() {
-										self.rte.options.fmOpen( function(url) { self.src.url(url).change(); } );
+										self.rte.options.fmOpen( function(url) { self.src.url.val(url).change(); } );
 									})
 									.hover(function() {$(this).addClass('ui-state-hover')}, function() { $(this).removeClass('ui-state-hover')})
 							);
@@ -163,10 +163,11 @@
 		this.set = function() {
 			self.swf = null
 			var url = this.rte.utils.absoluteURL(this.src.url.val()),
-				w = parseInt(this.src.width.val()) || '',
-				h = parseInt(this.src.height.val()) || ''
+				w = parseInt(this.src.width.val()) || 'auto',
+				h = parseInt(this.src.height.val()) || 'auto'
 				a = this.src.align.val(),
 				f = a == 'left' || a == 'right' ? a : '';
+
 			if (url) {
 				var m = this.src.margin.val(),
 					css = {
@@ -188,10 +189,10 @@
 					self.placeholder.css(css).attr('rel', url);
 				} else {
 					this.placeholder = $(this.rte.dom.create('img'))
-						.attr('src', this.rte.swfPlaceholder)
+						.attr('src', this.rte.filter.swfSrc)
 						.attr('rel', url)
 						.css(css)
-						.addClass('elrte-swf-placeholder')
+						.addClass('elrte-swf-placeholder');
 					this.rte.selection.insertNode(this.placeholder.get(0));
 				}
 
