@@ -33,6 +33,7 @@
 		
 		panels : {
 			style      : ['bold', 'blockquote' /*, 'italic', 'underline', 'sub', 'sup'*/],
+			clean      : ['removeformat'],
 			history    : ['undo', 'redo'],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
@@ -40,7 +41,7 @@
 		panelsNames : {},
 		
 		toolbars : {
-			'default' : ['style', 'history', 'fullscreen']
+			'default' : ['style', 'history', 'clean', 'fullscreen']
 		}
 	}
 	

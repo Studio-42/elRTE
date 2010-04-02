@@ -7,6 +7,16 @@
 		this.dom = rte.dom;
 		this.log = rte.log;
 		this.node = null;
+		this.win  = window;
+		this.doc  = document;
+		
+		rte.bind('focus', function(e) {
+			self.win = e.target.window;
+			self.doc = e.target.document;
+		}).bind('blur', function(e) {
+			self.win  = window;
+			self.doc  = document;
+		})
 		
 	}
 	
@@ -14,8 +24,8 @@
 	 * @return Selection
 	 **/
 	elRTE.prototype.selection.prototype.getSelection = function() {
-		// return this.win.getSelection();
-		return (this.rte.active.window || window).getSelection();
+		return this.win.getSelection();
+		// return (this.rte.active.window || window).getSelection();
 	}
 
 	/**
@@ -23,8 +33,8 @@
 	 **/
 	elRTE.prototype.selection.prototype.getRange = function() {
 		var s = this.getSelection();
-		return s && s.rangeCount ? s.getRangeAt(0) : (this.rte.active.document || document).createRange();
-		// return s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
+		// return s && s.rangeCount ? s.getRangeAt(0) : (this.rte.active.document || document).createRange();
+		return s && s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
 	}
 
 	/**
@@ -201,23 +211,64 @@
 			e = b[1];
 			c = this.dom.commonAncestor(s, e);
 
-			while (this.dom.is(s, 'first') && s!=c && s.parentNode != this.doc.body) {
-				s = s.parentNode; 
+			while (this.dom.is(s, 'first') && s.parentNode != c) {
+				s.parentNode.parentNode.insertBefore(s, s.parentNode);
 			}
-			while (this.dom.is(e, 'last') && e!=c && e.parentNode != this.doc.body) {
-				e = e.parentNode;
-			}
-			c = this.dom.commonAncestor(s, e);
 
+			while (this.dom.is(s, 'last') && s.parentNode != c) {
+				if (s.parentNode.nextSibling) {
+					s.parentNode.parentNode.insertBefore(s, s.parentNode.nextSibling);
+				} else {
+					s.parentNode.parentNode.appendChild(s);
+				}
+			}
+				
+			while (this.dom.is(e, 'last') && e.parentNode != c) {
+				if (e.parentNode.nextSibling) {
+					e.parentNode.parentNode.insertBefore(e, e.parentNode.nextSibling);
+				} else {
+					e.parentNode.parentNode.appendChild(e);
+				}
+			} 
+
+			while (this.dom.is(e, 'first') && e.parentNode != c) {
+				e.parentNode.parentNode.insertBefore(e, e.parentNode);
+			}
+
+			while (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
+				c.parentNode.insertBefore(s, c);
+				if (c.nextSibling) {
+					c.parentNode.insertBefore(e, c.nextSibling);
+				} else {
+					c.parentNode.appendChild(e)
+				}
+				c = c.parentNode;
+				this.rte.log('levelUp!')
+			}
+			
 			res = this.dom.traverse(s, e, c);
-
-			res[0] == b[0] && res.shift();
-			res[res.length-1] == b[1] && res.pop();
-
 			this.removeBookmark(b);
-			if (res.length==1 && this.dom.is(res[0], 'onlyChild') && res[0].parentNode != this.doc) {
-				res = [res[0].parentNode];
-			}
+			res.shift();
+			res.pop();
+			return res;
+			// 
+			// while (this.dom.is(s, 'first') && s!=c && s.parentNode != this.doc.body) {
+			// 	s = s.parentNode; 
+			// }
+			// while (this.dom.is(e, 'last') && e!=c && e.parentNode != this.doc.body) {
+			// 	e = e.parentNode;
+			// }
+			// c = this.dom.commonAncestor(s, e);
+			// 
+			// res = this.dom.traverse(s, e, c);
+			// 
+			// res[0] == b[0] && res.shift();
+			// res[res.length-1] == b[1] && res.pop();
+			// 
+			// this.removeBookmark(b);
+			// if (res.length==1 && this.dom.is(res[0], 'onlyChild') && res[0].parentNode != this.doc) {
+			// 	res = [res[0].parentNode];
+			// }
 		}
 
 		return res;

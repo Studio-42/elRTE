@@ -58,6 +58,54 @@ elRTE.prototype.dom = function(rte) {
 		
 	}
 	
+	this.regexp = {
+		// block : 
+		text : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/
+	}
+	
+	this._filters = {
+		any : /.*/,
+		element : function(n) { return n.nodeType == 1; },
+		block : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
+		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
+		text : function(n) { return n.nodeType == 3 || self.regexp.test(n.nodeName); },
+		empty : function(n) {
+			if (n.nodeType == 3) {
+				return $.trim(n.textContent.replace(/&nbsp;/gi, '')).length == 0;
+			} else if (n.nodeType == 1) {
+				if (n.nodeName == 'BR') {
+					return true;
+				}
+				if (n.nodeName == 'IMG' || n.nodeName == 'HR') {
+					return false;
+				}
+				for (var i =0; i < n.childNodes.length; i++) {
+					if (!self._filters.empty(n.childNodes[i])) {
+						return false;
+					}
+				}
+			}
+			return true;
+		},
+		notEmpty : function(n) { return !self._filters.empty(n); },
+		first : function(n) {
+			while (n.previousSibling && (n = n.previousSibling)) {
+				if (!self._filters.empty(n)) {
+					return false;
+				}
+			}
+			return true;
+		},
+		last : function(n) {
+			while (n.nextSibling && (n = n.nextSibling)) {
+				if (!self._filters.empty(n)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+	
 	this.rte.bind('focus', function(e) {
 		self.doc  = e.target.document;
 		self.body = self.doc.body;
@@ -92,6 +140,10 @@ elRTE.prototype.dom = function(rte) {
 			$(n).css(o.css);
 		}
 		return n;
+	}
+	
+	this.createTextNode = function(d) {
+		return this.doc.createTextNode(d)
 	}
 	
 	/**
