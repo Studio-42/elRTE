@@ -180,7 +180,7 @@
 		name            : 'color',
 		color           : '',
 		update          : null,
-		change          : function(c) { window.console && window.console.log && window.console.log(c) },
+		change          : function(c) {  },
 		colors          : [
 			'#ffffff', '#cccccc', '#999999', '#666666', '#333333', '#000000', 
 			'#ffcccc', '#cc9999', '#996666', '#663333', '#330000', 

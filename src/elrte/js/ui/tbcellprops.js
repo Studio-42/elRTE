@@ -149,7 +149,7 @@ elRTE.prototype.ui.prototype.buttons.tbcellprops = function(rte, name) {
 	}
 	
 	this.set = function() {
-		$(t).remove();
+		// $(t).remove();
 		var target = this.cell,
 			apply  = this.src.main.apply.val();
 		switch (this.src.main.apply.val()) {
