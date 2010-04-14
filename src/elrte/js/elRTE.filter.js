@@ -332,7 +332,8 @@
 					url = t.attr('src'),
 					w = t.attr('width'),
 					h = t.attr('height'),
-					pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px" rel="'+url+'"/>';
+					s = t.attr('style'),
+					pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px;'+s+'" rel="'+url+'"/>';
 				
 				t.replaceWith(pl);
 			})
@@ -349,7 +350,8 @@
 					url = t.attr('rel'),
 					w = parseInt(t.css('width'))||'',
 					h = parseInt(t.css('height'))||'',
-					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
+					s = t.attr('style'),
+					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" style="'+s+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
 
 				t.replaceWith(ifr);
 			});
