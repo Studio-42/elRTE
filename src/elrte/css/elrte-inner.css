@@ -24,6 +24,11 @@ body.el-rte-structure a[name] {
 	border:1px solid #ccc;
 }
 
+body div.elrte-map-placeholder {
+	border:1px solid #eee;
+	background:url('../images/gm.png') center center no-repeat;
+}
+
 .elrtebm {
 /*	height:15px;
 	width:2px;

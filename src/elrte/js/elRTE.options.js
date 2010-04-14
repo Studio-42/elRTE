@@ -34,7 +34,7 @@ elRTE.prototype.options   = {
 	fmAllow         : true,
 	fmOpen          : null,
 	allowTags       : [],
-	denyTags        : ['iframe'],
+	denyTags        : [],
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',

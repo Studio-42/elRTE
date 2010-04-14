@@ -62,7 +62,7 @@ elRTE = function(target, opts) {
 
 	content = $.trim(content);
 	if (!content) {
-		content = '&nbsp;';
+		content = ' ';
 	}
 
 	/* add tabs */
@@ -73,7 +73,7 @@ elRTE = function(target, opts) {
 					self.tabsbar.children('.tab').toggleClass('active');
 					self.workzone.children().toggle();
 					if ($(this).hasClass('editor')) {
-						self.val(self.source.val()||'&nbsp;');
+						self.val(self.source.val()||' ');
 						self.window.focus();
 						self.ui.update(true);
 						// self.selection.select(self.doc.body.firstChild).collapse(true);
@@ -104,11 +104,12 @@ elRTE = function(target, opts) {
 		html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
 	});
 	this.doc.open();
-	this.doc.write(self.options.doctype+html+'</head><body>'+(this.filter.fromSource(content))+'</body></html>');
+	var s = this.filter.fromSource(content)
+	this.doc.write(self.options.doctype+html+'</head><body>'+(s)+'</body></html>');
 	this.doc.close();
 	
 	this.source.val(this.filter.toSource(content));
-	
+	// this.log($(this.doc.body).html())
 	/* make iframe editable */
 	if ($.browser.msie) {
 		this.doc.body.contentEditable = true;

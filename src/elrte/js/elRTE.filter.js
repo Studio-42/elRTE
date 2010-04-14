@@ -141,10 +141,10 @@
 			});
 
 			/* Replace non-semantic attributes with css */
-			html = html.replace(/\<([a-z1-6]+)\s+([^>]*(border|bordercolor|color|background|bgcolor|align|valign|hspace|vspace|clear|size|face)=[^>]*)\>/gi, function(t, n, a) {
+			html = html.replace(/\<([a-z1-6]+)([^>]*\s+(border|bordercolor|color|background|bgcolor|align|valign|hspace|vspace|clear|size|face)=[^>]*)\>/gi, function(t, n, a) {
 				var attrs = {},
 					m = a.match(/([a-z]+)="([^"]*)"/gi), _t, i;
-				
+				f.rte.log(a)
 				function style(v) {
 					if (!attrs.style) {
 						attrs.style = '';
@@ -261,7 +261,6 @@
 		/* proccess html for textarea */
 		toSource : function(f, html) { 
 
-			
 			html = f.rules.restore(f, html);
 
 
@@ -326,7 +325,16 @@
 						'float'          : fl,
 						'vertical-align' : a
 					});
-					$(this).replaceWith(img);
+					t.replaceWith(img);
+			}).end().find('iframe[src^="http://maps.google.com/maps/ms?"]').each(function() {
+
+				var t = $(this),
+					url = t.attr('src'),
+					w = t.attr('width'),
+					h = t.attr('height'),
+					pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px" rel="'+url+'"/>';
+				
+				t.replaceWith(pl);
 			})
 			
 			return n.html();
@@ -335,6 +343,16 @@
 		/* restore swf from placeholder */
 		restore : function(f, html) { 
 			var n = $('<div/>').html(html);
+
+			n.find('.elrte-map-placeholder').each(function() {
+				var t = $(this),
+					url = t.attr('rel'),
+					w = parseInt(t.css('width'))||'',
+					h = parseInt(t.css('height'))||'',
+					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
+
+				t.replaceWith(ifr);
+			});
 
 			n.find('.'+f.swfClass).each(function() {
 				var t = $(this),
@@ -356,7 +374,8 @@
 				if (t.attr('style') == '') {
 					t.removeAttr('style')
 				}
-			});
+			})
+			
 			return n.html();
 		}
 	}
