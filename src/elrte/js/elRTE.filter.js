@@ -326,18 +326,20 @@
 						'vertical-align' : a
 					});
 					t.replaceWith(img);
-			}).end().find('iframe[src^="http://maps.google.com/maps/ms?"]').each(function() {
-
-				var t = $(this),
-					url = t.attr('src'),
-					w = t.attr('width'),
-					h = t.attr('height'),
-					s = t.attr('style'),
-					pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px;'+s+'" rel="'+url+'"/>';
-				
-				t.replaceWith(pl);
 			})
 			
+			if (!$.browser.safari) {
+				
+				n.find('iframe[src^="http://maps.google."]').each(function() {
+					var t = $(this),
+						url = t.attr('src'),
+						w = t.attr('width'),
+						h = t.attr('height'),
+						pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px;" rel="'+url+'"/>';
+
+					t.replaceWith(pl);
+				});
+			}
 			return n.html();
 		},
 		
@@ -350,8 +352,7 @@
 					url = t.attr('rel'),
 					w = parseInt(t.css('width'))||'',
 					h = parseInt(t.css('height'))||'',
-					s = t.attr('style'),
-					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" style="'+s+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
+					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
 
 				t.replaceWith(ifr);
 			});
