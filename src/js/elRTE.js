@@ -64,30 +64,64 @@
 
 		this.history = new this.history(this);
 		
+		this._commands = {};
+		
+		this._plugins = {};
+		
 		if (!this.options.toolbars[this.options.toolbar]) {
 			this.options.toolbar = 'default';
 		}
 		
 		/* load plugins and commands */
 		var plugins = [], 
-			commands = [],
-		 	p = self.options.toolbars[self.options.toolbar], 
-			i, j, pn, clist;
-		
-		for (i=0; i < p.length; i++) {
-			clist = this.options.panels[p[i]];
-			if (clist && clist.length) {
-				pn = this.view.createPanel(p[i]);
-				for (j=0; j < clist.length; j++) {
-					if (typeof(this.commands[clist[j]]) == 'function') {
-						commands.push(new this.commands[clist[j]](this));
-						pn.append(commands[commands.length-1].button||'');
+		 	tb = this.options.toolbars[this.options.toolbar], 
+			i = tb.length, p, l, command;
+
+		while (i--) {
+			p = this.options.panels[tb[i]];
+			if (typeof(p) != 'undefined' && (l = p.length)) {
+				while (l--) {
+					command = p[l];
+					if (typeof(this.commands[command]) == 'function') {
+						this._commands[command] = new this.commands[command](this)
 					}
-				};
-				this.view.addPanel(pn);
+				}
 			}
-		};
-		this.commands = commands;
+		}
+
+		// for (i=0; i<tb.length; i++) {
+		// 	if (this.options.panels[tb[i]]) {
+		// 		// panels[tb[i]] = this.options.panels[tb[i]];
+		// 		l = this.options.panels[tb[i]].length;
+		// 		while (l--) {
+		// 			command = this.options.panels[tb[i]][l];
+		// 			if (typeof(this.commands[command]) == 'function') {
+		// 				this._commands[command] = new this.commands[command](this)
+		// 			}
+		// 		}
+		// 	}
+		// }
+		if (this.options.allowToolbar) {
+			this.view.showToolbar(tb)
+		}
+		// this.log(panels)
+		// this.log(this.options.toolbars[this.options.toolbar])
+		// for (i=0; i < p.length; i++) {
+		// 	clist = this.options.panels[p[i]];
+		// 	if (clist && clist.length) {
+		// 		pn = this.view.createPanel(p[i]);
+		// 		for (j=0; j < clist.length; j++) {
+		// 			if (typeof(this.commands[clist[j]]) == 'function') {
+		// 				commands.push(new this.commands[clist[j]](this));
+		// 				pn.append(commands[commands.length-1].button||'');
+		// 				this._commands[clist[j]] = new this.commands[clist[j]](this)
+		// 			}
+		// 		};
+		// 		this.view.addPanel(pn);
+		// 	}
+		// };
+		// this.commands = commands;
+		// this.log(this._commands)
 		
 		for (i=0; i < this.options.plugins.length; i++) {
 			if ( (p = this.plugins[this.options.plugins[i]]) ) {

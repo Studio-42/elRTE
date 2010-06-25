@@ -12,7 +12,7 @@
 		this.workzone  = $('<div class="elrte-workzone" />');
 		this.statusbar = $('<div class="elrte-statusbar" />');
 		this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
-			.append(this.toolbar)
+			.append(this.toolbar.hide())
 			.append(this.tabsbar)
 			.append(this.workzone)
 			.append(this.statusbar.hide())
@@ -26,6 +26,22 @@
 
 	}
 	
+	elRTE.prototype.view.prototype.showToolbar = function(tb) {
+		
+		var i = tb.length, l, pname, p, panel, cname;
+		
+		while (i--) {
+			pname = tb[i];
+			p = this.rte.options.panels[pname];
+			// this.rte.log(p)
+			if (typeof(p) != undefined && (l = p.length)) {
+				while (l--) {
+					cname = p[l];
+					this.rte.log(p[l])
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Render new document

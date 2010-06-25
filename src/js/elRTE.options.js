@@ -29,6 +29,8 @@
 		/* plugins to load */
 		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
 		
+		allowToolbar : true,
+		
 		toolbar : 'default',
 		
 		panels : {
@@ -41,7 +43,7 @@
 		panelsNames : {},
 		
 		toolbars : {
-			'default' : ['style', 'history', 'clean', 'fullscreen']
+			'default' : [/*'style',*/ 'history', 'clean', 'fullscreen']
 		}
 	}
 	
