@@ -9,7 +9,10 @@
 			url    : $('<input type="text" name="url" />').css('width', '99%'),
 			width  : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
 			height : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
-			align  : $('<select />').css('width', '100%')
+			wmode  : $('<select />')
+						.append($('<option />').val('').text(this.rte.i18n('Not set', 'dialogs')))
+						.append($('<option />').val('transparent').text(this.rte.i18n('Transparent'))),
+			align  : $('<select />')
 						.append($('<option />').val('').text(this.rte.i18n('Not set', 'dialogs')))
 						.append($('<option />').val('left'       ).text(this.rte.i18n('Left')))
 						.append($('<option />').val('right'      ).text(this.rte.i18n('Right')))
@@ -36,11 +39,13 @@
 				f = $(n).css('float');
 				a = $(n).css('vertical-align');
 				this.src.margin.val(n);
+				this.src.wmode.val($(n).attr('wmode'));
 			} 
 			this.src.url.val(url);
 			this.src.width.val(w);
 			this.src.height.val(h);
 			this.src.align.val(f||a);
+			
 
 			
 
@@ -72,6 +77,7 @@
 			
 			d.append([this.rte.i18n('URL'), src], null, true);
 			d.append([this.rte.i18n('Size'), $('<span />').append(this.src.width).append(' x ').append(this.src.height).append(' px')], null, true)
+			d.append([this.rte.i18n('Wmode'), this.src.wmode], null, true);
 			d.append([this.rte.i18n('Alignment'), this.src.align], null, true);
 			d.append([this.rte.i18n('Margins'), this.src.margin], null, true);
 			
@@ -114,6 +120,19 @@
 					$(this).val('');
 				}
 			});
+			
+			this.src.wmode.change(function() {
+				if (self.swf) {
+					var wm = $(this).val();
+					if (wm) {
+						self.swf.attr('wmode', wm);
+						self.swf.children('embed').attr('wmode', wm);
+					} else {
+						self.swf.removeAttr('wmode');
+						self.swf.children('embed').removeAttr('wmode');
+					}
+				}
+			})
 			
 			this.src.align.change(function() {
 				var v = $(this).val(), f = v=='left' || v=='right';
@@ -164,7 +183,8 @@
 			self.swf = null
 			var url = this.rte.utils.absoluteURL(this.src.url.val()),
 				w = parseInt(this.src.width.val()) || 'auto',
-				h = parseInt(this.src.height.val()) || 'auto'
+				h = parseInt(this.src.height.val()) || 'auto',
+				wm = this.src.wmode.val(),
 				a = this.src.align.val(),
 				f = a == 'left' || a == 'right' ? a : '';
 
@@ -187,12 +207,20 @@
 
 				if (self.placeholder) {
 					self.placeholder.css(css).attr('rel', url);
+					if (wm) {
+						self.placeholder.attr('wmode', wm);
+					} else {
+						self.placeholder.removeAttr('wmode');
+					}
 				} else {
 					this.placeholder = $(this.rte.dom.create('img'))
 						.attr('src', this.rte.filter.swfSrc)
 						.attr('rel', url)
 						.css(css)
 						.addClass('elrte-swf-placeholder');
+					if (wm) {
+						this.placeholder.attr('wmode', wm);
+					}
 					this.rte.selection.insertNode(this.placeholder.get(0));
 				}
 

@@ -301,9 +301,10 @@
 					h   = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
 					fl  = t.css('float') || t.attr('align'),
 					a   = t.css('vertical-align'),
+					wm  = t.attr('wmode')||'',
 					img = $('<img src="'+f.swfSrc+'" class="'+f.swfClass+'" rel="'+url+'" />');
 
-				img.attr('style', st).css({
+				img.attr('style', st).attr('wmode', wm).css({
 					width            : w?(w+'px'):'auto',
 					height           : h?h+'px':'auto',
 					'float'          : fl,
@@ -318,8 +319,9 @@
 					h   = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
 					fl  = t.css('float') || t.attr('align'),
 					a   = t.css('vertical-align'),
+					wm  = t.attr('wmode')||'',
 					img = $('<img src="'+f.swfSrc+'" class="'+f.swfClass+'" rel="'+url+'" />');
-					img.attr('style', st).css({
+					img.attr('style', st).attr('wmode', wm).css({
 						width            : w?(w+'px'):'auto',
 						height           : h?h+'px':'auto',
 						'float'          : fl,
@@ -361,10 +363,10 @@
 				var t = $(this),
 					w = parseInt(t.css('width'))||'',
 					h = parseInt(t.css('height'))||'',
+					wm = t.attr('wmode'),
 					s = t.attr('style')
-					obj = '<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+t.attr('rel')+'" width="'+w+'" height="'+h+'" style="'+s+'" play="true" loop="true" menu="true"> </embed>';
+					obj = '<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+t.attr('rel')+'" width="'+w+'" height="'+h+'" style="'+s+'" play="true" loop="true" menu="true" wmode="'+wm+'"> </embed>';
 					// obj = '<object style="'+(t.attr('style')||'')+'" width="'+parseInt(t.css('width'))+'" height="'+parseInt(t.css('height'))+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
-
 				// f.rte.log(obj)
 				t.replaceWith($(obj));
 			})
