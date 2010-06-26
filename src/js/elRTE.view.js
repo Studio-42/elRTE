@@ -3,7 +3,6 @@
 	 * Class. elRTE renderer
 	 * 
 	 */
-	
 	elRTE.prototype.view = function(rte) {
 		var self       = this;
 		this.rte       = rte;
@@ -13,93 +12,119 @@
 		this.statusbar = $('<div class="elrte-statusbar" />');
 		this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
 			.append(this.toolbar.hide())
-			.append(this.tabsbar)
+			.append(this.tabsbar.hide())
 			.append(this.workzone)
 			.append(this.statusbar.hide())
 			.insertBefore(rte.target);
-		
-
 			
 		if (this.rte.options.height>0) {
 			this.workzone.height(this.rte.options.height);
 		}
 
+		/* click on document tab */
+		$('#'+this.rte.id+' .elrte-tab').live('click', function(e) {
+			var id = $(e.currentTarget).attr('rel').substr(1);
+
+			if ($(e.target).hasClass('elrte-tab-close')) {
+				if (confirm(self.rte.i18n('Close')+' "'+$(e.currentTarget).text()+'"'+'?')) {
+					self.rte.close(id);
+				} else {
+					id = self.workzone.children('.elrte-document:visible').attr('id');
+				}
+			}
+			self.rte.focus(id);
+		});
+
 	}
 	
+	/**
+	 * Create toolbar, add buttons and show
+	 *
+	 * @param  String  toolbar name
+	 * @return void
+	 **/
 	elRTE.prototype.view.prototype.showToolbar = function(tb) {
-		
-		var i = tb.length, l, pname, p, panel, cname;
+		var i = tb.length, l, pname, p, panel, cname, b;
 		
 		while (i--) {
 			pname = tb[i];
 			p = this.rte.options.panels[pname];
-			// this.rte.log(p)
+			panel = $('<ul class="elrte-toolbar-panel inline-block" id="'+this.rte.id+'-panel-'+pname+'"><li class="elrte-toolbar-sep inline-block"></li></ul>');
 			if (typeof(p) != undefined && (l = p.length)) {
 				while (l--) {
 					cname = p[l];
-					this.rte.log(p[l])
+					if (this.rte.commands[cname] && (b = this.rte.commands[cname].button())) {
+						panel.prepend(b);
+					}
 				}
 			}
+			if (panel.children().length) {
+				this.toolbar.prepend(panel);
+			}
+		}
+		if (this.toolbar.children().length) {
+			this.toolbar.show();
 		}
 	}
 	
 	/**
-	 * Render new document
+	 * Add new document into editor
 	 *
-	 * @param Object  elRTE document
-	 */
+	 * @param  Object  document
+	 * @return void
+	 **/
 	elRTE.prototype.view.prototype.add = function(d) {
-		var self = this, 
-			t = $('<li class="elrte-tab inline-block active" rel="#'+d.id+'">'+d.title+(this.rte.options.allowCloseDocs ? '<span class="elrte-tab-close" title="Close"/>' : '')+'</li>').click(function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if ($(e.target).hasClass('elrte-tab-close')) {
-					if (confirm('Do you want to close "'+$(this).parent().text()+'"?')) {
-						self.rte.close($(this).attr('rel').substr(1));
-					}
-				} else {
-					self.rte.focus($(this).attr('rel').substr(1));
-				}
-			});
-
-		
-		if (this.rte.options.height>0) {
-			$(d.editor).height(this.rte.options.height);
+		var self = this,
+			doc = $('<div id="'+d.id+'" class="elrte-document"/>')
+				.append(d.editor.addClass('elrte-editor'))
+				.append(d.source.addClass('elrte-source').height(this.workzone.height()).hide())
+				.hide(),
+			tab = $('<li class="elrte-tab inline-block" rel="#'+d.id+'">'+d.title+'</li>'), l;
+			
+		d.closeable && tab.append('<span class="elrte-tab-close" title="'+this.rte.i18n('Close')+'"/>');
+				
+		this.workzone.append(doc);
+		this.tabsbar.append(tab);
+		l = this.workzone.children('.elrte-document').length;
+		/* first or only document - set visible */
+		if (l == 1) {
+			doc.show();
+			tab.addClass('active');
 		}
-
-		this.workzone.append(
-			$('<div id="'+d.id+'" class="elrte-document"/>')
-				.hide()
-				.append($(d.editor).addClass('elrte-editor'))
-				.append(d.source.height(this.workzone.height()).addClass('elrte-source').hide())
-			);
-		this.tabsbar.children('.active')
-			.removeClass('active')
-			.end()
-			.append(t)
-			.toggle(this.rte.options.allowCloseDocs||this.tabsbar.children().length>1);
+		
+		if (l>1 || this.rte.options.tabsAlwaysShow) {
+			this.tabsbar.show();
+		}
 	}
 	
 	/**
-	 * Remove document by id
+	 * Switch editor to required docment
 	 *
-	 * @param String  document id
-	 */
-	elRTE.prototype.view.prototype.remove = function(id) {
-		this.tabsbar.find('[rel="#'+id+'"]').remove();
-		this.workzone.find('#'+id).remove();
-	}
-	
-	/**
-	 * Set document with selected id visible
-	 *
-	 * @param String  document id
-	 */
+	 * @param  String  document id
+	 * @return void
+	 **/
 	elRTE.prototype.view.prototype.focus = function(id) {
 		this.tabsbar.children().removeClass('active').filter('[rel="#'+id+'"]').addClass('active');
 		this.workzone.children('.elrte-document').hide().filter('#'+id).show();
 	}
+
+	/**
+	 * Remove document by id
+	 *
+	 * @param String  document id
+	 * @return void
+	 */
+	elRTE.prototype.view.prototype.remove = function(id) {
+		var l;
+		this.workzone.find('#'+id).remove();
+		this.tabsbar.find('[rel="#'+id+'"]').remove();	
+		l = this.workzone.children('.elrte-document').length;
+		if (!l || (l==1 && !this.rte.options.tabsAlwaysShow)) {
+			this.tabsbar.hide();
+		}
+	}
 	
+
 	/**
 	 * Switch between editor and source view in active document
 	 *
@@ -107,19 +132,6 @@
 	elRTE.prototype.view.prototype.toggle = function() {
 		var d = this.workzone.children(':visible');
 		d.children('iframe').add(d.children('textarea')).toggle();
-	}
-	
-	elRTE.prototype.view.prototype.createPanel = function(n) {
-		var p = $('<ul class="elrte-toolbar-panel inline-block" id="'+this.rte.id+'-pahel-'+n+'"><li class="elrte-toolbar-sep inline-block"></li></ul>');
-		
-		return p
-	}
-	
-	elRTE.prototype.view.prototype.addPanel = function(p) {
-		if (p.children('.elrte-button').length) {
-			this.toolbar.append(p);
-			this.toolbar.children().length == 1 && p.children().eq(0).remove();
-		}
 	}
 
 })(jQuery);

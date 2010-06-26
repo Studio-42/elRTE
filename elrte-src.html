@@ -33,12 +33,15 @@
 
 	<!-- commands -->
 	<script src="src/js/elRTE.command.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
+	<!-- 
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/history.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/removeformat.js" type="text/javascript" charset="utf-8"></script>
-
+ -->
 
 
 
@@ -53,12 +56,15 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				// height   : 420,
-				debug : false,
+				// debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
 					// $('#editor2')[0],
-					{content : 'asdf'}
+					{
+						content : 'asdf', 
+						closable : true
+					}
 					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}
 				]
@@ -107,7 +113,7 @@
 
 	<textarea name="Name" rows="8" cols="40" id="editor2" style="display:none">second</textarea>
 	<form method="post" action="post.php">
-	<div id="editor" name="abr" title="document">
+	<div id="editor" name="abr" title="Document">
 		<div>
 		<p>
 			Полотенце, возможно, самый необходимый  предмет  ! для межзвездного путешественника.

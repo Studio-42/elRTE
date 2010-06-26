@@ -1,75 +1,59 @@
 (function($) {
 
-	elRTE.prototype.command = new function() {
+	elRTE.prototype._command = new function() {
+		this.name    = 'command';
+		this.title   = '';
+		this.rte     = null;
+		this._button = null;
 		
 		this.init = function(rte) {
 			this.rte = rte;
 			this.dom = rte.dom;
-			this.sel = rte.selection;
-			this.createButton();
-			this.bind();
+			this.sel = rte.sel;
+			// this.rte.log('init '+this.name)
 		}
 		
-		/**
-		 * Create button for toolbar and bind event
-		 */
-		this.createButton = function() {
-			var self = this;
-			
-			this.button = $('<li unselectable="on" class="elrte-button inline-block disabled '+this.name+'" title="'+this.title+'" />')
-				.bind('mousedown', function(e) {
-					e.preventDefault();
-					e.stopPropagation()
-					self.rte.focus();
+		this.button = function() {
+			if (!this._button) {
+				var self = this;
+				
+				this._button = $('<li unselectable="on" class="elrte-button inline-block disabled '+this.name+'" title="'+this.title+'" />')
+					.click(function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						self.rte.focus();
+						if (!$(this).hasClass('disabled') && self.exec()) {
+							self.rte.trigger('change');
+						}
+					}).hover(function(e) {
+						$(this).toggleClass('hover', e.type == 'mouseenter' && !$(this).hasClass('disabled'));
+					});
 					
-					if (!$(this).hasClass('disabled') && self.exec()) {
-						 self.rte.trigger('change');
+				this.rte.bind('update change focus', function(e) {
+					switch (self.state()) {
+						case -1: self._button.removeClass('active').addClass('disabled'); break;
+						case  0: self._button.removeClass('active disabled');             break;
+						case  1: self._button.removeClass('disabled').addClass('active'); break;
 					}
-				}).hover(function(e) { 
-					 $(this).toggleClass('hover', e.type == 'mouseenter' && !$(this).hasClass('disabled'));
-				}).bind('change', function(e, s) {
-					if (s == 1) {
-						$(this).removeClass('disabled').addClass('active');	
-					} else if (s ==0) {
-						$(this).removeClass('disabled active');	
-					} else {
-						$(this).removeClass('active').addClass('disabled');	
-					}
+				}).bind('blur close', function(e) {
+					self._button.removeClass('active').addClass('disabled');
 				});
+			}
+			
+			return this._button;
 		}
 		
-		/**
-		 * Bind to rte events
-		 */
-		this.bind = function() {
-			var self = this;
-
-			this.rte.bind('close source blur', function() {
-				self.button.trigger('change', -1);
-			}).bind('update change', function(e) {
-				self.button.trigger('change', self.state())
-			});
+		this.exec = function() {
+			this.rte.log('exec command '+this.name)
 		}
 		
-		/**
-		 * @return Number  -1 for disable button, 0 - normal state, 1 - active button 
-		 */
 		this.state = function() {
 			return 0;
 		}
 		
-		/**
-		 * All magic making here :)
-		 * If return true trigger change will rised
-		 * @return Boolean
-		 */
-		this.exec = function() { 
-			this.rte.log('command '+this.name+' exec')
-			return false;
-		}
+		
 		
 	}
-
 
 
 

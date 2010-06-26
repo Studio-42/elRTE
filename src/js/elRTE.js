@@ -13,14 +13,18 @@
 		
 		var self = this;
 		window.console.time('load')
-		this.version   = '1.0 RC4 dev';
-		this.build     = '20100204';
+		/* version */
+		this.version   = '1.1 dev';
+		/* build date */
+		this.build     = '20100626';
+		/* DOM element on witch elRTE created */
 		this.target    = $(t).hide()[0];
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
-		this.load      = false;    
+		/* inner flag - editor created and load documents */
+		this._load      = false;    
 		/* opened documents */
 		this.documents = [];
 		/* active(visible) document */
@@ -44,7 +48,7 @@
 			/* called before close document */
 			'close'   : [],
 			/* called before send form */
-			'save'    : [],
+			'save'    : [self.sync],
 			'disable' : [],
 			/* called on click on editor document */
 			'click'   : [],
@@ -63,8 +67,8 @@
 		this.filter = new this.filter(this)
 
 		this.history = new this.history(this);
-		
-		this._commands = {};
+		this.log(this.listeners)
+		// this._commands = {};
 		
 		this._plugins = {};
 		
@@ -82,46 +86,17 @@
 			if (typeof(p) != 'undefined' && (l = p.length)) {
 				while (l--) {
 					command = p[l];
-					if (typeof(this.commands[command]) == 'function') {
-						this._commands[command] = new this.commands[command](this)
+					if (typeof(this._commands[command]) == 'function') {
+						this.commands[command] = new this._commands[command](this);
 					}
 				}
 			}
 		}
 
-		// for (i=0; i<tb.length; i++) {
-		// 	if (this.options.panels[tb[i]]) {
-		// 		// panels[tb[i]] = this.options.panels[tb[i]];
-		// 		l = this.options.panels[tb[i]].length;
-		// 		while (l--) {
-		// 			command = this.options.panels[tb[i]][l];
-		// 			if (typeof(this.commands[command]) == 'function') {
-		// 				this._commands[command] = new this.commands[command](this)
-		// 			}
-		// 		}
-		// 	}
-		// }
 		if (this.options.allowToolbar) {
 			this.view.showToolbar(tb)
 		}
-		// this.log(panels)
-		// this.log(this.options.toolbars[this.options.toolbar])
-		// for (i=0; i < p.length; i++) {
-		// 	clist = this.options.panels[p[i]];
-		// 	if (clist && clist.length) {
-		// 		pn = this.view.createPanel(p[i]);
-		// 		for (j=0; j < clist.length; j++) {
-		// 			if (typeof(this.commands[clist[j]]) == 'function') {
-		// 				commands.push(new this.commands[clist[j]](this));
-		// 				pn.append(commands[commands.length-1].button||'');
-		// 				this._commands[clist[j]] = new this.commands[clist[j]](this)
-		// 			}
-		// 		};
-		// 		this.view.addPanel(pn);
-		// 	}
-		// };
-		// this.commands = commands;
-		// this.log(this._commands)
+
 		
 		for (i=0; i < this.options.plugins.length; i++) {
 			if ( (p = this.plugins[this.options.plugins[i]]) ) {
@@ -130,193 +105,208 @@
 		};
 		this.plugins = plugins;
 		
+		// $('body').click(function(e) {
+		// 	self.log('document click')
+		// })
+		
 		/* load documents */
 		this.options.loadTarget && this.options.documents.unshift(t);
-		$.each(this.options.documents, function(i) { 
-			// self.open(this); 
-			var d = this;
-			setTimeout(function() {
-				// self.log(i == self.options.documents.length-1)
-				self.open(d);
-				if (i == self.options.documents.length-1) {
-					self.trigger($.Event('load'));
-					delete self.listeners.load;
-					self.focus(self.options.active);
-				}
-			}, 2)
-		});
 		
+		for (i=0; i<this.options.documents.length; i++) {
+			this.open(this.options.documents[i]);
+		}
+		if (this.documents.length) {
+			this.focus(this.documents[this.options.active] ? this.options.active : 0).trigger('focus');
+		}
+		this.view.editor.parents('form').bind('submit', function() { self.trigger('save'); })
+		this.trigger('load');
+		delete(this.listeners.load);
 
-		/* focus required or first document */
-		// this.focus(this.options.active);
-		// this.load = true;
-		// this.trigger($.Event('load'));
-		// delete this.listeners.load;
-		
-		// this.log(this.listeners)
-		window.console.timeEnd('load')
-
-		// this.filter.toSource('')
+		window.console.timeEnd('load');
 	}
 
+	/* API */
+
 	/**
-	 * Find document by id and return one
+	 * Return index of document by id or -1 if not exists
 	 *
 	 * @param  String  document id
-	 * @return Object  document 
-	 */
-	elRTE.prototype.document = function(id) {
+	 * @return Number
+	 **/
+	elRTE.prototype.indexOf = function(id) {
 		var l = this.documents.length;
 		while (l--) {
-			if (this.documents[l].id == id) {
-				return this.documents[l];
+			if (this.documents[l].id === id) {
+				return l;
 			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Return document by id or index
+	 *
+	 * @param  String|Number  document id/index
+	 * @return Object
+	 **/
+	elRTE.prototype.getDocument = function(i) {
+		if (typeof(i) == 'string') {
+			i = this.indexOf(i);
+		}
+		if (typeof(i) == 'number' && typeof(this.documents[i]) != 'undefined') {
+			return this.documents[i];
 		}
 	}
 
 	/**
-	 * Open document (convert node into editor document)
+	 * Open document in editor and return its id.
+	 * Document may be dom node or js object:
+	 * {
+	 *   id : document id - not required, if not set - generates automatically, 
+	 *   name : name for textarea - not required - if not set - id used,
+	 *   content : document text - required,
+	 *   closable : allow close document
+	 * }
 	 *
-	 * @todo  blur for current opened document
-	 * @param  DOMElement  node to convert into editor document
-	 * @return Number      document index
-	 */
-	elRTE.prototype.open = function(doc) {
+	 * @param  DOMElement|Object  document
+	 * @return String
+	 **/
+	elRTE.prototype.open = function(d) {
 
-		if (doc && (doc.nodeType == 1 || typeof(doc.content) == 'string')) {
-			
-			var self = this,
-				id   = this.id+'-document-'+(this.documents.length+1),
-				e    = $.Event('open'),
-				d, n, html;
-				
-			if (doc.nodeType == 1) {
-				n = $(doc);
-				doc = {
-					name : n.attr('name'),
-					title : n.attr('title')
-				}
-				if (/^(TEXTAREA|INPUT)$/.test(n[0].nodeName)) {
-					doc.content = n.val();
-					n.attr('name', 'origin-'+doc.name);
-				} else {
-					doc.content = n.html();
-				}
-			}
-			
-			d = {
-				id     : id,
-				title  : doc.title||'Document-'+(self.documents.length+1),
-				editor : $('<iframe frameborder="0"/>'),
-				source : $('<textarea name="'+(doc.name||id)+'" />').val($.trim(doc.content))
-			}
-
-			/* render document */
-			this.view.add(d);
-			d.window   = d.editor[0].contentWindow;
-			d.document = d.editor[0].contentWindow.document;
-			this.documents.push(d);
-			
-			/* create body in iframe */
-			html = this.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
-			$.each(self.options.cssfiles, function() {
-				html += '<link rel="stylesheet" type="text/css" href="'+this+'"/>';
-			});
-			d.document.open();
-			d.document.write(this.options.doctype+html+'</head><body> </body></html>');
-			d.document.close();
-			
-			/* set document content from textarea */
-			$(d.document.body).html(this.filter.fromSource(d.source.val()));
-			// setTimeout(function() {
-				// $(d.document.body).html(self.filter.fromSource(d.source.val()));
-			// }, 2);
-			
-			/* make iframe editable */
-			if ($.browser.msie) {
-				d.document.body.contentEditable = true;
-			} else {
-				try { d.document.designMode = "on"; } 
-				catch(e) { }
-			}
-
-
-			/* bind events */
-			/* @todo home/end and other keys from fullsized keyboards */
-			$(d.document)
-				.bind('keydown', function(e) {
-					if ((e.keyCode == 65 && e.metaKey||e.ctrlKey) /* ctrl+A meta+A */
-					||  (e.keyCode == 69 && e.ctrlKey)            /* ctrl+E */
-					) {
-						setTimeout( function() { 
-							var ev = $.Event('update');
-							ev.target = d;
-							ev.originalEvent = e;
-							self.trigger(ev);
-						}, 2);
-					} 
-				})
-				.bind('keyup', function(e) {
-					if (self.utils.isArrowKey(e.keyCode) 
-					||  self.utils.isDelKey(e.keyCode)) {
-						var ev = $.Event('update');
-						ev.target = d;
-						ev.originalEvent = e;
-						self.trigger(ev);
-					} else if (e.keyCode == 13) {
-						var ev = $.Event('change');
-						ev.target = d;
-						ev.originalEvent = e;
-						self.trigger(ev);
-					}
-				})
-				.bind('mouseup', function(e) {
-					setTimeout( function() { 
-						var ev = $.Event('update');
-						ev.target = d;
-						ev.originalEvent = e;
-						self.trigger(ev);
-					}, 2);
-				})
-				.bind('mousedown mouseup click keydown keyup', function(e) {
-					self.trigger(e)
-				});
-			
-			/* set this document as active */
-			e.target = d;
-			// this.log(e)
-			this.trigger(e).focus(id);
-			return d.id;
+		if (!d || (d.nodeType != 1 && typeof(d.content) != 'string')) {
+			return;
 		}
 		
+		var self  = this,
+			ndx   = this.documents.length+1,
+			id    = this.id+'-document-'+ndx,
+			title = this.i18n('Document')+' '+ndx,
+			doc   = { id : id },
+			e     = $.Event('open');
+			
+		doc.title = d.title||title;
+		if (d.nodeType == 1) {
+			doc.source = d.nodeName == 'TEXTAREA' ? $(d) : $('<textarea name="'+(d.name||id)+'" />').val($(d).html());
+			doc.closeable = $(d).hasClass('closable') ? true : this.options.allowCloseDocs;
+		} else {
+			doc.source = $('<textarea name="'+(d.name||id)+'" />').val(d.content||'');
+			doc.closeable = typeof(d.closable) != 'undefined' ? !!d.closable : this.options.allowCloseDocs;
+		}
+		
+		doc.editor = $('<iframe frameborder="0"/>');
+		
+		/* render document */
+		this.view.add(doc);
+		doc.window   = doc.editor[0].contentWindow;
+		doc.document = doc.editor[0].contentWindow.document;
+		
+		/* add to opened documents */
+		this.documents.push(doc);
+		if (ndx == 1) {
+			this.active = this.documents[0];
+		}
+		
+		/* create body in iframe */
+		html = this.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+this.options.charset+'" />';
+		$.each(self.options.cssfiles, function() {
+			html += '<link rel="stylesheet" type="text/css" href="'+this+'"/>';
+		});
+		doc.document.open();
+		doc.document.write(this.options.doctype+html+'</head><body> </body></html>');
+		doc.document.close();
+		/* set document content from textarea */
+		$(doc.document.body).html(this.filter.fromSource(doc.source.val()));
+		/* set textarea content */
+
+		/* make iframe editable */
+		if ($.browser.msie) {
+			doc.document.body.contentEditable = true;
+		} else {
+			try { doc.document.designMode = "on"; } 
+			catch(e) { }
+		}
+		
+		e.target = doc;
+		this.trigger(e);
+		return id;
 	}
-	
 
 	/**
-	 * Open document or/and give focus to it
+	 * Close document
 	 *
-	 * @param Number  document index
+	 * @param Number|String  document index/id
+	 * @return elRTE
 	 */
-	elRTE.prototype.focus = function(id) {
-		var d, t, docs = this.documents;
-
-		if (docs.length) {
-			d = (typeof(id) == 'number' ? docs[id] : this.document(id))||this.active||docs[0];
-
-			if (this.active != d) {
-				if (this.active) {
-					this.active.source.is(':visible') && this.toggle();
-					this.trigger('blur');
-				}
-				this.active = d;
-				this.view.focus(d.id);
-				t = true;
+	elRTE.prototype.close = function(i) {
+		var e   = $.Event('close'), 
+			l   = this.documents.length, 
+			tmp = [],
+			d, next;
+			
+		if ((d = this.getDocument(i)) && d.closeable) {
+			
+			if (d.id == this.active.id && l>1) {
+				next = this.getDocument((i = this.indexOf(d.id))==0 ? 1 : i-1);
 			}
-			(d.editor.is(':visible') ? d.window : d.source[0]).focus();
-			t && this.trigger('focus').trigger('update');
+
+			e.target = d;
+			this.trigger(e);
+			this.view.remove(d.id);
+
+			while (l--) {
+				d.id != this.documents[l].id && tmp.push(this.documents[l]);
+			}
+			this.documents = tmp;
+			next && this.focus(next.id)
 		}
 		return this;
 	}
+
+	/**
+	 * Set document active (visible) if is not. 
+	 * Set focus into document editor/source
+	 *
+	 * @param  String|Number  document id/index
+	 * @return elRTE
+	 **/
+	elRTE.prototype.focus = function(i) {
+		if (this.documents.length) {
+			var a = this.active || this.documents[0],
+				d = this.getDocument(i);
+				
+			if (d && d.editor) {
+				d.id != a.id && this.trigger('blur').view.focus(d.id);
+				(d.editor.is(':visible') ? d.window : d.source[0]).focus();
+				if (d.id != a.id) {
+					this.active = d;
+					this.trigger('focus');
+				}
+			}
+		}
+		return this;
+	}
+	
+	
+	elRTE.prototype.sync = function(i) {
+		var d = i>0 && typeof(this.documents[i]) != 'undefined' ? [this.documents[i]] : this.documents,
+			l = d.length;
+			
+		while (l--) {
+			alert('sync')
+			if (d[l].source.is(':hidden')) {
+				d[l].source.val(this.filter.toSource(d[l].editor.html()));
+			} else {
+				d[l].editor.html(this.filter.fromSource(d[l].source.val()));
+				
+			}
+		}
+	}
+
+
+
+
+
+
 
 	/**
 	 * Switch between editor and source in active document
@@ -349,7 +339,7 @@
 	 *
 	 * @param Number  document index
 	 */
-	elRTE.prototype.close = function(id) {
+	elRTE.prototype.close_ = function(id) {
 		var d, tmp = [], l = this.documents.length, n, e;
 		
 		if (l) {
@@ -386,13 +376,15 @@
 	 * @param Function  callback
 	 */
 	elRTE.prototype.bind = function(e, c) {
+		var event;
 		if (typeof(c) == 'function') {
 			e = e.split(' ');
 			for (var i=0; i < e.length; i++) {
-				e[i] = $.trim(e[i]);
-				if (this.listeners[e[i]]) {
-					this.listeners[e[i]].push(c);
-				} 
+				event = $.trim(e[i]);
+				if (typeof(this.listeners[event]) == 'undefined') {
+					this.listeners[event] = [];
+				}
+				this.listeners[event].push(c);
 			};
 		}
 		return this;
@@ -511,6 +503,7 @@
 	 *
 	 */
 	elRTE.prototype.commands = {};
+	elRTE.prototype._commands = {};	
 
 	/**
 	 * jquery plugin
