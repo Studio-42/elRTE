@@ -272,10 +272,14 @@
 	elRTE.prototype.focus = function(i) {
 		if (this.documents.length) {
 			var a = this.active || this.documents[0],
-				d = this.getDocument(i);
+				d = this.getDocument(i)||this.active;
 				
 			if (d && d.editor) {
-				d.id != a.id && this.trigger('blur').view.focus(d.id);
+				if (d.id != a.id) {
+					this.isSource() && this.toggle();
+					this.trigger('blur').view.focus(d.id);
+				}
+				this.log('focus here');
 				(d.editor.is(':visible') ? d.window : d.source[0]).focus();
 				if (d.id != a.id) {
 					this.active = d;
@@ -286,94 +290,86 @@
 		return this;
 	}
 	
-	
-	elRTE.prototype.sync = function(i) {
-		var d = i>0 && typeof(this.documents[i]) != 'undefined' ? [this.documents[i]] : this.documents,
-			l = d.length;
-			
-		while (l--) {
-			alert('sync')
-			if (d[l].source.is(':hidden')) {
-				d[l].source.val(this.filter.toSource(d[l].editor.html()));
-			} else {
-				d[l].editor.html(this.filter.fromSource(d[l].source.val()));
-				
-			}
-		}
-	}
-
-
-
-
-
-
-
 	/**
-	 * Switch between editor and source in active document
-	 *
+	 * Switch between editor and source in active document 
+	 * if source access eneabled
 	 * @todo for firefox set curret to start of texarea
 	 *
+	 * @return elRTE
 	 */
 	elRTE.prototype.toggle = function() {
-		if (this.active && this.options.allowSource) {
-			var d = this.active;
-			this.view.toggle();
-			
-			if (d.editor.is(':visible')) {
-				$(d.document.body).html(this.filter.fromSource(d.source.val()));
-				this.focus().trigger('focus');
+		if (this.options.allowSource && this.active) {
+			this.sync(this.active.id).view.toggle();
+			this.focus().trigger(this.isWysiwyg() ? 'focus' : 'source');
+		}
+		return this;
+	}
+	
+	/**
+	 * Sync data between editor/source in active document or in all documents
+	 * If editor is visible for now, data copy from editor to source and other wise
+	 *
+	 * @param  String|Number  document id/index, not set for sync all documents 
+	 * @return elRTE
+	 **/
+	elRTE.prototype.sync = function(i) {
+		var d, l;
+		d = typeof(i) != 'undefined' && (d = this.getDocument(i)) ? [d] : this.documents;
+		l = d.length;
+
+		while (l--) {
+			if (d[l].source.is(':visible')) {
+				$(d[l].document.body).html(this.filter.fromSource(d[l].source.val()));
 			} else {
-				d.source[0].value = this.filter.toSource($(d.document.body).html());
-				this.focus().trigger('source');
+				d[l].source.val(this.filter.toSource($(d[l].document.body).html()));
 			}
 		}
 		return this;
 	}
 
-	elRTE.prototype.wysiwyg = function() {
+	/**
+	 * Return true if active document in wisiwyg mode
+	 *
+	 * @return Boolean
+	 */
+	elRTE.prototype.isWysiwyg = function() {
 		return this.active && this.active.editor.is(':visible');
 	}
 	
 	/**
-	 * Close document by index
+	 * Return true if active document in source mode
 	 *
-	 * @param Number  document index
+	 * @return Boolean
 	 */
-	elRTE.prototype.close_ = function(id) {
-		var d, tmp = [], l = this.documents.length, n, e;
-		
-		if (l) {
-			var d = (typeof(id) == 'number' ? this.documents[id] : this.document(id))||this.active;
-
-			/* before close active doc, move focus to nex/prev doc */
-			if (this.active == d && this.documents.length>1) {
-				n = $.inArray(this.active, this.documents);
-				this.focus(this.documents[n<l-1 ? n+1 : n-1].id);
-			}
-			/* call trigger and remove doc from DOM */
-			e = $.Event('close');
-			e.target = d;
-			this.trigger(e);
-			this.view.remove(d.id);
-			/* update docs list */
-			while (l--) {
-				this.documents[l] != d && tmp.push(this.documents[l]);
-			}
-			this.documents = tmp;
-			/* If no docs - call trigger */
-			if (!this.documents.length) {
-				this.active = null;
-				// this.trigger('disable');
-			}
-		}
-		return this;
+	elRTE.prototype.isSource = function() {
+		return this.active && this.active.source.is(':visible');
 	}
 	
 	/**
-	 * Bind callback to event
+	 * Return required document content
+	 *
+	 * @param  String|Number  document id/index
+	 * @return String
+	 */
+	elRTE.prototype.getContent = function(i) {
+		var d = this.getDocument(i);
+		if (d && d.editor) {
+			return d.source.is(':visible') ? d.source.val() : $(d.document.body).html();
+		}
+		return '';
+	}
+
+	elRTE.prototype.setContent = function(i) {
+		
+	}
+
+	/**
+	 * Bind callback to event(s)
+	 * To bind multiply events at once, separate events names by space
 	 *
 	 * @param String    event name
 	 * @param Function  callback
+	 * @return elRTE
 	 */
 	elRTE.prototype.bind = function(e, c) {
 		var event;
@@ -425,14 +421,7 @@
 	
 	
 	
-	/**
-	 * send message to console log
-	 *
-	 * @param String  message
-	 */
-	elRTE.prototype.log = function(m) {
-		window.console && window.console.log && window.console.log(m);
-	}
+
 
 	/**
 	 * send message to console log if debug is enabled in config
@@ -441,6 +430,15 @@
 	 */
 	elRTE.prototype.debug = function(m) {
 		this.options.debug && this.log(m)
+	}
+
+	/**
+	 * send message to console log
+	 *
+	 * @param String  message
+	 */
+	elRTE.prototype.log = function(m) {
+		window.console && window.console.log && window.console.log(m);
 	}
 
 	elRTE.prototype.i18n = function(m) {

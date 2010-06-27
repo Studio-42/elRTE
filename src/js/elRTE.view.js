@@ -22,7 +22,7 @@
 		}
 
 		/* click on document tab */
-		$('#'+this.rte.id+' .elrte-tab').live('click', function(e) {
+		$('#'+this.rte.id+' .elrte-tabsbar .elrte-tab').live('click', function(e) {
 			var id = $(e.currentTarget).attr('rel').substr(1);
 
 			if ($(e.target).hasClass('elrte-tab-close')) {
@@ -98,6 +98,17 @@
 	}
 	
 	/**
+	 * Switch between editor and source view in active document
+	 *
+	 */
+	elRTE.prototype.view.prototype.toggle = function() {
+		if (this.rte.options.allowSource && this.workzone.children('.elrte-document:visible').length) {
+			this.workzone.children('.elrte-document:visible').children().toggle();
+		}
+	}
+	
+	
+	/**
 	 * Switch editor to required docment
 	 *
 	 * @param  String  document id
@@ -124,14 +135,4 @@
 		}
 	}
 	
-
-	/**
-	 * Switch between editor and source view in active document
-	 *
-	 */
-	elRTE.prototype.view.prototype.toggle = function() {
-		var d = this.workzone.children(':visible');
-		d.children('iframe').add(d.children('textarea')).toggle();
-	}
-
 })(jQuery);
