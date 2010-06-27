@@ -162,7 +162,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		this.src.main.rules.val(this.rte.dom.attr(this.table.get(0), 'rules'));
 
 		this.src.main.bg.val(this.table.css('background-color'));
-		var bgimg = this.table.css('background-image').replace(/url\(([^\)]+)\)/i, "$1");
+		var bgimg = (this.table.css('background-image')||'').replace(/url\(([^\)]+)\)/i, "$1");
 		this.src.main.bgimg.val(bgimg!='none' ? bgimg : '');
 
 		var opts = {
@@ -219,16 +219,28 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 			if (r<=0 || c<=0) {
 				return;
 			}
-			this.rte.history.add();
+			this.rte.history.add(); 
 			var b = $(this.rte.doc.createElement('tbody')).appendTo(this.table);
-			var tr     = $('<tr />');
-			for (var i=0; i < c; i++) {
-				tr.append($('<td />').html('&nbsp;'));
+			
+			for (var i=0; i < r; i++) {
+				var tr = '<tr>';
+				for (var j=0; j < c; j++) {
+					tr += '<td>&nbsp;</td>';
+				}
+				b.append(tr+'</tr>');
 			};
-			for (var i=0; i<r; i++) {
-				b.append(tr.clone(true))
-			};
-			this.rte.selection.insertNode(this.table.get(0), true);
+			
+			// var tr = $(this.rte.doc.createElement('tr'));
+			// 
+			// for (var i=0; i < c; i++) {
+			// 	tr.append($(this.rte.doc.createElement('td')).html('&nbsp;'));
+			// };
+			// 
+			// for (var i=0; i<r; i++) {
+			// 	b.append(tr.clone(true));
+			// };
+			
+			// this.rte.selection.insertNode(this.table.get(0), true);
 		} else {
 			this.table
 				.removeAttr('width')
@@ -247,12 +259,13 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		var cap = $.trim(this.src.main.caption.val());
 		if (cap) {
 			if (!this.table.children('caption').length) {
-				this.table.prepend($('<caption />'));
+				this.table.prepend('<caption />' );
 			}
-			this.table.children('caption').text(cap)
+			this.table.children('caption').text(cap);
 		} else {
 			this.table.children('caption').remove();
 		}
+		
 		
 		for (var tab in this.src) {
 			if (tab != 'main') {
@@ -310,7 +323,9 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		if (!this.table.attr('style')) {
 			this.table.removeAttr('style');
 		}
-		
+		if (!this.table.parents().length) {
+			this.rte.selection.insertNode(this.table.get(0), true);
+		}
 		this.rte.ui.update();
 	}
 	
