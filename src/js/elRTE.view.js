@@ -37,6 +37,10 @@
 
 	}
 	
+	elRTE.prototype.view.prototype.cleanToolbar = function() {
+		this.toolbar.empty();
+	}
+	
 	/**
 	 * Create toolbar, add buttons and show
 	 *

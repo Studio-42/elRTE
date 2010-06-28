@@ -4,7 +4,7 @@
 	 * Show path to selected node in status bar 
 	 * and highlight node on hever path to it
 	 **/
-	elRTE.prototype.plugins.statusbar = function(rte) {
+	elRTE.prototype._plugins.statusbar = function(rte) {
 		this.name        = 'statusbar';
 		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';

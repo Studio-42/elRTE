@@ -11,8 +11,9 @@
 			return alert('elRTE init failed! First argument should be DOMElement');
 		}
 		
-		var self = this;
-		window.console.time('load')
+		
+		var self = this, tb, l, p, i;
+		this.time('load')
 		/* version */
 		this.version   = '1.1 dev';
 		/* build date */
@@ -21,6 +22,9 @@
 		this.target    = $(t).hide()[0];
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
+		this.toolbar   = '';
+		this.commands  = {};
+		this.plugins   = {};
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* inner flag - editor created and load documents */
@@ -35,27 +39,28 @@
 			'load'    : [],
 			/* called after new document added to editor */
 			'open'    : [], 
-			/* called after document set editable in wysiwyg mode */
+			/* called after document switch to wysiwyg mode */
 			'focus'   : [], 
-			/* called after document set editable in source mode */
+			/* called after document switch to source mode */
 			'source'  : [],
-			/* called after current position changes */
-			'update'  : [],
-			/* called after some changes was made in document */
-			'change'  : [],
 			/* called after document set invisible */
 			'blur'    : [],
 			/* called before close document */
 			'close'   : [],
+			/* called after current position changes */
+			'input'  : [],
+			/* called after some changes was made in document */
+			'change'  : [],
+			
 			/* called before send form */
-			'save'    : [self.sync],
-			'disable' : [],
+			'save'    : [],
 			/* called on click on editor document */
 			'click'   : [],
 			/* called on keydown on editor document */
 			'keydown' : [],
 			/* called on keyup on editor document */
-			'keyup'   : []
+			'keyup'   : [],
+			'paste'   : []
 			};
 		/* editor view */
 		this.view      = new this.view(this);
@@ -67,47 +72,16 @@
 		this.filter = new this.filter(this)
 
 		this.history = new this.history(this);
-		this.log(this.listeners)
-		// this._commands = {};
 		
-		this._plugins = {};
-		
-		if (!this.options.toolbars[this.options.toolbar]) {
-			this.options.toolbar = 'default';
-		}
-		
-		/* load plugins and commands */
-		var plugins = [], 
-		 	tb = this.options.toolbars[this.options.toolbar], 
-			i = tb.length, p, l, command;
+		/* load commands */
+		this.loadToolbar(this.options.toolbar)
 
-		while (i--) {
-			p = this.options.panels[tb[i]];
-			if (typeof(p) != 'undefined' && (l = p.length)) {
-				while (l--) {
-					command = p[l];
-					if (typeof(this._commands[command]) == 'function') {
-						this.commands[command] = new this._commands[command](this);
-					}
-				}
-			}
-		}
-
-		if (this.options.allowToolbar) {
-			this.view.showToolbar(tb)
-		}
-
-		
+		/* load plugins */
 		for (i=0; i < this.options.plugins.length; i++) {
-			if ( (p = this.plugins[this.options.plugins[i]]) ) {
-				plugins.push(new p(this));
+			if ( (p = this._plugins[this.options.plugins[i]]) ) {
+				this.plugins[p] = new p(this);
 			}
 		};
-		this.plugins = plugins;
-		
-		// $('body').click(function(e) {
-		// 	self.log('document click')
-		// })
 		
 		/* load documents */
 		this.options.loadTarget && this.options.documents.unshift(t);
@@ -122,10 +96,39 @@
 		this.trigger('load');
 		delete(this.listeners.load);
 
-		window.console.timeEnd('load');
+		this.timeEnd('load');
 	}
 
 	/* API */
+
+	/**
+	 * Load commands defined by required toolbar
+	 * and display toolbar if allowed
+	 *
+	 * @param  String  toolbar name
+	 * @return elRTE
+	 **/
+	elRTE.prototype.loadToolbar = function(tb) {
+		var t, i, p, l;
+		this.commands = {};
+		this.toolbar = this.options.toolbars[tb] ? tb : 'default';
+		t = this.options.toolbars[this.toolbar];
+		i = t.length;
+		
+		while (i--) {
+			p = this.options.panels[t[i]];
+			if (typeof(p) != 'undefined' && (l = p.length)) {
+				while (l--) {
+					if (typeof(this._commands[p[l]]) == 'function') {
+						this.commands[p[l]] = new this._commands[p[l]](this);
+					}
+				}
+			}
+		}
+		this.view.cleanToolbar();
+		this.options.allowToolbar && this.view.showToolbar(t);
+		return this;
+	}
 
 	/**
 	 * Return index of document by id or -1 if not exists
@@ -193,7 +196,7 @@
 			doc.closeable = typeof(d.closable) != 'undefined' ? !!d.closable : this.options.allowCloseDocs;
 		}
 		
-		doc.editor = $('<iframe frameborder="0"/>');
+		doc.editor = $('<iframe frameborder="0" />');
 		
 		/* render document */
 		this.view.add(doc);
@@ -225,7 +228,36 @@
 			try { doc.document.designMode = "on"; } 
 			catch(e) { }
 		}
-		
+
+
+
+		$(doc.document).bind('paste', function(e) {
+			self.trigger('paste').trigger('change');
+		}).bind('keydown', function(e) {
+			var ev;
+			self.trigger(e);
+			if (e.metaKey && e.keyCode==88) {
+				ev = $.Event('change');
+				self.log('cut')
+
+			}
+			
+		}).bind('keyup', function(e) {
+			var ev;
+			self.trigger(e);
+			if (!e.ctrlKey && !e.metaKey && self.utils.kbd.isChar(e.keyCode)) {
+				ev = $.Event('input');
+			} else if (self.utils.kbd.isDel(e.keyCode) || (e.keyCode == 13 && !e.shiftKey)) {
+				ev = $.Event('change');
+			}
+
+			if (ev) {
+				ev.originalEvent = e;
+				self.trigger(ev);
+			}
+
+		})
+
 		e.target = doc;
 		this.trigger(e);
 		return id;
@@ -279,7 +311,6 @@
 					this.isSource() && this.toggle();
 					this.trigger('blur').view.focus(d.id);
 				}
-				this.log('focus here');
 				(d.editor.is(':visible') ? d.window : d.source[0]).focus();
 				if (d.id != a.id) {
 					this.active = d;
@@ -392,33 +423,33 @@
 	 * @param String event name
 	 */
 	elRTE.prototype.trigger = function(e, d) {
-			if (typeof(e) == 'string') {
-				e = $.Event(e);
-				e.target = this.active;
-			}
-			if (typeof(e.data) == 'undefined') {
-				e.data = d||{}
-			}
+		if (typeof(e) == 'string') {
+			e = $.Event(e);
+		}
+		if (!e.elrteDocumentId && this.active) {
+			e.elrteDocumentId = this.active.id;
+		}
+		// this.log(d)
+		if (typeof(e.data) == 'undefined' && typeof(d) == 'object') {
+			e.data = d;
+		}
 
-			this.debug(e.type+' '+(e.target ? e.target.id : ''));
-			if (this.listeners[e.type] && this.listeners[e.type].length) {
-				
-				for (var i=0; i < this.listeners[e.type].length; i++) {
-					if (e.isPropagationStopped()) {
-						this.log(e.type+' stopped')
-						break;
-					}
-					this.listeners[e.type][i](e);
-				};
-			}
+		this.debug(e.type+' '+e.elrteDocumentId);
+		if (this.listeners[e.type] && this.listeners[e.type].length) {
+			
+			for (var i=0; i < this.listeners[e.type].length; i++) {
+				if (e.isPropagationStopped()) {
+					this.log(e.type+' stopped')
+					break;
+				}
+				this.listeners[e.type][i](e);
+			};
+		}
 		
 		return this;
 	}
 	
-	elRTE.prototype.canUndo = function() {
-		
-	}
-	
+
 	
 	
 
@@ -439,6 +470,14 @@
 	 */
 	elRTE.prototype.log = function(m) {
 		window.console && window.console.log && window.console.log(m);
+	}
+
+	elRTE.prototype.time = function(l) {
+		window.console && window.console.time && window.console.time(l);
+	}
+	
+	elRTE.prototype.timeEnd = function(l) {
+		window.console && window.console.timeEnd && window.console.timeEnd(l);
 	}
 
 	elRTE.prototype.i18n = function(m) {
@@ -494,13 +533,12 @@
 	 * elRTE plugins
 	 *
 	 */
-	elRTE.prototype.plugins = {};
+	elRTE.prototype._plugins = {};
 	
 	/**
 	 * elRTE commands
 	 *
 	 */
-	elRTE.prototype.commands = {};
 	elRTE.prototype._commands = {};	
 
 	/**

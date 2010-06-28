@@ -11,8 +11,8 @@
 		this.doc  = document;
 		
 		rte.bind('focus', function(e) {
-			self.win = e.target.window;
-			self.doc = e.target.document;
+			self.win = self.rte.active.window;
+			self.doc = self.rte.active.document;
 		}).bind('blur', function(e) {
 			self.win  = window;
 			self.doc  = document;

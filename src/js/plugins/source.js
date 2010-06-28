@@ -4,7 +4,7 @@
 	 * Create tabs to toggle between editor and source in active document
 	 *
 	 **/
-	elRTE.prototype.plugins.source = function(rte) {
+	elRTE.prototype._plugins.source = function(rte) {
 		this.name        = 'source';
 		this.description = 'Create tabs to toggle between editor and source';
 		this.author      = 'Dmitry Levashov, dio@std42.ru';

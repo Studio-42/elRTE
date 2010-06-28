@@ -107,10 +107,10 @@ elRTE.prototype.dom = function(rte) {
 	};
 	
 	this.rte.bind('focus', function(e) {
-		self.doc  = e.target.document;
+		self.doc  = self.rte.active.document;
 		self.body = self.doc.body;
 		self.html = self.doc.body.parentNode;
-	}).bind('disable', function() {
+	}).bind('blur', function() {
 		self.doc  = document;
 		self.body = document.body;
 		self.html = document.body.parentNode;
