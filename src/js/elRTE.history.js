@@ -2,7 +2,64 @@
 	/**
 	 * @class elRTE history manager
 	 */
+	
 	elRTE.prototype.history = function(rte) {
+		this.rte = rte;
+		this.storage = {};
+		this.size = parseInt(rte.options.historySize)||0;
+		this.id = 0;
+		
+		rte.log(this.size)
+		var self    = this,
+			enabled = this.size > 0;
+		
+		function save(id) {
+			self.rte.log('save');
+			
+		}
+		
+		this.save = function() {
+			this.rte.log('save')
+			this.storage[this.rte.active.id].input = false;
+			
+			var html = $(this.rte.active.document.body).html();
+			this.rte.log(html)
+		}
+		
+		if (enabled) {
+			rte.bind('open', function(e) {
+				self.storage[e.elrteDocument.id] = {
+					store : [],
+					pointer : null,
+					active : false,
+					input : false
+				}
+			}).bind('close', function(e) {
+				delete self.storage[e.elrteDocument.id];
+			}).bind('focus', function(e) {
+				this.id = e.elrteDocument.id;
+			}).bind('blur', function(e) {
+				this.id = 0;
+			})
+			
+			.bind('exec change', function(e) {
+				self.save();
+			}).bind('update', function() {
+
+				self.storage[rte.active.id].input && self.save();
+
+			}).bind('input', function(e) {
+				self.storage[rte.active.id].input = true;
+
+			})
+		}
+		
+
+		
+		
+	}
+	
+	elRTE.prototype.history_ = function(rte) {
 
 		var load      = false, /* flag, true if rte is loaded */
 			size      = rte.options.historySize, /* max allowed history size */

@@ -15,7 +15,9 @@
 		debug    : true,
 		/* allow user view and edit source? required plugin or command */
 		allowSource : true, 
-		
+		/* switch cuurent doc to editor when switch to another doc */
+		autoToggle : false,
+		/* always show documents tabs, if false - tabs hide when only one doc opened */
 		tabsAlwaysShow : true,
 		/* additional css class for elrte */
 		cssClass : '',
@@ -23,19 +25,18 @@
 		height   : 0,
 		/* interface language */
 		lang     : 'en',
-		
+		/* allow close docs by default, ovveride by closeable options for every document */
 		allowCloseDocs : true,
 		
 		allowTags : [],
 		denyTags : ['iframe'],
-		
-		historySize : 100,
-		
+		/* max undo/redo steps */
+		historySize : 2,
 		/* plugins to load */
-		plugins : ['source', 'dummy', 'statusbar', 'webkit'],
-		
+		plugins : ['source', 'dummy', 'path', 'webkit'],
+		/* display or not toolbar */
 		allowToolbar : true,
-		
+		/* cuurent toolbar name */
 		toolbar : 'default',
 		
 		panels : {

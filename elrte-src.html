@@ -28,7 +28,7 @@
 
 	<!-- plugins -->
 	<script src="src/js/plugins/source.js"    type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/plugins/statusbar.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/plugins/path.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/plugins/webkit.js"    type="text/javascript" charset="utf-8"></script>
 
 	<!-- commands -->
@@ -73,6 +73,10 @@
 			// var rte = new elRTE($('#editor')[0], opts);
 			// rte.closeDocument(1)
 			var rte = jQuery('#editor').elrte(opts);
+			
+			$('#editor3').bind('click change', function(e) {
+				alert(e.type)
+			})
 			
 			// $('<div/>').appendTo(document.body).elrte(opts);
 			
