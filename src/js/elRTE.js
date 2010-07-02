@@ -61,9 +61,7 @@
 			'exec'      : [],
 			/* called after user type new char into document */
 			'input'     : [],
-			/* called after carrent position was changed in document */
-			'update'    : [],
-			/* called after some changes was made in document */
+			/* called after some changes was made in document or carrent change position */
 			'change'    : [],
 			/* called before send form */
 			'save'      : [],
@@ -252,55 +250,40 @@
 			catch(e) { }
 		}
 
+		/* bind events to document */
+		$(doc.document).bind('paste', function(e) {
+			self.trigger('paste').trigger('change');
+		}).bind('cut', function(e) {
+			self.trigger('change');
+		}).bind('keydown keyup mousedown mouseup click dblclick', function(e) {
+			if (this == self.active.document) {
+				self.trigger(e);
+				var ev, c;
 
-
-		// $(doc.document).bind('paste', function(e) {
-		// 	self.trigger('paste').trigger('change');
-		// }).bind('cut', function(e) {
-		// 	self.trigger('change');
-		// }).bind('keydown keyup mousedown mouseup click dblclick', function(e) {
-		// 	
-		// 	if (this == self.active.document) {
-		// 		self.trigger(e);
-		// 		var ev;
-		// 
-		// 		
-		// 		if (/(mouseup|keyup)/i.test(e.type)) {
-		// 			
-		// 			if (e.type == 'mouseup') {
-		// 				ev = $.Event('update');
-		// 			} else {
-		// 				if (self.utils.keyIsArrow(e)) {
-		// 					ev = $.Event('update');
-		// 				} else if (self.utils.keyIsDel(e) || e.keyCode == 13) {
-		// 					ev = $.Event('change');
-		// 				} else if (self.utils.keyIsChar(e)) {
-		// 					if (e.ctrlKey || e.metaKey) {
-		// 						ev = $.Event('update')
-		// 					} else if (!this.selectionCollapsed) {
-		// 						ev = $.Event('change')
-		// 					} else {
-		// 						ev = $.Event('input')
-		// 					}
-		// 				} 
-		// 			}
-		// 			
-		// 			if (ev) {
-		// 				this.selectionCollapsed = self.selection.collapsed();
-		// 				ev.originalEvent = e;
-		// 				self.trigger(ev);
-		// 			}
-		// 		}
-		// 	}
-		// 	
-		// 
-		// });
-		
-
+				if (e.type == 'mouseup') {
+					ev = $.Event('change');
+				} else if (e.type == 'keyup') {
+					c = e.keyCode;
+					
+					if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
+						ev = $.Event('change');
+					} else if (self.utils.isKeyDel()) {
+						ev = $.Event('change');
+						ev.isDel = true;
+					} else if (self.utils.isKeyChar(c) && !e.ctrlKey) {
+						ev = $.Event('input')
+					}
+				}
+				if (ev) {
+					ev.originalEvent = e;
+					self.trigger(ev);
+				}
+			}
+		});
 
 		e.elrteDocument = doc;
 		this.trigger(e);
-		/* if open only document after load editor */
+		/* when loading document into empty editor after editor was loaded */
 		if (!this.documents.length == 1 && !this.listeners.load) {
 			this.focus(d.id);
 		}
@@ -413,27 +396,47 @@
 	 *
 	 * @param String    event name
 	 * @param Function  callback
+	 * @param Boolean   put listener before others (on top)
 	 * @return elRTE
 	 */
-	elRTE.prototype.bind = function(e, c) {
-		var event;
+	elRTE.prototype.bind = function(e, c, t) {
+		var ev;
 		if (typeof(c) == 'function') {
 			e = e.split(' ');
 			for (var i=0; i < e.length; i++) {
-				event = $.trim(e[i]);
-				if (typeof(this.listeners[event]) == 'undefined') {
-					this.listeners[event] = [];
+				ev = $.trim(e[i]);
+				if (typeof(this.listeners[ev]) == 'undefined') {
+					this.listeners[ev] = [];
 				}
-				this.listeners[event].push(c);
+				t ? this.listeners[ev].unshift(c) : this.listeners[ev].push(c);
 			};
 		}
 		return this;
 	}
 	
 	/**
+	 * Create and return event with required type and elrteDocument set to required or active document
+	 *
+	 * @param  String       event name
+	 * @param  Object       document (not set for active document)
+	 * @return jQuery.Event
+	 */
+	elRTE.prototype.event = function(n, d) {
+		var e = $.Event(n);
+		if (typeof(d) == 'object') {
+			e.elrteDocument = d;
+		} else if (this.active) {
+			e.elrteDocument = this.active;
+		}
+		return e;
+	}
+	
+	/**
 	 * Send notification to all event subscribers
 	 *
 	 * @param String event name
+	 * @param Object event data
+	 * @return  elRTE
 	 */
 	elRTE.prototype.trigger = function(e, d) {
 		if (typeof(e) == 'string') {
@@ -442,14 +445,13 @@
 		if (!e.elrteDocument && this.active) {
 			e.elrteDocument = this.active;
 		}
-		// this.log(d)
-		if (typeof(e.data) == 'undefined' && typeof(d) == 'object') {
+
+		if (typeof(d) == 'object') {
 			e.data = d;
 		}
 
 		this.debug(e.type+' '+e.elrteDocument.id);
 		if (this.listeners[e.type] && this.listeners[e.type].length) {
-			
 			for (var i=0; i < this.listeners[e.type].length; i++) {
 				if (e.isPropagationStopped()) {
 					this.log(e.type+' stopped')
@@ -468,14 +470,12 @@
 	 * @param  String|Number  document id/index
 	 * @return String
 	 */
-	elRTE.prototype.getContent = function(i) {
-		var d = this.getDocument(i)||this.active;
+	elRTE.prototype.getContent = function(i, q) {
+		var d = this.getDocument(i)||this.active, e;
 		if (d) {
 			this.sync(d.id);
-			e = $.Event('get');
-			e.elrteDocument = d;
-			this.trigger(e);
-			return e.elrteDocument.source.val();
+			!q && this.trigger(this.event('get', d));
+			return d.source.val();
 		}
 		return '';
 	}
@@ -485,23 +485,22 @@
 	 *
 	 * @param  String         new content
 	 * @param  String|Number  document id/index
+	 * @param  Boolean        true for no rise events
 	 * @return Boolean
 	 */
-	elRTE.prototype.setContent = function(c, i) {
+	elRTE.prototype.setContent = function(c, i, q) {
 		var d = this.getDocument(i)||this.active, e;
 		if (d) {
-			c = $.trim(c);
 			if (d.source.is(':visible')) {
 				d.source.val(this.filter.toSource(c));
 			} else {
 				$(d.document.body).html(this.filter.fromSource(c));
 			}
-			e = $.Event('set');
-			e.elrteDocument = d;
-			this.trigger(e);
+			!q && this.trigger(this.event('set', d));
+
 			if (d == this.active) {
 				this.focus();
-				this.wysiwyg && this.trigger('change');
+				this.wysiwyg && !q && this.trigger('change');
 			}
 			return true;
 		}

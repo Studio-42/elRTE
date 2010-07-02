@@ -1,248 +1,180 @@
 (function($) {
 	/**
-	 * @class elRTE history manager
+	 * @class elRTE history
+	 * @param elRTE editor instance
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 */
-	
 	elRTE.prototype.history = function(rte) {
-		this.rte = rte;
-		this.storage = {};
-		this.size = parseInt(rte.options.historySize)||0;
-		this.id = 0;
-		
-		rte.log(this.size)
+		/**
+		 * editor instance
+		 **/
+		this.rte    = rte;
+		/**
+		 * redo/undo levels size (0 - for not use history)
+		 **/
+		this.size   = parseInt(rte.options.historySize)||0;
+		/**
+		 * smth like class constant - user typed symbol
+		 **/
+		this._input = 1;
+		/**
+		 * smth like class constant - user pressed delete/backspace
+		 **/
+		this._del   = 2;
+
 		var self    = this,
-			enabled = this.size > 0;
-		
-		function save(id) {
-			self.rte.log('save');
-			
-		}
-		
-		this.save = function() {
-			this.rte.log('save')
-			this.storage[this.rte.active.id].input = false;
-			
-			var html = $(this.rte.active.document.body).html();
-			this.rte.log(html)
-		}
-		
-		if (enabled) {
-			rte.bind('open', function(e) {
-				self.storage[e.elrteDocument.id] = {
-					store : [],
-					pointer : null,
-					active : false,
-					input : false
-				}
-			}).bind('close', function(e) {
-				delete self.storage[e.elrteDocument.id];
-			}).bind('focus', function(e) {
-				this.id = e.elrteDocument.id;
-			}).bind('blur', function(e) {
-				this.id = 0;
-			})
-			
-			.bind('exec change', function(e) {
-				self.save();
-			}).bind('update', function() {
-
-				self.storage[rte.active.id].input && self.save();
-
-			}).bind('input', function(e) {
-				self.storage[rte.active.id].input = true;
-
-			})
-		}
-		
-
-		
-		
-	}
-	
-	elRTE.prototype.history_ = function(rte) {
-
-		var load      = false, /* flag, true if rte is loaded */
-			size      = rte.options.historySize, /* max allowed history size */
-			storage   = {}, /* store documents states */
-			listeners = []; /* callbacks for history size changes */
+			storage = {}, /* history storage */
+			active;       /* active document history */
 		
 		/**
-		 * Save state of active document in history
+		 * change active storage input state
 		 *
-		 * @param  Object   active elRTE document
-		 * @param  Boolean  flag, if true previous state not propagate in history
-		 */
-		function save(d, np) {
-			var s  = storage[d.id],
-				bm = rte.selection.getBookmark(),
-				ps = storage[d.id].pre.length,
-				ns = storage[d.id].nxt.length;
-
-			/* move current state to prev states and check prev size */
-			if (s.cur.html && (!np || s.pre.length == 0)) {
-				s.pre.unshift(s.cur);
-				if (s.pre.length > size) {
-					s.pre.pop();
-				}
-			}
-			/* clear next states */
-			s.nxt = [];
-			/* store current state */
-			s.cur = {
-				html : $(d.document.body).html(),
-				bm   : [bm[0].id, bm[1].id]
-			}
-			rte.selection.moveToBookmark(bm);
-			if (ps != s.pre.length || ns != s.nxt.length) {
-				trigger();
+		 * @param  Number  new active storage input state
+		 **/
+		function setInput(i) {
+			if (active) {
+				var ch = i != active.input;
+				active.input = i;
+				ch && self.rte.trigger('historyChange');
 			}
 		}
 		
 		/**
-		 * Set special flags on active document
+		 * Add new undo level if required and [change active storage input state]
 		 *
-		 * @param Boolean  flag, means prevoius action was typing symbols
-		 * @param Boolean  flag, means prevoius action was deleting 
-		 */
-		function flags(t, d) {
-			rte.active.document.elrteTyping = t;
-			rte.active.document.elrteDel = d;
-		}
-
-		/**
-		 * Send notification to listeners
-		 *
-		 */
-		function trigger() {
-			for (var i=0; i < listeners.length; i++) {
-				var e = $.Event('historyChange');
-				e.data = {
-					undo : storage[rte.active.id].pre.length>0,
-					redo : storage[rte.active.id].nxt.length>0
-				}
-				listeners[i](e);
-			};
-		}
-
-		/* If history allowed subscribe to events */
-		if (rte.options.historySize>0) {
+		 * @param  Number  new active storage input state
+		 **/
+		this.add = function(i) {
+			var c = self.rte.getContent(null, true), bm;
 			
-			rte.bind('open', function(e) {
-				/* create storage for document */
-				storage[e.target.id] = {
-					cur : {},
-					pre : [],
-					nxt : []
-				}
-			}).bind('close', function(e) {
-				/* remove document storage */
-				if (storage[e.target.id]) {
-					delete storage[e.target.id];
-				}
-			}).bind('load', function() {
-				/* we ready */
-				load = true;
-			}).bind('focus', function(e) {
-				/* save cuurent document state if not saved prevoiusly */
-				load && !storage[e.target.id].cur.html && save(e.target);
-			}).bind('blur source', function() {
-				flags(false, false);
-			}).bind('change', function(e) {
-				/* save if allowed */
-				load && !e.data.noHistory && save(e.target);
-				flags(false, false);
-			}).bind('keyup', function(e) {
-				/* minor magic for saving whole sequence of typed/removed symbols as one state */
-				var t = e.currentTarget;
-
-				if (rte.utils.isSymbolKey(e.keyCode)) {
-					save(rte.active, t.elrteTyping);
-					flags(true, false);
-				} else if (rte.utils.isDelKey(e.keyCode)) {
-					save(rte.active, t.elrteDel);
-					flags(false, true);
-				} 
-			}).bind('update', function(e) {
-				/* yet another part of minor magic */
-				var t = e.originalEvent ? e.originalEvent.type : false;
+			if (typeof(i) == 'number') {
+				active.input = i;
+			}
+			
+			if (active && (!active.levels.length || active.levels[active.index].origin != c)) {
+				self.rte.time('add')
 				
-				if (t == 'mouseup' || t == 'keyup') {
-					flags(false, false);
+				if (active.index < active.levels.length-1) {
+					active.levels.splice(active.index+1);
+				}
+				if (active.index >= self.size) {
+					active.levels.shift();
+					active.index--;
+				}
+				
+				bm = rte.selection.getBookmark();
+				active.levels.push({
+					origin : c,
+					html   : self.rte.getContent(null, true),
+					bm     : [bm[0].id, bm[1].id]
+				});
+				active.index = active.levels.length-1;
+				rte.selection.moveToBookmark(bm);
+				self.rte.timeEnd('add')
+				self.rte.log(active.levels.length+' '+active.index)
+				self.rte.trigger('historyChange');
+			}
+		}
+		
+		/**
+		 * Return true if undo is available
+		 *
+		 **/
+		this.canUndo = function() {
+			return active && (active.index>0 || active.input);
+		}
+		
+		/**
+		 * Return true if redo is available
+		 *
+		 **/
+		this.canRedo = function() {
+			return active && active.levels.length-active.index>1;
+		}
+		
+		/**
+		 * Produce undo action
+		 *
+		 * @return  Boolean
+		 **/
+		this.undo = function() {
+			if (this.canUndo()) {
+				self.rte.log('undo')
+				if (active.input) {
+					active.levels.push({});
+					active.index++;
+				}
+				active.index--;
+				active.input = 0;
+				self.rte.setContent(active.levels[active.index].html, null, true);
+				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				self.rte.trigger('change').trigger('historyChange');
+				return true;
+			}
+		}
+		
+		/**
+		 * Produce redo action
+		 *
+		 * @return  Boolean
+		 **/
+		this.redo = function() {
+			if (this.canRedo()) {
+				self.rte.log('redo')
+				active.index++;
+				active.input = 0;
+				self.rte.setContent(active.levels[active.index].html, null, true);
+				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				self.rte.trigger('change').trigger('historyChange');
+				return true;
+			}
+			
+		}
+		
+		if (this.size>0) {
+			rte.bind('open', function(e) {
+				/* create storage for new document */
+				storage[e.elrteDocument.id] = { 
+					levels : [], 
+					index  : 0, 
+					input  : 0 
+				};
+			}).bind('close', function(e) {
+				/* remove storage for document */
+				delete storage[e.elrteDocument.id];
+			})
+			.bind('focus', function() {
+				/* set active storage and add initial level if not exists */
+				active = storage[self.rte.active.id];
+				!active.levels.length && self.add();
+			}).bind('blur source', function() { 
+				/* change active storage */
+				active = null; 
+			})
+			.bind('exec change', function(e) { 
+				/* on press delete keys - update active input state, otherwise - add new level */
+				e.isDel ? setInput(self._del) : self.add(0);
+			}).bind('input', function(e) {
+				/* if symbol key pressed - update active input state */
+				setInput(self._input);
+			}).bind('keydown', function(e) {
+				if (e.keyCode == 90 && (e.ctrlKey || e.metaKey)) {
+					e.stopPropagation();
+					e.preventDefault();
+					e.shiftKey ? self.redo() : self.undo();
+					return;
+				}
+				if (active) {
+					if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
+						self.add(self._del);  /* change from typing to delete */
+					} else if (self.rte.utils.isKeyChar(e.keyCode) && active.input == self._del) {
+						self.add(self._input); /* change from delete to typing */
+					} else if (e.keyCode == 13 && active.input) {
+						self.add(); /* enter after typing/delete */
+					}
 				}
 			});
 		}
-
-		/**
-		 * Add callback to listeners list
-		 *
-		 * @param Function
-		 */
-		this.bind = function(f) {
-			listeners.push(f);
-		}
-		
-		/**
-		 * Return true in undo can be done for current documnet
-		 *
-		 * @return  Boolean
-		 */
-		this.canUndo = function() {
-			return load && rte.active.id ? storage[rte.active.id].pre.length>0 : false;
-		}
-		
-		/**
-		 * Return true in redo can be done for current documnet
-		 *
-		 * @return  Boolean
-		 */
-		this.canRedo = function() {
-			return load && rte.active.id ? storage[rte.active.id].nxt.length>0 : false;
-		}
-		
-		/**
-		 * Restore current document to prevoius state
-		 *
-		 */
-		this.undo = function() {
-			if (load) {
-				var doc = rte.active||null, 
-					s = doc && storage[doc.id] ? storage[doc.id] : false;
-
-				if (s && s.pre.length) {
-					s.nxt.unshift(s.cur);
-					s.cur = s.pre.shift();
-					$(doc.document.body).html(s.cur.html);
-					rte.selection.moveToBookmark(s.cur.bm);
-					s.nxt.length > size && s.nxt.pop();
-					rte.trigger('change', {noHistory : true});
-					trigger();
-				}
-			}
-
-		}
-		
-		/**
-		 * Restore current document to next undone state
-		 *
-		 */
-		this.redo = function() {
-			if (load) {
-				var doc = rte.active||null, 
-					s = doc && storage[doc.id] ? storage[doc.id] : false;
-
-				if (s && s.nxt.length) {
-					s.pre.unshift(s.cur);
-					s.cur = s.nxt.shift();
-					$(doc.document.body).html(s.cur.html);
-					rte.selection.moveToBookmark(s.cur.bm);
-					s.pre.length > size && s.pre.pop();
-					rte.trigger('change', {noHistory : true});
-					trigger();
-				}
-			}
-
-		}
-
 	}
 	
 })(jQuery);

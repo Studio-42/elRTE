@@ -12,7 +12,7 @@
 		/* documents charset */
 		charset : 'UTF-8',
 		/* send debug to log? */
-		debug    : true,
+		debug    : false,
 		/* allow user view and edit source? required plugin or command */
 		allowSource : true, 
 		/* switch cuurent doc to editor when switch to another doc */
@@ -31,7 +31,7 @@
 		allowTags : [],
 		denyTags : ['iframe'],
 		/* max undo/redo steps */
-		historySize : 2,
+		historySize : 5,
 		/* plugins to load */
 		plugins : ['source', 'dummy', 'path', 'webkit'],
 		/* display or not toolbar */
