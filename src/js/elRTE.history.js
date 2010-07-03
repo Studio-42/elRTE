@@ -68,10 +68,9 @@
 					html   : self.rte.getContent(null, {raw : true, quiet : true}),
 					bm     : [bm[0].id, bm[1].id]
 				});
-				active.index = active.levels.length-1;
 				rte.selection.moveToBookmark(bm);
+				active.index = active.levels.length-1;
 				self.rte.timeEnd('add')
-				self.rte.log(active.levels.length+' '+active.index)
 				self.rte.trigger('historyChange');
 			}
 		}
@@ -99,7 +98,7 @@
 		 **/
 		this.undo = function() {
 			if (this.canUndo()) {
-				self.rte.log('undo')
+				// self.rte.log('undo')
 				if (active.input) {
 					active.levels.push({});
 					active.index++;
@@ -120,7 +119,7 @@
 		 **/
 		this.redo = function() {
 			if (this.canRedo()) {
-				self.rte.log('redo')
+				// self.rte.log('redo')
 				active.index++;
 				active.input = 0;
 				self.rte.setContent(active.levels[active.index].html, null, {raw : true, quiet : true});
@@ -158,12 +157,6 @@
 				/* if symbol key pressed - update active input state */
 				setInput(self._input);
 			}).bind('keydown', function(e) {
-				if (e.keyCode == 90 && (e.ctrlKey || e.metaKey)) {
-					e.stopPropagation();
-					e.preventDefault();
-					e.shiftKey ? self.redo() : self.undo();
-					return;
-				}
 				if (active) {
 					if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
 						self.add(self._del);  /* change from typing to delete */
@@ -173,6 +166,10 @@
 						self.add(); /* enter after typing/delete */
 					}
 				}
+			}).shortcut(rte.macos ? 'meta+z' : 'ctrl+z', 'Undo (Ctrl+Z) / Redo (Ctrl+Shift+Z)', function(e) { 
+				e.stopPropagation();
+				e.preventDefault();
+				e.shiftKey ? self.redo() : self.undo();
 			});
 		}
 	}

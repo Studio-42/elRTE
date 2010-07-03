@@ -27,6 +27,7 @@
 		this.toolbar   = '';
 		this.commands  = {};
 		this.plugins   = {};
+		this.shortcuts = {};
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* inner flag - editor created and load documents */
@@ -255,7 +256,26 @@
 			self.trigger('paste').trigger('change');
 		}).bind('cut', function(e) {
 			self.trigger('change');
-		}).bind('keydown keyup mousedown mouseup click dblclick', function(e) {
+		}).bind('keydown', function(e) {
+			var i, s, p;
+			for (i in self.shortcuts) {
+				if (self.shortcuts.hasOwnProperty(i)) {
+					s = self.shortcuts[i];
+					p = s.pattern;
+					if (p.keyCode == e.keyCode 
+					&& (!p.ctrlKey || p.ctrlKey == e.ctrlKey) 
+					&& (!p.altKey || p.altKey == e.altKey) 
+					&& (!p.shiftKey || p.shiftKey == e.shiftKey) 
+					&& (!p.metaKey || p.metaKey == e.metaKey)) {
+						if (e.isPropagationStopped()) {
+							return;
+						}
+						s.callback(e);
+					}
+				}
+			}
+			!e.isPropagationStopped() && self.trigger(e);
+		}).bind('keyup mousedown mouseup click dblclick', function(e) {
 			if (this == self.active.document) {
 				self.trigger(e);
 				var ev, c;
@@ -414,6 +434,36 @@
 	}
 	
 	/**
+	 * Bind keybord shortcut to keydown event
+	 *
+	 * @param String    shortcut pattern in form: "ctrl+shift+z"
+	 * @param String    shortcut description
+	 * @param Function  callback
+	 * @return Boolean
+	 */
+	elRTE.prototype.shortcut = function(p, d, c) {
+		p = p.toUpperCase();
+		var _p = p.split('+'),
+			l  = _p.length, 
+			s  = { keyCode : 0 };
+		while (l--) {
+			switch (_p[l]) {
+				case 'CTRL'  : s.ctrlKey  = true; break;
+				case 'ALT'   : s.altKey   = true; break;
+				case 'SHIFT' : s.shiftKey = true; break;
+				case 'META'  : s.metaKey  = true; break;
+				default      : s.keyCode  = _p[l].charCodeAt(0);
+			}
+		}
+		if (s.keyCode>0 && (s.ctrlKey || s.altKey || s.shiftKey || s.metaKey) && typeof(c) == 'function') {
+			this.shortcuts[p] = {pattern : s, callback : c, description : this.i18n(d)};
+			this.log(this.shortcuts)
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Create and return event with required type and elrteDocument set to required or active document
 	 *
 	 * @param  String       event name
@@ -480,9 +530,7 @@
 				this.sync(d.id);
 				c = d.source.val();
 			}
-			if (!o.quiet) {
-				this.trigger(this.event('get', d));
-			}
+			!o.quiet && this.trigger(this.event('get', d));
 			return c;
 		}
 		return '';
