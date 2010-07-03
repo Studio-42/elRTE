@@ -16,16 +16,16 @@
 		function count(e) {
 			if (e.type == 'focus' 
 			|| (e.isDel || (e.originalEvent.keyCode && (e.originalEvent.keyCode == 32 || e.originalEvent.keyCode == 13)))) {
-				rte.time('count')
+				// rte.time('count')
 				var m = ($(rte.active.document.body).text().replace(/[0-9.(){},;:!?%#$¿'"_+=\\\/-]*/g, '').replace(/&nbsp;|&#160;/gi, '')+' ').match(/([^\s])+\s/gm),
 					c = m ? m.length : 0;
-				rte.timeEnd('count')
+				// rte.timeEnd('count')
 				panel.text(rte.i18n('Words')+': '+c);
 			}
 		}
 		
 		rte.bind('blur close source', function() {
-			self.panel.text('');
+			panel.text('');
 		}).bind('change focus input', count);
 	}
 	

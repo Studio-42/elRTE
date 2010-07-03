@@ -598,7 +598,6 @@
 	 */
 	elRTE.prototype.exec = function(c, o) {
 		if (this.commands[c]) {
-			this.trigger('exec');
 			if (this.commands[c].exec(o)) {
 				this.trigger('change');
 				return true;
@@ -612,11 +611,11 @@
 	 * @return Boolean
 	 */
 	elRTE.prototype.commandEnabled = function(c) {
-		return this.commands[c] ? this.commands[c].enabled() : false;
+		return this.commands[c] ? this.commands[c].state() > this.commands[c]._disabled : false;
 	}
 	
 	/**
-	 * Return command value if exists. (cuurent node properties)
+	 * Return command value if exists. (current node properties)
 	 *
 	 * @return String
 	 */
