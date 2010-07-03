@@ -41,6 +41,7 @@
 		
 		/**
 		 * Add new undo level if required and [change active storage input state]
+		 * Trigger "historyChange" event on success
 		 *
 		 * @param  Number  new active storage input state
 		 **/
@@ -70,7 +71,7 @@
 				});
 				rte.selection.moveToBookmark(bm);
 				active.index = active.levels.length-1;
-				self.rte.timeEnd('add')
+				self.rte.timeEnd('add');
 				self.rte.trigger('historyChange');
 			}
 		}
@@ -93,6 +94,7 @@
 		
 		/**
 		 * Produce undo action
+		 * Trigger "change" and "historyChange" events on success
 		 *
 		 * @return  Boolean
 		 **/
@@ -114,6 +116,7 @@
 		
 		/**
 		 * Produce redo action
+		 * Trigger "change" and "historyChange" events on success
 		 *
 		 * @return  Boolean
 		 **/
@@ -127,9 +130,9 @@
 				self.rte.trigger('change').trigger('historyChange');
 				return true;
 			}
-			
 		}
 		
+		/* init */
 		if (this.size>0) {
 			rte.bind('open', function(e) {
 				/* create storage for new document */
@@ -138,7 +141,8 @@
 					index  : 0, 
 					input  : 0 
 				};
-			}).bind('close', function(e) {
+			})
+			.bind('close', function(e) {
 				/* remove storage for document */
 				delete storage[e.elrteDocument.id];
 			})
@@ -146,17 +150,20 @@
 				/* set active storage and add initial level if not exists */
 				active = storage[self.rte.active.id];
 				!active.levels.length && self.add();
-			}).bind('blur source', function() { 
+			})
+			.bind('blur source', function() { 
 				/* change active storage */
 				active = null; 
 			})
 			.bind('exec change', function(e) { 
 				/* on press delete keys - update active input state, otherwise - add new level */
 				e.isDel ? setInput(self._del) : self.add(0);
-			}).bind('input', function(e) {
+			})
+			.bind('input', function(e) {
 				/* if symbol key pressed - update active input state */
 				setInput(self._input);
-			}).bind('keydown', function(e) {
+			})
+			.bind('keydown', function(e) {
 				if (active) {
 					if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
 						self.add(self._del);  /* change from typing to delete */
@@ -166,7 +173,8 @@
 						self.add(); /* enter after typing/delete */
 					}
 				}
-			}).shortcut(rte.macos ? 'meta+z' : 'ctrl+z', 'Undo (Ctrl+Z) / Redo (Ctrl+Shift+Z)', function(e) { 
+			})
+			.shortcut(rte.macos ? 'meta+z' : 'ctrl+z', 'Undo (Ctrl+Z) / Redo (Ctrl+Shift+Z)', function(e) { 
 				e.stopPropagation();
 				e.preventDefault();
 				e.shiftKey ? self.redo() : self.undo();

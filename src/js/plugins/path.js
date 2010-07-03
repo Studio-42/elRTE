@@ -9,6 +9,8 @@
 		this.name        = 'path';
 		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry (dio) Levashov, dio@std42.ru';
+		this.authorURL   = 'http://www.std42.ru';
+		this.docURL      = '';
 		this.panel       = $('<div class="elrte-statusbar-path"/>').appendTo(rte.view.statusbar);
 		this.cssClass    = rte.options.highlightClass || 'elrte-highlight';
 		

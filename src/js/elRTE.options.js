@@ -33,7 +33,7 @@
 		/* max undo/redo steps */
 		historySize : 5,
 		/* plugins to load */
-		plugins : ['source', 'dummy', 'path', 'webkit'],
+		plugins : ['source', 'dummy', 'path', 'webkit', 'wordcount'],
 		/* display or not toolbar */
 		allowToolbar : true,
 		/* cuurent toolbar name */

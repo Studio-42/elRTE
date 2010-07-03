@@ -287,7 +287,7 @@
 					
 					if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
 						ev = $.Event('change');
-					} else if (self.utils.isKeyDel()) {
+					} else if (self.utils.isKeyDel(c)) {
 						ev = $.Event('change');
 						ev.isDel = true;
 					} else if (self.utils.isKeyChar(c) && !e.ctrlKey) {
@@ -306,6 +306,7 @@
 		if (!this.documents.length == 1 && !this.listeners.load) {
 			this.focus(d.id);
 		}
+		
 		return id;
 	}
 
