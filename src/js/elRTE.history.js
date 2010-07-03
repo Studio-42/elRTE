@@ -45,7 +45,7 @@
 		 * @param  Number  new active storage input state
 		 **/
 		this.add = function(i) {
-			var c = self.rte.getContent(null, true), bm;
+			var c = self.rte.getContent(null, {raw : true, quiet : true}), bm;
 			
 			if (typeof(i) == 'number') {
 				active.input = i;
@@ -65,7 +65,7 @@
 				bm = rte.selection.getBookmark();
 				active.levels.push({
 					origin : c,
-					html   : self.rte.getContent(null, true),
+					html   : self.rte.getContent(null, {raw : true, quiet : true}),
 					bm     : [bm[0].id, bm[1].id]
 				});
 				active.index = active.levels.length-1;
@@ -106,7 +106,7 @@
 				}
 				active.index--;
 				active.input = 0;
-				self.rte.setContent(active.levels[active.index].html, null, true);
+				self.rte.setContent(active.levels[active.index].html, null, {raw : true, quiet : true});
 				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				self.rte.trigger('change').trigger('historyChange');
 				return true;
@@ -123,7 +123,7 @@
 				self.rte.log('redo')
 				active.index++;
 				active.input = 0;
-				self.rte.setContent(active.levels[active.index].html, null, true);
+				self.rte.setContent(active.levels[active.index].html, null, {raw : true, quiet : true});
 				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				self.rte.trigger('change').trigger('historyChange');
 				return true;

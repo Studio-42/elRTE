@@ -209,7 +209,7 @@
 			id    = this.id+'-document-'+ndx,
 			title = this.i18n('Document')+' '+ndx,
 			doc   = { id : id },
-			e     = $.Event('open'), html;
+			html;
 			
 		doc.title = d.title||title;
 		if (d.nodeType == 1) {
@@ -281,8 +281,7 @@
 			}
 		});
 
-		e.elrteDocument = doc;
-		this.trigger(e);
+		this.trigger(this.event('open', doc));
 		/* when loading document into empty editor after editor was loaded */
 		if (!this.documents.length == 1 && !this.listeners.load) {
 			this.focus(d.id);
@@ -468,14 +467,23 @@
 	 * Return required or active document content
 	 *
 	 * @param  String|Number  document id/index
+	 * @param  Object         options: raw : do not clear content, quiet : do not rise events
 	 * @return String
 	 */
-	elRTE.prototype.getContent = function(i, q) {
-		var d = this.getDocument(i)||this.active, e;
+	elRTE.prototype.getContent = function(i, o) {
+		var d = this.getDocument(i)||this.active, c, e;
 		if (d) {
-			this.sync(d.id);
-			!q && this.trigger(this.event('get', d));
-			return d.source.val();
+			o = o||{};
+			if (o.raw) {
+				c = d.source.is(':visible') ? d.source.val() : $(d.document.body).html();
+			} else {
+				this.sync(d.id);
+				c = d.source.val();
+			}
+			if (!o.quiet) {
+				this.trigger(this.event('get', d));
+			}
+			return c;
 		}
 		return '';
 	}
@@ -485,22 +493,22 @@
 	 *
 	 * @param  String         new content
 	 * @param  String|Number  document id/index
-	 * @param  Boolean        true for no rise events
+	 * @param  Object         options: raw : do not clear content, quiet : do not rise events
 	 * @return Boolean
 	 */
-	elRTE.prototype.setContent = function(c, i, q) {
-		var d = this.getDocument(i)||this.active, e;
+	elRTE.prototype.setContent = function(c, i, o) {
+		var d = this.getDocument(i)||this.active, c, e;
 		if (d) {
-			if (d.source.is(':visible')) {
-				d.source.val(this.filter.toSource(c));
-			} else {
-				$(d.document.body).html(this.filter.fromSource(c));
-			}
-			!q && this.trigger(this.event('set', d));
+			o = o||{};
+			if (!o.raw) {
+				c = d.source.is(':visible') ? this.filter.toSource(c) : this.filter.fromSource(c);
+			} 
+			d.source.is(':visible') ? d.source.val(c) : $(d.document.body).html(c);
+			!o.quiet && this.trigger(this.event('set', d));
 
 			if (d == this.active) {
 				this.focus();
-				this.wysiwyg && !q && this.trigger('change');
+				this.wysiwyg && !o.quiet && this.trigger('change');
 			}
 			return true;
 		}
