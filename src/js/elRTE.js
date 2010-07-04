@@ -1,37 +1,44 @@
 (function($) {
 	
 	/**
-	 * Class
-	 *
+	 * @Class elRTE editor
+	 * @todo  add  history methods wrappers to api
 	 * @param DOMElement  
-	 * @param Object  elrte options
+	 * @param Object  editor options
 	 */
 	elRTE = function(t, o) {
 		if (!t || !t.nodeName) {
 			return alert('elRTE init failed! First argument should be DOMElement');
 		}
 		
-		
-		var self = this, tb, l, p, i;
 		this.time('load')
+		var self = this, tb, l, p, i;
+		
 		/* version */
 		this.version   = '1.1 dev';
 		/* build date */
-		this.build     = '20100626';
+		this.build     = '20100705';
+		/* is os - macos? */
 		this.macos     = navigator.userAgent.indexOf('Mac') != -1;
+		/* messages language */
 		this.lang      = 'en';
 		/* DOM element on witch elRTE created */
 		this.target    = $(t).hide()[0];
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
+		/* cuurent toolbar name */
 		this.toolbar   = this.options.toolbars[this.options.toolbar] ? this.options.toolbar : 'default';
+		/* messages */
 		this.messages  = this.i18Messages[this.options.lang]||{};
+		/* loaded commands */
 		this.commands  = {};
+		/* loaded plugins */
 		this.plugins   = {};
+		/* shortcuts */
 		this.shortcuts = {};
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
-		/* inner flag - editor created and load documents */
+		/* active documents is in wysiwyg mode */
 		this.wysiwyg   = false;    
 		/* opened documents */
 		this.documents = [];
@@ -55,15 +62,15 @@
 			'blur'      : [],
 			/* called before close document */
 			'close'     : [],
-			/* called before content from document will be returned outside editor. if needed modify event.elrteDocument.source value */
+			/* called before content from document will be returned. if needed modify event.elrteDocument.source value */
 			'get'       : [],
 			/* callend after new content will be set for document */
 			'set'       : [],
-			/* called before command will be execed */
+			/* called before command will be executed */
 			'exec'      : [],
-			/* called after user type new char into document */
+			/* called after user typed new symbol into document */
 			'input'     : [],
-			/* called after some changes was made in document or carrent change position */
+			/* called after some changes was made in document or carret change position */
 			'change'    : [],
 			/* called before send form */
 			'save'      : [],
@@ -80,9 +87,7 @@
 			/* called on double click on document */
 			'dblclick'  : [],
 			/* called before paste in document */
-			'paste'     : [],
-			/* called after cut from document */
-			'cut'       : []
+			'paste'     : []
 			};
 		/* object with various utilits */	
 		this.utils     = new this.utils(this)
@@ -94,13 +99,12 @@
 		this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
 
 		this.filter = new this.filter(this)
-
+		/* history object */
 		this.history = new this.history(this);
 		
 		/* load commands */
 		tb = this.options.toolbars[this.toolbar];
 		i = tb.length;
-		
 		while (i--) {
 			p = this.options.panels[tb[i]]; 
 			if (typeof(p) != 'undefined' && (l = p.length)) {
@@ -137,7 +141,7 @@
 		/* complete editor load */
 		this.trigger('load');
 		delete(this.listeners.load);
-		this.log(this.messages)
+
 		this.timeEnd('load');
 	}
 
@@ -671,6 +675,10 @@
 	 */
 	elRTE.prototype._commands = {};	
 
+	/**
+	 * elRTE messages
+	 *
+	 */
 	elRTE.prototype.i18Messages = {}
 
 	/**
