@@ -1,12 +1,10 @@
-/* reset and common classes */
-
+/* reset */
+.elrte,
 .elrte div, 
 .elrte ul, 
 .elrte li, 
 .elrte iframe, 
-.elrte textarea,
-.elrte .active,
-.elrte .disabled {
+.elrte textarea {
 	margin: 0; 
 	padding: 0;
 	font: inherit;
@@ -21,17 +19,28 @@
 
 .elrte ul { list-style: none; }
 
-.elrte .inline-block {
+/******************  common stuffs  *********************/
+
+/* cross-browser inline-block */
+.elrte .elrte-ib {
 	display: -moz-inline-stack;
 	display: inline-block;
-	vertical-align: top;
 	zoom: 1;
 	*display: inline;
 }
 
-.elrte .active { background:#eee; }
-
-.elrte .disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
+/* common tabs style */
+.elrte .elrte-tab {
+	border: 1px solid #ccc;
+	padding: 2px 19px;
+	margin: 0 3px 0 0;
+	font-size: 78%;
+	font-weight: bold;
+	color:#777;
+	cursor: default;
+}
+/* active tab */
+.elrte .elrte-tab-active { background:#eee; }
 
 /******************  editor  *********************/
 
@@ -46,12 +55,12 @@
 	background: #fff;
 }
 
-.elrte.fullscreen {
-	position: absolute;
-	width: 99%;
-	height: 100%;
-	left: 0;
-	top: 0;
+.elrte-fullscreen {
+	position:absolute;
+	left:0;
+	top:0;
+	width:99%;
+	margin:0;
 }
 
 /******************  toolbar  *********************/
@@ -66,12 +75,21 @@
 	background: #eee;
 }
 
-.elrte .elrte-toolbar-panel {
-	padding: 2px 0px 2px 0;
-/*	border: 1px solid #ccc;*/
+.elrte .elrte-toolbar-panel { 
+	padding: 2px 0px 2px 7px; 
+	background:url(../images/elrte-toolbar.png) -27px 3px no-repeat;
+	display: -moz-inline-stack;
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+}
+.elrte .elrte-toolbar-panel-first {
+	padding-left:0;
+	background:transparent;
 }
 
-.elrte .elrte-button {
+
+.elrte .elrte-ui-button {
 	width:  22px;
 	height: 22px;
 	margin: 0 2px 0 0;
@@ -82,49 +100,21 @@
 	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
 }
 
-.elrte .elrte-toolbar-sep {
-	width:  9px;
-	height: 22px;
-	background: url(../images/elrte-toolbar.png) 0 0 no-repeat;
-}
+.elrte .elrte-ui-fullscreen { background-position:3px 0; }
+.elrte .elrte-ui-bold { background-position:-19px -18px; }
+.elrte .elrte-ui-italic { background-position:-19px -38px; }
 
-.elrte .elrte-button.active {
-	background-color:#ccc;
-	border-color:#fff;
-}
-
-.elrte .elrte-button.hover {
-	border-color:#999;
-}
-
-.elrte .fullscreen {
-	background-position: -10px 0;
-}
-.elrte .fullscreen.active {
-	background-position: -10px -22px;
-}
-
-.elrte .bold   { background-position: -32px 0; }
-.elrte .italic { background-position: -32px -22px; }
+/* ui states */
+.elrte .elrte-ui-hover    { border-color:#777; }
+.elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
+.elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
 /******************  documents tabs  *********************/
 
-.elrte .elrte-tabsbar { border-bottom: 1px solid #ccc; }
+/*.elrte .elrte-tabsbar { border-bottom: 1px solid #ccc; }*/
 
-.elrte .elrte-tab {
-	border: 1px solid #ccc;
-	padding: 2px 19px;
-	margin: 0 3px 0 0;
-	font-size: 78%;
-	font-weight: bold;
-	color:#777;
-	cursor: default;
-}
-
-.elrte .elrte-tab.active { color:#444; }
-
-.elrte .elrte-tabsbar .elrte-tab {
-	border-bottom: 0 solid;
+.elrte .elrte-doc-tab {
+	border-bottom:0 solid;
 	-moz-border-radius-topleft: 3px; 
 	-moz-border-radius-topright: 3px; 
 	-webkit-border-top-left-radius: 3px;
@@ -133,16 +123,16 @@
 	border-top-right-radius: 3px;
 }
 
-.elrte .elrte-tabsbar .elrte-tab .elrte-tab-close {
+.elrte .elrte-doc-tab-close {
 	float:right;
 	width:10px;
 	height:10px;
 	margin:2px -12px 2px 9px;
-
 	border:1px solid #111;
 }
 
 /******************  workzone  *********************/
+
 .elrte .elrte-workzone {
 	border: 1px solid #ccc;
 	height: 300px;
@@ -155,18 +145,20 @@
 /* editor (iframe) */
 .elrte .elrte-editor {
 	width: 100%;
-	height: 300px;
+/*	height: 300px;*/
 }
 
 /* document source */
 .elrte .elrte-source {
 	width: 100%;
+/*	height:100%;*/
 	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
 }
 
 /******************  editor/source tabs  *********************/
+/*.elrte .elrte-src-tabsbar { }*/
 
-.elrte .elrte-togglebar .elrte-tab { 
+.elrte .elrte-src-tab { 
 	border-top: 0 solid;
 	-moz-border-radius-bottomleft: 3px; 
 	-moz-border-radius-bottomright: 3px; 
@@ -176,98 +168,31 @@
 	border-bottom-right-radius: 3px;
 }
 
-
-/******************  status  *********************/
+/******************  statusbar  *********************/
 
 .elrte .elrte-statusbar {
-	margin-top: 7px;
-	padding: 0 12px;
-	clear: both;
 	height: 22px;
-	background: #eee;
+	clear: both;
+	margin-top: 5px;
+	padding: 0 12px;
+	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
+	color:#555;
 	border: 1px solid #ccc;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
-	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
-/*	font-weight:bold;*/
-	color:#555;
+	background: #eee;
 }
 
-.elrte .elrte-statusbar span { cursor:pointer; }
+/* path info */
+.elrte .elrte-statusbar-path span { cursor:pointer; }
 
-.elrte-swf-placeholder {
-	width:10px;
-	height:10px;
-	background: url('../images/swf.png') 0 0 no-repeat;	
-}
 
-/* COLORS */
-.elrte.cupertino {
-	border-color:#b2c7d7;
-}
 
-.elrte.cupertino .elrte-workzone,
-.elrte.cupertino .elrte-tab {
-	border-color: #aaa;
-}
 
-.elrte.cupertino .elrte-tab {
-	background: #e6e6e6;
-}
 
-.elrte.cupertino .elrte-tab.active {
-	background: #99c2ff;
-	border-color: #2694e8;
-}
 
-/* default color scheme */
-/*.elrte {
-	border-color:#ccc;
-}
-.elrte .elrte-workzone {
-	border-color:#aaa;
-}
-.elrte .elrte-tabsbar-tab,
-.elrte .elrte-togglebar-tab {
-	background:#eee;
-	border-color:#eee;
-	color:#777;
-}
-.elrte .elrte-tabsbar-tab.active,
-.elrte .elrte-togglebar-tab.active {
-	background:#fff;
-	color:#444;
-}
-.elrte .elrte-toolbar, 
-.elrte .elrte-statusbar {
-	background:#eee;
-}
-*/
-/* cupertino color scheme */
-/*.elrte.cupertino {
-	border-color:#b2c7d7;
-}
-.elrte.cupertino .elrte-workzone {
-	border-color:#aaa;
-}
-.elrte.cupertino .elrte-tabsbar-tab,
-.elrte.cupertino .elrte-togglebar-tab {
-	background:#e6e6e6;
-	border-color:#aaa;
-	color:#777;
-}
-.elrte.cupertino .elrte-tabsbar-tab.active,
-.elrte.cupertino .elrte-togglebar-tab.active {
-	background:#99c2ff;
-	border-color:#2694e8;
-	color:#444;
-}
 
-.elrte.cupertino .elrte-toolbar,
-.elrte.cupertino .elrte-statusbar {
-	background:#e6e6e6;
-}
 
-*/
+
 

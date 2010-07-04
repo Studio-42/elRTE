@@ -22,10 +22,10 @@
 		}
 
 		/* click on document tab */
-		$('#'+this.rte.id+' .elrte-tabsbar .elrte-tab').live('click', function(e) {
+		$('#'+this.rte.id+' .elrte-doc-tab').live('click', function(e) {
 			var id = $(e.currentTarget).attr('rel').substr(1);
 
-			if ($(e.target).hasClass('elrte-tab-close')) {
+			if ($(e.target).hasClass('elrte-doc-tab-close')) {
 				if (confirm(self.rte.i18n('Close')+' "'+$(e.currentTarget).text()+'"'+'?')) {
 					self.rte.close(id);
 				} else {
@@ -53,11 +53,11 @@
 		while (i--) {
 			pname = tb[i];
 			p = this.rte.options.panels[pname];
-			panel = $('<ul class="elrte-toolbar-panel inline-block" id="'+this.rte.id+'-panel-'+pname+'"><li class="elrte-toolbar-sep inline-block"></li></ul>');
+			panel = $('<ul class="elrte-toolbar-panel elrte-ib '+(i==0 ? 'elrte-toolbar-panel-first' : '')+'" id="'+this.rte.id+'-panel-'+pname+'"></ul>');
 			if (typeof(p) != undefined && (l = p.length)) {
 				while (l--) {
 					cname = p[l];
-					if (this.rte.commands[cname] && (b = this.rte.commands[cname].button())) {
+					if (this.rte.commands[cname] && (b = this.rte.commands[cname].ui())) {
 						panel.prepend(b);
 					}
 				}
@@ -79,13 +79,14 @@
 	 **/
 	elRTE.prototype.view.prototype.add = function(d) {
 		var self = this,
+			h = this.workzone.height(),
 			doc = $('<div id="'+d.id+'" class="elrte-document"/>')
-				.append(d.editor.addClass('elrte-editor'))
-				.append(d.source.addClass('elrte-source').height(this.workzone.height()).hide())
+				.append(d.editor.addClass('elrte-editor').height(h))
+				.append(d.source.addClass('elrte-source').height(h).hide())
 				.hide(),
-			tab = $('<li class="elrte-tab inline-block" rel="#'+d.id+'">'+d.title+'</li>'), l;
+			tab = $('<li class="elrte-tab elrte-doc-tab elrte-ib" rel="#'+d.id+'">'+d.title+'</li>'), l;
 			
-		d.closeable && tab.append('<span class="elrte-tab-close" title="'+this.rte.i18n('Close')+'"/>');
+		d.closeable && tab.append('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>');
 				
 		this.workzone.append(doc);
 		this.tabsbar.append(tab);
@@ -93,7 +94,7 @@
 		/* first or only document - set visible */
 		if (l == 1) {
 			doc.show();
-			tab.addClass('active');
+			tab.addClass('elrte-tab-active');
 		}
 		
 		if (l>1 || this.rte.options.tabsAlwaysShow) {
@@ -119,7 +120,7 @@
 	 * @return void
 	 **/
 	elRTE.prototype.view.prototype.focus = function(id) {
-		this.tabsbar.children().removeClass('active').filter('[rel="#'+id+'"]').addClass('active');
+		this.tabsbar.children().removeClass('elrte-tab-active').filter('[rel="#'+id+'"]').addClass('elrte-tab-active');
 		this.workzone.children('.elrte-document').hide().filter('#'+id).show();
 	}
 
@@ -137,6 +138,10 @@
 		if (!l || (l==1 && !this.rte.options.tabsAlwaysShow)) {
 			this.tabsbar.hide();
 		}
+	}
+
+	elRTE.prototype.view.prototype.setWorkzoneHeight = function(h) {
+		this.workzone.add(this.workzone.find('.elrte-editor,.elrte-source')).height(h);
 	}
 	
 })(jQuery);

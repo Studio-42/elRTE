@@ -11,9 +11,9 @@
 		
 		if (rte.options.allowSource) {
 
-			var ed  = $('<li class="elrte-tab inline-block active">'+rte.i18n('Editor')+'</li>'),
-				src = $('<li class="elrte-tab inline-block">'+rte.i18n('Source')+'</li>'),
-				bar = $('<ul class="elrte-togglebar" />')
+			var ed  = $('<li class="elrte-tab elrte-src-tab elrte-ib elrte-tab-active">'+rte.i18n('Editor')+'</li>'),
+				src = $('<li class="elrte-tab elrte-src-tab elrte-ib">'+rte.i18n('Source')+'</li>'),
+				bar = $('<ul class="elrte-src-tabsbar"/>')
 					.hide()
 					.insertAfter(rte.view.workzone)
 					.append(ed)
@@ -22,7 +22,7 @@
 			ed.add(src).mousedown(function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				$(this).hasClass('active') ? rte.focus() : rte.toggle();
+				$(this).hasClass('elrte-tab-active') ? rte.focus() : rte.toggle();
 			});
 				
 			rte.bind('open', function() {
@@ -30,8 +30,8 @@
 			}).bind('close', function() {
 				rte.documents.length == 1 && bar.hide();
 			}).bind('focus source', function(e) {
-				src.toggleClass('active', e.type == 'source');
-				ed.toggleClass('active',  e.type == 'focus');
+				src.toggleClass('elrte-tab-active', e.type == 'source');
+				ed.toggleClass('elrte-tab-active',  e.type == 'focus');
 			});
 			
 		}

@@ -53,7 +53,7 @@
 			}
 			
 			if (active && (!active.levels.length || active.levels[active.index].origin != c)) {
-				self.rte.time('add')
+				// self.rte.time('add')
 				
 				if (active.index < active.levels.length-1) {
 					active.levels.splice(active.index+1);
@@ -71,7 +71,7 @@
 				});
 				rte.selection.moveToBookmark(bm);
 				active.index = active.levels.length-1;
-				self.rte.timeEnd('add');
+				// self.rte.timeEnd('add');
 				self.rte.trigger('historyChange');
 			}
 		}

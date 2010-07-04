@@ -13,9 +13,9 @@
 		charset : 'UTF-8',
 		/* send debug to log? */
 		debug    : false,
-		/* allow user view and edit source? required plugin or command */
+		/* allow user view and edit source? required plugin or command to display ui */
 		allowSource : true, 
-		/* switch cuurent doc to editor when switch to another doc */
+		/* switch current doc from source to editor when switching to another doc */
 		autoToggle : false,
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
 		tabsAlwaysShow : true,

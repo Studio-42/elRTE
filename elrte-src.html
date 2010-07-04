@@ -36,6 +36,9 @@
 	<script src="src/js/elRTE.command.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
+	
+	<!-- lang -->
+	<script src="src/js/i18n/elrte.ru.js" type="text/javascript" charset="utf-8"></script>
 	<!-- 
 	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
@@ -56,7 +59,7 @@
 				// active : 1,
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
-				// height   : 420,
+				height   : 420,
 				// debug : false,
 				toolbar  : 'tiny',
 				cssfiles : ['src/css/elrte-inner.css'],
@@ -98,7 +101,7 @@
 			font-size:24px;
 			background:red;
 		}
-		div {
+		body div {
 			border:2px solid blue;
 		}
 		.active {
@@ -114,10 +117,8 @@
 	
 </head>
 <body>
-	<div id="editor3" style="display:none">div</div>
 
-	<textarea name="Name" rows="8" cols="40" id="editor2" style="display:none">second</textarea>
-	<form method="post" action="post.php">
+	<form method="post" action="post.php" style="position:relative">
 	<div id="editor" name="abr" title="Document">
 		<div>
 		<p>

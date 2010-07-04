@@ -24,7 +24,8 @@
 		this.target    = $(t).hide()[0];
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
-		this.toolbar   = '';
+		this.toolbar   = this.options.toolbars[this.options.toolbar] ? this.options.toolbar : 'default';
+		this.messages  = this.i18Messages[this.options.lang]||{};
 		this.commands  = {};
 		this.plugins   = {};
 		this.shortcuts = {};
@@ -97,51 +98,11 @@
 		this.history = new this.history(this);
 		
 		/* load commands */
-		this.loadToolbar(this.options.toolbar)
-
-		/* load plugins */
-		for (i=0; i < this.options.plugins.length; i++) {
-			if ( (p = this._plugins[this.options.plugins[i]]) ) {
-				this.plugins[p] = new p(this);
-			}
-		};
-		
-		/* load documents */
-		this.options.loadTarget && this.options.documents.unshift(t);
-
-		for (i=0; i<this.options.documents.length; i++) {
-			this.open(this.options.documents[i]);
-		}
-
-		if (this.documents.length) {
-			this.focus(this.documents[this.options.active] ? this.options.active : 0);
-		}
-
-		this.view.editor.parents('form').bind('submit', function() { self.trigger('save'); });
-		this.trigger('load');
-		delete(this.listeners.load);
-
-		this.timeEnd('load');
-	}
-
-	/* API */
-
-	/**
-	 * Load commands defined by required toolbar
-	 * and display toolbar if allowed
-	 *
-	 * @param  String  toolbar name
-	 * @return elRTE
-	 **/
-	elRTE.prototype.loadToolbar = function(tb) {
-		var t, i, p, l;
-		this.commands = {};
-		this.toolbar = this.options.toolbars[tb] ? tb : 'default';
-		t = this.options.toolbars[this.toolbar];
-		i = t.length;
+		tb = this.options.toolbars[this.toolbar];
+		i = tb.length;
 		
 		while (i--) {
-			p = this.options.panels[t[i]];
+			p = this.options.panels[tb[i]]; 
 			if (typeof(p) != 'undefined' && (l = p.length)) {
 				while (l--) {
 					if (typeof(this._commands[p[l]]) == 'function') {
@@ -150,10 +111,37 @@
 				}
 			}
 		}
-		this.view.cleanToolbar();
-		this.options.allowToolbar && this.view.showToolbar(t);
-		return this;
+		/* create toolbar if enabled */
+		this.options.allowToolbar && this.view.showToolbar(tb);
+
+		/* load plugins */
+		for (i=0; i < this.options.plugins.length; i++) {
+			if ( (p = this._plugins[this.options.plugins[i]]) ) {
+				this.plugins[p] = new p(this);
+			}
+		};
+		
+		/* add target node as document if enabled */
+		this.options.loadTarget && this.options.documents.unshift(t);
+		/* load documents */
+		for (i=0; i<this.options.documents.length; i++) {
+			this.open(this.options.documents[i]);
+		}
+		/* focus required/first document */
+		if (this.documents.length) {
+			this.focus(this.documents[this.options.active] ? this.options.active : 0);
+		}
+		/* bind to parent form save events */
+		this.view.editor.parents('form').bind('submit', function() { self.trigger('save'); });
+		
+		/* complete editor load */
+		this.trigger('load');
+		delete(this.listeners.load);
+		this.log(this.messages)
+		this.timeEnd('load');
 	}
+
+	/*** API ***/
 
 	/**
 	 * Return index of document by id or -1 if not exists
@@ -190,17 +178,17 @@
 	 * Open document in editor and return its id.
 	 * Document may be dom node or js object:
 	 * {
-	 *   id : document id - not required, if not set - generates automatically, 
-	 *   name : name for textarea - not required - if not set - id used,
-	 *   content : document text - required,
-	 *   closable : allow close document
+	 *   id       : document id - not required, if not set - generates automatically, 
+	 *   name     : name for textarea - not required - if not set - id used,
+	 *   content  : document text - required,
+	 *   closable : allow close document,
+	 *   save     : object (not implemented yet)
 	 * }
 	 *
 	 * @param  DOMElement|Object  document
 	 * @return String
 	 **/
 	elRTE.prototype.open = function(d) {
-
 		if (!d || (d.nodeType != 1 && typeof(d.content) != 'string')) {
 			return;
 		}
@@ -209,15 +197,14 @@
 			ndx   = this.documents.length+1,
 			id    = this.id+'-document-'+ndx,
 			title = this.i18n('Document')+' '+ndx,
-			doc   = { id : id },
+			doc   = { id : id, title : d.title||title },
 			html;
 			
-		doc.title = d.title||title;
 		if (d.nodeType == 1) {
-			doc.source = d.nodeName == 'TEXTAREA' ? $(d) : $('<textarea name="'+(d.name||id)+'" />').val($(d).html());
+			doc.source    = d.nodeName == 'TEXTAREA' ? $(d) : $('<textarea name="'+(d.name||id)+'" />').val($(d).html());
 			doc.closeable = $(d).hasClass('closable') ? true : this.options.allowCloseDocs;
 		} else {
-			doc.source = $('<textarea name="'+(d.name||id)+'" />').val(d.content||'');
+			doc.source    = $('<textarea name="'+(d.name||id)+'" />').val(d.content||'');
 			doc.closeable = typeof(d.closable) != 'undefined' ? !!d.closable : this.options.allowCloseDocs;
 		}
 		
@@ -239,9 +226,9 @@
 		doc.document.open();
 		doc.document.write(this.options.doctype+html+'</head><body> </body></html>');
 		doc.document.close();
+		
 		/* set document content from textarea */
 		$(doc.document.body).html(this.filter.fromSource(doc.source.val()));
-		/* set textarea content */
 
 		/* make iframe editable */
 		if ($.browser.msie) {
@@ -254,19 +241,21 @@
 		/* bind events to document */
 		$(doc.document).bind('paste', function(e) {
 			self.trigger('paste').trigger('change');
-		}).bind('cut', function(e) {
+		})
+		.bind('cut', function(e) {
 			self.trigger('change');
-		}).bind('keydown', function(e) {
+		})
+		.bind('keydown', function(e) {
 			var i, s, p;
 			for (i in self.shortcuts) {
 				if (self.shortcuts.hasOwnProperty(i)) {
 					s = self.shortcuts[i];
 					p = s.pattern;
 					if (p.keyCode == e.keyCode 
-					&& (!p.ctrlKey || p.ctrlKey == e.ctrlKey) 
-					&& (!p.altKey || p.altKey == e.altKey) 
+					&& (!p.ctrlKey  || p.ctrlKey  == e.ctrlKey) 
+					&& (!p.altKey   || p.altKey   == e.altKey) 
 					&& (!p.shiftKey || p.shiftKey == e.shiftKey) 
-					&& (!p.metaKey || p.metaKey == e.metaKey)) {
+					&& (!p.metaKey  || p.metaKey  == e.metaKey)) {
 						if (e.isPropagationStopped()) {
 							return;
 						}
@@ -275,7 +264,8 @@
 				}
 			}
 			!e.isPropagationStopped() && self.trigger(e);
-		}).bind('keyup mousedown mouseup click dblclick', function(e) {
+		})
+		.bind('keyup mousedown mouseup click dblclick', function(e) {
 			if (this == self.active.document) {
 				self.trigger(e);
 				var ev, c;
@@ -284,7 +274,6 @@
 					ev = $.Event('change');
 				} else if (e.type == 'keyup') {
 					c = e.keyCode;
-					
 					if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
 						ev = $.Event('change');
 					} else if (self.utils.isKeyDel(c)) {
@@ -411,6 +400,23 @@
 	}
 
 	/**
+	 * Create and return event with required type and elrteDocument set to required or active document
+	 *
+	 * @param  String       event name
+	 * @param  Object       document (not set for active document)
+	 * @return jQuery.Event
+	 */
+	elRTE.prototype.event = function(n, d) {
+		var e = $.Event(n);
+		if (typeof(d) == 'object') {
+			e.elrteDocument = d;
+		} else if (this.active) {
+			e.elrteDocument = this.active;
+		}
+		return e;
+	}
+
+	/**
 	 * Bind callback to event(s)
 	 * To bind multiply events at once, separate events names by space
 	 *
@@ -458,27 +464,9 @@
 		}
 		if (s.keyCode>0 && (s.ctrlKey || s.altKey || s.shiftKey || s.metaKey) && typeof(c) == 'function') {
 			this.shortcuts[p] = {pattern : s, callback : c, description : this.i18n(d)};
-			this.log(this.shortcuts)
 			return true;
 		}
 		return false;
-	}
-	
-	/**
-	 * Create and return event with required type and elrteDocument set to required or active document
-	 *
-	 * @param  String       event name
-	 * @param  Object       document (not set for active document)
-	 * @return jQuery.Event
-	 */
-	elRTE.prototype.event = function(n, d) {
-		var e = $.Event(n);
-		if (typeof(d) == 'object') {
-			e.elrteDocument = d;
-		} else if (this.active) {
-			e.elrteDocument = this.active;
-		}
-		return e;
 	}
 	
 	/**
@@ -641,7 +629,7 @@
 	 * @return String
 	 */
 	elRTE.prototype.i18n = function(m) {
-		return m;
+		return this.messages[m]||m;
 	}
 
 	/**
@@ -672,16 +660,18 @@
 	}
 
 	/**
-	 * elRTE plugins
+	 * elRTE plugins classes
 	 *
 	 */
 	elRTE.prototype._plugins = {};
 	
 	/**
-	 * elRTE commands
+	 * elRTE commands classes
 	 *
 	 */
 	elRTE.prototype._commands = {};	
+
+	elRTE.prototype.i18Messages = {}
 
 	/**
 	 * jquery plugin
