@@ -1,4 +1,117 @@
 (function($) {
+	
+	elRTE.prototype.filter = function(rte) {
+		this.rte = rte;
+		/**
+		 * Allowed tags list
+		 **/
+		this.allow = rte.options.allowTags.length ? rte.options.allowTags : [];
+		/**
+		 * Deny tags regexp
+		 **/
+		this.deny  = rte.options.denyTags.length ? new RegExp('<(\/?)('+rte.options.denyTags.join('|')+')([^>]*)>', 'gi') : null;
+		
+		// rte.log(this.denyTags)
+		
+		this.chains = {};
+		var self = this;
+		$.each(this.chainsConf, function(n) {
+			self.chains[n] = [];
+			$.each(this, function() {
+				typeof(self.rules[this]) == 'function' && self.chains[n].push(self.rules[this]);
+			});
+		});
+
+		// rte.log(self.chains)
+
+		this._apply = function(html, chain) {
+			// rte.lo
+			var i, c = this.chains[chain]
+			if (c) {
+				for (var i=0; i<c.length; i++) {
+					html = c[i](this, html);
+					// this.rte.log(this)
+				}
+			}
+			return html;
+		}
+
+		this.toSource = function(html) {
+			return this._apply(html, 'toSource');
+		}
+		
+		this.fromSource = function(html) {
+			return this._apply(html, 'fromSource');
+		}
+		
+		this.appendStyle = function(a, s) {
+			return a.indexOf('style="') == -1 ? ' style="'+s+'"' : a.replace('style="', 'style="'+s+';')
+		}
+		
+	}
+	
+	function appendStyle(a, s) {
+		return a.indexOf('style="') == -1 ? ' style="'+s+'"'+a : a.replace('style="', 'style="'+s+';')
+	}
+	
+	elRTE.prototype.filter.prototype.cleanRules = {
+		b : [/<(\/?)b(\s[^>]*)*>/gi, "<$1strong$2>"],
+		big : [/<(\/?)big([^>]*)>/gi, function(m, c, a) { return '<'+c+'span'+(!c ? appendStyle(a, 'font-size:large') : '')+'>'; } ],
+		center : [/<(\/?)center([^>]*)>/gi, function(m, c, a) { return '<'+c+'div'+(!c ? appendStyle(a, 'text-align:center') : '')+'>'; } ],
+		
+		dir : [/<(\/?)(dir|menu)(\s[^>]*)*>/gi, "<$1ul$3>"],
+		i : [/<(\/?)i(\s[^>]*)*>/gi, "<$1em$2>"],
+		xmp : [/<(\/?)xmp(\s[^>]*)*>/gi, "<$1pre$2>"],
+		dummy : function(html) { return html }
+	}
+	
+	elRTE.prototype.filter.prototype.replaceRules = {
+		flash : [function(html) { return html; }, function(html) { return html; }]
+	}
+	
+	elRTE.prototype.filter.prototype.rules = {
+		allowTags : function(f, html) {
+			if (f.allow.length) {
+				html = html.replace(/<(?:\/?)([a-z0-9:]+)([^>]*)>/gi, function(m, t) {
+					return $.inArray(t, f.allow) != -1 ? m : '';
+				});
+			} else if (f.deny) {
+				html = html.replace(f.deny, '');
+			}
+			return html;
+		},
+		clean : function(f, html) {
+			$.each(f.cleanRules, function(n) {
+				switch (this.constructor) {
+					case RegExp: 
+						html = html.replace(this, '');
+						break;
+					case Function: 
+						html = this(html);
+						break;
+					case Array: 
+						html = html.replace(this[0], this[1]||'');
+						break;
+				}
+			});
+			return html;
+		},
+		msClean : function(f, html) {
+			return html;
+		},
+		replace : function(f, html) {
+			return html;
+		},
+		restore : function(f, html) {
+			return html;
+		}
+	}
+	
+	elRTE.prototype.filter.prototype.chainsConf = {
+		'toSource'   : ['allowTags', 'msClean', 'clean', 'restore'],
+		'fromSource' : ['allowTags', 'msClean', 'clean', 'replace']
+	}
+	
 	/**
 	 * @class Clean html and make replace/restore for some patterns
 	 *
@@ -6,7 +119,7 @@
 	 * @author Dmitry (dio) Levashov dio@std42.ru
 	 * @todo - replace/restore scripts
 	 */
-	elRTE.prototype.filter = function(rte) {
+	elRTE.prototype._filter = function(rte) {
 		var self     = this, chain, n;
 		this.rte     = rte;
 		/* make xhtml tags? */
@@ -104,7 +217,7 @@
 	/**
 	 * Default rules
 	 */
-	elRTE.prototype.filter.prototype.rules = {
+	elRTE.prototype._filter.prototype.rules = {
 		/* common cleanup tags and attrs */
 		cleanup : function(f, html) {
 			var at    = f._allow.length,
@@ -259,7 +372,7 @@
 		
 		/* proccess html for textarea */
 		toSource : function(f, html) { 
-
+			return html;
 			
 			html = f.rules.restore(f, html);
 
@@ -279,7 +392,7 @@
 		
 		/* proccess html for editor */
 		fromSource : function(f, html) { 
-
+			return html;
 			html = f.rules.replace(f, html);
 		
 			/* clean tags & attributes */
@@ -364,7 +477,7 @@
 	/**
 	 * Default chains configuration
 	 */
-	elRTE.prototype.filter.prototype.chains = {
+	elRTE.prototype._filter.prototype.chains = {
 		toSource   : [ 'toSource' ],
 		fromSource : [ 'fromSource' ]
 	}

@@ -300,6 +300,9 @@
 			this.focus(d.id);
 		}
 		
+		// this.log($(doc.document.body).html().match(/<(\w)(:\w)?([^>]*)>/g))
+		// this.log($(doc.document.body).html().match(/(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g))
+		
 		return id;
 	}
 

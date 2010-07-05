@@ -29,7 +29,7 @@
 		allowCloseDocs : true,
 		
 		allowTags : [],
-		denyTags : ['iframe'],
+		denyTags : ['applet', 'basefont', 'isindex', 'title', 'meta', 'iframe', 'o:p'],
 		/* max undo/redo steps */
 		historySize : 5,
 		/* plugins to load */
