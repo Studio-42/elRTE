@@ -2,6 +2,179 @@
 	
 	elRTE.prototype.filter = function(rte) {
 		this.rte = rte;
+		this._chains = {}
+		this.tagRegex = /<(\/?)([a-z0-9\:]+)(\s+[^>]*\s*)*(\/)?>/gi;
+		this.denyTagsRegex = this.rte.options.denyTags.length ? new RegExp('<(\/?)('+this.rte.options.denyTags.join('|')+')\s*([^>]*)*\s*\/?>', 'gi') : null;
+		
+		var self = this;
+		
+		var _nst = [];
+		$.each(this.nonSemanticTags, function(t) {
+			
+			_nst.push(t)
+		})
+		
+		this.nsTagRegex = _nst.length ? new RegExp('<(\/?)('+_nst.join('|')+')(\s+[^>]*)?>', 'gi') : null;
+		
+		if (!this.chains.fromSource.length) {
+			this.chains.fromSource = ['clean'];
+		}
+		if (!this.chains.toSource.length) {
+			this.chains.toSource = ['clean'];
+		}
+		
+		// cache existed chains
+		$.each(this.chains, function(n) {
+			self._chains[n] = [];
+			$.each(this, function() {
+				var r = this.toString();
+				typeof(self.rules[r]) == 'function' && self._chains[n].push(self.rules[r]);
+			});
+		});
+		
+		// filter through required chain
+		this.filter = function(chain, html) {
+			$.each(this._chains[chain]||[], function() {
+				html = this.call(self, html);
+			});
+			return html;
+		}
+		
+		// wrapper for "toSource" chain
+		this.toSource = function(html) {
+			return this.filter('toSource', html);
+		}
+		
+		// wrapper for "fromSource" chain
+		this.fromSource = function(html) {
+			return this.filter('fromSource', html);
+		}
+	}
+	
+	elRTE.prototype.filter.prototype.nonSemanticTags = {
+		b      : { tag : 'strong' },
+		big    : { tag : 'span', style : 'font-size:xx-large'},
+		center : { tag : 'div', style : 'text-align:center' },
+		i      : { tag : 'em' },
+		u      : { tag : 'span', style : 'text-decoration:underline' },
+		font   : { tag : 'span' },
+		xmp    : { tag : 'pre' }
+	}
+	
+	// 1 allowed/denied tags
+	// 2 ms office
+	// 3 non semantic tags
+	// 4 non semantic attrs
+	// 5 custom replace/restore
+	// 6 replace/restore (flash/google maps/video/audio protected nodes)
+	// 7 empty spans
+	// 8 nested spans
+	// browser specific attrs
+	// 9 xhtml tags
+	// 10 tagsToLower (IE || opera)
+	
+	elRTE.prototype.filter.prototype.rules = {
+		/**
+		 * If this.rte.options.allowTags is set - remove all except this ones
+		 * If this.rte.options.denyTags is set - remove all deny tags
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		allowedTags : function(html) {
+			var a = this.rte.options.allowTags||[];
+				
+			if (a.length) {
+				html = html.replace(this.tagRegex, function(t, c, n) {
+					return $.inArray(n, a) != -1 ? t : '';
+				});
+			}
+			if (this.denyTagsRegex) {
+				html = html.replace(this.denyTagsRegex, '');
+			}
+			return html;
+		},
+		/**
+		 * Clean ms/open office special stuffs
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		msOffice : function(html) {
+			return html;
+		},
+		/**
+		 * Replace non semantic tags
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		tags : function(html) {
+			// this.rte.log(this.nsTagRegex)
+			var self = this
+				tags = this.nonSemanticTags;
+			
+			function style(a, s) {
+				var m = a.match(/style=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
+				self.rte.log(m)
+			}
+			
+			function attrs(a) {
+				var ret = {},
+					tmp = a.split(' '),
+					l = tmp.length,
+					attr;
+					
+				while (l--) {
+					attr = $.trim(tmp[l]);
+					self.rte.log(attr)
+					var m = attr.match(/([a-z]+)=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
+					self.rte.log(m)
+					
+				}
+				// var m = a.match(/\s?([a-z]+)=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
+				
+			}
+			
+			html.replace(this.tagRegex, function(t, c, n, a, e) {
+				// self.rte.log(t+' '+c+' '+n+' '+a+' '+e)
+				if (tags[n]) {
+					// self.rte.log(t+' '+c+' '+n+' '+a+' '+e)
+
+					if (!c && tags[n].style) {
+						self.rte.log(n)
+						attrs(a, tags[n].style)
+					}
+				}
+			})
+			
+			return html;
+		},
+		tagsToLower : function(html) {
+			return html;
+		},
+		customReplace : function(html) {
+			
+		},
+		clean : function(html) {
+			this.rte.log('clean called')
+			return 'clean'+html
+		},
+		replace : function(html) {
+			return 'replace'+html
+		},
+	}
+	
+	elRTE.prototype.filter.prototype.chains = {
+		fromSource : ['allowedTags', 'msOffice', 'tags'],
+		toSource   : ['allowedTags', 'msOffice', 'tags']
+	}
+	
+	
+	//////////////////////////////////
+	
+	elRTE.prototype._filter_ = function(rte) {
+		this.rte = rte;
 		/**
 		 * Allowed tags list
 		 **/
@@ -54,22 +227,36 @@
 		return a.indexOf('style="') == -1 ? ' style="'+s+'"'+a : a.replace('style="', 'style="'+s+';')
 	}
 	
-	elRTE.prototype.filter.prototype.cleanRules = {
+	function fontSize(f) {
+		var s = ['', 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'];
+		return s[f]||'medium';
+	}
+	
+	// function fontFamily = function(f) {
+		// var fonts = 
+	// }
+	
+	elRTE.prototype._filter_.prototype.cleanRules = {
 		b : [/<(\/?)b(\s[^>]*)*>/gi, "<$1strong$2>"],
 		big : [/<(\/?)big([^>]*)>/gi, function(m, c, a) { return '<'+c+'span'+(!c ? appendStyle(a, 'font-size:large') : '')+'>'; } ],
 		center : [/<(\/?)center([^>]*)>/gi, function(m, c, a) { return '<'+c+'div'+(!c ? appendStyle(a, 'text-align:center') : '')+'>'; } ],
 		
 		dir : [/<(\/?)(dir|menu)(\s[^>]*)*>/gi, "<$1ul$3>"],
 		i : [/<(\/?)i(\s[^>]*)*>/gi, "<$1em$2>"],
+		font : [/<(\/?)font([^>]*)>/gi, function(m, s, a) {
+			
+			m.replace(/(color|face|size)=(?:'|")([^'"]+)('|")/gi, function(m, a, v) { window.console.log(a+' '+v)  })
+			return m
+		}],
 		xmp : [/<(\/?)xmp(\s[^>]*)*>/gi, "<$1pre$2>"],
 		dummy : function(html) { return html }
 	}
 	
-	elRTE.prototype.filter.prototype.replaceRules = {
+	elRTE.prototype._filter_.prototype.replaceRules = {
 		flash : [function(html) { return html; }, function(html) { return html; }]
 	}
 	
-	elRTE.prototype.filter.prototype.rules = {
+	elRTE.prototype._filter_.prototype.rules = {
 		allowTags : function(f, html) {
 			if (f.allow.length) {
 				html = html.replace(/<(?:\/?)([a-z0-9:]+)([^>]*)>/gi, function(m, t) {
@@ -107,7 +294,7 @@
 		}
 	}
 	
-	elRTE.prototype.filter.prototype.chainsConf = {
+	elRTE.prototype._filter_.prototype.chainsConf = {
 		'toSource'   : ['allowTags', 'msClean', 'clean', 'restore'],
 		'fromSource' : ['allowTags', 'msClean', 'clean', 'replace']
 	}
