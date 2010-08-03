@@ -3,8 +3,12 @@
 	elRTE.prototype.filter = function(rte) {
 		this.rte = rte;
 		this._chains = {}
-		this.tagRegex = /<(\/?)([a-z0-9\:]+)(\s+[^>]*\s*)*(\/)?>/gi;
-		this.denyTagsRegex = this.rte.options.denyTags.length ? new RegExp('<(\/?)('+this.rte.options.denyTags.join('|')+')\s*([^>]*)*\s*\/?>', 'gi') : null;
+		this.tagRegex = /<(\/?)(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)(\s*\/?)>/g;
+		this.attrRegex = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
+		
+		this.denyTagsReg = this.rte.options.denyTags.length 
+			? new RegExp('<(\/?)('+this.rte.options.denyTags.join('|')+')((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:\'[^\']*\')|[^>\s]+))?)*)(\s*\/?)>', 'g') 
+			: null;
 		
 		var self = this;
 		
@@ -82,17 +86,13 @@
 		 * return String
 		 **/
 		allowedTags : function(html) {
-			var a = this.rte.options.allowTags||[];
-				
+			var a = this.rte.options.allowTags;
 			if (a.length) {
 				html = html.replace(this.tagRegex, function(t, c, n) {
 					return $.inArray(n, a) != -1 ? t : '';
 				});
 			}
-			if (this.denyTagsRegex) {
-				html = html.replace(this.denyTagsRegex, '');
-			}
-			return html;
+			return this.denyTagsReg ? html.replace(this.denyTagsReg, '') : html;
 		},
 		/**
 		 * Clean ms/open office special stuffs
@@ -114,39 +114,30 @@
 			var self = this
 				tags = this.nonSemanticTags;
 			
-			function style(a, s) {
-				var m = a.match(/style=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
-				self.rte.log(m)
-			}
 			
+			var tagRegExp = /<(\/?)(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)(\s*\/?)>/g;
+			// var attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
+			var attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g
+			// var attrRegExp = /(\w+)((\s*=\s*)('|")?(.*)(\4)?)?/gi
 			function attrs(a) {
-				var ret = {},
-					tmp = a.split(' '),
-					l = tmp.length,
-					attr;
-					
-				while (l--) {
-					attr = $.trim(tmp[l]);
-					self.rte.log(attr)
-					var m = attr.match(/([a-z]+)=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
-					self.rte.log(m)
-					
-				}
-				// var m = a.match(/\s?([a-z]+)=('|")?([a-z0-9\:\-,;\s]*)('|")?/i)
+				var m = a.match(attrRegExp),
+					attrs = {};
 				
+				// self.rte.log(m)
+				if (m) {
+					$.each(m, function() {
+						var t = this.toString().split('='),
+						 	n = $.trim(t[0]);
+						attrs[n] = t[1] ? $.trim(t[1]).replace(/^('|")(.*)(\1)$/, "$2") : n;
+					});
+				}
+				self.rte.log(attrs)
 			}
 			
-			html.replace(this.tagRegex, function(t, c, n, a, e) {
-				// self.rte.log(t+' '+c+' '+n+' '+a+' '+e)
-				if (tags[n]) {
-					// self.rte.log(t+' '+c+' '+n+' '+a+' '+e)
+			
 
-					if (!c && tags[n].style) {
-						self.rte.log(n)
-						attrs(a, tags[n].style)
-					}
-				}
-			})
+			
+
 			
 			return html;
 		},

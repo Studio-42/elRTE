@@ -28,7 +28,7 @@
 		/* allow close docs by default, ovveride by closeable options for every document */
 		allowCloseDocs : true,
 		
-		allowTags : [],
+		allowTags : ['div', 'p'],
 		denyTags : ['applet', 'basefont', 'isindex', 'title', 'meta', 'iframe', 'o:p'],
 		/* max undo/redo steps */
 		historySize : 5,
