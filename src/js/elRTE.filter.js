@@ -1,25 +1,28 @@
 (function($) {
 	
 	elRTE.prototype.filter = function(rte) {
-		this.rte = rte;
-		this._chains = {}
-		this.tagRegex = /<(\/?)(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)(\s*\/?)>/g;
-		this.attrRegex = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
-		
-		this.denyTagsReg = this.rte.options.denyTags.length 
+		var self        = this;
+		this.rte        = rte;
+		this._xhtml  =  /xhtml/i.test(rte.options.doctype);
+		this._chains    = {};
+		this.boolAttrs  = rte.utils.makeObject('checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected'.split(','));
+		this.tagRegExp  = /<(\/?)(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/g;
+		this.attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
+		this.denyTagsRegExp = this.rte.options.denyTags.length 
 			? new RegExp('<(\/?)('+this.rte.options.denyTags.join('|')+')((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:\'[^\']*\')|[^>\s]+))?)*)(\s*\/?)>', 'g') 
 			: null;
 		
-		var self = this;
+		var n = $('<span />').addClass(this.swfClass).appendTo(rte.editor).text('swf')[0];
+		// if (typeof n.currentStyle != "undefined") {
+		// 	url = n.currentStyle['backgroundImage'];
+		// } else {
+		// 	url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
+		// }
+		// $(n).remove();
+
+		rte.log(n)
 		
-		var _nst = [];
-		$.each(this.nonSemanticTags, function(t) {
-			
-			_nst.push(t)
-		})
-		
-		this.nsTagRegex = _nst.length ? new RegExp('<(\/?)('+_nst.join('|')+')(\s+[^>]*)?>', 'gi') : null;
-		
+		// check for empty default chains
 		if (!this.chains.fromSource.length) {
 			this.chains.fromSource = ['clean'];
 		}
@@ -35,9 +38,12 @@
 				typeof(self.rules[r]) == 'function' && self._chains[n].push(self.rules[r]);
 			});
 		});
-		
+
 		// filter through required chain
 		this.filter = function(chain, html) {
+			// remove whitespace at the begin and end
+			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '')
+			// pass html through chain
 			$.each(this._chains[chain]||[], function() {
 				html = this.call(self, html);
 			});
@@ -55,14 +61,269 @@
 		}
 	}
 	
-	elRTE.prototype.filter.prototype.nonSemanticTags = {
+	/**
+	 * Parse attributes from string into object
+	 *
+	 * @TODO check register of attr value in ie&&opera
+	 * @param  String  string of attributes  
+	 * @return Object
+	 **/
+	elRTE.prototype.filter.prototype.parseAttrs = function(s) {
+		var a = {},
+			b = this.boolAttrs,
+			m = s.match(this.attrRegExp),
+			t, n, v;
+		
+		m && $.each(m, function(i, s) {
+			t = s.split('=');
+			n = $.trim(t[0]).toLowerCase();
+			v = b[n] || $.trim(t[1]||'').replace(/^('|")(.*)(\1)$/, "$2");
+			a[n] = v;
+		});
+		
+		a.style = this.rte.utils.parseStyle(a.style);
+		return a;
+	}
+	
+	/**
+	 * Remove/replace denied attributes/style properties
+	 *
+	 * @param  Object  attributes hash
+	 * @param  String  tag name to wich attrs belongs 
+	 * @return Object
+	 **/
+	elRTE.prototype.filter.prototype.cleanAttrs = function(a, t) {
+		var self = this, ra = this.replaceAttrs;
+		
+		// remove safari and mso classes
+		if (a['class']) {
+			a['class'] = a['class'].replace(/Apple-style-span/i, '').replace(/mso\w+/i, '');
+		}
+		
+		function value(v) {
+			return v+(/\d$/.test(v) ? 'px' : '');
+		}
+		
+		$.each(a, function(n, v) {
+			// replace required attrs with css
+			ra[n] && ra[n].call(self, a, t);
+			// remove/fix mso styles
+			if (n == 'style') {
+				$.each(v, function(sn, sv) {
+					switch (sn) {
+						case "mso-padding-alt":
+						case "mso-padding-top-alt":
+						case "mso-padding-right-alt":
+						case "mso-padding-bottom-alt":
+						case "mso-padding-left-alt":
+						case "mso-margin-alt":
+						case "mso-margin-top-alt":
+						case "mso-margin-right-alt":
+						case "mso-margin-bottom-alt":
+						case "mso-margin-left-alt":
+						case "mso-table-layout-alt":
+						case "mso-height":
+						case "mso-width":
+						case "mso-vertical-align-alt":
+							a.style[sn.replace(/^mso-|-alt$/g, '')] = value(sv);
+							delete a.style[sn];
+							break;
+
+						case "horiz-align":
+							a.style['text-align'] = sv;
+							delete a.style[sn];
+							break;
+							
+						case "vert-align":
+							a.style['vertical-align'] = sv;
+							delete a.style[sn];
+							break;
+
+						case "font-color":
+						case "mso-foreground":
+							a.style.color = sv;
+							delete a.style[sn];
+						break;
+						
+						case "mso-background":
+						case "mso-highlight":
+							a.style.background = sv;
+							delete a.style[sn];
+							break;
+
+						case "mso-default-height":
+							a.style['min-height'] = value(sv);
+							delete a.style[sn];
+							break;
+
+						case "mso-default-width":
+							a.style['min-width'] = value(sv);
+							delete a.style[sn];
+							break;
+
+						case "mso-padding-between-alt":
+							a.style['border-collapse'] = 'separate';
+							a.style['border-spacing'] = value(sv);
+							delete a.style[sn];
+							break;
+
+						case "text-line-through":
+							if (sv.match(/(single|double)/i)) {
+								a.style['text-decoration'] = 'line-through';
+							}
+							delete a.style[sn];
+							break;
+
+						case "mso-zero-height":
+							if (sv == 'yes') {
+								a.style.display = 'none';
+							}
+							delete a.style[sn];
+							break;
+						
+						case 'font-weight':
+							if (sv == 700) {
+								a.style['font-weight'] = 'bold';
+							}
+							break;
+							
+						default:
+							if (sn.match(/^(mso|column|font-emph|lang|layout|line-break|list-image|nav|panose|punct|row|ruby|sep|size|src|tab-|table-border|text-(?!align|decor|indent|trans)|top-bar|version|vnd|word-break)/)) {
+								delete a.style[sn]
+							}
+					}
+				});
+			}
+		});
+		return a;
+	}
+	
+	/**
+	 * Restore attributes string from hash
+	 *
+	 * @param  Object  attributes hash
+	 * @return String
+	 **/
+	elRTE.prototype.filter.prototype.serializeAttrs = function(a) {
+		var s = [], self = this;
+		
+		typeof(a) == 'object' && $.each(a, function(n, v) {
+			if (n=='style') {
+				v = self.rte.utils.serializeStyle(v);
+			}
+			v && s.push(n+'="'+v+'"');
+		});
+		return s.join(' ');
+	}
+	
+	// font sizes to convert size attr into css property
+	elRTE.prototype.filter.prototype.fontSize = ['medium', 'xx-small', 'small', 'medium','large','x-large','xx-large' ];
+	
+	// font families regexp to detect family by font name
+	elRTE.prototype.filter.prototype.fontFamily = {
+		'sans-serif' : /^(arial|tahoma|verdana)$/i,
+		'serif'      : /^(times|times new roman)$/i,
+		'monospace'  : /^courier$/i
+	}
+	
+	// rules to replace tags
+	elRTE.prototype.filter.prototype.replaceTags = {
 		b      : { tag : 'strong' },
-		big    : { tag : 'span', style : 'font-size:xx-large'},
-		center : { tag : 'div', style : 'text-align:center' },
+		big    : { tag : 'span', style : {'font-size' : 'large'} },
+		center : { tag : 'div',  style : {'text-align' : 'center'} },
 		i      : { tag : 'em' },
-		u      : { tag : 'span', style : 'text-decoration:underline' },
 		font   : { tag : 'span' },
+		nobr   : { tag : 'span', style : {'white-space' : 'nowrap'} },
+		s      : { tag : 'strike' },
+		small  : { tag : 'span', style : {'font-size' : 'small'}},
+		u      : { tag : 'span', style : {'text-decoration' : 'underline'} },
 		xmp    : { tag : 'pre' }
+	}
+	
+	// rules to replace attributes
+	// @TODO convert color values in hex
+	elRTE.prototype.filter.prototype.replaceAttrs = {
+		align : function(a, n) {
+			switch (n) {
+				case 'img':
+					a.style[a.align.match(/(left|right)/) ? 'float' : 'vertical-align'] = a.align;
+					break;
+				
+				case 'table':
+					if (a.align == 'center') {
+						a.style['margin-left'] = a.style['margin-right'] = 'auto';
+					} else {
+						a.style['float'] = a.align;
+					}
+					break;
+					
+				default:
+					a.style['text-align'] = a.align;
+			}
+			delete a.align;
+		},
+		border : function(a) {
+			!a.style['border-width'] && (a.style['border-width'] = (parseInt(a.border)||1)+'px');
+			!a.style['border-style'] && (a.style['border-style'] = 'solid');
+			delete a.border;
+		},
+		bordercolor : function(a) {
+			!a.style['border-color'] && (a.style['border-color'] = a.bordercolor);
+			delete a.bordercolor;
+		},
+		background : function(a) {
+			!a.style['background-image'] && (a.style['background-image'] = 'url('+a.background+')');
+			delete a.background;
+		},
+		bgcolor : function(a) {
+			!a.style['background-color'] && (a.style['background-color'] = a.bgcolor);
+			delete a.bgcolor;
+		},
+		clear : function(a) {
+			a.style.clear = a.clear == 'all' ? 'both' : a.clear;
+			delete a.clear;
+		},
+		color : function(a) {
+			!a.style.color && (a.style.color = a.color);
+			delete a.color;
+		},
+		face : function(a) {
+			var f = a.face.toLowerCase();
+			$.each(this.fontFamily, function(n, r) {
+				if (f.match(r)) {
+					a.style['font-family'] = f+','+n;
+				}
+			});
+			delete a.face;
+		},
+		hspace : function(a, n) {
+			if (n == 'img') {
+				var v = parseInt(a.hspace)||0;
+				!a.style['margin-left'] && (a.style['margin-left'] = v+'px');
+				!a.style['margin-right'] && (a.style['margin-right'] = v+'px')
+				delete a.hspace;
+			}
+		},
+		size : function(a, n) {
+			if (n != 'input') {
+				a.style['font-size'] = this.fontSize[parseInt(a.size)||0]||'medium';
+				delete a.size;
+			}
+		},
+		valign : function(a) {
+			if (!a.style['vertical-align']) {
+				a.style['vertical-align'] = a.valign;
+			}
+			delete a.valign;
+		},
+		vspace : function(a, n) {
+			if (n == 'img') {
+				var v = parseInt(a.vspace)||0;
+				!a.style['margin-top'] && (a.style['margin-top'] = v+'px');
+				!a.style['margin-bottom'] && (a.style['margin-bottom'] = v+'px')
+				delete a.hspace;
+			}
+		}
 	}
 	
 	// 1 allowed/denied tags
@@ -77,6 +338,7 @@
 	// 9 xhtml tags
 	// 10 tagsToLower (IE || opera)
 	
+	// rules collection
 	elRTE.prototype.filter.prototype.rules = {
 		/**
 		 * If this.rte.options.allowTags is set - remove all except this ones
@@ -86,59 +348,54 @@
 		 * return String
 		 **/
 		allowedTags : function(html) {
+			// this.rte.log(html)
 			var a = this.rte.options.allowTags;
 			if (a.length) {
-				html = html.replace(this.tagRegex, function(t, c, n) {
+				html = html.replace(this.tagRegExp, function(t, c, n) {
 					return $.inArray(n, a) != -1 ? t : '';
 				});
 			}
-			return this.denyTagsReg ? html.replace(this.denyTagsReg, '') : html;
+			return this.denyTagsRegExp ? html.replace(this.denyTagsRegExp, '') : html;
 		},
+		
 		/**
 		 * Clean ms/open office special stuffs
 		 *
 		 * @param String  html code
 		 * return String
 		 **/
-		msOffice : function(html) {
+		cleanMSO : function(html) {
+			html = html.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
+				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1");
 			return html;
 		},
+		
 		/**
 		 * Replace non semantic tags
 		 *
 		 * @param String  html code
 		 * return String
 		 **/
-		tags : function(html) {
-			// this.rte.log(this.nsTagRegex)
-			var self = this
-				tags = this.nonSemanticTags;
-			
-			
-			var tagRegExp = /<(\/?)(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)(\s*\/?)>/g;
-			// var attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
-			var attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g
-			// var attrRegExp = /(\w+)((\s*=\s*)('|")?(.*)(\4)?)?/gi
-			function attrs(a) {
-				var m = a.match(attrRegExp),
-					attrs = {};
+		clean : function(html) {
+			var self = this, 
+				rt   = this.replaceTags,
+				ra   = this.replaceAttrs,
+				attrs
+
+			html = html.replace(this.tagRegExp, function(t, c, n, a) {
+				n = n.toLowerCase();
+				// create attributes hash and clean it
+				attrs = c ? {} : self.cleanAttrs(self.parseAttrs(a||''), n);
 				
-				// self.rte.log(m)
-				if (m) {
-					$.each(m, function() {
-						var t = this.toString().split('='),
-						 	n = $.trim(t[0]);
-						attrs[n] = t[1] ? $.trim(t[1]).replace(/^('|")(.*)(\1)$/, "$2") : n;
-					});
+				if (rt[n]) {
+					// replace tag
+					!c && rt[n].style && $.extend(attrs.style, rt[n].style);
+					n = rt[n].tag;
 				}
-				self.rte.log(attrs)
-			}
-			
-			
-
-			
-
-			
+				// convert attributes into string
+				a = !c ? self.serializeAttrs.call(self, attrs) : '';
+				return '<'+c+n+(a?' ':'')+a+'>';
+			});
 			return html;
 		},
 		tagsToLower : function(html) {
@@ -147,18 +404,31 @@
 		customReplace : function(html) {
 			
 		},
-		clean : function(html) {
-			this.rte.log('clean called')
-			return 'clean'+html
-		},
 		replace : function(html) {
-			return 'replace'+html
+			var self = this;
+
+			html = html.replace(/<script([^>]+|)>([\s\S]*?)<\/script>/gi, function(t, a, c) {
+				return "<!-- ELRTE_COMMENT\n"+'<script'+(a||' type="text/javascript"')+">\n"+$.trim(c)+"\n</script>\n-->";
+			}).replace(/<style([^>]+|)>([\s\S]*?)<\/style>/gi, function(t, a, c) {
+				return "<!-- ELRTE_COMMENT\n"+t+"\n-->"
+			}).replace(/<!\[CDATA\[([\s\S]+)\]\]>/g, '<!--[CDATA[$1]]-->')
+			
+			return html
 		},
+		restore : function(html) {
+			var self =this
+			html = html.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/g, function(s, t) {
+				self.rte.log(t)
+				return $.trim(t)
+			})
+			
+			return html
+		}
 	}
 	
 	elRTE.prototype.filter.prototype.chains = {
-		fromSource : ['allowedTags', 'msOffice', 'tags'],
-		toSource   : ['allowedTags', 'msOffice', 'tags']
+		fromSource : ['allowedTags', 'cleanMSO', 'clean', 'replace'],
+		toSource   : ['allowedTags', 'cleanMSO', 'clean', 'restore']
 	}
 	
 	

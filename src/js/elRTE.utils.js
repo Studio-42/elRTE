@@ -37,8 +37,59 @@
 		 * @return  Boolean
 		 **/
 		this.isKeyArrow = function(c) { return c >= 33 && c <= 40; }
+		
+		this.makeObject = function(o) {
+			var m = {}, s;
+			$.each(o, function() {
+				s = this.toString();
+				m[s] = s;
+			});
+			return m
+		}
+	
+		this.parseStyle = function(s) {
+			var st = {}, a = this.rte.options.allowBrowsersSpecStyles, t, n, v;
+			
+			if (typeof(s) == 'string' && s.length) {
+				$.each(s.split(';'), function() {
+					t = this.toString().split(':');
+					if (t[0] && t[1]) {
+						n = $.trim(t[0]).toLowerCase();
+						v = $.trim(t[1]);
+						if (n && v && (!a || n.substring(0, 1) != '-')) {
+							st[n] = v;
+						}
+					}
+				});
+			}
+			return st;
+		}
+	
+		this.compactStyle = function(s) {
+			if (s['border-width']) {
+				s.border = s['border-width']+' '+(s['border-style']||'solid')+' '+(s['border-color']||'#000');
+				delete s['border-width'];
+				delete s['border-style'];
+				delete s['border-color'];
+			}
+			return s;
+		}
+	
+		this.serializeStyle = function(o) {
+			var s = [];
+			$.each(this.compactStyle(o), function(n, v) {
+				if (v) {
+					s.push(n+':'+v);
+				}
+			});
+			return s.join(';');
+		}
 	
 	}
+	
+	
+	
+	
 	
 	
 
