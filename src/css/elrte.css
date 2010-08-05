@@ -42,6 +42,8 @@
 /* active tab */
 .elrte .elrte-tab-active { background:#eee; }
 
+.elrte .elrte-test-url { background-image:url(../images/pixel.gif);}
+
 /******************  editor  *********************/
 
 .elrte {

@@ -1,7 +1,11 @@
 (function($) {
 	
 	elRTE.prototype.filter = function(rte) {
-		var self        = this;
+		var self = this,
+			n    = $('<span />').addClass('elrte-test-url').appendTo(rte.view.editor)[0];
+		
+		this.url = (typeof(n.currentStyle )!= "undefined" ? n.currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image')).replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
+		$(n).remove();
 		this.rte        = rte;
 		this._xhtml  =  /xhtml/i.test(rte.options.doctype);
 		this._chains    = {};
@@ -20,15 +24,6 @@
 			? new RegExp('<(\/?)('+this.rte.options.denyTags.join('|')+')((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:\'[^\']*\')|[^>\s]+))?)*)(\s*\/?)>', 'g') 
 			: null;
 		
-		// var n = $('<span />').addClass(this.swfClass).appendTo(rte.view.editor).text('swf')[0];
-		// if (typeof n.currentStyle != "undefined") {
-		// 	url = n.currentStyle['backgroundImage'];
-		// } else {
-		// 	url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
-		// }
-		// $(n).remove();
-		// 
-		// rte.log(url)
 		
 		// check for empty default chains
 		if (!this.chains.fromSource.length) {
@@ -79,7 +74,7 @@
 				b = this.boolAttrs,
 				m = s.match(this.attrRegExp),
 				t, n, v;
-			var self = this;
+				// var self = this
 			m && $.each(m, function(i, s) {
 				t = s.split('=');
 				n = $.trim(t[0]).toLowerCase();
@@ -87,6 +82,7 @@
 					if (t.length>2) {
 						t.shift();
 						v = t.join('=');
+						// self.rte.log(v)
 					} else {
 						v = t[1]||'';
 					}
@@ -368,18 +364,6 @@
 		},
 		
 		/**
-		 * Clean ms/open office special stuffs
-		 *
-		 * @param String  html code
-		 * return String
-		 **/
-		cleanMSO : function(html) {
-			html = html.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
-				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1");
-			return html;
-		},
-		
-		/**
 		 * Replace non semantic tags
 		 *
 		 * @param String  html code
@@ -397,8 +381,7 @@
 					n = n.toLowerCase();
 					// create attributes hash and clean it
 					attrs = c ? {} : self.cleanAttrs(self.parseAttrs(a||''), n);
-					if (n == 'embed' && !c)
-						self.rte.log(attrs)
+					
 					if (rt[n]) {
 						// replace tag
 						!c && rt[n].style && $.extend(attrs.style, rt[n].style);
@@ -418,20 +401,59 @@
 		},
 		replace : function(html) {
 			var self = this;
-
+			// @TODO join script/style replacement
 			html = html.replace(/<script([^>]+|)>([\s\S]*?)<\/script>/gi, function(t, a, c) {
 				return "<!-- ELRTE_COMMENT\n"+'<script'+(a||' type="text/javascript"')+">\n"+$.trim(c)+"\n</script>\n-->";
 			}).replace(/<style([^>]+|)>([\s\S]*?)<\/style>/gi, function(t, a, c) {
 				return "<!-- ELRTE_COMMENT\n"+t+"\n-->"
 			}).replace(/<!\[CDATA\[([\s\S]+)\]\]>/g, '<!--[CDATA[$1]]-->')
 			
-			return html
+			var encodedChars = {'&' : '&amp;', '"' : '&quot;', '<' : '&lt;', '>' : '&gt;'},
+				encodeCharsRe = /[<>&\"]/g;
+			
+			function encode(str) {
+				return ('' + str).replace(encodeCharsRe, function(chr) {
+					return encodedChars[chr];
+				});
+			}
+			
+			var types = ['application/x-shockwave-flash']
+			
+			html = html.replace(/<object([^>]*)>([\s\S]*?)<\/object>/gi, function(t, a, c) {
+				var m = c.match(/<(embed)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/i),
+					json = {}, m2, a;
+				
+				if (m) {
+					json.embed = self.parseAttrs(m[0].substring(7));
+
+					if ($.inArray(json.embed.type, types) != -1) {
+						
+						json.params = [];
+						if ((m2 = c.match(/<(param)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/g))) {
+							$.each(m2, function(i,t) {
+								a = self.parseAttrs(t.substring(6));
+								json.params.push({name : a.name, value : a.value});
+							})
+						}
+						return '<img src="'+self.url+'pixel.gif" class="elrte-flash elrte-protected" rel="'+encode(JSON.stringify(json))+'" style="border:1px solid #333" width="100" height="100"  >';
+					}
+				}
+				return t;
+			})
+			
+			return html;
 		},
 		restore : function(html) {
 			var self =this
-			html = html.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/g, function(s, t) {
-				self.rte.log(t)
+			html = html.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/gi, function(s, t) {
+				// self.rte.log(t)
 				return $.trim(t)
+			})
+			// self.rte.log(html)
+			html.replace(/<(\w+)([^>]*class\s*=\s*"elrte-[^>]*)>/gi, function(t, n, a) {
+				var attrs = self.parseAttrs(a);
+				var json = $.parseJSON($('<div>'+attrs.rel+'</div>').html())
+				self.rte.log(json)
 			})
 			
 			return html
