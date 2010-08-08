@@ -13,10 +13,17 @@
 		 * keabord chars codes
 		 **/
 		this._charsKeys  = [109, 188, 190, 191, 192, 219, 220, 221, 222, 32, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 59, 61, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]; 
-		
+		/**
+		 * entities map
+		 **/
 		this.entities = {'&' : '&amp;', '"' : '&quot;', '<' : '&lt;', '>' : '&gt;'};
+		/**
+		 * entities regexp
+		 **/
 		this.entitiesRegExp = /[<>&\"]/g;
-		
+		/**
+		 * media info
+		 **/
 		this.media = [{ 
 				type     : 'application/x-shockwave-flash', 
 				classid  : ['clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'], 
@@ -63,6 +70,12 @@
 		 **/
 		this.isKeyArrow = function(c) { return c >= 33 && c <= 40; }
 		
+		/**
+		 * Encode entities in string
+		 *
+		 * @param   String
+		 * @return  String
+		 **/
 		this.encode = function(s) {
 			var e = this.entities;
 			return (''+s).replace(this.entitiesRegExp, function(c) {
@@ -70,10 +83,22 @@
 			});
 		}
 		
+		/**
+		 * Decode entities in string
+		 *
+		 * @param   String
+		 * @return  String
+		 **/
 		this.decode = function(s) {
 			return $('<div/>').html(s||'').text();
 		}
 		
+		/**
+		 * Create object (map) from array
+		 *
+		 * @param   Array
+		 * @return  Object
+		 **/
 		this.makeObject = function(o) {
 			var m = {};
 			$.each(o, function(i, e) {
@@ -82,6 +107,12 @@
 			return m;
 		}
 	
+		/**
+		 * Parse style string into object
+		 *
+		 * @param   String
+		 * @return  Object
+		 **/
 		this.parseStyle = function(s) {
 			var st = {}, a = this.rte.options.allowBrowsersSpecStyles, t, n, v;
 			
@@ -100,6 +131,12 @@
 			return st;
 		}
 	
+		/**
+		 * Compact some style properties
+		 *
+		 * @param   Object
+		 * @return  Object
+		 **/
 		this.compactStyle = function(s) {
 			if (s['border-width']) {
 				s.border = s['border-width']+' '+(s['border-style']||'solid')+' '+(s['border-color']||'#000');
@@ -110,6 +147,12 @@
 			return s;
 		}
 	
+		/**
+		 * Serialize style object into string
+		 *
+		 * @param   Object
+		 * @return  String
+		 **/
 		this.serializeStyle = function(o) {
 			var s = [];
 			$.each(this.compactStyle(o), function(n, v) {
@@ -120,11 +163,23 @@
 			return s.join(';');
 		}
 	
+		/**
+		 * Parse class string into object
+		 *
+		 * @param   String
+		 * @return  Object
+		 **/
 		this.parseClass = function(c) {
 			c = $.trim(c);
 			return c.length ? c.split(/\s+/) : [];
 		}
 	
+		/**
+		 * Serialize class object into string
+		 *
+		 * @param   Object
+		 * @return  String
+		 **/
 		this.serializeClass = function(c) {
 			return c.join(' ')
 			var s = [];
@@ -134,6 +189,13 @@
 			return s.join(' ');
 		}
 	
+		/**
+		 * Return required media type info
+		 *
+		 * @param   String  mimetype
+		 * @param   String  classid
+		 * @return  Object
+		 **/
 		this.mediaInfo = function(t, c) {
 			var l = this.media.length;
 			
@@ -147,11 +209,5 @@
 	
 	}
 	
-	
-	
-	
-	
-	
-
 	
 })(jQuery);

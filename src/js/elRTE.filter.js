@@ -48,7 +48,7 @@
 			'monospace'  : /^courier$/i
 		}
 		// cached chains of rules
-		this._chains    = {};
+		this._chains = {};
 
 		
 		// check for empty default chains
@@ -106,18 +106,14 @@
 				b = this.boolAttrs,
 				m = s.match(this.attrRegExp),
 				t, n, v;
-				// var self = this
+
 			m && $.each(m, function(i, s) {
 				t = s.split('=');
 				n = $.trim(t[0]).toLowerCase();
-				if (/^(src|href|rel|value)$/.test(n)) {
-					if (t.length>2) {
-						t.shift();
-						v = t.join('=');
-						// self.rte.log(v)
-					} else {
-						v = t[1]||'';
-					}
+				
+				if (t.length>2) {
+					t.shift();
+					v = t.join('=');
 				} else {
 					v = b[n] ||t[1]||'';
 				}
@@ -139,17 +135,15 @@
 			var s = [], self = this;
 
 			$.each(a, function(n, v) {
-				// self.rte.log(n+' '+v)
 				if (n=='style') {
 					v = self.rte.utils.serializeStyle(v);
-					// v && s.push(n+'="'+v+'"');
+					v && s.push(n+'="'+v+'"');
 				} else if (n=='class') {
 					v = self.rte.utils.serializeClass(v);
-					// v && s.push(n+'="'+v+'"');
+					v && s.push(n+'="'+v+'"');
 				} else {
-					// s.push(n+'="'+v+'"');
+					s.push(n+'="'+v+'"');
 				}
-				v && s.push(n+'="'+v+'"');
 			});
 			return s.join(' ');
 		}
@@ -383,20 +377,22 @@
 	elRTE.prototype.filter.prototype.rules = {
 		/**
 		 * If this.rte.options.allowTags is set - remove all except this ones
-		 * If this.rte.options.denyTags is set - remove all deny tags
 		 *
 		 * @param String  html code
-		 * return String
+		 * @return String
 		 **/
 		allowedTags : function(html) {
 			var a = this.allowTags;
-			
 			return a ? html.replace(this.tagRegExp, function(t, c, n) { return a[n.toLowerCase()] ? t : ''; }) : html;
 		},
-		
+		/**
+		 * If this.rte.options.denyTags is set - remove all deny tags
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
 		deniedTags : function(html) {
 			var d = this.denyTags;
-			
 			return d ? html.replace(this.tagRegExp, function(t, c, n) { return d[n.toLowerCase()] ? '' : t }) : html;
 		},
 		
@@ -404,7 +400,7 @@
 		 * Replace not allowed tags/attributes
 		 *
 		 * @param String  html code
-		 * return String
+		 * @return String
 		 **/
 		clean : function(html) {
 			var self = this, 
@@ -430,7 +426,12 @@
 				});
 			return html;
 		},
-
+		/**
+		 * Replace script/style/media etc with placeholders
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
 		replace : function(html) {
 			var self = this;
 			
@@ -463,6 +464,14 @@
 					}
 				}
 				return '<img src="'+self.url+'pixel.gif" class="elrte-media elrte-media-'+c+' elrte-protected" title="'+(s ? self.rte.utils.encode(s) : '')+'" rel="'+self.rte.utils.encode(JSON.stringify(o))+'" width="'+w+'" height="'+h+'">';
+			}
+			
+			if (this.rte.options.replace.length) {
+				$.each(this.rte.options.replace, function(i, f) {
+					if (typeof(f) == 'function') {
+						html = f.call(self, html);
+					}
+				})
 			}
 			
 			html = html.replace(/(<script([^>]*)>[\s\S]*?<\/script>)/gi, "<!-- ELRTE_COMMENT$1-->")
@@ -501,9 +510,22 @@
 			
 			return html;
 		},
-		
+		/**
+		 * Restore script/style/media etc from placeholders
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
 		restore : function(html) {
 			var self =this;
+			
+			if (this.rte.options.restore.length) {
+				$.each(this.rte.options.restore, function(i, f) {
+					if (typeof(f) == 'function') {
+						html = f.call(self, html);
+					}
+				})
+			}
 			
 			html = html.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
 				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/gi, "$1")
@@ -532,11 +554,28 @@
 			
 			return html;
 		},
-		
+		/**
+		 * move tags and attributes names in lower case
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
 		tagsToLower : function(html) {
-			return html;
+			var self = this;
+			return html.replace(this.tagRegExp, function(t, c, n, a) {
+				if (!c) {
+					a = a ? self.serializeAttrs(self.parseAttrs(a)) : '';
+					a && (a = ' '+a);
+				}
+				return '<'+c+n.toLowerCase()+a+'>';
+			});
 		},
-		
+		/**
+		 * return xhtml tags
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
 		xhtmlTags : function(html) {
 			return html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />");
 		}
