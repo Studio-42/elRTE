@@ -34,3 +34,36 @@ body.elrte-structure .elrte-anchor {
 	background-color:#eee;
 	border:1px solid #ccc;
 }
+
+.elrte-media-x-shockwave-flash,
+.elrte-media-quicktime,
+.elrte-media-youtube,
+.elrte-media-rutube,
+.elrte-media-vimeo,
+.elrte-yandex-maps,
+.elrte-google-maps {
+	border:1px solid #ccc;
+	background:#eee url(../images/media-flash.png) center center no-repeat;
+}
+
+.elrte-media-x-shockwave-flash {
+	background-image:url(../images/media-flash.png);
+}
+.elrte-media-youtube {
+	background-image:url(../images/media-youtube.png);
+}
+.elrte-media-vimeo {
+	background-image:url(../images/media-vimeo.png);
+}
+.elrte-media-rutube {
+	background-image:url(../images/media-rutube.png);
+}
+.elrte-media-quicktime {
+	background-image:url(../images/media-quicktime.png);
+}
+.elrte-yandex-maps {
+	background-image:url(../images/yandex-maps.png);
+}
+.elrte-google-maps {
+	background-image:url(../images/google-maps.png);
+}

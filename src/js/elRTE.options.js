@@ -29,7 +29,7 @@
 		allowCloseDocs : true,
 		
 		allowTags : [],
-		denyTags : ['html', 'head', 'body', 'applet', 'basefont', 'isindex', 'title', 'meta', 'iframe', 'o:p'],
+		denyTags : ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'col', 'colgroup', 'iframe', 'isindex', 'frameset', 'html', 'head', 'meta', 'marquee', 'noframes', 'noembed', 'o:p', 'object', 'title', 'xml'],
 		
 		allowBrowsersSpecStyles : false,
 		
