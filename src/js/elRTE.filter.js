@@ -32,7 +32,7 @@
 		// regexp to detect media placeholders
 		this.restoreMediaRegExp = /<img([^>]*class\s*=\s*"[^>]*elrte-media[^>]*)>/gi;
 		// regexp to detect google maps placeholders
-		this.restoreGMapsRegExp = /<div([^>]*class\s*=\s*"[^>]*elrte-google-maps[^>]*)>/gi;
+		this.restoreGMapsRegExp = /<div([^>]*class\s*=\s*"[^>]*elrte-google-maps[^>]*)><\/div>/gi;
 		// elrte services classes regexp
 		this.elrteClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>/gi;
 		// allowed tags
@@ -121,7 +121,7 @@
 			});
 
 			a.style = this.rte.utils.parseStyle(a.style);
-			a['class'] = this.rte.utils.parseClass(a['class']);
+			a['class'] = a['class'] && a['class'].length ? a['class'].split(/\s+/) : []; 
 			return a;
 		}
 		
@@ -139,7 +139,7 @@
 					v = self.rte.utils.serializeStyle(v);
 					v && s.push(n+'="'+v+'"');
 				} else if (n=='class') {
-					v = self.rte.utils.serializeClass(v);
+					v = v.join(' '); 
 					v && s.push(n+'="'+v+'"');
 				} else {
 					s.push(n+'="'+v+'"');
@@ -161,7 +161,7 @@
 			// remove safari and mso classes
 			if (a['class']) {
 				a['class'] = $.grep(a['class'], function(e) {
-					return !/^(Apple-style-span|mso\w+)$/ig.test(e);
+					return !/^(Apple-style-span|mso\w+)$/i.test(e);
 				});
 			}
 
@@ -276,7 +276,7 @@
 		font      : { tag : 'span' },
 		nobr      : { tag : 'span', style : {'white-space' : 'nowrap'} },
 		menu      : { tag : 'ul' },
-		plaintext : { tag : 'pre'},
+		plaintext : { tag : 'pre' },
 		s         : { tag : 'strike' },
 		small     : { tag : 'span', style : {'font-size' : 'small'}},
 		u         : { tag : 'span', style : {'text-decoration' : 'underline'} },
@@ -373,7 +373,6 @@
 	
 	// rules collection
 	// @TODO empty & nested spans
-	// @TODO custom replace
 	elRTE.prototype.filter.prototype.rules = {
 		/**
 		 * If this.rte.options.allowTags is set - remove all except this ones
@@ -407,20 +406,31 @@
 				rt   = this.replaceTags,
 				ra   = this.replaceAttrs,
 				attrs;
-
+			// return html
 			html = html.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
 				.replace(this.tagRegExp, function(t, c, n, a) {
 					n = n.toLowerCase();
 					// create attributes hash and clean it
 					attrs = c ? {} : self.cleanAttrs(self.parseAttrs(a||''), n);
-					
+					if (!c) {
+						// a = self.cleanAttrs(self.parseAttrs(a||''), n);
+					}
+					self.rte.log(t)
 					if (rt[n]) {
 						// replace tag
+						if (!c && rt[n].style) {
+							// $.extend(a.style, rt[n].style);
+						}
 						!c && rt[n].style && $.extend(attrs.style, rt[n].style);
 						n = rt[n].tag;
 					}
 					// convert attributes into string
+					if (!c) {
+						// a = self.serializeAttrs.call(self, a);
+						// a = self.serializeAttrs(a);
+						// a && (a = ' '+a)
+					}
 					a = c ? '' : self.serializeAttrs.call(self, attrs);
 					return '<'+c+n+(a?' ':'')+a+'>';
 				});
@@ -433,8 +443,17 @@
 		 * @return String
 		 **/
 		replace : function(html) {
-			var self = this;
-			
+			var self = this, r = this.rte.options.replace;
+
+			// custom replaces if set
+			if (r.length) {
+				$.each(r, function(i, f) {
+					if (typeof(f) == 'function') {
+						html = f.call(self, html);
+					}
+				});
+			}
+
 			/**
 			 * Return media replacement - img html code
 			 *
@@ -466,21 +485,15 @@
 				return '<img src="'+self.url+'pixel.gif" class="elrte-media elrte-media-'+c+' elrte-protected" title="'+(s ? self.rte.utils.encode(s) : '')+'" rel="'+self.rte.utils.encode(JSON.stringify(o))+'" width="'+w+'" height="'+h+'">';
 			}
 			
-			if (this.rte.options.replace.length) {
-				$.each(this.rte.options.replace, function(i, f) {
-					if (typeof(f) == 'function') {
-						html = f.call(self, html);
-					}
-				})
-			}
-			
 			html = html.replace(/(<script([^>]*)>[\s\S]*?<\/script>)/gi, "<!-- ELRTE_COMMENT$1-->")
 				.replace(/(<style([^>]*)>[\s\S]*?<\/style>)/gi, "<!-- ELRTE_COMMENT$1-->")
 				.replace(/(<link([^>]+)>)/gi, "<!-- ELRTE_COMMENT$1-->")
 				.replace(/<!\[CDATA\[([\s\S]+)\]\]>/g, '<!--[CDATA[$1]]-->')
 				.replace(this.yMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
-					$.inArray('elrte-yandex-maps', a['class']) == -1 && a['class'].push('elrte-yandex-maps');
+					if ($.inArray('elrte-yandex-maps', a['class']) == -1) {
+						a['class'].push('elrte-yandex-maps');
+					}
 					return '<div '+self.serializeAttrs(a)+'>';
 				}).replace(this.gMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
@@ -508,6 +521,43 @@
 					return i ? img({ embed : a }, i.type) : t;
 				}).replace(/<\/(embed|param)>/gi, '');
 			
+			var n = $('<div>'+html+'</div>'), f = false;
+			
+			// n.find('span:not([class]):not([id])').filter(':not([style])').each(function() {
+			// 	self.rte.log(this)
+			// })
+			
+			n.find('span:not([id]):not([class])').each(function() {
+				var t = $(this);
+				
+				if (!t.attr('style')) {
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+					f = true;
+					self.rte.log($(this).text())
+				}
+			})
+			
+			n.find('span span:only-child').each(function() {
+				var t   = $(this), 
+					p   = t.parent().eq(0), 
+					tid = t.attr('id'), 
+					pid = p.attr('id'), id, s, c;
+				
+				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+					c = $.trim(p.attr('class')+' '+t.attr('class'))
+					c && p.attr('class', c);
+					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+					s && p.attr('style', s);
+					id = tid||pid;
+					id && p.attr('id', id);
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
+				
+			})
+			
+			if (f)
+				html = n.html()
+			// self.rte.log(html)
 			return html;
 		},
 		/**
@@ -517,14 +567,15 @@
 		 * @return String
 		 **/
 		restore : function(html) {
-			var self =this;
-			
-			if (this.rte.options.restore.length) {
-				$.each(this.rte.options.restore, function(i, f) {
+			var self =this, r = this.rte.options.restore;
+
+			// custom restore if set
+			if (r.length) {
+				$.each(r, function(i, f) {
 					if (typeof(f) == 'function') {
 						html = f.call(self, html);
 					}
-				})
+				});
 			}
 			
 			html = html.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
