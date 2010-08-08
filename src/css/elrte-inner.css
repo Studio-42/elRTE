@@ -37,6 +37,9 @@ body.elrte-structure .elrte-anchor {
 
 .elrte-media-x-shockwave-flash,
 .elrte-media-quicktime,
+.elrte-media-x-director,
+.elrte-media-x-mplayer2,
+.elrte-media-x-pn-realaudio-plugin,
 .elrte-media-youtube,
 .elrte-media-rutube,
 .elrte-media-vimeo,
@@ -45,7 +48,6 @@ body.elrte-structure .elrte-anchor {
 	border:1px solid #ccc;
 	background:#eee url(../images/media-flash.png) center center no-repeat;
 }
-
 .elrte-media-x-shockwave-flash {
 	background-image:url(../images/media-flash.png);
 }
@@ -60,6 +62,15 @@ body.elrte-structure .elrte-anchor {
 }
 .elrte-media-quicktime {
 	background-image:url(../images/media-quicktime.png);
+}
+.elrte-media-x-director {
+	background-image:url(../images/media-director.png);
+}
+.elrte-media-x-mplayer2 {
+	background-image:url(../images/media-winmedia.png);
+}
+.elrte-media-x-pn-realaudio-plugin {
+	background-image:url(../images/media-realaudio.png);
 }
 .elrte-yandex-maps {
 	background-image:url(../images/yandex-maps.png);
