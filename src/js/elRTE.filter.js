@@ -32,15 +32,9 @@
 		// google maps regexp
 		this.gMapsRegExp = /<iframe\s+([^>]*src\s*=\s*"http:\/\/maps\.google\.\w+[^>]*)>([\s\S]*?)<\/iframe>/gi;
 		// video hostings url regexp
-		this.videoHostRegExp = /^http:\/\/((www|video)\.)?(youtube|vimeo|rutube)\./i;
-		// regexp to replace video hostings url into css class
-		this.videoHostRepl = /.+(youtube|vimeo|rutube).+/i;
-		// regexp to detect media placeholders
-		this.restoreMediaRegExp = /<img([^>]*class\s*=\s*"[^>]*elrte-media[^>]*)>/gi;
-		// regexp to detect google maps placeholders
-		this.restoreGMapsRegExp = /<div([^>]*class\s*=\s*"[^>]*elrte-google-maps[^>]*)><\/div>/gi;
+		this.videoHostRegExp = /^(http:\/\/[\w\.]*)?(youtube|vimeo|rutube).*/i;
 		// elrte services classes regexp
-		this.elrteClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>/gi;
+		this.serviceClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>\s*(<\/\1>)?/gi;
 		// allowed tags
 		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
 		// denied tags
@@ -486,7 +480,7 @@
 			 **/
 			function img(o, t) {
 				var s = src(),
-					c = s && self.videoHostRegExp.test(s) ? s.replace(self.videoHostRepl, "$1") : t.replace(/^\w+\/(.+)/, "$1"),
+					c = s && self.videoHostRegExp.test(s) ? s.replace(self.videoHostRegExp, "$2") : t.replace(/^\w+\/(.+)/, "$1"),
 					w = parseInt(o.obj ? o.obj.width || o.obj.style.width : 0)||(o.embed ? o.embed.width || o.embed.style.width : 0)||100,
 					h = parseInt(o.obj ? o.obj.height || o.obj.style.height : 0)||(o.embed ? o.embed.height || o.embed.style.height : 0)||100,
 					l;
@@ -564,27 +558,25 @@
 			
 			html = html.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
 				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/gi, "$1")
-				.replace(this.restoreMediaRegExp, function(t, a) {
-					var a = self.parseAttrs(a),
-						j = a.rel ? $.parseJSON(self.rte.utils.decode(a.rel)) : {},
-						o = '';
-				
-					j.params && $.each(j.params, function(i, p) {
-						o += '<param '+self.serializeAttrs(p)+">\n";
-					});
-					j.embed && (o+='<embed '+self.serializeAttrs(j.embed)+">");
-					j.obj && (o = '<object '+self.serializeAttrs(j.obj)+">\n"+o+"\n</object>");
-					return o||t;
-				}).replace(this.restoreGMapsRegExp, function(t, a) {
-					a = self.parseAttrs(a);
-					a = $.parseJSON(self.rte.utils.decode(a.rel));
-					return '<iframe '+self.serializeAttrs(a)+'></iframe>';
-				}).replace(this.elrteClassRegExp, function(t, n, a) {
-					a = self.parseAttrs(a);
+				.replace(this.serviceClassRegExp, function(t, n, a, e) {
+					var a = self.parseAttrs(a), j, o = '';
+					
+					if (a['class']['elrte-media']) {
+						j = a.rel ? $.parseJSON(self.rte.utils.decode(a.rel)) : {};
+						j.params && $.each(j.params, function(i, p) {
+							o += '<param '+self.serializeAttrs(p)+">\n";
+						});
+						j.embed && (o+='<embed '+self.serializeAttrs(j.embed)+">");
+						j.obj && (o = '<object '+self.serializeAttrs(j.obj)+">\n"+o+"\n</object>\n");
+						return o||t;
+					} else if (a['class']['elrte-google-maps']) {
+						return '<iframe '+self.serializeAttrs($.parseJSON(self.rte.utils.decode(a.rel)))+'></iframe>';
+					} 
 					$.each(a['class'], function(n) {
 						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
 					});
-					return '<'+n+' '+self.serializeAttrs(a)+'>';
+					return '<'+n+' '+self.serializeAttrs(a)+'>'+e;
+
 				});
 			
 			return html;

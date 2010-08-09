@@ -44,7 +44,8 @@ body.elrte-structure .elrte-anchor {
 .elrte-media-rutube,
 .elrte-media-vimeo,
 .elrte-yandex-maps,
-.elrte-google-maps {
+.elrte-google-maps,
+.elrte-media {
 	border:1px solid #ccc;
 	background:#eee url(../images/media-flash.png) center center no-repeat;
 }
