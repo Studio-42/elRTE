@@ -1,5 +1,9 @@
 (function($) {
-	
+	/**
+	 * @class Filter - clean editor content
+	 * @param elRTE editor instance
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 */
 	elRTE.prototype.filter = function(rte) {
 		var self = this,
 			n    = $('<span />').addClass('elrte-test-url').appendTo(rte.view.editor)[0];
@@ -13,6 +17,8 @@
 		this.boolAttrs = rte.utils.makeObject('checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected'.split(','));
 		// tag regexp
 		this.tagRegExp = /<(\/?)([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
+		// opened tag regexp
+		this.openTagRegExp = /<([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
 		// attributes regexp
 		this.attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
 		// object tag regexp
@@ -49,15 +55,6 @@
 		}
 		// cached chains of rules
 		this._chains = {};
-
-		
-		// check for empty default chains
-		if (!this.chains.fromSource.length) {
-			this.chains.fromSource = ['clean'];
-		}
-		if (!this.chains.toSource.length) {
-			this.chains.toSource = ['clean'];
-		}
 		
 		// cache existed chains
 		$.each(this.chains, function(n) {
@@ -68,7 +65,13 @@
 			});
 		});
 
-		// filter through required chain
+		/**
+		 * filtering through required chain
+		 *
+		 * @param  String  chain name
+		 * @param  String  html-code
+		 * @return String
+		 **/
 		this.filter = function(chain, html) {
 			// remove whitespace at the begin and end
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
@@ -76,23 +79,27 @@
 			$.each(this._chains[chain]||[], function() {
 				html = this.call(self, html);
 			});
-			if ($.browser.msie||$.browser.opera) {
-				html = this.rules.tagsToLower.call(this, html);
-			}
-			if (this.xhtml) {
-				html = this.rules.xhtmlTags.call(this, html);
-			}
 			return html;
 		}
 		
-		// wrapper for "toSource" chain
-		this.toSource = function(html) {
-			return this.filter('toSource', html);
+		/**
+		 * wrapper for "wysiwyg" chain filtering
+		 *
+		 * @param  String  
+		 * @return String
+		 **/
+		this.wysiwyg = function(html) {
+			return this.filter('wysiwyg', html);
 		}
 		
-		// wrapper for "fromSource" chain
-		this.fromSource = function(html) {
-			return this.filter('fromSource', html);
+		/**
+		 * wrapper for "source" chain filtering
+		 *
+		 * @param  String  
+		 * @return String
+		 **/
+		this.source = function(html) {
+			return this.filter('source', html);
 		}
 		
 		/**
@@ -121,7 +128,7 @@
 			});
 
 			a.style = this.rte.utils.parseStyle(a.style);
-			a['class'] = a['class'] && a['class'].length ? a['class'].split(/\s+/) : []; 
+			a['class'] = this.rte.utils.parseClass(a['class']||'')
 			return a;
 		}
 		
@@ -131,19 +138,16 @@
 		 * @param  Object  attributes hash
 		 * @return String
 		 **/
-		this.serializeAttrs = function(a) {
+		this.serializeAttrs = function(a, c) {
 			var s = [], self = this;
 
 			$.each(a, function(n, v) {
 				if (n=='style') {
-					v = self.rte.utils.serializeStyle(v);
-					v && s.push(n+'="'+v+'"');
+					v = self.rte.utils.serializeStyle(v, c);
 				} else if (n=='class') {
-					v = v.join(' '); 
-					v && s.push(n+'="'+v+'"');
-				} else {
-					s.push(n+'="'+v+'"');
-				}
+					v = self.rte.utils.serializeClass(v);
+				} 
+				v && s.push(n+'="'+v+'"');
 			});
 			return s.join(' ');
 		}
@@ -159,11 +163,9 @@
 			var self = this, ra = this.replaceAttrs;
 
 			// remove safari and mso classes
-			if (a['class']) {
-				a['class'] = $.grep(a['class'], function(e) {
-					return !/^(Apple-style-span|mso\w+)$/i.test(e);
-				});
-			}
+			$.each(a['class'], function(n) {
+				/^(Apple-style-span|mso\w+)$/i.test(n) && delete a['class'][n];
+			});
 
 			function value(v) {
 				return v+(/\d$/.test(v) ? 'px' : '');
@@ -263,9 +265,7 @@
 			return a;
 		}
 		
-		
 	}
-	
 
 	// rules to replace tags
 	elRTE.prototype.filter.prototype.replaceTags = {
@@ -369,10 +369,7 @@
 		}
 	}
 	
-
-	
 	// rules collection
-	// @TODO empty & nested spans
 	elRTE.prototype.filter.prototype.rules = {
 		/**
 		 * If this.rte.options.allowTags is set - remove all except this ones
@@ -404,37 +401,63 @@
 		clean : function(html) {
 			var self = this, 
 				rt   = this.replaceTags,
-				ra   = this.replaceAttrs,
-				attrs;
-			// return html
+				ra   = this.replaceAttrs, 
+				n, f = false;
+			
 			html = html.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
+				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br><br>')
 				.replace(this.tagRegExp, function(t, c, n, a) {
 					n = n.toLowerCase();
-					// create attributes hash and clean it
-					attrs = c ? {} : self.cleanAttrs(self.parseAttrs(a||''), n);
+					
 					if (!c) {
-						// a = self.cleanAttrs(self.parseAttrs(a||''), n);
+						// create attributes hash and clean it
+						a = self.cleanAttrs(self.parseAttrs(a||''), n);
 					}
-					self.rte.log(t)
 					if (rt[n]) {
 						// replace tag
 						if (!c && rt[n].style) {
-							// $.extend(a.style, rt[n].style);
+							$.extend(a.style, rt[n].style);
 						}
-						!c && rt[n].style && $.extend(attrs.style, rt[n].style);
 						n = rt[n].tag;
 					}
-					// convert attributes into string
+					
 					if (!c) {
-						// a = self.serializeAttrs.call(self, a);
-						// a = self.serializeAttrs(a);
-						// a && (a = ' '+a)
+						// convert attributes into string
+						a = self.serializeAttrs(a);
+						a && (a = ' '+a)
 					}
-					a = c ? '' : self.serializeAttrs.call(self, attrs);
-					return '<'+c+n+(a?' ':'')+a+'>';
+					return '<'+c+n+a+'>';
 				});
-			return html;
+				
+			n = $('<div>'+html+'</div>');
+			// remove empty spans and merge nested spans
+			n.find('span:not([id]):not([class])').each(function() {
+				var t = $(this);
+				
+				if (!t.attr('style')) {
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+					f = true;
+				}
+			}).end().find('span span:only-child').each(function() {
+				var t   = $(this), 
+					p   = t.parent().eq(0), 
+					tid = t.attr('id'), 
+					pid = p.attr('id'), id, s, c;
+				
+				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+					c = $.trim(p.attr('class')+' '+t.attr('class'))
+					c && p.attr('class', c);
+					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+					s && p.attr('style', s);
+					id = tid||pid;
+					id && p.attr('id', id);
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+					f = true;
+				}
+			});
+
+			return f ? n.html() : html;
 		},
 		/**
 		 * Replace script/style/media etc with placeholders
@@ -491,9 +514,7 @@
 				.replace(/<!\[CDATA\[([\s\S]+)\]\]>/g, '<!--[CDATA[$1]]-->')
 				.replace(this.yMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
-					if ($.inArray('elrte-yandex-maps', a['class']) == -1) {
-						a['class'].push('elrte-yandex-maps');
-					}
+					a['class']['elrte-yandex-maps'] = 'elrte-yandex-maps';
 					return '<div '+self.serializeAttrs(a)+'>';
 				}).replace(this.gMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
@@ -521,43 +542,6 @@
 					return i ? img({ embed : a }, i.type) : t;
 				}).replace(/<\/(embed|param)>/gi, '');
 			
-			var n = $('<div>'+html+'</div>'), f = false;
-			
-			// n.find('span:not([class]):not([id])').filter(':not([style])').each(function() {
-			// 	self.rte.log(this)
-			// })
-			
-			n.find('span:not([id]):not([class])').each(function() {
-				var t = $(this);
-				
-				if (!t.attr('style')) {
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
-					f = true;
-					self.rte.log($(this).text())
-				}
-			})
-			
-			n.find('span span:only-child').each(function() {
-				var t   = $(this), 
-					p   = t.parent().eq(0), 
-					tid = t.attr('id'), 
-					pid = p.attr('id'), id, s, c;
-				
-				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
-					c = $.trim(p.attr('class')+' '+t.attr('class'))
-					c && p.attr('class', c);
-					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
-					s && p.attr('style', s);
-					id = tid||pid;
-					id && p.attr('id', id);
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
-				}
-				
-			})
-			
-			if (f)
-				html = n.html()
-			// self.rte.log(html)
 			return html;
 		},
 		/**
@@ -597,28 +581,41 @@
 					return '<iframe '+self.serializeAttrs(a)+'></iframe>';
 				}).replace(this.elrteClassRegExp, function(t, n, a) {
 					a = self.parseAttrs(a);
-					a['class'] = $.grep(a['class'], function(e) {
-						return !/^elrte-\w+/i.test(e);
-					})
+					$.each(a['class'], function(n) {
+						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
+					});
 					return '<'+n+' '+self.serializeAttrs(a)+'>';
 				});
 			
 			return html;
 		},
 		/**
-		 * move tags and attributes names in lower case
+		 * move tags and attributes names in lower case(for ie&opera)
+		 * and compact styles
 		 *
 		 * @param String  html code
 		 * return String
 		 **/
 		tagsToLower : function(html) {
-			var self = this;
+			var self = this; 
+
 			return html.replace(this.tagRegExp, function(t, c, n, a) {
-				if (!c) {
-					a = a ? self.serializeAttrs(self.parseAttrs(a)) : '';
-					a && (a = ' '+a);
-				}
-				return '<'+c+n.toLowerCase()+a+'>';
+				a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
+				return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
+			});
+		},
+		/**
+		 * compact styles
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		compactStyles : function(html) {
+			var self = this;
+
+			return html.replace(this.openTagRegExp, function(t, n, a) {
+				a = a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
+				return '<'+n+(a?' ':'')+a+'>';
 			});
 		},
 		/**
@@ -628,15 +625,20 @@
 		 * return String
 		 **/
 		xhtmlTags : function(html) {
-			return html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />");
+			return this.xhtml ? html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />") : html;
 		}
 	}
 	
+	/**
+	 * Chains configuration
+	 * Two default chains 
+	 * 1. wysiwyg - proccess html for wysiwyg editor mode
+	 * 2. source  - proccess html for source editor mode
+	 * deniedTags is in the end of chain to protect google maps iframe from removed
+	 **/
 	elRTE.prototype.filter.prototype.chains = {
-		wysiwyg : ['allowedTags', 'clean', 'replace', 'deniedTags'],
-		source  : ['allowedTags', 'clean', 'restore'],
-		fromSource : ['allowedTags', 'clean', 'replace', 'deniedTags'],
-		toSource   : ['allowedTags', 'clean', 'restore']
+		wysiwyg : ['allowedTags', 'clean', 'replace', 'deniedTags', 'compactStyles'],
+		source  : ['allowedTags', 'clean', 'restore', 'tagsToLower', 'xhtmlTags']
 	}
 	
 

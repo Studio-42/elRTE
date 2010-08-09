@@ -46,6 +46,31 @@
 				codebase : 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0'
 			}];
 		
+		// rgb color regexp
+		this.rgbRegExp = /\s*rgb\s*?\(\s*?([0-9]+)\s*?,\s*?([0-9]+)\s*?,\s*?([0-9]+)\s*?\)\s*/i;
+		// regexp to detect color in border/background properties
+		this.colorsRegExp = /aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|rgb\s*\([^\)]+\)/i;
+		// web safe colors
+		this.colors = {
+			aqua    : '#00ffff',
+			black   : '#000000',
+			blue    : '#0000ff',
+			fuchsia : '#ff00ff',
+			gray    : '#808080',
+			green   : '#008000',
+			lime    : '#00ff00',
+			maroon  : '#800000',
+			navy    : '#000080',
+			olive   : '#808000',
+			orange  : '#ffa500',
+			purple  : '#800080',
+			red     : '#ff0000',
+			silver  : '#c0c0c0',
+			teal    : '#008080',
+			white   : '#fffffff',
+			yellow  : '#ffff00'
+		}
+		
 		/**
 		 * Return true if code is char code
 		 *
@@ -122,6 +147,9 @@
 					if (t[0] && t[1]) {
 						n = $.trim(t[0]).toLowerCase();
 						v = $.trim(t[1]);
+						if (n == 'color' || n == 'background-color') {
+							v = v.toLowerCase();
+						}
 						if (n && v && (!a || n.substring(0, 1) != '-')) {
 							st[n] = v;
 						}
@@ -132,33 +160,81 @@
 		}
 	
 		/**
-		 * Compact some style properties
+		 * Compact some style properties and convert colors in hex
 		 *
 		 * @param   Object
 		 * @return  Object
 		 **/
 		this.compactStyle = function(s) {
+			var self = this;
+
+			if (s.border == 'medium none') {
+				delete s.border;
+			}
+			
+			$.each(s, function(n, v) {
+				if (/color$/i.test(n)) {
+					s[n] = self.color2Hex(v);
+				} else if (/^(border|background)$/i.test(n)) {
+					s[n] = v.replace(self.colorsRegExp, function(m) {
+						return self.color2Hex(m);
+					});
+				}
+			});
+			
 			if (s['border-width']) {
 				s.border = s['border-width']+' '+(s['border-style']||'solid')+' '+(s['border-color']||'#000');
 				delete s['border-width'];
 				delete s['border-style'];
 				delete s['border-color'];
 			}
+			
+			if (s['background-image']) {
+				s.background = (s['background-color']+' ')||''+s['background-image']+' '+s['background-position']||'0 0'+' '+s['background-repeat']||'repeat';
+				delete s['background-image'];
+				delete['background-image'];
+				delete['background-position'];
+				delete['background-repeat'];
+			}
+			
+			if (s['margin-top'] && s['margin-right'] && s['margin-bottom'] && s['margin-left']) {
+				s.margin = s['margin-top']+' '+s['margin-right']+' '+s['margin-bottom']+' '+s['margin-left'];
+				delete s['margin-top'];
+				delete s['margin-right'];
+				delete s['margin-bottom'];
+				delete s['margin-left'];
+			}
+			
+			if (s['padding-top'] && s['padding-right'] && s['padding-bottom'] && s['padding-left']) {
+				s.padding = s['padding-top']+' '+s['padding-right']+' '+s['padding-bottom']+' '+s['padding-left'];
+				delete s['padding-top'];
+				delete s['padding-right'];
+				delete s['padding-bottom'];
+				delete s['padding-left'];
+			}
+			
+			if (s['list-style-type'] || s['list-style-position'] || s['list-style-image']) {
+				s['list-style'] = $.trim(s['list-style-type']||' '+s['list-style-position']||''+s['list-style-image']||'');
+				delete s['list-style-type'];
+				delete s['list-style-position'];
+				delete s['list-style-image'];
+			}
+			
 			return s;
 		}
 	
 		/**
 		 * Serialize style object into string
 		 *
-		 * @param   Object
+		 * @param   Object  style map
+		 * @param   Boolean flag - compact style?
 		 * @return  String
 		 **/
-		this.serializeStyle = function(o) {
+		this.serializeStyle = function(o, c) {
 			var s = [];
-			$.each(this.compactStyle(o), function(n, v) {
-				if (v) {
-					s.push(n+':'+v);
-				}
+			// c=true
+			$.each(c ? this.compactStyle(o) : o, function(n, v) {
+				v && s.push(n+':'+v);
 			});
 			return s.join(';');
 		}
@@ -170,7 +246,9 @@
 		 * @return  Object
 		 **/
 		this.parseClass = function(c) {
-			c = $.trim(c);
+			c = $.trim(c); 
+			// this.rte.log(c)
+			return c.length ? this.makeObject(c.split(/\s+/)) : {};
 			return c.length ? c.split(/\s+/) : [];
 		}
 	
@@ -181,10 +259,10 @@
 		 * @return  String
 		 **/
 		this.serializeClass = function(c) {
-			return c.join(' ')
+			// return c.join(' ')
 			var s = [];
 			$.each(c, function(n) {
-				s.push(n)
+				s.push(n);
 			});
 			return s.join(' ');
 		}
@@ -204,6 +282,29 @@
 					return this.media[l];
 				}
 			}
+		}
+	
+		/**
+		 * Return color hex value
+		 *
+		 * @param   String   color name or rgb
+		 * @return  String
+		 **/
+		this.color2Hex = function(c) {
+			var m;
+			
+			function hex(s) {
+				s = parseInt(s).toString(16);
+				return s.length > 1 ? s : '0' + s; 
+			};
+			
+			if (this.colors[c]) {
+				return this.colors[c];
+			}
+			if ((m = c.match(this.rgbRegExp))) {
+				return '#'+hex(m[1])+hex(m[2])+hex(m[3]);
+			}
+			return c;
 		}
 	
 	

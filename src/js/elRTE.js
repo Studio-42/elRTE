@@ -232,7 +232,7 @@
 		doc.document.close();
 		
 		/* set document content from textarea */
-		$(doc.document.body).html(this.filter.fromSource(doc.source.val()));
+		$(doc.document.body).html(this.filter.wysiwyg(doc.source.val()));
 
 		/* make iframe editable */
 		if ($.browser.msie) {
@@ -398,9 +398,9 @@
 
 		while (l--) {
 			if (d[l].source.is(':visible')) {
-				$(d[l].document.body).html(this.filter.fromSource(d[l].source.val()));
+				$(d[l].document.body).html(this.filter.wysiwyg(d[l].source.val()));
 			} else {
-				d[l].source.val(this.filter.toSource($(d[l].document.body).html()));
+				d[l].source.val(this.filter.source($(d[l].document.body).html()));
 			}
 		}
 		return this;
@@ -559,7 +559,7 @@
 	}
 	
 	/**
-	 * Show editor if hide
+	 * Show editor if hidden
 	 *
 	 * @return elRTE
 	 */
