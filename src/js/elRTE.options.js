@@ -41,11 +41,11 @@
 		/* max undo/redo steps */
 		historySize : 5,
 		/* plugins to load */
-		plugins : ['source', 'dummy', 'path', 'webkit', 'wordcount'],
+		plugins : ['source'/*, 'dummy', 'path', 'webkit', 'wordcount'*/],
 		/* display or not toolbar */
 		allowToolbar : true,
 		/* cuurent toolbar name */
-		toolbar : 'default',
+		toolbar : 'empty',
 		
 		panels : {
 			style      : ['bold', 'italic' /* , 'italic', 'underline', 'sub', 'sup'*/],
@@ -57,6 +57,7 @@
 		panelsNames : {},
 		
 		toolbars : {
+			'empty' : [],
 			'default' : [/*'style', 'history', 'clean',*/'style', 'fullscreen']
 		}
 	}

@@ -17,7 +17,7 @@
 		/* version */
 		this.version   = '1.1 dev';
 		/* build date */
-		this.build     = '20100705';
+		this.build     = '20100810';
 		/* is os - macos? */
 		this.macos     = navigator.userAgent.indexOf('Mac') != -1;
 		/* messages language */
@@ -59,7 +59,7 @@
 			/* called after document switch to source mode */
 			'source'    : [],
 			/* called before(!) document editor set invisible */
-			'blur'      : [],
+			'wysiwyg'      : [],
 			/* called before close document */
 			'close'     : [],
 			/* called before content from document will be returned. if needed modify event.elrteDocument.source value */
@@ -91,19 +91,20 @@
 			};
 		/* object with various utilits */	
 		this.utils     = new this.utils(this)
-		/* editor view */
+		/* editor view/renderer */
 		this.view      = new this.view(this);
 		/* DOM manipulation */
 		this.dom       = new this.dom(this);
-		/* selection and text text range */
+		/* selection and text range object */
 		this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
-
+		/* cleaning content object */
 		this.filter = new this.filter(this)
 		/* history object */
-		this.history = new this.history(this);
+		// this.history = new this.history(this);
 		
 		/* load commands */
 		tb = this.options.toolbars[this.toolbar];
+		tb = this.options.toolbars[this.options.toolbar]||[]
 		i = tb.length;
 		while (i--) {
 			p = this.options.panels[tb[i]]; 
@@ -143,6 +144,7 @@
 		delete(this.listeners.load);
 
 		this.timeEnd('load');
+		// this.log(this.listeners)
 	}
 
 	/*** API ***/
@@ -230,9 +232,15 @@
 		doc.document.open();
 		doc.document.write(this.options.doctype+html+'</head><body> </body></html>');
 		doc.document.close();
+
+		// add methods to document
+		doc.isWysiwyg = (function(self) { return function() { return self.editor.is(':visible'); } })(doc);
+		doc.get       = (function(self) { return function(t) { return t == 'source' ? doc.source.val() : $(self.document.body).html(); } })(doc);
+		doc.set       = (function(self) { return function(t, c) { t == 'source' ? doc.source.val(c) : $(self.document.body).html(c); } })(doc);
 		
 		/* set document content from textarea */
-		$(doc.document.body).html(this.filter.wysiwyg(doc.source.val()));
+		doc.set('wysiwyg', this.filter.wysiwyg(doc.get('source')))
+		// $(doc.document.body).html(this.filter.wysiwyg(doc.source.val()));
 
 		/* make iframe editable */
 		if ($.browser.msie) {
@@ -242,67 +250,64 @@
 			catch(e) { }
 		}
 
-		/* bind events to document */
-		$(doc.document).bind('paste', function(e) {
-			self.trigger('paste').trigger('change');
-		})
-		.bind('cut', function(e) {
-			self.trigger('change');
-		})
-		.bind('keydown', function(e) {
-			var i, s, p;
-			for (i in self.shortcuts) {
-				if (self.shortcuts.hasOwnProperty(i)) {
-					s = self.shortcuts[i];
-					p = s.pattern;
-					if (p.keyCode == e.keyCode 
-					&& (!p.ctrlKey  || p.ctrlKey  == e.ctrlKey) 
-					&& (!p.altKey   || p.altKey   == e.altKey) 
-					&& (!p.shiftKey || p.shiftKey == e.shiftKey) 
-					&& (!p.metaKey  || p.metaKey  == e.metaKey)) {
-						if (e.isPropagationStopped()) {
-							return;
-						}
-						s.callback(e);
-					}
-				}
-			}
-			!e.isPropagationStopped() && self.trigger(e);
-		})
-		.bind('keyup mousedown mouseup click dblclick', function(e) {
-			if (this == self.active.document) {
-				self.trigger(e);
-				var ev, c;
 
-				if (e.type == 'mouseup') {
-					ev = $.Event('change');
-				} else if (e.type == 'keyup') {
-					c = e.keyCode;
-					if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
-						ev = $.Event('change');
-					} else if (self.utils.isKeyDel(c)) {
-						ev = $.Event('change');
-						ev.isDel = true;
-					} else if (self.utils.isKeyChar(c) && !e.ctrlKey) {
-						ev = $.Event('input')
-					}
-				}
-				if (ev) {
-					ev.originalEvent = e;
-					self.trigger(ev);
-				}
-			}
-		});
+		/* bind events to document */
+		// $(doc.document).bind('paste', function(e) {
+		// 	self.trigger('paste').trigger('change');
+		// })
+		// .bind('cut', function(e) {
+		// 	self.trigger('change');
+		// })
+		// .bind('keydown', function(e) {
+		// 	var i, s, p;
+		// 	for (i in self.shortcuts) {
+		// 		if (self.shortcuts.hasOwnProperty(i)) {
+		// 			s = self.shortcuts[i];
+		// 			p = s.pattern;
+		// 			if (p.keyCode == e.keyCode 
+		// 			&& (!p.ctrlKey  || p.ctrlKey  == e.ctrlKey) 
+		// 			&& (!p.altKey   || p.altKey   == e.altKey) 
+		// 			&& (!p.shiftKey || p.shiftKey == e.shiftKey) 
+		// 			&& (!p.metaKey  || p.metaKey  == e.metaKey)) {
+		// 				if (e.isPropagationStopped()) {
+		// 					return;
+		// 				}
+		// 				s.callback(e);
+		// 			}
+		// 		}
+		// 	}
+		// 	!e.isPropagationStopped() && self.trigger(e);
+		// })
+		// .bind('keyup mousedown mouseup click dblclick', function(e) {
+		// 	if (this == self.active.document) {
+		// 		self.trigger(e);
+		// 		var ev, c;
+		// 
+		// 		if (e.type == 'mouseup') {
+		// 			ev = $.Event('change');
+		// 		} else if (e.type == 'keyup') {
+		// 			c = e.keyCode;
+		// 			if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
+		// 				ev = $.Event('change');
+		// 			} else if (self.utils.isKeyDel(c)) {
+		// 				ev = $.Event('change');
+		// 				ev.isDel = true;
+		// 			} else if (self.utils.isKeyChar(c) && !e.ctrlKey) {
+		// 				ev = $.Event('input')
+		// 			}
+		// 		}
+		// 		if (ev) {
+		// 			ev.originalEvent = e;
+		// 			self.trigger(ev);
+		// 		}
+		// 	}
+		// });
 
 		this.trigger(this.event('open', doc));
 		/* when loading document into empty editor after editor was loaded */
 		if (!this.documents.length == 1 && !this.listeners.load) {
 			this.focus(d.id);
 		}
-		
-		// this.log($(doc.document.body).html().match(/<(\w)(:\w)?([^>]*)>/g))
-		// this.log($(doc.document.body).html().match(/(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g))
-		
 		return id;
 	}
 
@@ -313,8 +318,7 @@
 	 * @return elRTE
 	 */
 	elRTE.prototype.close = function(i) {
-		var e   = $.Event('close'), 
-			l   = this.documents.length, 
+		var l   = this.documents.length, 
 			tmp = [],
 			d, next;
 			
@@ -324,8 +328,7 @@
 				next = this.getDocument((i = this.indexOf(d.id))==0 ? 1 : i-1);
 			}
 
-			e.elrteDocument = d;
-			this.trigger(e);
+			this.trigger(this.event('close', d));
 			this.view.remove(d.id);
 
 			while (l--) {
@@ -345,23 +348,35 @@
 	 * @return elRTE
 	 **/
 	elRTE.prototype.focus = function(i) {
-		var d, a = this.active;
+		var d, a = this.active, self = this;
 		
 		if (this.documents.length) {
 			d = this.getDocument(i)||a||this.documents[0];
 			
-			if (a && d != a) {
-				!this.wysiwyg && this.options.autoToggle && this.toggle();
-				this.wysiwyg  && this.trigger('blur');
-				this.view.focus(d.id);
+			function focus() {
+				if (self.wysiwyg) {
+					self.active.window.focus();
+				} else {
+					self.active.source[0].focus();
+				}
 			}
 			
-			this.wysiwyg = this.view.workzone.children('#'+d.id).children('iframe').is(':visible');
-			(this.wysiwyg ? d.window : d.source[0]).focus();
-			
 			if (d != a) {
+				// set active doc in wysiwyg mode if required
+				a && !this.wysiwyg && this.options.autoToggle && this.toggle();
+				// show doc
+				this.view.focus(d.id);
+				// check doc mode
+				this.wysiwyg = d.editor.is(':visible');
+				// set doc active
 				this.active = d;
-				this.trigger(this.wysiwyg ? 'focus' : 'source');
+				
+				// get focus
+				focus();
+				// rise events
+				this.trigger('focus').trigger(this.wysiwyg ? 'wysiwyg' : 'source');
+			} else {
+				focus();
 			}
 		}
 		return this;
@@ -376,10 +391,9 @@
 	 */
 	elRTE.prototype.toggle = function() {
 		if (this.options.allowSource && this.active) {
-			this.wysiwyg && this.trigger('blur');
 			this.sync(this.active.id).view.toggle();
-			this.focus();
-			this.trigger(this.wysiwyg ? 'focus' : 'source');
+			// this.log(this.active.isWysiwyg())
+			this.focus().trigger((this.wysiwyg = this.active.editor.is(':visible') )? 'wysiwyg' : 'source');
 		}
 		return this;
 	}
@@ -388,7 +402,7 @@
 	 * Sync data between editor/source in active document or in all documents
 	 * If editor is visible for now, data copy from editor to source and otherwise
 	 *
-	 * @param  String|Number  document id/index, not set it for sync all documents 
+	 * @param  String|Number  document id/index or undefined to sync all documents 
 	 * @return elRTE
 	 **/
 	elRTE.prototype.sync = function(i) {
@@ -396,11 +410,10 @@
 			l = d.length;
 
 		while (l--) {
-			if (d[l].source.is(':visible')) {
-				$(d[l].document.body).html(this.filter.wysiwyg(d[l].source.val()));
-			} else {
-				d[l].source.val(this.filter.source($(d[l].document.body).html()));
-			}
+			var s = d[l].isWysiwyg() ? 'wysiwyg' : 'source',
+				t = d[l].isWysiwyg() ? 'source' : 'wysiwyg';
+			
+			d[l].set(t, this.filter.proccess(t, d[l].get(s)));
 		}
 		return this;
 	}
@@ -494,7 +507,7 @@
 			e.data = d;
 		}
 
-		this.debug(e.type+' '+e.elrteDocument.id);
+		this.debug(e.type+' '+(e.elrteDocument ? e.elrteDocument.id : 'no document'));
 		if (this.listeners[e.type] && this.listeners[e.type].length) {
 			for (var i=0; i < this.listeners[e.type].length; i++) {
 				if (e.isPropagationStopped()) {

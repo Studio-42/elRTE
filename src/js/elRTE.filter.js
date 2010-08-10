@@ -56,10 +56,7 @@
 		// cached chains of rules
 		this._chains = {};
 		
-		
-		
-		
-		// cache existed chains
+		// cache chains
 		$.each(this.chains, function(n) {
 			self._chains[n] = [];
 			$.each(this, function(i, r) {
@@ -74,7 +71,7 @@
 		 * @param  String  html-code
 		 * @return String
 		 **/
-		this.filter = function(chain, html) {
+		this.proccess = function(chain, html) {
 			// remove whitespace at the begin and end
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
 			// pass html through chain
@@ -91,7 +88,7 @@
 		 * @return String
 		 **/
 		this.wysiwyg = function(html) {
-			return this.filter('wysiwyg', html);
+			return this.proccess('wysiwyg', html);
 		}
 		
 		/**
@@ -101,7 +98,7 @@
 		 * @return String
 		 **/
 		this.source = function(html) {
-			return this.filter('source', html);
+			return this.proccess('source', html);
 		}
 		
 		/**
