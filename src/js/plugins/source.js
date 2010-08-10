@@ -26,7 +26,7 @@
 				tb.show();
 			}).bind('close', function() {
 				rte.documents.length == 1 && tb.hide();
-			}).bind('wysiwyg source', function(e) {
+			}).bind('  wysiwyg  source', function(e) {
 				ts.toggleClass('elrte-tab-active', e.type == 'source');
 				te.toggleClass('elrte-tab-active', e.type == 'wysiwyg');
 			});

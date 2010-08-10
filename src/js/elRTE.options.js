@@ -16,7 +16,7 @@
 		/* allow user view and edit source? required plugin or command to display ui */
 		allowSource : true, 
 		/* switch current doc from source to editor when switching to another doc */
-		autoToggle : false,
+		autoToggle : true,
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
 		tabsAlwaysShow : true,
 		/* additional css class for elrte */

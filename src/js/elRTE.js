@@ -132,6 +132,14 @@
 		for (i=0; i<this.options.documents.length; i++) {
 			this.open(this.options.documents[i]);
 		}
+		
+		/* fix ff bug with carret in textarea */
+		if ($.browser.mozilla) {
+			this.bind('source', function(e) {
+				self.active.source[0].setSelectionRange(0,0);
+			});
+		}
+		
 		/* focus required/first document */
 		if (this.documents.length) {
 			this.focus(this.documents[this.options.active] ? this.options.active : 0);
@@ -144,7 +152,6 @@
 		delete(this.listeners.load);
 
 		this.timeEnd('load');
-		// this.log(this.listeners)
 	}
 
 	/*** API ***/
@@ -166,18 +173,18 @@
 	}
 
 	/**
-	 * Return document by id or index
+	 * Return document by id or index (or active document)
 	 *
-	 * @param  String|Number  document id/index
+	 * @param  String|Number  document id/index (or undefined for active document)
 	 * @return Object
 	 **/
 	elRTE.prototype.getDocument = function(i) {
 		if (typeof(i) == 'string') {
 			i = this.indexOf(i);
 		}
-		if (typeof(i) == 'number' && typeof(this.documents[i]) != 'undefined') {
-			return this.documents[i];
-		}
+		return typeof(i) == 'number' && typeof(this.documents[i]) != 'undefined' 
+			? this.documents[i]
+			: this.active;
 	}
 
 	/**
@@ -234,12 +241,16 @@
 		doc.document.close();
 
 		// add methods to document
-		doc.isWysiwyg = (function(self) { return function() { return self.editor.is(':visible'); } })(doc);
-		doc.get       = (function(self) { return function(t) { return t == 'source' ? doc.source.val() : $(self.document.body).html(); } })(doc);
-		doc.set       = (function(self) { return function(t, c) { t == 'source' ? doc.source.val(c) : $(self.document.body).html(c); } })(doc);
+		doc.isWysiwyg = (function(self) { return function() { return self.editor.is(':visible') || self.editor.css('display') != 'none'; }})(doc);
+		doc.get       = (function(self) { return function(t) { return (t ? t == 'wysiwyg' : self.isWysiwyg()) ? $(self.document.body).html() : doc.source.val(); }})(doc);
+		doc.set       = (function(self) { return function(c, t) { (t ? t == 'wysiwyg' : self.isWysiwyg()) ? $(self.document.body).html(c) :  doc.source.val(c); }})(doc);
+		doc.focus     = (function(self) { return function() { if (self.editor.parent().is(':visible')) { self.editor.is(':visible') ? self.window.focus() : self.source[0].focus();} return true; }})(doc);
+		doc.toggle    = this.options.allowSource
+			? (function(self) { return function() { return !!(self.editor.parent().is(':visible') && self.editor.add(self.source).toggle() && self.focus()); }})(doc)
+			: function() { return false };
 		
 		/* set document content from textarea */
-		doc.set('wysiwyg', this.filter.wysiwyg(doc.get('source')))
+		doc.set(this.filter.wysiwyg(doc.get('source')), 'wysiwyg')
 		// $(doc.document.body).html(this.filter.wysiwyg(doc.source.val()));
 
 		/* make iframe editable */
@@ -340,6 +351,10 @@
 		return this;
 	}
 
+	elRTE.prototype.isWysiwyg = function() {
+		return this.active && this.active.isWysiwyg();
+	}
+
 	/**
 	 * Set document active (visible) if is not. 
 	 * Set focus into document editor/source
@@ -351,32 +366,21 @@
 		var d, a = this.active, self = this;
 		
 		if (this.documents.length) {
-			d = this.getDocument(i)||a||this.documents[0];
-			
-			function focus() {
-				if (self.wysiwyg) {
-					self.active.window.focus();
-				} else {
-					self.active.source[0].focus();
-				}
-			}
+			d = this.getDocument(i)||this.documents[0];
 			
 			if (d != a) {
 				// set active doc in wysiwyg mode if required
-				a && !this.wysiwyg && this.options.autoToggle && this.toggle();
+				a && !a.isWysiwyg() && this.options.autoToggle && this.toggle();
 				// show doc
 				this.view.focus(d.id);
-				// check doc mode
-				this.wysiwyg = d.editor.is(':visible');
 				// set doc active
 				this.active = d;
-				
-				// get focus
-				focus();
+				// get focus to doc
+				d.focus();
 				// rise events
-				this.trigger('focus').trigger(this.wysiwyg ? 'wysiwyg' : 'source');
+				this.trigger('focus').trigger(d.isWysiwyg() ? 'wysiwyg' : 'source');
 			} else {
-				focus();
+				d.focus();
 			}
 		}
 		return this;
@@ -385,16 +389,12 @@
 	/**
 	 * Switch between editor and source in active document 
 	 * if source access eneabled
-	 * @todo for firefox set curret to start of texarea
+	 * @todo for firefox set curret to start of texarea (bind to source event)
 	 *
 	 * @return elRTE
 	 */
 	elRTE.prototype.toggle = function() {
-		if (this.options.allowSource && this.active) {
-			this.sync(this.active.id).view.toggle();
-			// this.log(this.active.isWysiwyg())
-			this.focus().trigger((this.wysiwyg = this.active.editor.is(':visible') )? 'wysiwyg' : 'source');
-		}
+		this.active && this.sync(this.active.id) && this.active.toggle() && this.trigger(this.active.isWysiwyg() ? 'wysiwyg' : 'source');
 		return this;
 	}
 	
@@ -410,10 +410,9 @@
 			l = d.length;
 
 		while (l--) {
-			var s = d[l].isWysiwyg() ? 'wysiwyg' : 'source',
-				t = d[l].isWysiwyg() ? 'source' : 'wysiwyg';
-			
-			d[l].set(t, this.filter.proccess(t, d[l].get(s)));
+			var t = d[l].isWysiwyg() ? 'source' : 'wysiwyg';
+			this.debug('sync: '+d[l].id)
+			d[l].set(this.filter.proccess(t, d[l].get()), t);
 		}
 		return this;
 	}
@@ -427,11 +426,8 @@
 	 */
 	elRTE.prototype.event = function(n, d) {
 		var e = $.Event(n);
-		if (typeof(d) == 'object') {
-			e.elrteDocument = d;
-		} else if (this.active) {
-			e.elrteDocument = this.active;
-		}
+		
+		e.elrteDocument = d && d.editor ? d : this.active;
 		return e;
 	}
 
@@ -445,16 +441,15 @@
 	 * @return elRTE
 	 */
 	elRTE.prototype.bind = function(e, c, t) {
-		var ev;
+		var self = this;
+		
 		if (typeof(c) == 'function') {
-			e = e.split(' ');
-			for (var i=0; i < e.length; i++) {
-				ev = $.trim(e[i]);
-				if (typeof(this.listeners[ev]) == 'undefined') {
-					this.listeners[ev] = [];
+			$.each($.trim(e).split(/\s+/), function(i, n) {
+				if (typeof(self.listeners[n]) == 'undefined') {
+					self.listeners[n] = [];
 				}
-				t ? this.listeners[ev].unshift(c) : this.listeners[ev].push(c);
-			};
+				self.listeners[n][t?'unshift':'push'](c);
+			});
 		}
 		return this;
 	}
@@ -492,31 +487,29 @@
 	 * Send notification to all event subscribers
 	 *
 	 * @param String event name
-	 * @param Object event data
+	 * @param Object extra parameters
 	 * @return  elRTE
 	 */
 	elRTE.prototype.trigger = function(e, d) {
-		if (typeof(e) == 'string') {
-			e = $.Event(e);
+		var self=this;
+		
+		if (!e.type) {
+			e = this.event(e);
 		}
+		
 		if (!e.elrteDocument && this.active) {
 			e.elrteDocument = this.active;
 		}
 
-		if (typeof(d) == 'object') {
-			e.data = d;
-		}
-
 		this.debug(e.type+' '+(e.elrteDocument ? e.elrteDocument.id : 'no document'));
-		if (this.listeners[e.type] && this.listeners[e.type].length) {
-			for (var i=0; i < this.listeners[e.type].length; i++) {
-				if (e.isPropagationStopped()) {
-					this.log(e.type+' stopped')
-					break;
-				}
-				this.listeners[e.type][i](e);
-			};
-		}
+		
+		$.each(this.listeners[e.type]||[], function() {
+			if (e.isPropagationStopped()) {
+				self.debug(e.type+' stopped');
+				return false;
+			}
+			this(e, d);
+		});
 		
 		return this;
 	}
@@ -525,23 +518,16 @@
 	 * Return required or active document content
 	 *
 	 * @param  String|Number  document id/index
-	 * @param  Object         options: raw : do not clear content, quiet : do not rise events
 	 * @return String
 	 */
 	elRTE.prototype.getContent = function(i, o) {
-		var d = this.getDocument(i)||this.active, c, e;
-		if (d) {
-			o = o||{};
-			if (o.raw) {
-				c = d.source.is(':visible') ? d.source.val() : $(d.document.body).html();
-			} else {
-				this.sync(d.id);
-				c = d.source.val();
-			}
-			!o.quiet && this.trigger(this.event('get', d));
-			return c;
+		var d = this.getDocument(i);
+
+		if (!d) {
+			return '';
 		}
-		return '';
+		d.isWysiwyg() && this.sync(d.id);
+		return d.get('source');
 	}
 
 	/**
@@ -553,19 +539,31 @@
 	 * @return Boolean
 	 */
 	elRTE.prototype.setContent = function(c, i, o) {
-		var d = this.getDocument(i)||this.active, c, e;
+		var d = this.getDocument(i), e;
 		if (d) {
 			o = o||{};
 			if (!o.raw) {
-				c = d.source.is(':visible') ? this.filter.toSource(c) : this.filter.fromSource(c);
-			} 
-			d.source.is(':visible') ? d.source.val(c) : $(d.document.body).html(c);
-			!o.quiet && this.trigger(this.event('set', d));
-
-			if (d == this.active) {
-				this.focus();
-				this.wysiwyg && !o.quiet && this.trigger('change');
+				c = this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c);
 			}
+			
+			d.set(c);
+			!o.quiet && this.trigger(this.event('set', d));
+			if (d == this.active) {
+				d.focus();
+				!o.quiet && d.isWysiwyg() && this.trigger('change');
+			}
+			
+			
+			// if (!o.raw) {
+			// 	c = d.source.is(':visible') ? this.filter.toSource(c) : this.filter.fromSource(c);
+			// } 
+			// d.source.is(':visible') ? d.source.val(c) : $(d.document.body).html(c);
+			// !o.quiet && this.trigger(this.event('set', d));
+			// 
+			// if (d == this.active) {
+			// 	this.focus();
+			// 	this.wysiwyg && !o.quiet && this.trigger('change');
+			// }
 			return true;
 		}
 	}
