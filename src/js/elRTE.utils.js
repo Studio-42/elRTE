@@ -150,7 +150,7 @@
 						if (n == 'color' || n == 'background-color') {
 							v = v.toLowerCase();
 						}
-						if (n && v && (!a || n.substring(0, 1) != '-')) {
+						if (n && v && (a || n.substring(0, 1) != '-')) {
 							st[n] = v;
 						}
 					}

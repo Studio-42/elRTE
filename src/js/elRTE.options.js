@@ -31,9 +31,12 @@
 		allowTags : [],
 		/* if set this tags will be removed */
 		denyTags : ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'col', 'colgroup', 'iframe', 'isindex', 'frameset', 'html', 'head', 'meta', 'marquee', 'noframes', 'noembed', 'o:p', 'object', 'title', 'xml'],
-		/* allow browser styles like -moz|-webkit|-o */
+		allowTextNodes : true,
+		/* allow browser specific styles like -moz|-webkit|-o */
 		allowBrowsersSpecStyles : false,
+		/* user replacement rules */
 		replace : [ function(html) { return html.replace(/\{(xz)\}/gi, "PLACEHODER:$1 ") } ],
+		/* user restore rules */
 		restore : [ function(html) { return html.replace(/PLACEHODER:(\w+)/, "{$1}") } ],
 		/* max undo/redo steps */
 		historySize : 5,

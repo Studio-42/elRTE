@@ -21,6 +21,10 @@
 		this.openTagRegExp = /<([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
 		// attributes regexp
 		this.attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
+		this.scriptRegExp = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+		this.styleRegExp = /(<style([^>]*)>[\s\S]*?<\/style>)/gi;
+		this.linkRegExp = /(<link([^>]+)>)/gi;
+		this.cdataRegExp = /<!\[CDATA\[([\s\S]+)\]\]>/g;
 		// object tag regexp
 		this.objRegExp = /<object([^>]*)>([\s\S]*?)<\/object>/gi;
 		// embed tag regexp
@@ -47,14 +51,18 @@
 			'serif'      : /^(times|times new roman)$/i,
 			'monospace'  : /^courier$/i
 		}
+		// scripts storage
+		this.scripts = {};
 		// cached chains of rules
 		this._chains = {};
+		
+		
+		
 		
 		// cache existed chains
 		$.each(this.chains, function(n) {
 			self._chains[n] = [];
-			$.each(this, function() {
-				var r = this.toString();
+			$.each(this, function(i, r) {
 				typeof(self.rules[r]) == 'function' && self._chains[n].push(self.rules[r]);
 			});
 		});
@@ -382,7 +390,7 @@
 		 * @return String
 		 **/
 		deniedTags : function(html) {
-			var d = this.denyTags;
+			var d = this.denyTags; 
 			return d ? html.replace(this.tagRegExp, function(t, c, n) { return d[n.toLowerCase()] ? '' : t }) : html;
 		},
 		
@@ -396,11 +404,12 @@
 			var self = this, 
 				rt   = this.replaceTags,
 				ra   = this.replaceAttrs, 
-				n, f = false;
+				n;
 			
-			html = html.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
+			html = html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
+				.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
-				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br><br>')
+				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br>')
 				.replace(this.tagRegExp, function(t, c, n, a) {
 					n = n.toLowerCase();
 					
@@ -423,35 +432,9 @@
 					}
 					return '<'+c+n+a+'>';
 				});
-				
-			n = $('<div>'+html+'</div>');
-			// remove empty spans and merge nested spans
-			n.find('span:not([id]):not([class])').each(function() {
-				var t = $(this);
-				
-				if (!t.attr('style')) {
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
-					f = true;
-				}
-			}).end().find('span span:only-child').each(function() {
-				var t   = $(this), 
-					p   = t.parent().eq(0), 
-					tid = t.attr('id'), 
-					pid = p.attr('id'), id, s, c;
-				
-				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
-					c = $.trim(p.attr('class')+' '+t.attr('class'))
-					c && p.attr('class', c);
-					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
-					s && p.attr('style', s);
-					id = tid||pid;
-					id && p.attr('id', id);
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
-					f = true;
-				}
-			});
+			
 
-			return f ? n.html() : html;
+			return html; 
 		},
 		/**
 		 * Replace script/style/media etc with placeholders
@@ -460,7 +443,7 @@
 		 * @return String
 		 **/
 		replace : function(html) {
-			var self = this, r = this.rte.options.replace;
+			var self = this, r = this.rte.options.replace, n;
 
 			// custom replaces if set
 			if (r.length) {
@@ -502,11 +485,21 @@
 				return '<img src="'+self.url+'pixel.gif" class="elrte-media elrte-media-'+c+' elrte-protected" title="'+(s ? self.rte.utils.encode(s) : '')+'" rel="'+self.rte.utils.encode(JSON.stringify(o))+'" width="'+w+'" height="'+h+'">';
 			}
 			
-			html = html.replace(/(<script([^>]*)>[\s\S]*?<\/script>)/gi, "<!-- ELRTE_COMMENT$1-->")
-				.replace(/(<style([^>]*)>[\s\S]*?<\/style>)/gi, "<!-- ELRTE_COMMENT$1-->")
-				.replace(/(<link([^>]+)>)/gi, "<!-- ELRTE_COMMENT$1-->")
-				.replace(/<!\[CDATA\[([\s\S]+)\]\]>/g, '<!--[CDATA[$1]]-->')
-				.replace(this.yMapsRegExp, function(t, a) {
+			html = html
+				.replace(this.styleRegExp, "<!-- ELRTE_COMMENT$1 -->")
+				.replace(this.linkRegExp,  "<!-- ELRTE_COMMENT$1-->")
+				.replace(this.cdataRegExp, "<!--[CDATA[$1]]-->")
+				.replace(this.scriptRegExp, function(t, a, s) {
+					var id;
+					if (self.denyTags.script) {
+						return '';
+					}
+					id = 'script'+Math.random().toString().substring(2);
+					a = self.parseAttrs(a);
+					!a.type && (a.type = 'text/javascript');
+					self.scripts[id] = '<script '+self.serializeAttrs(a)+">"+s+"</script>";
+					return '<!-- ELRTE_SCRIPT:'+(id)+' -->';
+				}).replace(this.yMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
 					a['class']['elrte-yandex-maps'] = 'elrte-yandex-maps';
 					return '<div '+self.serializeAttrs(a)+'>';
@@ -536,7 +529,39 @@
 					return i ? img({ embed : a }, i.type) : t;
 				}).replace(/<\/(embed|param)>/gi, '');
 			
-			return html;
+			n = $('<div>'+html+'</div>');
+			// remove empty spans and merge nested spans
+			n.find('span:not([id]):not([class])').each(function() {
+				var t = $(this);
+
+				if (!t.attr('style')) {
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
+			}).end().find('span span:only-child').each(function() {
+				var t   = $(this), 
+					p   = t.parent().eq(0), 
+					tid = t.attr('id'), 
+					pid = p.attr('id'), id, s, c;
+
+				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+					c = $.trim(p.attr('class')+' '+t.attr('class'))
+					c && p.attr('class', c);
+					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+					s && p.attr('style', s);
+					id = tid||pid;
+					id && p.attr('id', id);
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
+			});
+
+			if (!this.rte.options.allowTextNodes) {
+				// wrap text nodes with p
+				n.contents().filter(function() {
+					return this.nodeType == 3 && $.trim(this.nodeValue);
+				}).wrap('<p/>');
+			}
+			
+			return n.html();
 		},
 		/**
 		 * Restore script/style/media etc from placeholders
@@ -556,8 +581,16 @@
 				});
 			}
 			
-			html = html.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
-				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?)--\>/gi, "$1")
+			html = html
+				.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
+				.replace(/\<\!--\s*ELRTE_SCRIPT\:\s*(script\d+)\s*--\>/gi, function(t, n) {
+					if (self.scripts[n]) {
+						t = self.scripts[n];
+						delete self.scripts[n];
+					}
+					return t||'';
+				})
+				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?) --\>/gi, "$1")
 				.replace(this.serviceClassRegExp, function(t, n, a, e) {
 					var a = self.parseAttrs(a), j, o = '';
 					

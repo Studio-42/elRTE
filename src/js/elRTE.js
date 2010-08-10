@@ -386,15 +386,14 @@
 	
 	/**
 	 * Sync data between editor/source in active document or in all documents
-	 * If editor is visible for now, data copy from editor to source and other wise
+	 * If editor is visible for now, data copy from editor to source and otherwise
 	 *
-	 * @param  String|Number  document id/index, not set for sync all documents 
+	 * @param  String|Number  document id/index, not set it for sync all documents 
 	 * @return elRTE
 	 **/
 	elRTE.prototype.sync = function(i) {
-		var d, l;
-		d = typeof(i) != 'undefined' && (d = this.getDocument(i)) ? [d] : this.documents;
-		l = d.length;
+		var d = typeof(i) != 'undefined' && (d = this.getDocument(i)) ? [d] : this.documents,
+			l = d.length;
 
 		while (l--) {
 			if (d[l].source.is(':visible')) {
