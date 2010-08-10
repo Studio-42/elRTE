@@ -46,31 +46,27 @@
 		this.active    = null;
 		/* events listeners */
 		this.listeners = {
-			/* called after elRTE init and load all documents */
+			/* called once after elRTE init and load all documents */
 			'load'      : [],
-			/* called before editor will be set visible */
+			/* called before? editor will be set visible */
 			'show'      : [],
-			/* called before editor will be set hidden */
+			/* called before? editor will be set hidden */
 			'hide'      : [],
 			/* called after new document added to editor */
 			'open'      : [], 
-			/* called after document switch to wysiwyg mode */
+			/* called after document set active */
 			'focus'     : [], 
 			/* called after document switch to source mode */
 			'source'    : [],
-			/* called before(!) document editor set invisible */
+			/* called after document switch to wysiwyg mode */
 			'wysiwyg'      : [],
 			/* called before close document */
 			'close'     : [],
-			/* called before content from document will be returned. if needed modify event.elrteDocument.source value */
-			'get'       : [],
-			/* callend after new content will be set for document */
-			'set'       : [],
 			/* called before command will be executed */
 			'exec'      : [],
 			/* called after user typed new symbol into document */
 			'input'     : [],
-			/* called after some changes was made in document or carret change position */
+			/* called after some changes was made in document or carret change position. Warning! change may rise on any (not only active doc) */
 			'change'    : [],
 			/* called before send form */
 			'save'      : [],
@@ -157,6 +153,15 @@
 	/*** API ***/
 
 	/**
+	 * Return true if active document si in wysiwyg mode
+	 *
+	 * @return Boolean
+	 **/
+	elRTE.prototype.isWysiwyg = function() {
+		return this.active && this.active.isWysiwyg();
+	}
+
+	/**
 	 * Return index of document by id or -1 if not exists
 	 *
 	 * @param  String  document id
@@ -173,7 +178,8 @@
 	}
 
 	/**
-	 * Return document by id or index (or active document)
+	 * Return document by id or index
+	 * If document not found return active document (may be undefined if no documents loaded!)
 	 *
 	 * @param  String|Number  document id/index (or undefined for active document)
 	 * @return Object
@@ -189,7 +195,7 @@
 
 	/**
 	 * Open document in editor and return its id.
-	 * Document may be dom node or js object:
+	 * Document may be dom element or js object:
 	 * {
 	 *   id       : document id - not required, if not set - generates automatically, 
 	 *   name     : name for textarea - not required - if not set - id used,
@@ -198,7 +204,7 @@
 	 *   save     : object (not implemented yet)
 	 * }
 	 *
-	 * @param  DOMElement|Object  document
+	 * @param  DOMElement|Object  document to load in editor
 	 * @return String
 	 **/
 	elRTE.prototype.open = function(d) {
@@ -351,9 +357,7 @@
 		return this;
 	}
 
-	elRTE.prototype.isWysiwyg = function() {
-		return this.active && this.active.isWysiwyg();
-	}
+	
 
 	/**
 	 * Set document active (visible) if is not. 
@@ -523,11 +527,11 @@
 	elRTE.prototype.getContent = function(i, o) {
 		var d = this.getDocument(i);
 
-		if (!d) {
-			return '';
+		if (d) {
+			d.isWysiwyg() && this.sync(d.id);
+			return d.get('source');
 		}
-		d.isWysiwyg() && this.sync(d.id);
-		return d.get('source');
+		return '';
 	}
 
 	/**
@@ -535,35 +539,16 @@
 	 *
 	 * @param  String         new content
 	 * @param  String|Number  document id/index
-	 * @param  Object         options: raw : do not clear content, quiet : do not rise events
+	 * @param  Object         options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
 	 * @return Boolean
 	 */
 	elRTE.prototype.setContent = function(c, i, o) {
-		var d = this.getDocument(i), e;
+		var d = this.getDocument(i), w;
 		if (d) {
 			o = o||{};
-			if (!o.raw) {
-				c = this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c);
-			}
-			
-			d.set(c);
-			!o.quiet && this.trigger(this.event('set', d));
-			if (d == this.active) {
-				d.focus();
-				!o.quiet && d.isWysiwyg() && this.trigger('change');
-			}
-			
-			
-			// if (!o.raw) {
-			// 	c = d.source.is(':visible') ? this.filter.toSource(c) : this.filter.fromSource(c);
-			// } 
-			// d.source.is(':visible') ? d.source.val(c) : $(d.document.body).html(c);
-			// !o.quiet && this.trigger(this.event('set', d));
-			// 
-			// if (d == this.active) {
-			// 	this.focus();
-			// 	this.wysiwyg && !o.quiet && this.trigger('change');
-			// }
+			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
+			d.focus();
+			!o.quiet && this.trigger(this.event('change', d));
 			return true;
 		}
 	}

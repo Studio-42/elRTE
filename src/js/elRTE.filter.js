@@ -72,7 +72,7 @@
 		 * @return String
 		 **/
 		this.proccess = function(chain, html) {
-			// this.rte.log(html)
+			this.rte.debug('filter::proccess '+chain)
 			// remove whitespace at the begin and end
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
 			// pass html through chain

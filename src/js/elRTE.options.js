@@ -25,12 +25,13 @@
 		height   : 0,
 		/* interface language */
 		lang     : 'en',
-		/* allow close docs by default, ovveride by closeable options for every document */
+		/* allow close docs by default, may ovveride by "closeable" options for every document */
 		allowCloseDocs : true,
 		/* if set all other tag will be removed */
 		allowTags : [],
 		/* if set this tags will be removed */
 		denyTags : ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'col', 'colgroup', 'iframe', 'isindex', 'frameset', 'html', 'head', 'meta', 'marquee', 'noframes', 'noembed', 'o:p', 'object', 'title', 'xml'],
+		/* If false - all text nodes will be wrapped by paragraph tag */
 		allowTextNodes : true,
 		/* allow browser specific styles like -moz|-webkit|-o */
 		allowBrowsersSpecStyles : false,
