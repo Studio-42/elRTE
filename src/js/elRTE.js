@@ -12,7 +12,7 @@
 		}
 		
 		this.time('load')
-		var self = this, tb, l, p, i;
+		var self = this, tb, p, c,  l, i, id, ids=[];
 		
 		/* version */
 		this.version   = '1.1 dev';
@@ -39,9 +39,10 @@
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* active documents is in wysiwyg mode */
-		this.wysiwyg   = false;    
+		// this.wysiwyg   = false;    
+		this.ndx = 0;
 		/* opened documents */
-		this.documents = [];
+		this.documents = { };
 		/* active(visible) document */
 		this.active    = null;
 		/* events listeners */
@@ -99,47 +100,48 @@
 		// this.history = new this.history(this);
 		
 		/* load commands */
-		tb = this.options.toolbars[this.toolbar];
-		tb = this.options.toolbars[this.options.toolbar]||[]
-		i = tb.length;
-		while (i--) {
-			p = this.options.panels[tb[i]]; 
-			if (typeof(p) != 'undefined' && (l = p.length)) {
-				while (l--) {
-					if (typeof(this._commands[p[l]]) == 'function') {
-						this.commands[p[l]] = new this._commands[p[l]](this);
-					}
-				}
-			}
-		}
+		this.log(this.options.toolbar)
+		self.log(this.options.toolbars[this.options.toolbar]||[])
+		tb = this.options.toolbars[this.options.toolbar]||[];
+		$.each(tb, function(i, n) {
+			$.each(self.options.panels[n]||[], function(i, cn) {
+				typeof((c = self._commands[cn])) == 'function' && (self.commands[cn] = new c(self));
+			})
+		})
+		this.log(this.commands)
+		// tb = this.options.toolbars[this.toolbar];
+		// tb = this.options.toolbars[this.options.toolbar]||[]
+		// i = tb.length;
+		// while (i--) {
+		// 	p = this.options.panels[tb[i]]; 
+		// 	if (typeof(p) != 'undefined' && (l = p.length)) {
+		// 		while (l--) {
+		// 			if (typeof(this._commands[p[l]]) == 'function') {
+		// 				this.commands[p[l]] = new this._commands[p[l]](this);
+		// 			}
+		// 		}
+		// 	}
+		// }
 		/* create toolbar if enabled */
-		this.options.allowToolbar && this.view.showToolbar(tb);
+		// this.options.allowToolbar && this.view.showToolbar(tb);
 
 		/* load plugins */
-		for (i=0; i < this.options.plugins.length; i++) {
-			if ( (p = this._plugins[this.options.plugins[i]]) ) {
-				this.plugins[p] = new p(this);
-			}
-		};
+		$.each(this.options.plugins, function(i, n) {
+			// p = self._plugins[n];
+			typeof((p = self._plugins[n])) == 'function' && (self.plugins[n] = new p(self))
+		});
 		
 		/* add target node as document if enabled */
 		this.options.loadTarget && this.options.documents.unshift(t);
 		/* load documents */
-		for (i=0; i<this.options.documents.length; i++) {
-			this.open(this.options.documents[i]);
-		}
-		
-		/* fix ff bug with carret in textarea */
-		if ($.browser.mozilla) {
-			this.bind('source', function(e) {
-				self.active.source[0].setSelectionRange(0,0);
-			});
-		}
-		
+		$.each(this.options.documents, function(i, d) {
+			if ((id = self.open(d))) {
+				ids.push(id);
+			}
+		});
 		/* focus required/first document */
-		if (this.documents.length) {
-			this.focus(this.documents[this.options.active] ? this.options.active : 0);
-		}
+		ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
+		
 		/* bind to parent form save events */
 		this.view.editor.parents('form').bind('submit', function() { self.trigger('save'); });
 		
@@ -147,7 +149,15 @@
 		this.trigger('load');
 		delete(this.listeners.load);
 
+		/* fix ff bug with carret position in textarea */
+		if ($.browser.mozilla) {
+			this.bind('source', function(e) {
+				self.active.source[0].setSelectionRange(0,0);
+			});
+		}
+		// this.sync(ids[1])
 		this.timeEnd('load');
+		// this.log(this.content(true))
 	}
 
 	/*** API ***/
@@ -162,19 +172,16 @@
 	}
 
 	/**
-	 * Return index of document by id or -1 if not exists
+	 * Return number of loaded documents
 	 *
-	 * @param  String  document id
 	 * @return Number
 	 **/
-	elRTE.prototype.indexOf = function(id) {
-		var l = this.documents.length;
-		while (l--) {
-			if (this.documents[l].id === id) {
-				return l;
-			}
-		}
-		return -1;
+	elRTE.prototype.count = function() {
+		var i = 0;
+		$.each(this.documents, function() {
+			i++;
+		});
+		return i;
 	}
 
 	/**
@@ -184,13 +191,8 @@
 	 * @param  String|Number  document id/index (or undefined for active document)
 	 * @return Object
 	 **/
-	elRTE.prototype.getDocument = function(i) {
-		if (typeof(i) == 'string') {
-			i = this.indexOf(i);
-		}
-		return typeof(i) == 'number' && typeof(this.documents[i]) != 'undefined' 
-			? this.documents[i]
-			: this.active;
+	elRTE.prototype.getDocument = function(id) {
+		return this.documents[id]||this.active;
 	}
 
 	/**
@@ -212,22 +214,19 @@
 			return;
 		}
 		
-		var self  = this,
-			ndx   = this.documents.length+1,
-			id    = this.id+'-document-'+ndx,
-			title = this.i18n('Document')+' '+ndx,
-			doc   = { id : id, title : d.title||title },
-			html;
-			
-		if (d.nodeType == 1) {
-			doc.source    = d.nodeName == 'TEXTAREA' ? $(d) : $('<textarea name="'+(d.name||id)+'" />').val($(d).html());
-			doc.closeable = $(d).hasClass('closable') ? true : this.options.allowCloseDocs;
-		} else {
-			doc.source    = $('<textarea name="'+(d.name||id)+'" />').val(d.content||'');
-			doc.closeable = typeof(d.closable) != 'undefined' ? !!d.closable : this.options.allowCloseDocs;
-		}
-		
-		doc.editor = $('<iframe frameborder="0" />');
+		var self = this,
+			ndx  = ++this.ndx,
+			id   = this.id+'-document-'+ndx,
+			n    = d.nodeType == 1,
+			doc  = {
+				id        : id, 
+				ndx       : ndx, 
+				title     : d.title||this.i18n('Document')+' '+ndx,
+				closeable : $(d).hasClass('closable')||d.closable||this.options.allowCloseDocs,
+				source    : n && d.nodeName == 'TEXTAREA' ? $(d).addClass('elrte-source') : $('<textarea class="elrte-source" name="'+(d.name||id)+'" />').val((n ? $(d).html() : d.content)||''),
+				editor    : $('<iframe frameborder="0" class="elrte-editor" />')
+			}, html
+			;
 		
 		/* render document */
 		this.view.add(doc);
@@ -235,11 +234,11 @@
 		/* add to editor documents */
 		doc.window   = doc.editor[0].contentWindow;
 		doc.document = doc.editor[0].contentWindow.document;
-		this.documents.push(doc);
+		this.documents[id] = doc;
 
 		/* create body in iframe */
 		html = this.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+this.options.charset+'" />';
-		$.each(self.options.cssfiles, function() {
+		$.each(this.options.cssfiles, function() {
 			html += '<link rel="stylesheet" type="text/css" href="'+this+'"/>';
 		});
 		doc.document.open();
@@ -256,8 +255,7 @@
 			: function() { return false };
 		
 		/* set document content from textarea */
-		doc.set(this.filter.wysiwyg(doc.get('source')), 'wysiwyg')
-		// $(doc.document.body).html(this.filter.wysiwyg(doc.source.val()));
+		doc.set(this.filter.wysiwyg(doc.get('source')), 'wysiwyg');
 
 		/* make iframe editable */
 		if ($.browser.msie) {
@@ -322,7 +320,7 @@
 
 		this.trigger(this.event('open', doc));
 		/* when loading document into empty editor after editor was loaded */
-		if (!this.documents.length == 1 && !this.listeners.load) {
+		if (!this.listeners.load && (this.count() == 1 || !this.options.loadDocsInBg)) {
 			this.focus(d.id);
 		}
 		return id;
@@ -331,60 +329,49 @@
 	/**
 	 * Close document
 	 *
-	 * @param Number|String  document index/id
+	 * @param String  document id
 	 * @return elRTE
 	 */
-	elRTE.prototype.close = function(i) {
-		var l   = this.documents.length, 
-			tmp = [],
-			d, next;
-			
-		if ((d = this.getDocument(i)) && d.closeable) {
-			
-			if (d.id == this.active.id && l>1) {
-				next = this.getDocument((i = this.indexOf(d.id))==0 ? 1 : i-1);
+	elRTE.prototype.close = function(id) {
+		var d = this.getDocument(id);
+		
+		if (d) {
+			// switch to prev/next document before close active
+			d == this.active && this.count()>1 && this.focus(this.view.getPrev()||this.view.getNext());
+			this.trigger(this.event('close', d)).view.remove(d.id);
+			delete this.documents[d.id];
+			if (this.active.id == d.id) {
+				this.active = null;
 			}
-
-			this.trigger(this.event('close', d));
-			this.view.remove(d.id);
-
-			while (l--) {
-				d.id != this.documents[l].id && tmp.push(this.documents[l]);
-			}
-			this.documents = tmp;
-			next && this.focus(next.id)
 		}
 		return this;
 	}
 
-	
-
 	/**
 	 * Set document active (visible) if is not. 
-	 * Set focus into document editor/source
+	 * Get focus to document editor/source
 	 *
-	 * @param  String|Number  document id/index
+	 * @param  String  document id
 	 * @return elRTE
 	 **/
-	elRTE.prototype.focus = function(i) {
-		var d, a = this.active, self = this;
+	elRTE.prototype.focus = function(id) {
+		var d = this.getDocument(id), 
+			a = this.active;
 		
-		if (this.documents.length) {
-			d = this.getDocument(i)||this.documents[0];
-			
-			if (d != a) {
+		if (d) {
+			if (d == a) { // document already active
+				d.focus();
+			} else { // switch to another document
 				// set active doc in wysiwyg mode if required
 				a && !a.isWysiwyg() && this.options.autoToggle && this.toggle();
 				// show doc
-				this.view.focus(d.id);
+				this.view.showDoc(d.id);
 				// set doc active
 				this.active = d;
 				// get focus to doc
 				d.focus();
 				// rise events
 				this.trigger('focus').trigger(d.isWysiwyg() ? 'wysiwyg' : 'source');
-			} else {
-				d.focus();
 			}
 		}
 		return this;
@@ -406,18 +393,17 @@
 	 * Sync data between editor/source in active document or in all documents
 	 * If editor is visible for now, data copy from editor to source and otherwise
 	 *
-	 * @param  String|Number  document id/index or undefined to sync all documents 
+	 * @param  String  document id, undefined to sync all documents 
 	 * @return elRTE
 	 **/
-	elRTE.prototype.sync = function(i) {
-		var d = typeof(i) != 'undefined' && (d = this.getDocument(i)) ? [d] : this.documents,
-			l = d.length;
+	elRTE.prototype.sync = function(id) {
+		var self = this, t;
 
-		while (l--) {
-			var t = d[l].isWysiwyg() ? 'source' : 'wysiwyg';
-			this.debug('sync: '+d[l].id)
-			d[l].set(this.filter.proccess(t, d[l].get()), t);
-		}
+		$.each(id && (d = this.getDocument(id)) ? [d] : this.documents, function() {
+			t = this.isWysiwyg() ? 'source' : 'wysiwyg';
+			this.set(self.filter.proccess(t, this.get()), t);
+			self.debug('sync: '+this.id);
+		});
 		return this;
 	}
 
@@ -430,7 +416,6 @@
 	 */
 	elRTE.prototype.event = function(n, d) {
 		var e = $.Event(n);
-		
 		e.elrteDocument = d && d.editor ? d : this.active;
 		return e;
 	}
@@ -439,9 +424,9 @@
 	 * Bind callback to event(s)
 	 * To bind multiply events at once, separate events names by space
 	 *
-	 * @param String    event name
-	 * @param Function  callback
-	 * @param Boolean   put listener before others (on top)
+	 * @param  String    event name
+	 * @param  Function  callback
+	 * @param  Boolean   put listener before others (on top)
 	 * @return elRTE
 	 */
 	elRTE.prototype.bind = function(e, c, t) {
@@ -461,9 +446,9 @@
 	/**
 	 * Bind keybord shortcut to keydown event
 	 *
-	 * @param String    shortcut pattern in form: "ctrl+shift+z"
-	 * @param String    shortcut description
-	 * @param Function  callback
+	 * @param  String    shortcut pattern in form: "ctrl+shift+z"
+	 * @param  String    shortcut description
+	 * @param  Function  callback
 	 * @return Boolean
 	 */
 	elRTE.prototype.shortcut = function(p, d, c) {
@@ -490,9 +475,9 @@
 	/**
 	 * Send notification to all event subscribers
 	 *
-	 * @param String event name
-	 * @param Object extra parameters
-	 * @return  elRTE
+	 * @param  String event name
+	 * @param  Object extra parameters
+	 * @return elRTE
 	 */
 	elRTE.prototype.trigger = function(e, d) {
 		var self=this;
@@ -519,32 +504,23 @@
 	}
 	
 	/**
-	 * Return required or active document content
+	 * Get/set content for required or active document
+	 * If document id not set - method will be apply to active document
 	 *
-	 * @param  String|Number  document id/index
-	 * @return String
+	 * @param  String   document id
+	 * @param  String   new content
+	 * @param  Object   set options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
+	 * @return String|Boolean
 	 */
-	elRTE.prototype.getContent = function(i, o) {
-		var d = this.getDocument(i);
-
+	elRTE.prototype.content = function(id, c, o) {
+		var d = this.getDocument(id);
 		if (d) {
-			d.isWysiwyg() && this.sync(d.id);
-			return d.get('source');
-		}
-		return '';
-	}
-
-	/**
-	 * Set content for required or active document
-	 *
-	 * @param  String         new content
-	 * @param  String|Number  document id/index
-	 * @param  Object         options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
-	 * @return Boolean
-	 */
-	elRTE.prototype.setContent = function(c, i, o) {
-		var d = this.getDocument(i), w;
-		if (d) {
+			// get content
+			if (typeof(c) == 'undefined') {
+				d.isWysiwyg() && this.sync(d.id);
+				return d.get('source');
+			}
+			// set content
 			o = o||{};
 			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
 			d.focus();

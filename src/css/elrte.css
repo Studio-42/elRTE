@@ -1,6 +1,7 @@
 /* reset */
 .elrte,
 .elrte div, 
+.elrte span,
 .elrte ul, 
 .elrte li, 
 .elrte iframe, 
@@ -14,10 +15,10 @@
 	border: 0 solid;
 	outline: none;
 	color: #000;
-	background: transparent;
+/*	background: transparent;*/
 }
 
-.elrte ul { list-style: none; }
+.elrte ul { list-style: none; background: transparent;}
 
 /******************  common stuffs  *********************/
 
@@ -28,20 +29,7 @@
 	zoom: 1;
 	*display: inline;
 }
-
-/* common tabs style */
-.elrte .elrte-tab {
-	border: 1px solid #ccc;
-	padding: 2px 19px;
-	margin: 0 3px 0 0;
-	font-size: 78%;
-	font-weight: bold;
-	color:#777;
-	cursor: default;
-}
-/* active tab */
-.elrte .elrte-tab-active { background:#eee; }
-
+/* style to detect images url */
 .elrte .elrte-test-url { background-image:url(../images/pixel.gif);}
 
 /******************  editor  *********************/
@@ -54,7 +42,7 @@
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
 	border-radius:5px;
-	background: #fff;
+	background-color: #fff;
 }
 
 .elrte-fullscreen {
@@ -63,6 +51,83 @@
 	top:0;
 	width:99%;
 	margin:0;
+}
+
+/******************  workzone/documents  *********************/
+
+.elrte .elrte-workzone {
+	border: 1px solid #ccc;
+	height: 300px;
+	overflow: hidden;
+/*	background:#eee;*/
+}
+
+/* document container */
+.elrte .elrte-document { }
+
+/* editor (iframe) */
+.elrte .elrte-editor {
+	width: 100%;
+	background-color:#fff;
+	height: 300px;
+}
+
+/* document source (textarea) */
+.elrte .elrte-source {
+	width: 100%;
+	height:100%;
+	background-color:#000;
+	color:#fff;
+	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
+}
+
+/******************  tabs  *********************/
+
+/* common tabs style */
+.elrte .elrte-doc-tab,
+.elrte .elrte-toggle-tab {
+	border: 1px solid #ccc;
+	padding: 2px 19px;
+	margin: 0 3px 0 0;
+	font-size: 78%;
+	font-weight: bold;
+	color:#777;
+	background-color:#fff;
+	cursor: default;
+	-moz-user-select:none;
+}
+/* active tab */
+.elrte .elrte-tab-active { background-color:#eee; }
+
+/* documents tabs */
+.elrte .elrte-doc-tab {
+	border-bottom:0 solid;
+	-moz-border-radius-topleft: 3px; 
+	-moz-border-radius-topright: 3px; 
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	border-top-left-radius: 3px; 
+	border-top-right-radius: 3px;
+}
+
+/* close button */
+.elrte .elrte-doc-tab-close {
+	float:right;
+	width:10px;
+	height:10px;
+	margin:2px -12px 2px 9px;
+	border:1px solid #111;
+}
+
+/* editor/source toggle tabs */
+.elrte .elrte-toggle-tab { 
+	border-top: 0 solid;
+	-moz-border-radius-bottomleft: 3px; 
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px; 
+	border-bottom-left-radius: 3px; 
+	border-bottom-right-radius: 3px;
 }
 
 /******************  toolbar  *********************/
@@ -111,64 +176,7 @@
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
 .elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
-/******************  documents tabs  *********************/
 
-/*.elrte .elrte-tabsbar { border-bottom: 1px solid #ccc; }*/
-
-.elrte .elrte-doc-tab {
-	border-bottom:0 solid;
-	-moz-border-radius-topleft: 3px; 
-	-moz-border-radius-topright: 3px; 
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px; 
-	border-top-left-radius: 3px; 
-	border-top-right-radius: 3px;
-}
-
-.elrte .elrte-doc-tab-close {
-	float:right;
-	width:10px;
-	height:10px;
-	margin:2px -12px 2px 9px;
-	border:1px solid #111;
-}
-
-/******************  workzone  *********************/
-
-.elrte .elrte-workzone {
-	border: 1px solid #ccc;
-	height: 300px;
-	overflow: hidden;
-}
-
-/* document wrapper */
-.elrte .elrte-document { }
-
-/* editor (iframe) */
-.elrte .elrte-editor {
-	width: 100%;
-/*	height: 300px;*/
-}
-
-/* document source */
-.elrte .elrte-source {
-	width: 100%;
-/*	height:100%;*/
-	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
-}
-
-/******************  editor/source tabs  *********************/
-/*.elrte .elrte-src-tabsbar { }*/
-
-.elrte .elrte-src-tab { 
-	border-top: 0 solid;
-	-moz-border-radius-bottomleft: 3px; 
-	-moz-border-radius-bottomright: 3px; 
-	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px; 
-	border-bottom-left-radius: 3px; 
-	border-bottom-right-radius: 3px;
-}
 
 /******************  statusbar  *********************/
 

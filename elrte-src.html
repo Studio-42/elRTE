@@ -7,8 +7,11 @@
 	<!--[if lte IE 9]><script src="js/firebug.js" type="text/javascript" charset="utf-8"></script><![endif]-->
 	<!-- jQuery and plugins -->
 	<script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jquery-ui-1.8.4.custom.min.js" type="text/javascript" charset="utf-8"></script>
 
-	<link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+	<!-- <link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
+<link rel="stylesheet" href="js/ui-themes/ui-lightness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 
 
@@ -59,16 +62,17 @@
 				// active : 1,
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
-				height   : 420,
-				debug : true,
-				toolbar  : 'tiny',
+				height   : 470,
+				// debug : true,
+				toolbar  : 'default',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
 					// $('#editor2')[0],
 					{
 						content : '<b>asdf</b>', 
 						closable : true
-					}
+					},
+					{ title : 't'}
 					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}
 				]

@@ -1,32 +1,34 @@
 (function($) {
 	
 	elRTE.prototype.options = {
-		/* additional nodes to load in editor as documents */
-		documents      : [],
-		/* load target do element as document */
-		loadTarget : true,
-		/* active document index */
-		active  : 0,
+		/* additional css class for elrte */
+		cssClass : '',
+		/* editor workzone height */
+		height : 0,
+		/* interface language */
+		lang : 'en',
 		/* iframe doctype */
 		doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',
 		/* documents charset */
 		charset : 'UTF-8',
-		/* send debug to log? */
-		debug    : false,
+		/* css files to load in iframe */
+		cssfiles : ['src/css/elrte-inner.css'],
+		/* additional nodes or objects to load in editor as documents */
+		documents : [],
+		/* load target element as document */
+		loadTarget : true,
+		/* active document index */
+		active  : false,
+		/* If true - first loaded doc will be set active, if false - last loaded doc */
+		loadDocsInBg : true,
+		/* allow close docs by default, ovverided by "closeable" options for every document */
+		allowCloseDocs : true,
 		/* allow user view and edit source? required plugin or command to display ui */
 		allowSource : true, 
 		/* switch current doc from source to editor when switching to another doc */
 		autoToggle : true,
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
-		tabsAlwaysShow : true,
-		/* additional css class for elrte */
-		cssClass : '',
-		/* editor workzone height */
-		height   : 0,
-		/* interface language */
-		lang     : 'en',
-		/* allow close docs by default, may ovveride by "closeable" options for every document */
-		allowCloseDocs : true,
+		alwaysShowTabs : true,
 		/* if set all other tag will be removed */
 		allowTags : [],
 		/* if set this tags will be removed */
@@ -60,7 +62,9 @@
 		toolbars : {
 			'empty' : [],
 			'default' : [/*'style', 'history', 'clean',*/'style', 'fullscreen']
-		}
+		},
+		/* send debug to log? */
+		debug    : false,
 	}
 	
 })(jQuery);

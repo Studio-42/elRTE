@@ -12,8 +12,8 @@
 		
 		if (rte.options.allowSource) {
 
-			var te = $('<li class="elrte-tab elrte-src-tab elrte-ib elrte-tab-active">'+rte.i18n('Editor')+'</li>'),
-				ts = $('<li class="elrte-tab elrte-src-tab elrte-ib">'+rte.i18n('Source')+'</li>'),
+			var te = $('<li class="elrte-toggle-tab elrte-ib elrte-tab-active">'+rte.i18n('Editor')+'</li>'),
+				ts = $('<li class="elrte-toggle-tab elrte-ib">'+rte.i18n('Source')+'</li>'),
 				tb = $('<ul class="elrte-src-tabsbar"/>').hide().insertAfter(rte.view.workzone).append(te).append(ts);
 			
 			te.add(ts).mousedown(function(e) {
@@ -25,8 +25,8 @@
 			rte.bind('open', function() {
 				tb.show();
 			}).bind('close', function() {
-				rte.documents.length == 1 && tb.hide();
-			}).bind('  wysiwyg  source', function(e) {
+				rte.count() == 1 && tb.hide();
+			}).bind('wysiwyg  source', function(e) {
 				ts.toggleClass('elrte-tab-active', e.type == 'source');
 				te.toggleClass('elrte-tab-active', e.type == 'wysiwyg');
 			});
