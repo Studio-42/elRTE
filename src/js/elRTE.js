@@ -12,7 +12,7 @@
 		}
 		
 		this.time('load')
-		var self = this, tb, p, c,  l, i, id, ids=[];
+		var self = this, ui, p, id, ids=[];
 		
 		/* version */
 		this.version   = '1.1 dev';
@@ -31,9 +31,9 @@
 		/* messages */
 		this.messages  = this.i18Messages[this.options.lang]||{};
 		/* loaded commands */
-		this.commands  = {};
+		this._commands  = {};
 		/* loaded plugins */
-		this.plugins   = {};
+		this._plugins   = {};
 		/* shortcuts */
 		this.shortcuts = {};
 		/* editor DOM element id. Used as base part for inner elements ids */
@@ -100,44 +100,28 @@
 		// this.history = new this.history(this);
 		
 		/* load commands */
-		this.log(this.options.toolbar)
-		self.log(this.options.toolbars[this.options.toolbar]||[])
-		tb = this.options.toolbars[this.options.toolbar]||[];
-		$.each(tb, function(i, n) {
+		$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
 			$.each(self.options.panels[n]||[], function(i, cn) {
-				typeof((c = self._commands[cn])) == 'function' && (self.commands[cn] = new c(self));
-			})
-		})
-		this.log(this.commands)
-		// tb = this.options.toolbars[this.toolbar];
-		// tb = this.options.toolbars[this.options.toolbar]||[]
-		// i = tb.length;
-		// while (i--) {
-		// 	p = this.options.panels[tb[i]]; 
-		// 	if (typeof(p) != 'undefined' && (l = p.length)) {
-		// 		while (l--) {
-		// 			if (typeof(this._commands[p[l]]) == 'function') {
-		// 				this.commands[p[l]] = new this._commands[p[l]](this);
-		// 			}
-		// 		}
-		// 	}
-		// }
-		/* create toolbar if enabled */
-		// this.options.allowToolbar && this.view.showToolbar(tb);
+				if (typeof((c = self.commands[cn])) == 'function') {
+					// self.log(c.rte)
+					self._commands[cn] = new c(self);
+					if ((ui = self._commands[cn].ui())) {
+						self.view.addUI(ui, n);
+					}
+				}
+			});
+		});
 
 		/* load plugins */
 		$.each(this.options.plugins, function(i, n) {
-			// p = self._plugins[n];
-			typeof((p = self._plugins[n])) == 'function' && (self.plugins[n] = new p(self))
+			typeof((p = self.plugins[n])) == 'function' && (self._plugins[n] = new p(self));
 		});
 		
 		/* add target node as document if enabled */
 		this.options.loadTarget && this.options.documents.unshift(t);
 		/* load documents */
 		$.each(this.options.documents, function(i, d) {
-			if ((id = self.open(d))) {
-				ids.push(id);
-			}
+			(id = self.open(d)) && ids.push(id);
 		});
 		/* focus required/first document */
 		ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
@@ -641,13 +625,13 @@
 	 * elRTE plugins classes
 	 *
 	 */
-	elRTE.prototype._plugins = {};
+	elRTE.prototype.plugins = {};
 	
 	/**
 	 * elRTE commands classes
 	 *
 	 */
-	elRTE.prototype._commands = {};	
+	elRTE.prototype.commands = {};	
 
 	/**
 	 * elRTE messages

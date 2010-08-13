@@ -46,7 +46,9 @@
 		/* plugins to load */
 		plugins : ['source'/*, 'dummy', 'path', 'webkit', 'wordcount'*/],
 		/* display or not toolbar */
-		allowToolbar : true,
+		showToolbar : true,
+		
+		resizable : true,
 		/* cuurent toolbar name */
 		toolbar : 'empty',
 		
@@ -61,7 +63,7 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : [/*'style', 'history', 'clean',*/'style', 'fullscreen']
+			'default' : [/*'style', 'history', 'clean','style',*/ 'fullscreen']
 		},
 		/* send debug to log? */
 		debug    : false,

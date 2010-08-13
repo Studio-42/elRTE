@@ -4,7 +4,7 @@
 	 * Add support for Shift+Enter for Safari/Chrome
 	 *
 	 **/
-	elRTE.prototype._plugins.webkit = function(rte) {
+	elRTE.prototype.plugins.webkit = function(rte) {
 		
 		if ($.browser.webkit) {
 

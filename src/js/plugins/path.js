@@ -5,7 +5,7 @@
 	 * and highlight node on hover it's path
 	 *
 	 **/
-	elRTE.prototype._plugins.path = function(rte) {
+	elRTE.prototype.plugins.path = function(rte) {
 		this.name        = 'path';
 		this.description = 'Show path to selected node in status bar';
 		this.author      = 'Dmitry (dio) Levashov, dio@std42.ru';

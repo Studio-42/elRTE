@@ -4,7 +4,7 @@
 	 * Count words in active document
 	 * @todo fix regexp to count words+new line
 	 **/
-	elRTE.prototype._plugins.wordcount = function(rte) {
+	elRTE.prototype.plugins.wordcount = function(rte) {
 		this.name        = 'wordcount';
 		this.description = 'Count words plugin';
 		this.author      = 'Dmitry (dio) Levashov, dio@std42.ru';

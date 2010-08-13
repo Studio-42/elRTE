@@ -11,21 +11,19 @@
 		this.workzone  = $('<div class="elrte-workzone" />');
 		this.statusbar = $('<div class="elrte-statusbar" />');
 		this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
-			.append(this.toolbar.hide())
+			.append(this.toolbar)
 			.append(this.tabsbar.hide())
 			.append(this.workzone)
 			.append(this.statusbar.hide())
 			.insertBefore(rte.target);
 			
-		// this.editor.resizable({handles : 'se', alsoResize : this.workzone})
-		// .bind('resize', function() {
-		// 	self.rte.log('resize')
-		// 	self.workzone.find('iframe, textarea').height(self.workzone.height())
-		// })
-		if (this.rte.options.height>0) {
+		if (rte.options.height>0) {
 			this.workzone.height(this.rte.options.height);
 		}
-
+		if (!rte.options.showToolbar) {
+			this.toolbar.hide();
+		}
+		
 		/**
 		 * Update tabsbar visibility
 		 *
@@ -133,44 +131,50 @@
 			return n.length ? n.attr('rel').substr(1) : false;
 		}
 
-		// this.setWorkzoneHeight = function(h) {
-		// 	this.workzone.add(this.workzone.find('.elrte-editor,.elrte-source')).height(h);
-		// }
-	}
-	
-	// elRTE.prototype.view.prototype.cleanToolbar = function() {
-	// 	this.toolbar.empty();
-	// }
-	
-	/**
-	 * Create toolbar, add buttons and show
-	 *
-	 * @param  String  toolbar name
-	 * @return void
-	 **/
-	elRTE.prototype.view.prototype.showToolbar = function(tb) {
-		var i = tb.length, l, pname, p, panel, cname, b;
+		/**
+		 * Add button on required toolbar's panel 
+		 *
+		 * @param  jQuery  button
+		 * @param  String  panel name
+		 * @return void
+		 */
+		this.addUI = function(ui, pn) {
+			var p = this.toolbar.children('[name="'+pn+'"]');
+			if (!p.length) {
+				p = $('<ul class="elrte-toolbar-panel elrte-toolbar-panel-'+pn+(!this.toolbar.children('.elrte-toolbar-panel').length ? ' elrte-toolbar-panel-first' : '')+'" name="'+pn+'" />').appendTo(this.toolbar);
+			}
+			p.append(ui)
+		}
+
+		/**
+		 * Sync iframes/textareas height with orkzone height 
+		 *
+		 * @return void
+		 */
+		this.updateHeight = function() {
+			this.workzone.find('.elrte-editor,.elrte-source').height(this.workzone.height());
+		}
 		
-		while (i--) {
-			pname = tb[i];
-			p = this.rte.options.panels[pname];
-			panel = $('<ul class="elrte-toolbar-panel elrte-ib '+(i==0 ? 'elrte-toolbar-panel-first' : '')+'" id="'+this.rte.id+'-panel-'+pname+'"></ul>');
-			if (typeof(p) != undefined && (l = p.length)) {
-				while (l--) {
-					cname = p[l];
-					if (this.rte.commands[cname] && (b = this.rte.commands[cname].ui())) {
-						panel.prepend(b);
-					}
+		/**
+		 * Turn editor resizable on/off if allowed
+		 *
+		 * @param  Boolean 
+		 * @return void
+		 **/
+		this.resizable = function(r) {
+			if (rte.options.resizable) {
+				if (r) {
+					this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', function() {
+						self.updateHeight();
+					});
+				} else {
+					this.editor.resizable('destroy');
 				}
 			}
-			if (panel.children().length) {
-				this.toolbar.prepend(panel);
-			}
 		}
-		if (this.toolbar.children().length) {
-			this.toolbar.show();
-		}
+		
+		this.resizable(true);
+
 	}
-	
 	
 })(jQuery);

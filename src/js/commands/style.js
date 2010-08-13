@@ -1,7 +1,7 @@
 (function($) {
 	
 	
-	elRTE.prototype._commands.style = function() {
+	elRTE.prototype.commands.style = function() {
 		
 		
 		this.exec = function() {
@@ -9,11 +9,11 @@
 		}
 	}
 	
-	elRTE.prototype._commands.style.prototype = elRTE.prototype._command;
+	elRTE.prototype.commands.style.prototype = elRTE.prototype.command;
 
 
 	
-	elRTE.prototype._commands.bold = function(rte) {
+	elRTE.prototype.commands.bold = function(rte) {
 		this.name = 'bold'
 		this.title = 'Bold';
 		
@@ -25,7 +25,7 @@
 	// elRTE.prototype._commands.bold.prototype = new elRTE.prototype._commands.style()
 	
 	
-	elRTE.prototype._commands.italic = function(rte) {
+	elRTE.prototype.commands.italic = function(rte) {
 		this.name = 'italic'
 		this.title = 'Italic';
 		
@@ -33,8 +33,8 @@
 	}
 	
 	// elRTE.prototype._commands.bold.prototype = elRTE.prototype._command;
-	elRTE.prototype._commands.bold.prototype = 
-	elRTE.prototype._commands.italic.prototype = new elRTE.prototype._commands.style()
+	elRTE.prototype.commands.bold.prototype = 
+	elRTE.prototype.commands.italic.prototype = new elRTE.prototype.commands.style()
 	
 	// elRTE.prototype._commands.italic = function(rte) {
 	// 	this.name = 'italic';
