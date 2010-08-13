@@ -12,7 +12,7 @@
 		this.statusbar = $('<div class="elrte-statusbar" />');
 		this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
 			.append(this.toolbar)
-			.append(this.tabsbar.hide())
+			.append($('<div class="elrte-tabsbar-wrapper"/>').append(this.tabsbar.hide()))
 			.append(this.workzone)
 			.append(this.statusbar.hide())
 			.insertBefore(rte.target);
@@ -23,16 +23,10 @@
 		if (!rte.options.showToolbar) {
 			this.toolbar.hide();
 		}
-		
-		/**
-		 * Update tabsbar visibility
-		 *
-		 * @return void
-		 **/
-		function updateTabsbar() {
-			self.tabsbar.toggle(self.workzone.children('.elrte-document').length > 1 || self.rte.options.alwaysShowTabs);
+		if ($.fn.sortable) {
+			this.tabsbar.sortable({ delay : 10});
 		}
-
+		
 		/**
 		 * Add new document into editor
 		 *
@@ -42,11 +36,10 @@
 		this.add = function(d) {
 			var self = this,
 				h    = this.workzone.height(),
-				tab  = $('<li class="elrte-doc-tab elrte-ib" rel="#'+d.id+'">'+d.title+'</li>')
+				tab  = $('<li class="elrte-doc-tab elrte-ib" rel="#'+d.id+'" title="'+d.title+'"><div class="elrte-doc-tab-title">'+d.title+'</div></li>')
 					.appendTo(this.tabsbar)
 					.mousedown(function(e) {
 						e.preventDefault();
-						e.stopPropagation();
 						self.rte.focus($(this).attr('rel').substr(1));
 					});
 				
@@ -66,7 +59,7 @@
 					}
 				}));
 			}
-			updateTabsbar();
+			this.updateTabsbar();
 		}
 
 		/**
@@ -88,7 +81,16 @@
 		 */
 		this.remove = function(id) {
 			this.workzone.find('#'+id).add(this.tabsbar.find('[rel="#'+id+'"]')).remove();
-			updateTabsbar();
+			this.updateTabsbar();
+		}
+		
+		/**
+		 * Update tabsbar visibility
+		 *
+		 * @return void
+		 **/
+		this.updateTabsbar = function() {
+			self.tabsbar.toggle(self.workzone.children('.elrte-document').length > 1 || self.rte.options.alwaysShowTabs);
 		}
 		
 		/**
@@ -162,7 +164,7 @@
 		 * @return void
 		 **/
 		this.resizable = function(r) {
-			if (rte.options.resizable) {
+			if (this.rte.options.resizable && $.fn.resizable) {
 				if (r) {
 					this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', function() {
 						self.updateHeight();

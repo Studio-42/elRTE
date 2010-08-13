@@ -37,7 +37,7 @@
 .elrte {
 	padding: 3px;
 	margin: 3px 0;
-	font:98% normal Trebuchet ms, tahoma, sans-serif;
+	font:98% normal tahoma, Trebuchet ms, tahoma, sans-serif;
 	border: 1px solid #aaa;
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
@@ -83,24 +83,31 @@
 
 /******************  tabs  *********************/
 
+.elrte .elrte-tabsbar-wrapper {
+	overflow:hidden;
+}
+.elrte .elrte-tabsbar {
+	width:3000px;
+}
+
 /* common tabs style */
 .elrte .elrte-doc-tab,
 .elrte .elrte-toggle-tab {
 	border: 1px solid #ccc;
-	padding: 2px 19px;
 	margin: 0 3px 0 0;
+	max-width:200px;
 	font-size: 78%;
-	font-weight: bold;
-	color:#777;
-	background-color:#fff;
+	background-color:#f2f2f2;
 	cursor: default;
-	-moz-user-select:none;
+	position:relative;
+	white-space:nowrap;
 }
 /* active tab */
-.elrte .elrte-tab-active { background-color:#eee; }
+.elrte .elrte-tab-active { background-color:#fff; }
 
 /* documents tabs */
 .elrte .elrte-doc-tab {
+	padding: 2px 20px 2px 9px;
 	border-bottom:0 solid;
 	-moz-border-radius-topleft: 3px; 
 	-moz-border-radius-topright: 3px; 
@@ -110,17 +117,26 @@
 	border-top-right-radius: 3px;
 }
 
+.elrte .elrte-doc-tab-title {
+	overflow:hidden;
+	color:#555;
+}
+
 /* close button */
 .elrte .elrte-doc-tab-close {
-	float:right;
-	width:10px;
-	height:10px;
-	margin:2px -12px 2px 9px;
-	border:1px solid #111;
+	position:absolute;
+	top:4px;
+	right:4px;
+	width:11px;
+	height:11px;
+	background:url(../images/close.png) 0 0 no-repeat;
 }
 
 /* editor/source toggle tabs */
 .elrte .elrte-toggle-tab { 
+	padding: 2px 19px;
+	font-weight: bold;
+	color:#555;
 	border-top: 0 solid;
 	-moz-border-radius-bottomleft: 3px; 
 	-moz-border-radius-bottomright: 3px; 

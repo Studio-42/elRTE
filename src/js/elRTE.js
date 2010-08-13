@@ -488,29 +488,68 @@
 	}
 	
 	/**
-	 * Get/set content for required or active document
-	 * If document id not set - method will be apply to active document
+	 * Get content from required/active document
+	 * If document id not set - return active document content
 	 *
-	 * @param  String   document id
-	 * @param  String   new content
-	 * @param  Object   set options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
-	 * @return String|Boolean
-	 */
-	elRTE.prototype.content = function(id, c, o) {
+	 * @param  String  document id 
+	 * @return String
+	 * @TODO clean source
+	 **/
+	elRTE.prototype.get = function(id) {
 		var d = this.getDocument(id);
 		if (d) {
-			// get content
-			if (typeof(c) == 'undefined') {
-				d.isWysiwyg() && this.sync(d.id);
-				return d.get('source');
-			}
-			// set content
+			d.isWysiwyg() && this.sync(d.id);
+			return d.get('source');
+		}
+	}
+	
+	/**
+	 * Set required/active document content
+	 * If document id not set - set active document content
+	 *
+	 * @param  String   new content
+	 * @param  String   document id 
+	 * @param  Object  set options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
+	 * @return String
+	 **/
+	elRTE.prototype.set = function(c, id, o) {
+		var d = this.getDocument(id);
+		if (d) {
 			o = o||{};
 			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
 			d.focus();
 			!o.quiet && this.trigger(this.event('change', d));
 			return true;
 		}
+	}
+	
+	/**
+	 * Wrapper for get/set methods
+	 * this.content() - returns active document content
+	 * this.content(id) - returns document with id content
+	 * this.content('some text..', [options]) - set active document content
+	 * this.content(id, 'some text..', [options]) - set document with id content
+	 *
+	 * @return String|Boolean
+	 **/
+	elRTE.prototype.content = function() {
+		var id, c, o
+
+		if (typeof(arguments[0]) == 'undefined') {
+			this.log('get from active')
+			id = this.active.id;
+		} else if (this.documents[arguments[0]]) {
+			id = arguments[0];
+			if (typeof(arguments[1]) != 'undefined') {
+				c = arguments[1];
+				o = arguments[2]||{}
+			}
+		} else {
+			id = this.active.id
+			c = arguments[0];
+			o = arguments[1]||{}
+		}
+		return c ? this.set(''+c, id, o) : this.get(id);
 	}
 	
 	/**
@@ -547,11 +586,16 @@
 	 * @return Boolean
 	 */
 	elRTE.prototype.exec = function(c, o) {
-		if (this.commands[c]) {
-			if (this.commands[c].exec(o)) {
-				this.trigger('change');
-				return true;
-			}
+		o = $.isArray(o) ? o : [];
+		// this.log(c)
+		// this.log(o)
+		if (this[c]) {
+			return this[c].apply(this, o);
+		}
+		
+		if (this._commands[c] && this._commands[c].exec(o.length?o[0]:{})) {
+			this.trigger('change');
+			return true;
 		}
 	}
 
@@ -579,7 +623,7 @@
 	 * @return Number
 	 */
 	elRTE.prototype.commandState = function(c) {
-		return this.commands[c] ? this.commands[c].state() : false;
+		return this._commands[c] ? this._commands[c].state() : false;
 	}
 
 	/* SERVICE METHODS */
@@ -646,34 +690,20 @@
 	 */
 	$.fn.elrte = function(o) {
 		
-		return this.each(function() {
+		this.each(function() {
 			if (!this.elrte) {
 				this.elrte = new elRTE(this, typeof(o) == 'object' ? o : {});
 			}
-			
-			if (o.cmd && typeof o.cmd == 'string') {
-				switch (o.cmd) {
-					case 'open':
-						window.console.log('open')
-						break;
-						
-					case 'close':
-						window.console.log('close')
-						break;
-						
-					case 'val':
-						window.console.log('val')
-						break;
-						
-					case 'trigger':
-						window.console.log('trigger')
-						break;
-				}
-			}
-			
-			
-
 		});
+		
+		if (this.length && typeof(o) == 'string') {
+			var a = Array.prototype.slice.call(arguments)
+			a.shift()
+			// window.console.log(a)
+			// return this[0].elrte.exec.apply(this[0].elrte, a)
+			return this[0].elrte.exec(o, a);
+		}
+		return this;
 	}
 	
 })(jQuery);

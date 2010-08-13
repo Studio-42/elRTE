@@ -11,22 +11,16 @@
 		this.authorURL   = 'http://www.std42.ru';
 		this.docURL      = '';
 		
-		var panel = $('<div style="float:right;"/>').prependTo(rte.view.statusbar);
+		var panel = $('<div style="float:right;"/>').prependTo(rte.view.statusbar.show());
 		
 		function count(e) {
-			if (e.type == 'focus' 
-			|| (e.isDel || (e.originalEvent.keyCode && (e.originalEvent.keyCode == 32 || e.originalEvent.keyCode == 13)))) {
-				// rte.time('count')
-				var m = ($(rte.active.document.body).text().replace(/[0-9.(){},;:!?%#$¿'"_+=\\\/-]*/g, '').replace(/&nbsp;|&#160;/gi, '')+' ').match(/([^\s])+\s/gm),
-					c = m ? m.length : 0;
-				// rte.timeEnd('count')
-				panel.text(rte.i18n('Words')+': '+c);
-			}
+			txt = $(rte.active.document.body).text().replace(/[0-9\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '').replace(/&nbsp;|&#160;/gi, '').split(/\s+/)
+			panel.text(rte.i18n('Words')+': '+txt.length);
 		}
 		
-		rte.bind('blur close source', function() {
+		rte.bind('close source', function() {
 			panel.text('');
-		}).bind('change focus input', count);
+		}).bind('change wysiwyg', count);
 	}
 	
 })(jQuery);

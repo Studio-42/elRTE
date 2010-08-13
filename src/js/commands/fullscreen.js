@@ -13,17 +13,17 @@
 		/* view object */
 		this.view = rte.view;
 		/* editor node */
-		this.editor  = rte.view.editor;
+		this.editor = rte.view.editor;
 		/* workzone node */
-		this.wz      = rte.view.workzone;
+		this.wz = rte.view.workzone;
 		/* workzone height */
-		this.height  = 0;
+		this.height = 0;
 		/* difference between editor and workzone heights */
-		this.delta   = 0;
+		this.delta = 0;
 		/* parents with position=relative */
 		this.parents = [];
 		/* editor fullscreen css class */
-		this._class  = 'elrte-fullscreen';
+		this._class = 'elrte-fullscreen';
 		
 		/* remember height, delta and parents with position=relative */
 		rte.bind('load', function() {
@@ -75,6 +75,7 @@
 				$(window).bind('resize', resize);
 			}
 			this.updateUI(this.state());
+			return true;
 		}
 		
 		/**
