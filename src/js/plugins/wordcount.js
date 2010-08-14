@@ -14,7 +14,7 @@
 		var panel = $('<div style="float:right;"/>').prependTo(rte.view.statusbar.show());
 		
 		function count(e) {
-			txt = $(rte.active.document.body).text().replace(/[0-9\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '').replace(/&nbsp;|&#160;/gi, '').split(/\s+/)
+			var txt = $(rte.active.document.body).text().replace(/[0-9\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '').replace(/&nbsp;|&#160;/gi, '').split(/\s+/)
 			panel.text(rte.i18n('Words')+': '+txt.length);
 		}
 		

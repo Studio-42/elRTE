@@ -13,30 +13,24 @@
 		 * redo/undo levels size (0 - for not use history)
 		 **/
 		this.size   = parseInt(rte.options.historySize)||0;
-		/**
-		 * smth like class constant - user typed symbol
-		 **/
-		this._input = 1;
-		/**
-		 * smth like class constant - user pressed delete/backspace
-		 **/
-		this._del   = 2;
 
 		var self    = this,
 			storage = {}, /* history storage */
 			active;       /* active document history */
 		
 		/**
-		 * change active storage input state
+		 * Return 1 if c is char key, -1 if c is del key or 0
 		 *
-		 * @param  Number  new active storage input state
+		 * @param  Number  key code
+		 * @return Number
 		 **/
-		function setInput(i) {
-			if (active) {
-				var ch = i != active.input;
-				active.input = i;
-				ch && self.rte.trigger('historyChange');
+		this.inputType = function(c) {
+			if (self.rte.utils.isKeyChar(c)) {
+				return 1;
+			} else if (self.rte.utils.isKeyDel(c)) {
+				return -1;
 			}
+			return 0;
 		}
 		
 		/**
@@ -46,35 +40,33 @@
 		 * @param  Number  new active storage input state
 		 **/
 		this.add = function(i) {
-			var c = self.rte.getContent(null, {raw : true, quiet : true}), bm;
+			var d = this.rte.active, c, bm;
 			
-			if (typeof(i) == 'number') {
-				active.input = i;
-			}
-			
-			if (active && (!active.levels.length || active.levels[active.index].origin != c)) {
-				// self.rte.time('add')
-				
-				if (active.index < active.levels.length-1) {
-					active.levels.splice(active.index+1);
+			if (active && d) {
+				active.input = i||0;
+				c = d.get('wysiwyg');
+				if (!active.levels.length || active.levels[active.index].origin != c) {
+					if (active.index < active.levels.length-1) {
+						active.levels.splice(active.index+1);
+					}
+					if (active.index >= self.size) {
+						active.levels.shift();
+						active.index--;
+					}
+
+					bm = rte.selection.getBookmark();
+					active.levels.push({
+						origin : c,
+						html   : d.get('wysiwyg'),
+						bm     : [bm[0].id, bm[1].id]
+					});
+					rte.selection.moveToBookmark(bm);
+					active.index = active.levels.length-1;
+					self.rte.debug('history', 'add level: '+active.levels.length)
 				}
-				if (active.index >= self.size) {
-					active.levels.shift();
-					active.index--;
-				}
-				
-				bm = rte.selection.getBookmark();
-				active.levels.push({
-					origin : c,
-					html   : self.rte.getContent(null, {raw : true, quiet : true}),
-					bm     : [bm[0].id, bm[1].id]
-				});
-				rte.selection.moveToBookmark(bm);
-				active.index = active.levels.length-1;
-				// self.rte.timeEnd('add');
-				self.rte.trigger('historyChange');
 			}
 		}
+		
 		
 		/**
 		 * Return true if undo is available
@@ -107,7 +99,7 @@
 				}
 				active.index--;
 				active.input = 0;
-				self.rte.setContent(active.levels[active.index].html, null, {raw : true, quiet : true});
+				self.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
 				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				self.rte.trigger('change').trigger('historyChange');
 				return true;
@@ -125,7 +117,7 @@
 				// self.rte.log('redo')
 				active.index++;
 				active.input = 0;
-				self.rte.setContent(active.levels[active.index].html, null, {raw : true, quiet : true});
+				self.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
 				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				self.rte.trigger('change').trigger('historyChange');
 				return true;
@@ -136,7 +128,7 @@
 		if (this.size>0) {
 			rte.bind('open', function(e) {
 				/* create storage for new document */
-				storage[e.elrteDocument.id] = { 
+				storage[e.data.id] = { 
 					levels : [], 
 					index  : 0, 
 					input  : 0 
@@ -146,38 +138,71 @@
 				/* remove storage for document */
 				delete storage[e.elrteDocument.id];
 			})
-			.bind('focus', function() {
+			.bind('wysiwyg', function() {
 				/* set active storage and add initial level if not exists */
 				active = storage[self.rte.active.id];
 				!active.levels.length && self.add();
 			})
-			.bind('blur source', function() { 
+			.bind('source', function() { 
 				/* change active storage */
 				active = null; 
 			})
-			.bind('exec change', function(e) { 
-				/* on press delete keys - update active input state, otherwise - add new level */
-				e.isDel ? setInput(self._del) : self.add(0);
+			.bind('keyup', function(e) {
+				var i = self.inputType(e.keyCode);
+				if (active.input == -1 && i == 1) {
+					// change from typing to delete (not catch by change event)
+					self.add(i);
+				} 
+				active.input = i;
 			})
-			.bind('input', function(e) {
-				/* if symbol key pressed - update active input state */
-				setInput(self._input);
-			})
-			.bind('keydown', function(e) {
-				if (active) {
-					if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
-						self.add(self._del);  /* change from typing to delete */
-					} else if (self.rte.utils.isKeyChar(e.keyCode) && active.input == self._del) {
-						self.add(self._input); /* change from delete to typing */
-					} else if (e.keyCode == 13 && active.input) {
-						self.add(); /* enter after typing/delete */
+			.bind('change', function(e) {
+				if (e.data.originalEvent && e.data.originalEvent.type == 'keyup') {
+					var i = self.inputType(e.data.originalEvent.keyCode);
+					if (i == 0 || (active.input == 1 && i == -1)) {
+						// all changes except delete after delete
+						self.add(i);
 					}
+				} else {
+					self.add(0);
 				}
 			})
-			.shortcut(rte.macos ? 'meta+z' : 'ctrl+z', 'Undo (Ctrl+Z) / Redo (Ctrl+Shift+Z)', function(e) { 
-				e.stopPropagation();
-				e.preventDefault();
-				e.shiftKey ? self.redo() : self.undo();
+			// .bind('change', function(e) { 
+			// 	/* on press delete keys - update active input state, otherwise - add new level */
+			// 	if (e.data.originalEvent && e.data.originalEvent.type == 'keyup' && self.rte.utils.isKeyDel(e.data.originalEvent.keyCode)) {
+			// 		// self.rte.log('input del')
+			// 		setInput(self._del)
+			// 	} else {
+			// 		self.add(0);
+			// 	}
+			// 	// e.isDel ? setInput(self._del) : self.add(0);
+			// })
+			// .bind('input', function(e) {
+			// 	/* if symbol key pressed - update active input state */
+			// 	// self.rte.log(e.data)
+			// 	setInput(self._input);
+			// })
+			// .bind('keydown', function(e) {
+			// 	if (active) {
+			// 		self.rte.log(self.rte.utils.isKeyDel(e.keyCode)+' '+(active.input == self._input))
+			// 		if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
+			// 			
+			// 			self.add(self._del);  /* change from typing to delete */
+			// 		} else if (self.rte.utils.isKeyChar(e.keyCode) && active.input == self._del) {
+			// 			self.add(self._input); /* change from delete to typing */
+			// 		} else if (e.keyCode == 13 && active.input) {
+			// 			self.add(); /* enter after typing/delete */
+			// 		}
+			// 	}
+			// })
+			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'Undo (Ctrl+Z)', function(e) {
+				if (self.canUndo()) {
+					self.undo();
+				}
+			})
+			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+shift+z', 'Redo (Ctrl+Shift+Z)', function(e) {
+				if (self.canRedo()) {
+					self.redo();
+				}
 			});
 		}
 	}

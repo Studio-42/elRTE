@@ -12,7 +12,7 @@
 		}
 		
 		this.time('load')
-		var self = this, ui, p, id, ids=[];
+		var self = this, c, ui, p, id, ids=[];
 		
 		/* version */
 		this.version   = '1.1 dev';
@@ -36,6 +36,7 @@
 		this._plugins   = {};
 		/* shortcuts */
 		this.shortcuts = {};
+		this.change = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* active documents is in wysiwyg mode */
@@ -97,7 +98,7 @@
 		/* cleaning content object */
 		this.filter = new this.filter(this)
 		/* history object */
-		// this.history = new this.history(this);
+		this.history = new this.history(this);
 		
 		/* load commands */
 		$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
@@ -251,58 +252,83 @@
 
 
 		/* bind events to document */
-		// $(doc.document).bind('paste', function(e) {
-		// 	self.trigger('paste').trigger('change');
-		// })
-		// .bind('cut', function(e) {
-		// 	self.trigger('change');
-		// })
-		// .bind('keydown', function(e) {
-		// 	var i, s, p;
-		// 	for (i in self.shortcuts) {
-		// 		if (self.shortcuts.hasOwnProperty(i)) {
-		// 			s = self.shortcuts[i];
-		// 			p = s.pattern;
-		// 			if (p.keyCode == e.keyCode 
-		// 			&& (!p.ctrlKey  || p.ctrlKey  == e.ctrlKey) 
-		// 			&& (!p.altKey   || p.altKey   == e.altKey) 
-		// 			&& (!p.shiftKey || p.shiftKey == e.shiftKey) 
-		// 			&& (!p.metaKey  || p.metaKey  == e.metaKey)) {
-		// 				if (e.isPropagationStopped()) {
-		// 					return;
-		// 				}
-		// 				s.callback(e);
-		// 			}
-		// 		}
-		// 	}
-		// 	!e.isPropagationStopped() && self.trigger(e);
-		// })
-		// .bind('keyup mousedown mouseup click dblclick', function(e) {
-		// 	if (this == self.active.document) {
-		// 		self.trigger(e);
-		// 		var ev, c;
-		// 
-		// 		if (e.type == 'mouseup') {
-		// 			ev = $.Event('change');
-		// 		} else if (e.type == 'keyup') {
-		// 			c = e.keyCode;
-		// 			if (self.utils.isKeyArrow(c) || c== 13 || e.ctrlKey || (self.macos && (c == 91 || c == 93 || c == 224))) {
-		// 				ev = $.Event('change');
-		// 			} else if (self.utils.isKeyDel(c)) {
-		// 				ev = $.Event('change');
-		// 				ev.isDel = true;
-		// 			} else if (self.utils.isKeyChar(c) && !e.ctrlKey) {
-		// 				ev = $.Event('input')
-		// 			}
-		// 		}
-		// 		if (ev) {
-		// 			ev.originalEvent = e;
-		// 			self.trigger(ev);
-		// 		}
-		// 	}
-		// });
+		$(doc.document).bind('paste', function(e) {
+			if (!self.options.allowPaste) {
+				e.stopPropagation();
+				e.preventDefault();
+				// opera suck!
+			} else {
+				var n = self.dom.create({name : 'div', css : {border : '1px solid red', position : 'absolute', left : '-1000px'}}),
+					r = self.dom.createTextNode(' '), c;
+				
+				n.appendChild(r);
+				n = self.selection.insertNode(n);
+				self.selection.select(n.firstChild);
+				setTimeout(function() {
+					if (n.parentNode) {
+						self.options.pasteOnlyText
+							? $(n).text($(n).text())
+							: $(n).html(self.filter.proccess('paste', $(n).html()));
+						self.dom.unwrap(n);
+					} else {
+						// smth wrong - clean all
+						self.active.set( self.filter.wysiwyg(self.active.get('source')), 'wysiwyg');
+					}
+					
+				}, 10);
+			}
+		})
+		.bind('dragstart', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+		})
+		.bind('cut', function(e) {
+			setTimeout(function() { self.trigger('change'); }, 5);
+		})
+		.bind('keydown', function(e) {
+			var p, c = e.keyCode;
 
-		this.trigger(this.event('open', doc));
+			self.change = false;
+			$.each(self.shortcuts, function(n, s){
+				p = s.pattern;
+				if (p.keyCode == e.keyCode && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
+					e.stopPropagation();
+					e.preventDefault();
+					s.callback(e);
+					return false;
+				}
+			});
+
+			if (!e.isPropagationStopped()) {
+				if ($.browser.opera && ((e.keyCode == 86 && e.ctrlKey) || e.keyCode == 45 && e.shiftKey)) {
+					e.stopPropagation();
+					e.preventDefault();
+					return;
+				}
+				self.trigger(e);
+				// cache if input modify DOM or change carret/selection position
+				// not bulletproof method - we rise change event on any symbol key with ctrl, 
+				// but i dont know other method to catch emacs-like shortcuts ctrl+(a|e|d) which ff understand
+				// another minus - we rise change twice on ctrl+x/ctrl-v
+				// but i think its not a big deal
+				self.change = self.utils.isKeyArrow(c) || self.utils.isKeyDel(c) || c == 13 || (self.utils.isKeyChar(c) && (!self.selection.collapsed() || e.ctrlKey || (self.macos&&e.metaKey)));
+			}
+		})
+		.bind('keyup', function(e) {
+			if (self.change) {
+				// rise cached changes
+				self.trigger('change', {originalEvent : e});
+				self.change = false;
+			}
+			self.trigger(e);
+		})
+		.bind('mousedown mouseup click dblclick', function(e) {
+			e.type == 'mouseup' && self.trigger('change', {originalEvent : e});
+			self.trigger(e);
+		})
+
+		this.trigger('open', { id : doc.id });
+
 		/* when loading document into empty editor after editor was loaded */
 		if (!this.listeners.load && (this.count() == 1 || !this.options.loadDocsInBg)) {
 			this.focus(d.id);
@@ -436,10 +462,10 @@
 	 * @return Boolean
 	 */
 	elRTE.prototype.shortcut = function(p, d, c) {
-		p = p.toUpperCase();
-		var _p = p.split('+'),
+		// p = p.toUpperCase();
+		var _p = p.toUpperCase().split('+'),
 			l  = _p.length, 
-			s  = { keyCode : 0 };
+			s  = { keyCode : 0, ctrlKey : false, altKey : false, shiftKey : false, metaKey : false };
 		while (l--) {
 			switch (_p[l]) {
 				case 'CTRL'  : s.ctrlKey  = true; break;
@@ -449,11 +475,11 @@
 				default      : s.keyCode  = _p[l].charCodeAt(0);
 			}
 		}
-		if (s.keyCode>0 && (s.ctrlKey || s.altKey || s.shiftKey || s.metaKey) && typeof(c) == 'function') {
+		if (s.keyCode>0 && (s.altKey||s.ctrlKey||s.metaKey) && typeof(c) == 'function') {
 			this.shortcuts[p] = {pattern : s, callback : c, description : this.i18n(d)};
-			return true;
+			this.debug('shortcut', 'add '+p)
 		}
-		return false;
+		return this;
 	}
 	
 	/**
@@ -467,18 +493,22 @@
 		var self=this;
 		
 		if (!e.type) {
-			e = this.event(e);
+			e = $.Event(e)
+			// e = this.event(e);
 		}
-		
-		if (!e.elrteDocument && this.active) {
-			e.elrteDocument = this.active;
+		e.data = d||{}
+		if (!e.data.id && this.active) {
+			e.data.id = this.active.id
 		}
+		// if (!e.elrteDocument && this.active) {
+		// 	e.elrteDocument = this.active;
+		// }
 
-		this.debug(e.type+' '+(e.elrteDocument ? e.elrteDocument.id : 'no document'));
-		
+		this.debug('event.'+e.type,  e.data.id||'no document');
+		// this.log(d)
 		$.each(this.listeners[e.type]||[], function() {
 			if (e.isPropagationStopped()) {
-				self.debug(e.type+' stopped');
+				self.debug('event.'+e.type, 'stopped');
 				return false;
 			}
 			this(e, d);
@@ -495,10 +525,13 @@
 	 * @return String
 	 * @TODO clean source
 	 **/
-	elRTE.prototype.get = function(id) {
+	elRTE.prototype.get = function(id, o) {
 		var d = this.getDocument(id);
 		if (d) {
-			d.isWysiwyg() && this.sync(d.id);
+			if (!o.raw) {
+				d.isWysiwyg() && this.sync(d.id);
+			}
+			
 			return d.get('source');
 		}
 	}
@@ -643,8 +676,16 @@
 	 *
 	 * @param String  message
 	 */
-	elRTE.prototype.debug = function(m) {
-		this.options.debug && this.log(m)
+	elRTE.prototype.debug = function(n, m) {
+		if (this.options.debug == 'all') {
+			this.log(n+': '+m);
+		} else if (this.options.debug.length) {
+			var _n = n.split('.');
+			if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
+				this.log(n+': '+m);
+			}
+		}
+
 	}
 
 	/**

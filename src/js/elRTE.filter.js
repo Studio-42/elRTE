@@ -43,6 +43,9 @@
 		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
 		// denied tags
 		this.denyTags = rte.options.denyTags.length ? rte.utils.makeObject(rte.options.denyTags) : null;
+		// TODO makemap
+		this.denyAttr = self.rte.options.denyAttr||[];
+		this.pasteDenyAttr = self.rte.options.pasteDenyAttr||[];
 		// font sizes to convert size attr into css property
 		this.fontSize = ['medium', 'xx-small', 'small', 'medium','large','x-large','xx-large' ];
 		// font families regexp to detect family by font name
@@ -72,7 +75,7 @@
 		 * @return String
 		 **/
 		this.proccess = function(chain, html) {
-			this.rte.debug('filter::proccess '+chain)
+			this.rte.debug('filter', chain)
 			// remove whitespace at the begin and end
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
 			// pass html through chain
@@ -100,6 +103,14 @@
 		 **/
 		this.source = function(html) {
 			return this.proccess('source', html);
+		}
+		
+		this.source2source = function(html) {
+			return this.proccess('source', this.proccess('wysiwyg', html));
+		}
+		
+		this.wysiwyg2wysiwyg = function(html) {
+			return this.proccess('wysiwyg', this.proccess('source', html));
 		}
 		
 		/**
@@ -402,6 +413,7 @@
 			var self = this, 
 				rt   = this.replaceTags,
 				ra   = this.replaceAttrs, 
+				da   = this.denyAttr,
 				n;
 			
 			html = html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
@@ -411,29 +423,48 @@
 				.replace(this.tagRegExp, function(t, c, n, a) {
 					n = n.toLowerCase();
 					
-					if (!c) {
-						// create attributes hash and clean it
-						a = self.cleanAttrs(self.parseAttrs(a||''), n);
+					if (c) {
+						return '</'+(rt[n] ? rt[n].tag : n)+'>';
 					}
+					
+					// create attributes hash and clean it
+					a = self.cleanAttrs(self.parseAttrs(a||''), n);
+					
 					if (rt[n]) {
-						// replace tag
-						if (!c && rt[n].style) {
-							$.extend(a.style, rt[n].style);
-						}
+						rt[n].style && $.extend(a.style, rt[n].style);
 						n = rt[n].tag;
 					}
 					
-					if (!c) {
-						// convert attributes into string
-						a = self.serializeAttrs(a);
-						a && (a = ' '+a)
-					}
-					return '<'+c+n+a+'>';
+					da.length && $.each(a, function(na) {
+						if ($.inArray(na, da) != -1) {
+							delete a[na];
+						}
+					});
+					a = self.serializeAttrs(a);
+					return '<'+n+(a?' ':'')+a+'>';
 				});
-			
 
 			return html; 
 		},
+		
+		cleanPaste : function(html) {
+			var self = this, d = self.pasteDenyAttr;
+			
+			if (d.length) {
+				html = html.replace(this.openTagRegExp, function(t, n, a) {
+					a = self.parseAttrs(a);
+					$.each(a, function(an) {
+						if ($.inArray(an, d) != -1) {
+							delete a[an]
+						}
+					});
+					a = self.serializeAttrs(a, true);
+					return '<'+n+(a?' ':'')+a+'>';
+				});
+			}
+			return html;
+		},
+		
 		/**
 		 * Replace script/style/media etc with placeholders
 		 *
@@ -655,13 +686,14 @@
 	/**
 	 * Chains configuration
 	 * Two default chains 
-	 * 1. wysiwyg - proccess html for wysiwyg editor mode
-	 * 2. source  - proccess html for source editor mode
+	 * 1. wysiwyg - proccess html from source for wysiwyg editor mode
+	 * 2. source  - proccess html from wysiwyg for source editor mode
 	 * deniedTags is in the end of chain to protect google maps iframe from removed
 	 **/
 	elRTE.prototype.filter.prototype.chains = {
 		wysiwyg : ['allowedTags', 'clean', 'replace', 'deniedTags', 'compactStyles'],
-		source  : ['allowedTags', 'clean', 'restore', 'tagsToLower', 'xhtmlTags']
+		source  : ['allowedTags', 'clean', 'restore', 'tagsToLower', 'xhtmlTags'],
+		paste   : ['allowedTags', 'clean', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles']
 	}
 	
 
