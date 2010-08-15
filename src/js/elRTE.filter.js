@@ -450,7 +450,7 @@
 		},
 		
 		/**
-		 * Replace pasted html
+		 * Clean pasted html
 		 *
 		 * @param String  html code
 		 * @return String
@@ -462,7 +462,7 @@
 				html = html.replace(this.openTagRegExp, function(t, n, a) {
 					a = self.parseAttrs(a);
 					$.each(a, function(an) {
-						if (da[na]) {
+						if (d[an]) {
 							delete a[an];
 						}
 					});

@@ -9,29 +9,28 @@
 		 * editor instance
 		 **/
 		this.rte         = rte;
-		/**
-		 * keabord chars codes
-		 **/
-		this._charsKeys  = [109, 188, 190, 191, 192, 219, 220, 221, 222, 32, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 59, 61, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]; 
-		this.notCharKeys = [
-			37, 38, 39, 40, // arrows
-			33, 34, //page-up/page-down
-			35, 36, // home/end
-			8, 46, //delete
-			45, // ins
-			9, //tab
-			13, //enter
+		
+		this.serviceKeys = [
 			16, //shift
 			17, //ctrl
 			18, //alt
 			20, //caps
+			22, 24, 26, //opera hack
 			27, // esc
-			91, // win/left cmd
+			37, 38, 39, 40, //arrows
+			33, 34, //page-up/page-down
+			35, 36, //home/end
+			45, //ins
+			91, //win/left cmd
 			93, //right cmd,
-			224, //cmd as think firefox
-			112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, // f1-12
-			144, // num
-		];
+			112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, //f1-12
+			144, //num
+			224 //cmd as think firefox
+		]
+		
+		if ($.browser.opera) {
+			this.serviceKeys.push(0)
+		}
 		
 		/**
 		 * entities map
@@ -97,7 +96,7 @@
 		 * @param   Number  key code
 		 * @return  Boolean
 		 **/
-		this.isKeyChar = function(c) { return  $.inArray(c, this.notCharKeys) == -1 && c < 6200; }
+		this.isKeyChar = function(c) { return !(this.isKeyService(c) || this.isKeyDel(c)) && c < 6200; }
 		
 		/**
 		 * Return true if code is delete/backspace code
@@ -114,6 +113,8 @@
 		 * @return  Boolean
 		 **/
 		this.isKeyArrow = function(c) { return c >= 33 && c <= 40; }
+		
+		this.isKeyService = function(c) { return $.inArray(c, this.serviceKeys) != -1; }
 		
 		/**
 		 * Encode entities in string

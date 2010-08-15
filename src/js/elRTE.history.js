@@ -26,12 +26,7 @@
 		 * @return Number
 		 **/
 		this.inputType = function(c) {
-			if (self.rte.utils.isKeyChar(c)) {
-				return 1;
-			} else if (self.rte.utils.isKeyDel(c)) {
-				return -1;
-			}
-			return 0;
+			return self.rte.utils.isKeyChar(c) && c != 13 ? 1 : (self.rte.utils.isKeyDel(c) ? -1 : 0);
 		}
 		
 		/**
@@ -39,17 +34,19 @@
 		 * Trigger "historyChange" event in both cases
 		 *
 		 * @param  Number  new active storage input state
+		 * @param  Boolean  force add new level
+		 * @param  Boolean  replace last level
 		 **/
-		this.add = function(i) {
-			var d = this.rte.active, c, bm, t = false;
+		this.add = function(i, f, r) {
+			var d = this.rte.active, c, bm, t = false, l;
 			
 			if (active && d) {
 				t = active.input!=i;
-				active.input = i||0;
+				active.input = i;
 				c = d.get('wysiwyg');
-				if (!active.levels.length || active.levels[active.index].origin != c) {
+				if (!active.levels.length || f || active.levels[active.index].origin != c) {
 					if (active.index < active.levels.length-1) {
-						active.levels.splice(active.index+1);
+						active.levels.splice(active.index+1, active.levels.length-active.index-1);
 					}
 					if (active.index >= self.size) {
 						active.levels.shift();
@@ -57,19 +54,28 @@
 					}
 
 					bm = this.rte.selection.getBookmark();
-					active.levels.push({
+					
+					l = {
 						origin : c,
 						html   : d.get('wysiwyg'),
 						bm     : [bm[0].id, bm[1].id]
-					});
+					}
 					this.rte.selection.moveToBookmark(bm);
+
+					if (r && active.levels.length) {
+						active.levels[active.levels.length-1] = l;
+					} else {
+						active.levels.push(l);
+					}
+					
 					active.index = active.levels.length-1;
-					this.rte.debug('history', 'add level: '+active.levels.length);
+					this.rte.debug('history.add', 'level: '+active.levels.length);
 					t = true;
 				}
-				t && this.rte.trigger('historyChange')
+				t && this.rte.trigger('historyChange');
 			}
 		}
+		
 		
 		/**
 		 * Return true if undo is available
@@ -95,15 +101,13 @@
 		 **/
 		this.undo = function() {
 			if (this.canUndo()) {
-				if (active.input) {
-					this.add(0);
-				}
-				this.rte.debug('history', 'undo '+active.index);
+				active.input && this.add(0, true);
 				active.index--;
 				active.input = 0;
 				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				this.rte.trigger('historyChange').trigger('change');
+				this.rte.debug('history.undo', (active.index+1));
 				return true;
 			}
 		}
@@ -118,10 +122,10 @@
 			if (this.canRedo()) {
 				active.index++;
 				active.input = 0;
-				this.rte.debug('history', 'redo '+active.index);
 				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				this.rte.trigger('historyChange').trigger('change');
+				this.rte.debug('history', 'redo '+(active.index-1));
 				return true;
 			}
 		}
@@ -143,28 +147,38 @@
 			.bind('wysiwyg', function() {
 				/* set active storage and add initial level if not exists */
 				active = storage[self.rte.active.id];
-				!active.levels.length && self.add();
+				!active.levels.length && self.add(0);
 			})
 			.bind('source', function() { 
 				/* disable active storage for source mode */
 				active = null; 
 			})
+			.bind('cut paste', function(e) {
+				// save snapshot before changes
+				self.add(0, true, active.input == 0);
+			})
 			.bind('keydown', function(e) {
-				var  i = self.inputType(e.keyCode);
-				if (active.input != i) {
-					// change from typing to delete or otherwise - save state before changes
-					self.add(i);
+				var i;
+				// save snapshot before changes
+				if (!self.rte.utils.isKeyService(e.keyCode)) {
+					i = self.inputType(e.keyCode);
+					if (self.rte.change && i != -1 && !e.ctrlKey && !e.metaKey) {
+						self.add(0, true, active.input == 0);
+					} else if (i != active.input) {
+						self.add(e.ctrlKey||e.metaKey?0:i, active.levels.length==1||e.ctrlKey||e.metaKey, active.input==0);
+					}
+				}
+			})
+			.bind('change', function(e) {
+				if (!e.data.originalEvent || self.inputType(e.data.originalEvent.keyCode) == 0) {
+					// save snapshot on dom changes
+					self.add(0);
 				}
 			})
 			.bind('keyup', function(e) {
-				// only update input type
-				active.input = self.inputType(e.keyCode);;
-			})
-			.bind('change', function(e) {
-				var i = e.data.originalEvent ? self.inputType(e.data.originalEvent.keyCode) : 0;
-				if (i != -1 && active.input != -1) {
-					// all changes except delete after delete
-					self.add(i);
+				// update input state
+				if (!self.rte.utils.isKeyService(e.keyCode)) {
+					active.input = self.inputType(e.keyCode);
 				}
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'Undo (Ctrl+Z)', function(e) {

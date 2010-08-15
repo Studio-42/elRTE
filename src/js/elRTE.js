@@ -61,15 +61,15 @@
 			/* called after document switch to source mode */
 			'source'    : [],
 			/* called after document switch to wysiwyg mode */
-			'wysiwyg'      : [],
+			'wysiwyg'   : [],
 			/* called before close document */
 			'close'     : [],
 			/* called before command will be executed */
 			'exec'      : [],
-			/* called after user typed new symbol into document */
-			'input'     : [],
-			/* called after some changes was made in document or carret change position. Warning! change may rise on any (not only active doc) */
+			/* called after some changes was made in document. */
 			'change'    : [],
+			/* called after carret change position */
+			'chagePos'  : [],
 			/* called before send form */
 			'save'      : [],
 			/* called on mousedown on document */
@@ -84,6 +84,8 @@
 			'click'     : [],
 			/* called on double click on document */
 			'dblclick'  : [],
+			/* called before cut from document */
+			'cut'       : [],
 			/* called before paste in document */
 			'paste'     : []
 			};
@@ -252,44 +254,73 @@
 
 
 		/* bind events to document */
+		
+		// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
+		// on mac opera think meta is a ctrl key
+		// i hope only a few nerds use opera on mac :)
+		// TODO test on linux/win
+		if ($.browser.opera && !this.macos) {
+			
+			$(doc.document).bind('keydown', function(e) {
+				if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
+					e.stopPropagation();
+					e.preventDefault();
+					self.trigger(e.keyCode == 88 ? 'cut' : 'paste');
+				}
+			});
+		}
+		
 		$(doc.document).bind('paste', function(e) {
 			if (!self.options.allowPaste) {
 				e.stopPropagation();
 				e.preventDefault();
-				// opera suck!
 			} else {
-				var n = self.dom.create({name : 'div', css : {position : 'absolute', left : '-1000px'}}),
-					r = self.dom.createTextNode(' ');
-				
+				var n = self.dom.create({name : 'div', css : {position : 'absolute', width : '10px', height : '10px', 'overflow' : 'hidden' }}),
+					r = self.dom.createTextNode(' _ ');
+					
+				self.trigger('paste');
 				n.appendChild(r);
 				n = self.selection.insertNode(n);
 				self.selection.select(n.firstChild);
 				setTimeout(function() {
 					if (n.parentNode) {
+						
 						self.options.pasteOnlyText
-							? $(n).text($(n).text())
+							? $(n).text($(n).text().replace(/\n/g, '<br>'))
 							: $(n).html(self.filter.proccess('paste', $(n).html()));
+						
+						r = n.lastChild;
 						self.dom.unwrap(n);
+						if (r) {
+							self.selection.select(r);
+							self.selection.collapse(false)
+						}
+
 					} else {
-						// smth wrong - clean all
+						// smth wrong - clean all doc
+						self.log('wrong')
+						n.parentNode && n.parentNode.removeChild(n);
 						self.active.set(self.filter.wysiwyg2wysiwyg(self.active.get('wysiwyg')), 'wysiwyg');
+						self.selection.select(self.active.document.body)
+						self.selection.collapse(true)
 					}
 					self.trigger('change');
-				}, 10);
+				}, 30);
 			}
 		})
-		.bind('drop', function(e) {
-			self.trigger('change');
-			// e.preventDefault();
-			// e.stopPropagation();
+		.bind('dragstart drop', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 		})
 		.bind('cut', function(e) {
+			self.trigger('cut')
 			setTimeout(function() { self.trigger('change'); }, 5);
 		})
 		.bind('keydown', function(e) {
 			var p, c = e.keyCode;
 
 			self.change = false;
+			// exec shortcut callback
 			$.each(self.shortcuts, function(n, s){
 				p = s.pattern;
 				if (p.keyCode == e.keyCode && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
@@ -301,30 +332,34 @@
 			});
 
 			if (!e.isPropagationStopped()) {
-				if ($.browser.opera && ((e.keyCode == 86 && e.ctrlKey) || e.keyCode == 45 && e.shiftKey)) {
+				if (c == 9){
 					e.stopPropagation();
 					e.preventDefault();
-					return;
-				}
-				self.trigger(e);
+					// alert('tab')
+					self.selection.insertHtml("&nbsp;&nbsp;&nbsp;&nbsp;")
+					// return
+					// self.change
+				} 
 				// cache if input modify DOM or change carret/selection position
-				// not bulletproof method - we rise change event on any symbol key with ctrl, 
-				// but i dont know other method to catch emacs-like shortcuts ctrl+(a|e|d) which ff understand
+				// not bulletproof method - we rise change event on any symbol key with ctrl|meta pressed, 
+				// but i dont know other method to catch emacs-like shortcuts ctrl+(a|e|d)
 				// another minus - we rise change twice on ctrl+x/ctrl-v
-				// but i think its not a big deal
-				self.change = self.utils.isKeyArrow(c) || self.utils.isKeyDel(c) || c == 13 || (self.utils.isKeyChar(c) && (!self.selection.collapsed() || e.ctrlKey || (self.macos&&e.metaKey)));
+				// but i think its not a big deal ;)
+				self.change = self.utils.isKeyDel(c) || c == 13 || c == 9 || (self.utils.isKeyChar(c) && (!self.selection.collapsed() || e.ctrlKey || (self.macos&&e.metaKey)));
+				self.trigger(e);
 			}
 		})
 		.bind('keyup', function(e) {
 			if (self.change) {
-				// rise cached changes
 				self.trigger('change', {originalEvent : e});
 				self.change = false;
+			} else if (self.utils.isKeyArrow(e.keyCode)) {
+				self.trigger('changePos', {originalEvent : e});
 			}
 			self.trigger(e);
 		})
 		.bind('mousedown mouseup click dblclick', function(e) {
-			e.type == 'mouseup' && self.trigger('change', {originalEvent : e});
+			e.type == 'mouseup' && self.trigger('changePos', {originalEvent : e});
 			self.trigger(e);
 		})
 
@@ -505,7 +540,7 @@
 		// 	e.elrteDocument = this.active;
 		// }
 
-		this.debug('event.'+e.type,  e.data.id||'no document');
+		this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type] ? 'trigger' : 'ignore'));
 		// this.log(d)
 		$.each(this.listeners[e.type]||[], function() {
 			if (e.isPropagationStopped()) {
@@ -552,7 +587,7 @@
 			o = o||{};
 			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
 			d.focus();
-			!o.quiet && this.trigger(this.event('change', d));
+			!o.quiet && d == this.active && this.trigger(this.event('change', d));
 			return true;
 		}
 	}

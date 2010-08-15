@@ -117,8 +117,14 @@
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.insertHtml = function(html) {
-		var n = this.insertNode($(this.dom.create('span')).html(html||'')[0]);
-		$(n).replaceWith($(n).html());
+		var n = this.insertNode($(this.dom.create('span')).html(html||'')[0]),
+			l = n.lastChild;
+
+		this.rte.dom.unwrap(n);
+		if (l && l.parentNode) {
+			this.select(l);
+			this.collapse();
+		}
 		return this;
 	}
 	

@@ -34,7 +34,7 @@
 		/* if set this tags will be removed */
 		denyTags : ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'col', 'colgroup', 'iframe', 'isindex', 'frameset', 'html', 'head', 'meta', 'marquee', 'noframes', 'noembed', 'o:p', 'object', 'title', 'xml'],
 		denyAttr : ['id'],
-		pasteDenyAttr : ['id', 'name', 'class', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
+		pasteDenyAttr : ['id', 'name', 'class', 'style', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 		pasteOnlyText : false,
 		/* If false - all text nodes will be wrapped by paragraph tag */
 		allowTextNodes : true,
@@ -46,7 +46,7 @@
 		restore : [ function(html) { return html.replace(/PLACEHODER:(\w+)/, "{$1}") } ],
 		allowPaste : true,
 		/* max undo/redo steps */
-		historySize : 7,
+		historySize : 20,
 		/* plugins to load */
 		plugins : ['source', 'wordcount'/*, 'dummy', 'path', 'webkit', 'wordcount'*/],
 		/* display or not toolbar */
