@@ -258,8 +258,8 @@
 				e.preventDefault();
 				// opera suck!
 			} else {
-				var n = self.dom.create({name : 'div', css : {border : '1px solid red', position : 'absolute', left : '-1000px'}}),
-					r = self.dom.createTextNode(' '), c;
+				var n = self.dom.create({name : 'div', css : {position : 'absolute', left : '-1000px'}}),
+					r = self.dom.createTextNode(' ');
 				
 				n.appendChild(r);
 				n = self.selection.insertNode(n);
@@ -272,15 +272,16 @@
 						self.dom.unwrap(n);
 					} else {
 						// smth wrong - clean all
-						self.active.set( self.filter.wysiwyg(self.active.get('source')), 'wysiwyg');
+						self.active.set(self.filter.wysiwyg2wysiwyg(self.active.get('wysiwyg')), 'wysiwyg');
 					}
-					
+					self.trigger('change');
 				}, 10);
 			}
 		})
-		.bind('dragstart', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
+		.bind('drop', function(e) {
+			self.trigger('change');
+			// e.preventDefault();
+			// e.stopPropagation();
 		})
 		.bind('cut', function(e) {
 			setTimeout(function() { self.trigger('change'); }, 5);

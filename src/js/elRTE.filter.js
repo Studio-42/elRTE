@@ -21,9 +21,13 @@
 		this.openTagRegExp = /<([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
 		// attributes regexp
 		this.attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
+		// script tag regexp
 		this.scriptRegExp = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+		// style tag regexp
 		this.styleRegExp = /(<style([^>]*)>[\s\S]*?<\/style>)/gi;
+		// link tag regexp
 		this.linkRegExp = /(<link([^>]+)>)/gi;
+		// cdata regexp
 		this.cdataRegExp = /<!\[CDATA\[([\s\S]+)\]\]>/g;
 		// object tag regexp
 		this.objRegExp = /<object([^>]*)>([\s\S]*?)<\/object>/gi;
@@ -43,9 +47,10 @@
 		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
 		// denied tags
 		this.denyTags = rte.options.denyTags.length ? rte.utils.makeObject(rte.options.denyTags) : null;
-		// TODO makemap
-		this.denyAttr = self.rte.options.denyAttr||[];
-		this.pasteDenyAttr = self.rte.options.pasteDenyAttr||[];
+		// deny attributes
+		this.denyAttr = rte.options.denyAttr ? rte.utils.makeObject(rte.options.denyAttr) : null;
+		// deny attributes for pasted html
+		this.pasteDenyAttr = rte.options.pasteDenyAttr ? rte.utils.makeObject(rte.options.pasteDenyAttr) : null;
 		// font sizes to convert size attr into css property
 		this.fontSize = ['medium', 'xx-small', 'small', 'medium','large','x-large','xx-large' ];
 		// font families regexp to detect family by font name
@@ -295,7 +300,6 @@
 	}
 	
 	// rules to replace attributes
-	// @TODO convert color values in hex
 	elRTE.prototype.filter.prototype.replaceAttrs = {
 		align : function(a, n) {
 			switch (n) {
@@ -416,7 +420,7 @@
 				da   = this.denyAttr,
 				n;
 			
-			html = html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
+			return html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
 				.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
 				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br>')
@@ -435,27 +439,31 @@
 						n = rt[n].tag;
 					}
 					
-					da.length && $.each(a, function(na) {
-						if ($.inArray(na, da) != -1) {
+					da && $.each(a, function(na) {
+						if (da[na]) {
 							delete a[na];
 						}
 					});
 					a = self.serializeAttrs(a);
 					return '<'+n+(a?' ':'')+a+'>';
 				});
-
-			return html; 
 		},
 		
+		/**
+		 * Replace pasted html
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
 		cleanPaste : function(html) {
 			var self = this, d = self.pasteDenyAttr;
 			
-			if (d.length) {
+			if (d) {
 				html = html.replace(this.openTagRegExp, function(t, n, a) {
 					a = self.parseAttrs(a);
 					$.each(a, function(an) {
-						if ($.inArray(an, d) != -1) {
-							delete a[an]
+						if (da[na]) {
+							delete a[an];
 						}
 					});
 					a = self.serializeAttrs(a, true);
@@ -650,14 +658,14 @@
 		 * @param String  html code
 		 * return String
 		 **/
-		tagsToLower : function(html) {
-			var self = this; 
-
-			return html.replace(this.tagRegExp, function(t, c, n, a) {
-				a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
-				return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
-			});
-		},
+		// tagsToLower : function(html) {
+		// 	var self = this; 
+		// 
+		// 	return html.replace(this.tagRegExp, function(t, c, n, a) {
+		// 		a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
+		// 		return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
+		// 	});
+		// },
 		/**
 		 * compact styles
 		 *
@@ -667,9 +675,9 @@
 		compactStyles : function(html) {
 			var self = this;
 
-			return html.replace(this.openTagRegExp, function(t, n, a) {
-				a = a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
-				return '<'+n+(a?' ':'')+a+'>';
+			return html.replace(this.tagRegExp, function(t, c, n, a) {
+				a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
+				return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
 			});
 		},
 		/**
@@ -685,14 +693,15 @@
 	
 	/**
 	 * Chains configuration
-	 * Two default chains 
+	 * Three default chains 
 	 * 1. wysiwyg - proccess html from source for wysiwyg editor mode
 	 * 2. source  - proccess html from wysiwyg for source editor mode
+	 * 3. paste   - clean pasted html
 	 * deniedTags is in the end of chain to protect google maps iframe from removed
 	 **/
 	elRTE.prototype.filter.prototype.chains = {
 		wysiwyg : ['allowedTags', 'clean', 'replace', 'deniedTags', 'compactStyles'],
-		source  : ['allowedTags', 'clean', 'restore', 'tagsToLower', 'xhtmlTags'],
+		source  : ['allowedTags', 'clean', 'restore', 'compactStyles', 'xhtmlTags'],
 		paste   : ['allowedTags', 'clean', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles']
 	}
 	

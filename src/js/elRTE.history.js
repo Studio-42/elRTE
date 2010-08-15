@@ -67,7 +67,6 @@
 			}
 		}
 		
-		
 		/**
 		 * Return true if undo is available
 		 *
@@ -92,16 +91,15 @@
 		 **/
 		this.undo = function() {
 			if (this.canUndo()) {
-				// self.rte.log('undo')
 				if (active.input) {
-					active.levels.push({});
-					active.index++;
+					this.add(0);
 				}
+				this.rte.debug('history', 'undo '+active.index);
 				active.index--;
 				active.input = 0;
-				self.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
-				self.rte.trigger('change').trigger('historyChange');
+				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
+				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				this.rte.trigger('change');
 				return true;
 			}
 		}
@@ -114,12 +112,12 @@
 		 **/
 		this.redo = function() {
 			if (this.canRedo()) {
-				// self.rte.log('redo')
 				active.index++;
 				active.input = 0;
-				self.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
-				self.rte.trigger('change').trigger('historyChange');
+				this.rte.debug('history', 'redo '+active.index)
+				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
+				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				this.rte.trigger('change');
 				return true;
 			}
 		}
@@ -144,7 +142,7 @@
 				!active.levels.length && self.add();
 			})
 			.bind('source', function() { 
-				/* change active storage */
+				/* disable active storage for source mode */
 				active = null; 
 			})
 			.bind('keyup', function(e) {
@@ -159,50 +157,19 @@
 				if (e.data.originalEvent && e.data.originalEvent.type == 'keyup') {
 					var i = self.inputType(e.data.originalEvent.keyCode);
 					if (i == 0 || (active.input == 1 && i == -1)) {
-						// all changes except delete after delete
+						// all changes from keyboard except delete after delete
 						self.add(i);
 					}
 				} else {
+					// all other changes
 					self.add(0);
 				}
 			})
-			// .bind('change', function(e) { 
-			// 	/* on press delete keys - update active input state, otherwise - add new level */
-			// 	if (e.data.originalEvent && e.data.originalEvent.type == 'keyup' && self.rte.utils.isKeyDel(e.data.originalEvent.keyCode)) {
-			// 		// self.rte.log('input del')
-			// 		setInput(self._del)
-			// 	} else {
-			// 		self.add(0);
-			// 	}
-			// 	// e.isDel ? setInput(self._del) : self.add(0);
-			// })
-			// .bind('input', function(e) {
-			// 	/* if symbol key pressed - update active input state */
-			// 	// self.rte.log(e.data)
-			// 	setInput(self._input);
-			// })
-			// .bind('keydown', function(e) {
-			// 	if (active) {
-			// 		self.rte.log(self.rte.utils.isKeyDel(e.keyCode)+' '+(active.input == self._input))
-			// 		if (self.rte.utils.isKeyDel(e.keyCode) && active.input == self._input) {
-			// 			
-			// 			self.add(self._del);  /* change from typing to delete */
-			// 		} else if (self.rte.utils.isKeyChar(e.keyCode) && active.input == self._del) {
-			// 			self.add(self._input); /* change from delete to typing */
-			// 		} else if (e.keyCode == 13 && active.input) {
-			// 			self.add(); /* enter after typing/delete */
-			// 		}
-			// 	}
-			// })
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'Undo (Ctrl+Z)', function(e) {
-				if (self.canUndo()) {
-					self.undo();
-				}
+				self.canUndo() && self.undo();
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+shift+z', 'Redo (Ctrl+Shift+Z)', function(e) {
-				if (self.canRedo()) {
-					self.redo();
-				}
+				self.canRedo() && self.redo();
 			});
 		}
 	}

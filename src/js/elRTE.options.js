@@ -46,7 +46,7 @@
 		restore : [ function(html) { return html.replace(/PLACEHODER:(\w+)/, "{$1}") } ],
 		allowPaste : true,
 		/* max undo/redo steps */
-		historySize : 5,
+		historySize : 7,
 		/* plugins to load */
 		plugins : ['source', 'wordcount'/*, 'dummy', 'path', 'webkit', 'wordcount'*/],
 		/* display or not toolbar */
