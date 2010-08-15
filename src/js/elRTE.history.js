@@ -1,6 +1,7 @@
 (function($) {
 	/**
 	 * @class elRTE history
+	 * rise event historyChange
 	 * @param elRTE editor instance
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 */
@@ -34,15 +35,16 @@
 		}
 		
 		/**
-		 * Add new undo level if required and [change active storage input state]
-		 * Trigger "historyChange" event on success
+		 * Add new undo level if required and change active storage input state
+		 * Trigger "historyChange" event in both cases
 		 *
 		 * @param  Number  new active storage input state
 		 **/
 		this.add = function(i) {
-			var d = this.rte.active, c, bm;
+			var d = this.rte.active, c, bm, t = false;
 			
 			if (active && d) {
+				t = active.input!=i;
 				active.input = i||0;
 				c = d.get('wysiwyg');
 				if (!active.levels.length || active.levels[active.index].origin != c) {
@@ -54,16 +56,18 @@
 						active.index--;
 					}
 
-					bm = rte.selection.getBookmark();
+					bm = this.rte.selection.getBookmark();
 					active.levels.push({
 						origin : c,
 						html   : d.get('wysiwyg'),
 						bm     : [bm[0].id, bm[1].id]
 					});
-					rte.selection.moveToBookmark(bm);
+					this.rte.selection.moveToBookmark(bm);
 					active.index = active.levels.length-1;
-					self.rte.debug('history', 'add level: '+active.levels.length)
+					this.rte.debug('history', 'add level: '+active.levels.length);
+					t = true;
 				}
+				t && this.rte.trigger('historyChange')
 			}
 		}
 		
@@ -72,7 +76,7 @@
 		 *
 		 **/
 		this.canUndo = function() {
-			return active && (active.index>0 || active.input);
+			return active && (active.index>0 || active.input!=0);
 		}
 		
 		/**
@@ -99,7 +103,7 @@
 				active.input = 0;
 				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
 				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
-				this.rte.trigger('change');
+				this.rte.trigger('historyChange').trigger('change');
 				return true;
 			}
 		}
@@ -114,10 +118,10 @@
 			if (this.canRedo()) {
 				active.index++;
 				active.input = 0;
-				this.rte.debug('history', 'redo '+active.index)
+				this.rte.debug('history', 'redo '+active.index);
 				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
 				this.rte.selection.moveToBookmark(active.levels[active.index].bm);
-				this.rte.trigger('change');
+				this.rte.trigger('historyChange').trigger('change');
 				return true;
 			}
 		}
@@ -145,24 +149,22 @@
 				/* disable active storage for source mode */
 				active = null; 
 			})
-			.bind('keyup', function(e) {
-				var i = self.inputType(e.keyCode);
-				if (active.input == -1 && i == 1) {
-					// change from typing to delete (not catch by change event)
+			.bind('keydown', function(e) {
+				var  i = self.inputType(e.keyCode);
+				if (active.input != i) {
+					// change from typing to delete or otherwise - save state before changes
 					self.add(i);
-				} 
-				active.input = i;
+				}
+			})
+			.bind('keyup', function(e) {
+				// only update input type
+				active.input = self.inputType(e.keyCode);;
 			})
 			.bind('change', function(e) {
-				if (e.data.originalEvent && e.data.originalEvent.type == 'keyup') {
-					var i = self.inputType(e.data.originalEvent.keyCode);
-					if (i == 0 || (active.input == 1 && i == -1)) {
-						// all changes from keyboard except delete after delete
-						self.add(i);
-					}
-				} else {
-					// all other changes
-					self.add(0);
+				var i = e.data.originalEvent ? self.inputType(e.data.originalEvent.keyCode) : 0;
+				if (i != -1 && active.input != -1) {
+					// all changes except delete after delete
+					self.add(i);
 				}
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'Undo (Ctrl+Z)', function(e) {
