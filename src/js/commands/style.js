@@ -1,5 +1,65 @@
 (function($) {
 	
+	elRTE.prototype.commands.bold = function(rte) {
+		this.name = 'bold'
+		this.title = 'Bold';
+		this.init(rte);
+		
+		this.test = function(n) {
+			if (n.nodeType == 1) {
+				return /^(B|STRONG)$/i.test(n.nodeName)
+			}
+			return false;
+		}
+		
+		this.state = function() {
+			return this.dom.selectionMatchAll(this.test) ? this._active : (/*this.sel.collapsed() ? this._disabled :*/ this._enabled)
+		}
+		
+		this.exec = function() {
+			var n, bm;
+			
+			if (this.sel.collapsed()) {
+				n = this.dom.parent(this.sel.getNode(), this.test, null, true);
+				this.rte.log(n)
+				if (n) {
+					bm = this.sel.getBookmark();
+					this.dom.unwrap(n);
+					this.sel.moveToBookmark(bm)
+					// $(n.firstChild).unwrap()
+					return true
+				} else {
+					n = this.dom.create('strong');
+					n.appendChild(this.dom.createTextNode('\uFEFF'))
+					var r = this.sel.getRange();
+					var s =this.sel.getSelection()
+					r.insertNode(n)
+					// this.rte
+					r.selectNode(n.firstChild)
+					s.removeAllRanges();
+					r.collapse(false);
+					// r.deleteContents();
+					s.addRange(r);
+					
+					// bm = this.sel.getBookmark();
+					// this.dom.wrap(bm, n)
+					// this.sel.moveToBookmark([bm[0].id, bm[1].id])
+					// n.appendChild(this.dom.createTextNode('b'));
+					// n = this.sel.insertNode(n)
+					// this.rte.log(n.firstChild)
+					// this.sel.select(n.firstChild)
+					// this.sel.collapse(false)
+					// this.sel.selectNodeContent(n.firstChild)
+				}
+				
+			} else {
+				
+			}
+		}
+		
+	}
+	
+	elRTE.prototype.commands.bold.prototype = elRTE.prototype.command;
 	
 	elRTE.prototype.commands.style = function() {
 		
@@ -13,7 +73,7 @@
 
 
 	
-	elRTE.prototype.commands.bold = function(rte) {
+	elRTE.prototype.commands._bold = function(rte) {
 		this.name = 'bold'
 		this.title = 'Bold';
 		
@@ -25,7 +85,7 @@
 	// elRTE.prototype._commands.bold.prototype = new elRTE.prototype._commands.style()
 	
 	
-	elRTE.prototype.commands.italic = function(rte) {
+	elRTE.prototype.commands._italic = function(rte) {
 		this.name = 'italic'
 		this.title = 'Italic';
 		
@@ -33,8 +93,8 @@
 	}
 	
 	// elRTE.prototype._commands.bold.prototype = elRTE.prototype._command;
-	elRTE.prototype.commands.bold.prototype = 
-	elRTE.prototype.commands.italic.prototype = new elRTE.prototype.commands.style()
+	elRTE.prototype.commands._bold.prototype = 
+	elRTE.prototype.commands._italic.prototype = new elRTE.prototype.commands.style()
 	
 	// elRTE.prototype._commands.italic = function(rte) {
 	// 	this.name = 'italic';

@@ -27,7 +27,6 @@
 		this.classActive = 'elrte-ui-active';
 		/* class for disabled button */
 		this.classDisabled = 'elrte-ui-disabled';
-		
 
 		/**
 		 * Initilize object
@@ -37,7 +36,7 @@
 		this.init = function(rte) {
 			this.rte = rte;
 			this.dom = rte.dom;
-			this.sel = rte.sel;
+			this.sel = rte.selection;
 		}
 		
 		/**
@@ -120,7 +119,7 @@
 		/**
 		 * Bind update ui methods
 		 *
-		 * @return jQuery
+		 * @return void
 		 **/
 		this._bind = function() {
 			var self = this;

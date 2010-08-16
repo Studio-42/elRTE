@@ -124,7 +124,7 @@
 				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
 				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
 				this.rte.trigger('historyChange').trigger('change');
-				this.rte.debug('history', 'redo '+(active.index-1));
+				this.rte.debug('history', 'redo '+(active.index));
 				return true;
 			}
 		}

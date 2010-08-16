@@ -178,7 +178,7 @@
 	 * @param  String|Number  document id/index (or undefined for active document)
 	 * @return Object
 	 **/
-	elRTE.prototype.getDocument = function(id) {
+	elRTE.prototype.document = function(id) {
 		return this.documents[id]||this.active;
 	}
 
@@ -381,7 +381,7 @@
 	 * @return elRTE
 	 */
 	elRTE.prototype.close = function(id) {
-		var d = this.getDocument(id);
+		var d = this.document(id);
 		
 		if (d) {
 			// switch to prev/next document before close active
@@ -405,7 +405,7 @@
 	 * @return elRTE
 	 **/
 	elRTE.prototype.focus = function(id) {
-		var d = this.getDocument(id), 
+		var d = this.document(id), 
 			a = this.active;
 		
 		if (d) {
@@ -449,7 +449,7 @@
 	elRTE.prototype.sync = function(id) {
 		var self = this, t;
 
-		$.each(id && (d = this.getDocument(id)) ? [d] : this.documents, function() {
+		$.each(id && (d = this.document(id)) ? [d] : this.documents, function() {
 			t = this.isWysiwyg() ? 'source' : 'wysiwyg';
 			this.set(self.filter.proccess(t, this.get()), t);
 			self.debug('sync: '+this.id);
@@ -549,7 +549,7 @@
 	 * @TODO clean source
 	 **/
 	elRTE.prototype.get = function(id, o) {
-		var d = this.getDocument(id);
+		var d = this.document(id);
 		if (d) {
 			if (!o.raw) {
 				d.isWysiwyg() && this.sync(d.id);
@@ -569,7 +569,7 @@
 	 * @return String
 	 **/
 	elRTE.prototype.set = function(c, id, o) {
-		var d = this.getDocument(id);
+		var d = this.document(id);
 		if (d) {
 			o = o||{};
 			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
@@ -694,12 +694,22 @@
 		return this.messages[m]||m;
 	}
 
-	elRTE.prototype.pluginConf = function(p, o) {
-		if (!o) {
-			return this.options.pluginsConf ? this.options.pluginsConf[p] : false; 
-		}
-		return this.options.pluginsConf && this.options.pluginsConf[p] ? this.options.pluginsConf[p][o] : false; 
+	elRTE.prototype._conf = function(t, n, o) {
+		var c = this.options[t == 'cmd' ? 'commandsConf' : 'pluginsConf'];
+		return o
+			? (c && c[n] ? c[n][o] : false)
+			: (c ? c[n] : false);
 	}
+
+	elRTE.prototype.commandConf = function(n, o) {
+		return this._conf('cmd', n, o);
+	}
+
+	elRTE.prototype.pluginConf = function(n, o) {
+		return this._conf('pl', n, o);
+	}
+
+	
 
 	/**
 	 * send message to console log if debug is enabled in config

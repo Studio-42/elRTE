@@ -57,9 +57,9 @@
 		toolbar : 'empty',
 		
 		panels : {
-			style      : ['bold', 'italic' /* , 'italic', 'underline', 'sub', 'sup'*/],
+			style      : ['bold' /* , 'italic', 'underline', 'sub', 'sup'*/],
 			clean      : ['removeformat'],
-			history    : ['undo', 'redo'],
+			history    : ['undo', 'redo', 'docstructure'],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
 		
@@ -67,12 +67,20 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : [/*'style', 'history', 'clean','style',*/ 'fullscreen', 'history']
+			'default' : [/*'style', 'history', 'clean','style',*/ 'style', 'fullscreen', 'history']
 		},
 		/* send debug to log? */
 		debug    : false,
+		/* plugins configuration */
 		pluginsConf : {
-			wordcount : {  count : 'all'}
+			wordcount : {  count : 'words'}
+		},
+		/* commands configuration */
+		commandsConf : {
+			docstructure : {
+				initState : 'off'
+			}
+			
 		}
 	}
 	

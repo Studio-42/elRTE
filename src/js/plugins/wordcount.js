@@ -18,7 +18,7 @@
 		}).bind('source', function() {
 			self.panel.text('');
 		}).bind('wysiwyg change keyup', function(e) {
-			var txt, str;
+			var text, str;
 			if (!rte.active || (e.type == 'keyup' && rte.utils.isKeyService(e.keyCode))) {
 				return;
 			}

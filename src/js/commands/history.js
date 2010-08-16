@@ -40,7 +40,6 @@
 				}
 			});
 		}
-		
 	}
 	
 	elRTE.prototype.commands.history.prototype = elRTE.prototype.command;
@@ -52,8 +51,8 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.undo = function(rte) {
-		this.name = 'undo'
-		this.title = 'Undo';
+		this.name  = 'undo'
+		this.title = 'Undo last action';
 		this.init(rte);
 	}
 	
@@ -64,8 +63,8 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.redo = function(rte) {
-		this.name = 'redo'
-		this.title = 'Redo';
+		this.name  = 'redo'
+		this.title = 'Redo previous action';
 		this.init(rte);
 	}
 	

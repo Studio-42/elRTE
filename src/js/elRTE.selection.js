@@ -99,6 +99,12 @@
 		return this;
 	}
 	
+	elRTE.prototype.selection.prototype.selectNodeContent = function(n) {
+		var s = this.getSelection(),
+			r = this.getRange();	
+		r.selectNodeContents(n)
+	}
+	
 	/**
 	 * Insert node into begining of selection
 	 * @param  DOMElement
@@ -150,7 +156,7 @@
 	/**
 	 * Move selection to bookmark
 	 *
-	 * @param Array  array of DOMElements - bookmark nodes
+	 * @param Array  array of DOMElements - bookmarks nodes or ids list
 	 * @return selection
 	 **/
 	elRTE.prototype.selection.prototype.moveToBookmark = function(b) {
