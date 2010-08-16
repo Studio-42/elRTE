@@ -48,6 +48,7 @@
     zoom: 1;
     *display: inline;
 	margin:1px 1px;
+	padding:0; /* Joomla 1.6 compat */
 	background:url('../images/elrte-toolbar.png') no-repeat; 
 	border:1px solid #ccc;	
 }
@@ -179,6 +180,8 @@
 .el-rte .toolbar ul li.el-select label {
 	height:19px;
 	padding: 3px 5px 0 5px;
+	float:none; /* Joomla 1.6 compat */
+	width:96px; /* Joomla 1.6 compat */
 }
 
 /* textarea & iframe в диплогах вставки текста */
