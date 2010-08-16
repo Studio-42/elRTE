@@ -6,28 +6,32 @@
 	 *
 	 **/
 	elRTE.prototype.command = new function() {
-		this.name      = 'command';
-		this.title     = '';
+		/* command name */
+		this.name = 'command';
+		/* short command description for button title */
+		this.title = '';
 		/* editor instance */
-		this.rte       = null;
+		this.rte = null;
 		/* editor DOM object */
-		this.dom       = null;
+		this.dom = null;
 		/* editor selection object */
-		this.sel       = null;
+		this.sel = null;
 		/* button/menu or other ui element placed on toolbar */
-		this._ui       = null;
+		this._ui = null;
 		/* smth like constant:) command disabled at now */
 		this._disabled = -1;
 		/* command enabled */
 		this._enabled  = 0;
 		/* command active, for example command 'bold' when carret inside 'strong' node */
 		this._active   = 1;
+		/* class for active button */
 		this.classActive = 'elrte-ui-active';
+		/* class for disabled button */
 		this.classDisabled = 'elrte-ui-disabled';
 		
 
 		/**
-		 * Init command
+		 * Initilize object
 		 *
 		 * @param  elRTE  editor instance
 		 **/
@@ -72,6 +76,12 @@
 			return this._enabled;
 		}
 		
+		/**
+		 * Change button classes based on command state
+		 *
+		 * @param  Number  command state
+		 * @return void
+		 **/
 		this.updateUI = function(s) {
 			switch (s) {
 				case this._disabled: this._ui.removeClass(this.classActive).addClass(this.classDisabled); break;
@@ -97,7 +107,7 @@
 		 **/
 		this._createUI = function() {
 			var self = this;
-			return $('<li unselectable="on" class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this.classDisabled+'" title="'+this.title+'" />')
+			return $('<li '+($.browser.msie ? 'unselectable="on" ' : '')+'class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this.classDisabled+'" title="'+this.title+'" />')
 				.click(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -115,16 +125,12 @@
 		 **/
 		this._bind = function() {
 			var self = this;
-			this.rte.bind('change focus', function(e) {
+			this.rte.bind('wysiwyg change changePos', function(e) {
 				self.updateUI(self.state())
-				// switch (self.state()) {
-				// 	case self._disabled: self._ui.removeClass(this.classActive).addClass(this.classDisabled); break;
-				// 	case self._enabled : self._ui.removeClass(this.classActive+' '+this.classDisabled);       break;
-				// 	case self._active  : self._ui.removeClass(this.classDisabled).addClass(this.classActive); break;
-				// }
-			}).bind('source close', function(e) {
-				self.updateUI(self._disabled)
-				// self._ui.removeClass(this.classActive).addClass(this.classDisabled);
+			}).bind('close source', function(e) {
+				if (e.type == 'source' || e.data.id == self.rte.active.id) {
+					self.updateUI(self._disabled);
+				}
 			});
 		}
 	}

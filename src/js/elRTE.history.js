@@ -142,7 +142,7 @@
 			})
 			.bind('close', function(e) {
 				/* remove storage for document */
-				delete storage[e.elrteDocument.id];
+				delete storage[e.data.id];
 			})
 			.bind('wysiwyg', function() {
 				/* set active storage and add initial level if not exists */

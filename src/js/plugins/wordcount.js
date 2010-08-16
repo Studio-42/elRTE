@@ -18,8 +18,11 @@
 		}).bind('source', function() {
 			self.panel.text('');
 		}).bind('wysiwyg change input', function(e) {
-			var text = rte.active.get().replace(/<\/?(p|div|br)[^>]*>/gi, ' ').replace(/<\/?\w+[^>]*>/gi, '').replace(/&nbsp;|&#160;/gi, ' '),
-				str;
+			var txt, str;
+			if (!rte.active) {
+				return;
+			}
+			text = rte.active.get().replace(/<\/?(p|div|br)[^>]*>/gi, ' ').replace(/<\/?\w+[^>]*>/gi, '').replace(/&nbsp;|&#160;/gi, ' ');
 
 			function words() {
 				var t = $.trim(text).replace(/[\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '');

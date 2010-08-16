@@ -389,11 +389,13 @@
 		if (d) {
 			// switch to prev/next document before close active
 			d == this.active && this.count()>1 && this.focus(this.view.getPrev()||this.view.getNext());
-			this.trigger(this.event('close', d)).view.remove(d.id);
-			delete this.documents[d.id];
+			this.trigger('close', {id : d.id}).view.remove(d.id);
+
+			
 			if (this.active.id == d.id) {
 				this.active = null;
 			}
+			delete this.documents[d.id];
 		}
 		return this;
 	}
@@ -459,19 +461,6 @@
 	}
 
 	/**
-	 * Create and return event with required type and elrteDocument set to required or active document
-	 *
-	 * @param  String       event name
-	 * @param  Object       document (not set for active document)
-	 * @return jQuery.Event
-	 */
-	elRTE.prototype.event = function(n, d) {
-		var e = $.Event(n);
-		e.elrteDocument = d && d.editor ? d : this.active;
-		return e;
-	}
-
-	/**
 	 * Bind callback to event(s)
 	 * To bind multiply events at once, separate events names by space
 	 *
@@ -534,19 +523,15 @@
 		var self=this;
 		
 		if (!e.type) {
-			e = $.Event(e)
-			// e = this.event(e);
+			e = $.Event(e);
 		}
-		e.data = d||{}
+		e.data = d||{};
 		if (!e.data.id && this.active) {
-			e.data.id = this.active.id
+			e.data.id = this.active.id;
 		}
-		// if (!e.elrteDocument && this.active) {
-		// 	e.elrteDocument = this.active;
-		// }
 
 		this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type] ? 'trigger' : 'ignore'));
-		// this.log(d)
+
 		$.each(this.listeners[e.type]||[], function() {
 			if (e.isPropagationStopped()) {
 				self.debug('event.'+e.type, 'stopped');
@@ -592,7 +577,7 @@
 			o = o||{};
 			d.set(o.raw ? c : this.filter.proccess(d.isWysiwyg() ? 'wysiwyg' : 'source', c));
 			d.focus();
-			!o.quiet && d == this.active && this.trigger(this.event('change', d));
+			!o.quiet && d == this.active && this.trigger('change', { id : d.id });
 			return true;
 		}
 	}
