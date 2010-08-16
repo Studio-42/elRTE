@@ -1,9 +1,8 @@
 (function($) {
 	/**
-	 * @class elRTE parent class for editor commands
+	 * @class command parent class for editor commands
 	 *
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 *
 	 **/
 	elRTE.prototype.command = new function() {
 		/* command name */
@@ -73,7 +72,7 @@
 		 * @return Number
 		 **/
 		this.state = function() {
-			return this._enabled;
+			return this._disabled;
 		}
 		
 		/**
@@ -126,7 +125,7 @@
 		this._bind = function() {
 			var self = this;
 			this.rte.bind('wysiwyg change changePos', function(e) {
-				self.updateUI(self.state())
+				self.updateUI(self.state());
 			}).bind('close source', function(e) {
 				if (e.type == 'source' || e.data.id == self.rte.active.id) {
 					self.updateUI(self._disabled);

@@ -358,9 +358,6 @@
 				// carret change position
 				self.trigger('changePos', {originalEvent : e});
 			}
-			if (self.utils.isKeyChar(e.keyCode)) {
-				self.trigger('input')
-			}
 			self.trigger(e);
 		})
 		.bind('mousedown mouseup click dblclick', function(e) {

@@ -76,7 +76,6 @@
 			}
 		}
 		
-		
 		/**
 		 * Return true if undo is available
 		 *
@@ -137,7 +136,7 @@
 				storage[e.data.id] = { 
 					levels : [], 
 					index  : 0, 
-					input  : 0 
+					input  : 0
 				};
 			})
 			.bind('close', function(e) {
@@ -159,13 +158,16 @@
 			})
 			.bind('keydown', function(e) {
 				var i;
+				flag = false
 				// save snapshot before changes
 				if (!self.rte.utils.isKeyService(e.keyCode)) {
 					i = self.inputType(e.keyCode);
 					if (self.rte.change && i != -1 && !e.ctrlKey && !e.metaKey) {
-						self.add(0, true, active.input == 0);
+						self.add(self.inputType(e.keyCode), true, active.input == 0);
 					} else if (i != active.input) {
 						self.add(e.ctrlKey||e.metaKey?0:i, active.levels.length==1||e.ctrlKey||e.metaKey, active.input==0);
+					} else {
+						active.input = self.inputType(e.keyCode);
 					}
 				}
 			})
@@ -173,12 +175,6 @@
 				if (!e.data.originalEvent || self.inputType(e.data.originalEvent.keyCode) == 0) {
 					// save snapshot on dom changes
 					self.add(0);
-				}
-			})
-			.bind('keyup', function(e) {
-				// update input state
-				if (!self.rte.utils.isKeyService(e.keyCode)) {
-					active.input = self.inputType(e.keyCode);
 				}
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'Undo (Ctrl+Z)', function(e) {

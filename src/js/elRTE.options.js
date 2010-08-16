@@ -67,7 +67,7 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : [/*'style', 'history', 'clean','style',*/ 'fullscreen']
+			'default' : [/*'style', 'history', 'clean','style',*/ 'fullscreen', 'history']
 		},
 		/* send debug to log? */
 		debug    : false,

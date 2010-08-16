@@ -17,9 +17,9 @@
 			e.data.id == rte.active.id && self.panel.text('');
 		}).bind('source', function() {
 			self.panel.text('');
-		}).bind('wysiwyg change input', function(e) {
+		}).bind('wysiwyg change keyup', function(e) {
 			var txt, str;
-			if (!rte.active) {
+			if (!rte.active || (e.type == 'keyup' && rte.utils.isKeyService(e.keyCode))) {
 				return;
 			}
 			text = rte.active.get().replace(/<\/?(p|div|br)[^>]*>/gi, ' ').replace(/<\/?\w+[^>]*>/gi, '').replace(/&nbsp;|&#160;/gi, ' ');

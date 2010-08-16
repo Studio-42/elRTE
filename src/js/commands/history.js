@@ -1,57 +1,74 @@
 (function($) {
 	/**
-	 * @class Parent class for undo/redo buttons
-	 */
-	elRTE.prototype.commands.history = function(rte) {
+	 * @class history - parent class for undo/redo commands
+	 *
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
+	elRTE.prototype.commands.history = function() {
 		
-		this._init = function(rte) {
-			this.init(rte);
+		/**
+		 * Return button state based on history state
+		 *
+		 * @return Number
+		 **/
+		this.state = function() {
+			return this.rte.history[this.name == 'undo' ? 'canUndo' : 'canRedo']() ? this._enabled : this._disabled;
 		}
 		
 		/**
-		 * Bind to rte and history events
-		 */
-		this.bind = function() {
+		 * Exec history command (undo/redo)
+		 *
+		 * @return Number
+		 **/
+		this.exec = function() {
+			return this.rte.history[this.name]();
+		}
+		
+		/**
+		 * Bind update ui methods
+		 *
+		 * @return void
+		 **/
+		this._bind = function() {
 			var self = this;
-
-			this.rte.bind('close source blur', function() {
-				self.button.removeClass('active').addClass('disabled');
-			}).history.bind(function(e) {
-				self.button.toggleClass('disabled', !e.data[self.name]);
+			
+			this.rte.bind('wysiwyg historyChange', function(e) {
+				self.updateUI(self.state());
+			}).bind('close source', function(e) {
+				if (e.type == 'source' || e.data.id == self.rte.active.id) {
+					self.updateUI(self._disabled);
+				}
 			});
 		}
 		
-		/**
-		 * Call history method
-		 * Not return true to avoid history rewrite problem
-		 * History call trigger('change') itself
-		 */
-		this.exec = function() {
-			this.rte.history[this.name]();
-		}
 	}
 	
 	elRTE.prototype.commands.history.prototype = elRTE.prototype.command;
 	
 	/**
-	 * @class Undo ccommand
-	 */
+	 * @class undo - undo button
+	 *
+	 * @param  elRTE
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.undo = function(rte) {
-		this.name  = 'undo';
+		this.name = 'undo'
 		this.title = 'Undo';
-		this._init(rte)
+		this.init(rte);
 	}
 	
 	/**
-	 * @class Redo ccommand
-	 */
+	 * @class redo - redo button
+	 *
+	 * @param  elRTE
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.redo = function(rte) {
-		this.name  = 'redo';
+		this.name = 'redo'
 		this.title = 'Redo';
-		this._init(rte)
+		this.init(rte);
 	}
 	
-	elRTE.prototype.commands.undo.prototype =
-	elRTE.prototype.commands.redo.prototype = new elRTE.prototype.commands.history();
+	elRTE.prototype.commands.undo.prototype = elRTE.prototype.commands.redo.prototype = new elRTE.prototype.commands.history;
 	
 })(jQuery);
