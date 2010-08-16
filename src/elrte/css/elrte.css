@@ -18,7 +18,7 @@
 }
 
 /* панель инструментов */
-.el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; }
+.el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; white-space:normal; }
 /* панель кнопок */
 .el-rte .toolbar ul {
 	display:inline-block; 

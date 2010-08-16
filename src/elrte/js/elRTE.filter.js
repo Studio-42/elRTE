@@ -119,7 +119,8 @@
 					i      : ['em'],
 					nobr   : ['span', 'white-space:nowrap'],
 					small  : ['span', 'font-size:small'],
-					u      : ['span', 'text-decoration:underline']
+					u      : ['span', 'text-decoration:underline'],
+					s      : ['strike']
 				};
 			
 			if ($.browser.opera||$.browser.msie) {
@@ -127,7 +128,7 @@
 			}
 				
 			/* Replace non-semantic tags */
-			html = html.replace(/\<(\/?)(b|i|u|font|center|nobr|big|small)(\s+[^>]*)?\>/gi, function(t, s, n, a) {
+			html = html.replace(/\<(\/?)(b|i|u|s|font|center|nobr|big|small)(\s+[^>]*)?\>/gi, function(t, s, n, a) {
 				n = n.toLowerCase(n);
 				a = (a||'').toLowerCase(a);
 				
