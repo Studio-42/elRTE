@@ -113,6 +113,7 @@
 	-moz-border-radius-topright: 3px; 
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
 	border-top-left-radius: 3px; 
 	border-top-right-radius: 3px;
 }
@@ -142,6 +143,7 @@
 	-moz-border-radius-bottomright: 3px; 
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
 	border-bottom-left-radius: 3px; 
 	border-bottom-right-radius: 3px;
 }
@@ -154,6 +156,7 @@
 	border: 1px solid #ccc;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
+	-webkit-background-clip: padding-box;
 	border-radius:3px;
 	background: #eee;
 }
@@ -180,6 +183,7 @@
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	-webkit-background-clip: padding-box;
 	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
 }
 
@@ -207,6 +211,7 @@
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
+	-webkit-background-clip: padding-box;
 	background: #eee;
 }
 

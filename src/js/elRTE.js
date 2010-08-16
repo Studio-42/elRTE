@@ -265,17 +265,23 @@
 				if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
 					e.stopPropagation();
 					e.preventDefault();
+					if (e.keyCode == 86 && !self.options.allowPaste) {
+						return;
+					}
 					self.trigger(e.keyCode == 88 ? 'cut' : 'paste');
 				}
 			});
 		}
 		
 		$(doc.document).bind('paste', function(e) {
+			// paste handler
 			if (!self.options.allowPaste) {
+				// paste denied 
 				e.stopPropagation();
 				e.preventDefault();
 			} else {
-				var n = self.dom.create({name : 'div', css : {position : 'absolute', width : '10px', height : '10px', 'overflow' : 'hidden' }}),
+				// create sandbox for paste, clean it content and unwrap
+				var n = self.dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
 					r = self.dom.createTextNode(' _ ');
 					
 				self.trigger('paste');
@@ -283,32 +289,28 @@
 				n = self.selection.insertNode(n);
 				self.selection.select(n.firstChild);
 				setTimeout(function() {
-					if (n.parentNode) {
-						
-						self.options.pasteOnlyText
-							? $(n).text($(n).text().replace(/\n/g, '<br>'))
-							: $(n).html(self.filter.proccess('paste', $(n).html()));
-						
+					if (n.parentNode && !r.parentNode) {
+						// clean sandbox content
+						$(n).html(self.filter.proccess('paste', $(n).html()));
 						r = n.lastChild;
 						self.dom.unwrap(n);
 						if (r) {
 							self.selection.select(r);
-							self.selection.collapse(false)
+							self.selection.collapse(false);
 						}
-
 					} else {
 						// smth wrong - clean all doc
-						self.log('wrong')
 						n.parentNode && n.parentNode.removeChild(n);
 						self.active.set(self.filter.wysiwyg2wysiwyg(self.active.get('wysiwyg')), 'wysiwyg');
-						self.selection.select(self.active.document.body)
-						self.selection.collapse(true)
+						self.selection.select(self.active.document.body);
+						self.selection.collapse(true);
 					}
 					self.trigger('change');
-				}, 30);
+				}, 15);
 			}
 		})
-		.bind('dragstart drop', function(e) {
+		.bind('dragstart dragend drop', function(e) {
+			// disable drag&drop
 			e.preventDefault();
 			e.stopPropagation();
 		})
@@ -333,12 +335,10 @@
 
 			if (!e.isPropagationStopped()) {
 				if (c == 9){
+					// on tab pressed insert spaces
 					e.stopPropagation();
 					e.preventDefault();
-					// alert('tab')
-					self.selection.insertHtml("&nbsp;&nbsp;&nbsp;&nbsp;")
-					// return
-					// self.change
+					self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
 				} 
 				// cache if input modify DOM or change carret/selection position
 				// not bulletproof method - we rise change event on any symbol key with ctrl|meta pressed, 
@@ -351,9 +351,11 @@
 		})
 		.bind('keyup', function(e) {
 			if (self.change) {
+				// cached changes
 				self.trigger('change', {originalEvent : e});
 				self.change = false;
 			} else if (self.utils.isKeyArrow(e.keyCode)) {
+				// carret change position
 				self.trigger('changePos', {originalEvent : e});
 			}
 			self.trigger(e);

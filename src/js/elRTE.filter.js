@@ -6,10 +6,11 @@
 	 */
 	elRTE.prototype.filter = function(rte) {
 		var self = this,
-			n    = $('<span />').addClass('elrte-test-url').appendTo(rte.view.editor)[0];
+			n = $(rte.view.workzone).addClass('elrte-test-url')[0];
 		// media replacement image base url
 		this.url = (typeof(n.currentStyle )!= "undefined" ? n.currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image')).replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
-		$(n).remove();
+		$(n).removeClass('elrte-test-url');
+
 		this.rte = rte;
 		// flag - return xhtml tags?
 		this.xhtml = /xhtml/i.test(rte.options.doctype);
@@ -87,7 +88,7 @@
 			$.each(this._chains[chain]||[], function() {
 				html = this.call(self, html);
 			});
-			return html;
+			return html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n");
 		}
 		
 		/**
@@ -110,12 +111,24 @@
 			return this.proccess('source', html);
 		}
 		
+		/**
+		 * wrapper for "source2source" chain filtering
+		 *
+		 * @param  String  
+		 * @return String
+		 **/
 		this.source2source = function(html) {
-			return this.proccess('source', this.proccess('wysiwyg', html));
+			return this.proccess('source2source', html);
 		}
 		
+		/**
+		 * wrapper for "wysiwyg2wysiwyg" chain filtering
+		 *
+		 * @param  String  
+		 * @return String
+		 **/
 		this.wysiwyg2wysiwyg = function(html) {
-			return this.proccess('wysiwyg', this.proccess('source', html));
+			return this.proccess('wysiwyg2wysiwyg', html);
 		}
 		
 		/**
@@ -456,9 +469,20 @@
 		 * @return String
 		 **/
 		cleanPaste : function(html) {
-			var self = this, d = self.pasteDenyAttr;
+			var self = this, d = this.pasteDenyAttr;
+
+			html = html
+				.replace(this.scriptRegExp, '')
+				.replace(this.styleRegExp, '')
+				.replace(this.linkRegExp, '')
+				.replace(this.cdataRegExp, '')
+				.replace(/\<\!--[\s\S]*?--\>/g, '');
 			
-			if (d) {
+			if (this.rte.options.pasteOnlyText) {
+				html = html.replace(this.tagRegExp, function(t, c, n) {
+					return /br/i.test(n) || (c && /h[1-6]|p|ol|ul|li|div|blockquote|tr/i) ? '<br>' : '';
+				}).replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
+			} else if (d) {
 				html = html.replace(this.openTagRegExp, function(t, n, a) {
 					a = self.parseAttrs(a);
 					$.each(a, function(an) {
@@ -470,7 +494,7 @@
 					return '<'+n+(a?' ':'')+a+'>';
 				});
 			}
-			return html;
+			return html; 
 		},
 		
 		/**
@@ -652,22 +676,7 @@
 			return html;
 		},
 		/**
-		 * move tags and attributes names in lower case(for ie&opera)
-		 * and compact styles
-		 *
-		 * @param String  html code
-		 * return String
-		 **/
-		// tagsToLower : function(html) {
-		// 	var self = this; 
-		// 
-		// 	return html.replace(this.tagRegExp, function(t, c, n, a) {
-		// 		a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
-		// 		return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
-		// 	});
-		// },
-		/**
-		 * compact styles
+		 * compact styles and move tags and attributes names in lower case(for ie&opera)
 		 *
 		 * @param String  html code
 		 * return String
@@ -693,16 +702,20 @@
 	
 	/**
 	 * Chains configuration
-	 * Three default chains 
-	 * 1. wysiwyg - proccess html from source for wysiwyg editor mode
-	 * 2. source  - proccess html from wysiwyg for source editor mode
-	 * 3. paste   - clean pasted html
+	 * Default chains 
+	 * wysiwyg - proccess html from source for wysiwyg editor mode
+	 * source  - proccess html from wysiwyg for source editor mode
+	 * paste   - clean pasted html
+	 * wysiwyg2wysiwyg - ciclyc rule to clean html from wysiwyg for wysiwyg paste
+	 * source2source - ciclyc rule to clean html from source for source paste
 	 * deniedTags is in the end of chain to protect google maps iframe from removed
 	 **/
 	elRTE.prototype.filter.prototype.chains = {
-		wysiwyg : ['allowedTags', 'clean', 'replace', 'deniedTags', 'compactStyles'],
-		source  : ['allowedTags', 'clean', 'restore', 'compactStyles', 'xhtmlTags'],
-		paste   : ['allowedTags', 'clean', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles']
+		wysiwyg         : ['allowedTags', 'clean', 'replace', 'deniedTags', 'compactStyles'],
+		source          : ['allowedTags', 'clean', 'restore', 'compactStyles', 'xhtmlTags'],
+		paste           : ['allowedTags', 'clean', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles'],
+		wysiwyg2wysiwyg : ['allowedTags', 'clean', 'restore', 'replace', 'deniedTags', 'compactStyles'],
+		source2source   : ['allowedTags', 'clean', 'replace', 'deniedTags', 'restore', 'compactStyles', 'xhtmlTags']
 	}
 	
 
