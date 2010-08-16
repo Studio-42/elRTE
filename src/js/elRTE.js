@@ -358,6 +358,9 @@
 				// carret change position
 				self.trigger('changePos', {originalEvent : e});
 			}
+			if (self.utils.isKeyChar(e.keyCode)) {
+				self.trigger('input')
+			}
 			self.trigger(e);
 		})
 		.bind('mousedown mouseup click dblclick', function(e) {
@@ -707,6 +710,13 @@
 	 */
 	elRTE.prototype.i18n = function(m) {
 		return this.messages[m]||m;
+	}
+
+	elRTE.prototype.pluginConf = function(p, o) {
+		if (!o) {
+			return this.options.pluginsConf ? this.options.pluginsConf[p] : false; 
+		}
+		return this.options.pluginsConf && this.options.pluginsConf[p] ? this.options.pluginsConf[p][o] : false; 
 	}
 
 	/**

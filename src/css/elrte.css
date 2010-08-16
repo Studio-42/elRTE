@@ -196,8 +196,6 @@
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
 .elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
-
-
 /******************  statusbar  *********************/
 
 .elrte .elrte-statusbar {
@@ -215,8 +213,15 @@
 	background: #eee;
 }
 
-/* path info */
+/****************************************************/
+/***                   PLUGINS                    ***/
+/****************************************************/
+
+/* path */
 .elrte .elrte-statusbar-path span { cursor:pointer; }
+
+/* wordcount */
+.elrte .elrte-statusbar-wordcount { float:right; font-size:x-small; }
 
 
 

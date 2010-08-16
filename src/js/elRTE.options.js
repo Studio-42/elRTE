@@ -48,7 +48,7 @@
 		/* max undo/redo steps */
 		historySize : 20,
 		/* plugins to load */
-		plugins : ['source', 'wordcount'/*, 'dummy', 'path', 'webkit', 'wordcount'*/],
+		plugins : ['source', 'path', 'wordcount'/*, 'dummy',  'webkit', 'wordcount'*/],
 		/* display or not toolbar */
 		showToolbar : true,
 		
@@ -71,6 +71,9 @@
 		},
 		/* send debug to log? */
 		debug    : false,
+		pluginsConf : {
+			wordcount : {  count : 'all'}
+		}
 	}
 	
 })(jQuery);
