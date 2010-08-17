@@ -5,23 +5,22 @@
 	 *
 	 **/
 	elRTE.prototype.plugins.webkit = function(rte) {
+		this.name        = 'webkit';
+		this.description = 'Create tabs to toggle between editor and source';
+		this.author      = 'Dmitry Levashov, dio@std42.ru';
+		
+		
 		
 		if ($.browser.webkit) {
-
 			rte.bind('keydown', function(e) {
-				
-
-				if (e.keyCode == 13) {
-					var n = rte.selection.getNode();
-					if (n.nodeName == 'BODY' 
-					|| rte.dom.parent(n, /^DIV$/, null, true) 
-					|| (rte.dom.parent(n, /^P$/,  null, true) && e.shiftKey)) {
-						e.preventDefault();
-						rte.selection.select( rte.selection.insertNode(rte.dom.create('br')) ).collapse(false);
-					}
+				if (e.keyCode == 13 && e.shiftKey) {
+					rte.log('webkit')
+					e.preventDefault();
+					rte.selection.insertHtml('<br>');
 				}
 			});
 		}
+		
 	}
 	
 })(jQuery);

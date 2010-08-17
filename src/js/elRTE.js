@@ -105,8 +105,7 @@
 		/* load commands */
 		$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
 			$.each(self.options.panels[n]||[], function(i, cn) {
-				if (typeof((c = self.commands[cn])) == 'function') {
-					// self.log(c.rte)
+				if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
 					self._commands[cn] = new c(self);
 					if ((ui = self._commands[cn].ui())) {
 						self.view.addUI(ui, n);
@@ -116,8 +115,11 @@
 		});
 
 		/* load plugins */
+		$.browser.webkit && this.options.plugins.unshift('webkit');
 		$.each(this.options.plugins, function(i, n) {
-			typeof((p = self.plugins[n])) == 'function' && (self._plugins[n] = new p(self));
+			if (typeof((p = self.plugins[n])) == 'function' && !self._plugins[n]) {
+				self._plugins[n] = new p(self);
+			}
 		});
 		
 		/* add target node as document if enabled */

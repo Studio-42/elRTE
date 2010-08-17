@@ -6,17 +6,167 @@
 		this.rte = rte;
 		this.dom = rte.dom;
 		this.log = rte.log;
+		this.debug = rte.debug;
 		this.node = null;
 		this.win  = window;
 		this.doc  = document;
 		
-		rte.bind('focus', function(e) {
+		rte.bind('focus', function() {
+			// on focus - work with active document
 			self.win = self.rte.active.window;
 			self.doc = self.rte.active.document;
-		}).bind('blur', function(e) {
-			self.win  = window;
-			self.doc  = document;
-		})
+		}).bind('source close', function(e) {
+			// on source or close active document switch to global objects to avoid errors
+			if (e.type == 'source' || e.data.id == self.rte.active.id) {
+				self.win  = window;
+				self.doc  = document;
+			}
+		});
+		
+		/**
+		 * Return selection object
+		 *
+		 * @return Selection
+		 **/
+		this.selection = function() {
+			return this.win.getSelection();
+		}
+		
+		/**
+		 * Return text range object
+		 *
+		 * @return Range
+		 **/
+		this.range = function() {
+			var s = this.selection();
+			return s && s.rangeCount ? s.getRangeAt(0) : this.doc.createRange();
+		}
+		
+		/**
+		 * Return true if range collapsed
+		 *
+		 * @return Boolean
+		 **/
+		this.collapsed = function() {
+			return this.range().collapsed;
+		}
+		
+		/**
+		 * Collapse range
+		 *
+		 * @param  Boolean   collapse to start
+		 * @return elRTE.Selection
+		 **/
+		this.collapse = function(st) {
+			var s = this.selection(),
+				r = this.range();
+			r.collapse(st?true:false);
+			s.removeAllRanges();
+			s.addRange(r);
+			return this;
+		}
+		
+		/**
+		 * Select from start node to end node
+		 *
+		 * @param  DOMElement
+		 * @param  DOMElement
+		 * @return elRTE.Selection
+		 **/
+		this.select = function(sn, en) {
+			var s = this.selection(),
+				r = this.doc.createRange(), r1, r2;
+
+			if (this.dom.isNode(sn)) {
+				if (this.dom.isNode(en) && en !== sn) {
+					r1 = this.doc.createRange();
+					r2 = this.doc.createRange();
+					r1.selectNode(sn)
+					r2.selectNode(en);
+					if (r1.compareBoundaryPoints(r1.START_TO_END, r2) == 1) {
+						r.setStartBefore(en);
+						r.setEndAfter(sn);
+					} else {
+						r.setStartBefore(sn);
+						r.setEndAfter(en);
+					}
+				} else {
+					r.selectNode(sn);
+				}
+				s.removeAllRanges();
+				s.addRange(r);
+			} else {
+				this.rte.debug('error.selection', 'select(): sn is not node');
+			}
+			return this;
+		}
+		
+		/**
+		 * Select all nodes in active document
+		 *
+		 * @return elRTE.Selection
+		 **/
+		this.selectAll = function() {
+			return this.select(this.doc.body.firstChild, this.doc.body.lastChild);
+		}
+		
+		/**
+		 * Select node contents
+		 *
+		 * @param  DOMElement
+		 * @return elRTE.Selection
+		 **/
+		this.selectContents = function(n) {
+			var s = this.selection(),
+				r = this.doc.createRange();
+				
+			if (this.dom.isNode(n)) {
+				r.selectNodeContents(n);
+				s.removeAllRanges();
+				s.addRange(r);
+			} else {
+				this.rte.debug('error.selection', 'selectContents(): n is not a node');
+			}
+			
+			return this
+		}
+		
+		/**
+		 * Insert node into selection and return node on success
+		 * Return node need to compatibility with IE selection
+		 *
+		 * @param  DOMElement
+		 * @return DOMElement|undefined
+		 **/
+		this.insertNode = function(n) {
+			var s = this.selection(),
+				r = this.range();
+				
+			try {
+				r.insertNode(n);
+			} catch (e) {
+				return this.rte.debug('error.selection', 'insertNode(): '+e.message);
+			}
+			this.select(n).collapse()
+			return n;
+		}
+		
+		/**
+		 * Insert html into selection and return nodes list
+		 *
+		 * @param  String
+		 * @return Array|undefined
+		 **/
+		this.insertHtml = function(h) {
+			var n = this.insertNode($(this.dom.create('span')).html(h||'')[0]), r;
+			
+			if (n) {
+				r = Array.prototype.slice.call(n.childNodes);
+				this.dom.unwrap(n);
+				r.length && this.select(r[r.length-1]).collapse();
+				return r;
+			}
+		}
 		
 	}
 	

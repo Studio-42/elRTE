@@ -161,6 +161,10 @@ elRTE.prototype.dom = function(rte) {
 	/*                                  SEARCH                                      */
 	/********************************************************************************/
 	
+	this.isNode = function(n) {
+		return n && n.nodeType && n.parentNode;
+	}
+	
 	/**
 	 * Return true if node matched by filter
 	 *

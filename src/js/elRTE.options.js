@@ -48,7 +48,7 @@
 		/* max undo/redo steps */
 		historySize : 20,
 		/* plugins to load */
-		plugins : ['source', 'path', 'wordcount'/*, 'dummy',  'webkit', 'wordcount'*/],
+		plugins : ['source', 'path', 'wordcount', 'webkit'],
 		/* display or not toolbar */
 		showToolbar : true,
 		

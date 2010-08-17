@@ -20,6 +20,14 @@
 			var n, bm, next;
 			
 			if (this.sel.collapsed()) {
+				
+				// var n = $(this.rte.active.document.body).find('strong')[0],
+				// 	e = $(this.rte.active.document.body).find('strong')[1],
+					// e2 = $(n).children('em')[0]
+				// this.sel.select(n, this.dom.create('div'))
+				// this.rte.log(n)
+				// 
+				// return
 				n = this.dom.parent(this.sel.getNode(), this.test, null, true);
 				// this.rte.log(n)
 				if (n) {
@@ -40,10 +48,10 @@
 				} else {
 					n = this.dom.create('strong');
 					n.appendChild(this.dom.createTextNode($.browser.webkit ? '\uFEFF' : ''));
+					if ((n = this.sel.insertNode(n))) {
+						this.sel.selectContents(n).collapse(false);
+					}
 					
-					n = this.sel.insertNode(n);
-					this.sel.select(n.firstChild);
-					this.sel.collapse(false);
 					
 					return true
 				}
