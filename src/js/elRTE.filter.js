@@ -82,6 +82,11 @@
 		 **/
 		this.proccess = function(chain, html) {
 			this.rte.debug('filter', chain)
+			var r = new RegExp('\uFEFF', 'gi')
+			if (r.test(html)) {
+				this.rte.log('found')
+				html = html.replace(r, '')
+			}
 			// remove whitespace at the begin and end
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
 			// pass html through chain

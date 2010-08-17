@@ -99,10 +99,11 @@
 		return this;
 	}
 	
-	elRTE.prototype.selection.prototype.selectNodeContent = function(n) {
+	elRTE.prototype.selection.prototype.selectContents = function(n) {
 		var s = this.getSelection(),
 			r = this.getRange();	
-		r.selectNodeContents(n)
+		r.selectNodeContents(n);
+		return this;
 	}
 	
 	/**

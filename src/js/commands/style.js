@@ -17,39 +17,35 @@
 		}
 		
 		this.exec = function() {
-			var n, bm;
+			var n, bm, next;
 			
 			if (this.sel.collapsed()) {
 				n = this.dom.parent(this.sel.getNode(), this.test, null, true);
-				this.rte.log(n)
+				// this.rte.log(n)
 				if (n) {
 					bm = this.sel.getBookmark();
+					next = this.dom.next(bm[1]);
+					if ((!next || (next.nodeType==3 && next.nodeValue == '')) && n.nextSibling) {
+						this.rte.log('off')
+						this.sel.removeBookmark(bm)
+						this.sel.select(n.nextSibling)
+						this.sel.collapse(true)
+						return true
+					}
+					
 					this.dom.unwrap(n);
 					this.sel.moveToBookmark(bm)
 					// $(n.firstChild).unwrap()
 					return true
 				} else {
 					n = this.dom.create('strong');
-					n.appendChild(this.dom.createTextNode('\uFEFF'))
-					var r = this.sel.getRange();
-					var s =this.sel.getSelection()
-					r.insertNode(n)
-					// this.rte
-					r.selectNode(n.firstChild)
-					s.removeAllRanges();
-					r.collapse(false);
-					// r.deleteContents();
-					s.addRange(r);
+					n.appendChild(this.dom.createTextNode($.browser.webkit ? '\uFEFF' : ''));
 					
-					// bm = this.sel.getBookmark();
-					// this.dom.wrap(bm, n)
-					// this.sel.moveToBookmark([bm[0].id, bm[1].id])
-					// n.appendChild(this.dom.createTextNode('b'));
-					// n = this.sel.insertNode(n)
-					// this.rte.log(n.firstChild)
-					// this.sel.select(n.firstChild)
-					// this.sel.collapse(false)
-					// this.sel.selectNodeContent(n.firstChild)
+					n = this.sel.insertNode(n);
+					this.sel.select(n.firstChild);
+					this.sel.collapse(false);
+					
+					return true
 				}
 				
 			} else {
