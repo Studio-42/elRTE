@@ -469,7 +469,7 @@ elRTE.prototype.dom = function(rte) {
 		if (this.isNode(s) && this.isNode(e)) {
 			
 			if (s === e) {
-				c = s.parentNode;
+				c = s;
 			} else {
 				sp = this.parents(s).reverse();
 				ep = this.parents(e).reverse();
@@ -499,22 +499,24 @@ elRTE.prototype.dom = function(rte) {
 			r   = [s], 
 			tmp = [e];
 		
-		if (s === e) {
-			return r;
+		if (s !== e) {
+			// s === sp && r.push(s);
+			while (n != sp) {
+				r = r.concat(this.nextAll(n))
+				n = n.parentNode;
+			}
+			r = r.concat(this.nextUntil(sp, 'any', ep))
+
+			n = e;
+			while (n != ep) {
+				tmp = tmp.concat(this.prevAll(n));
+
+				n = n.parentNode;
+			}
+			r = r.concat(tmp.reverse());
+			// e === ep && r.push(e);
 		}
-		
-		while (n != sp) {
-			r = r.concat(this.nextAll(n))
-			n = n.parentNode;
-		}
-		r = r.concat(this.nextUntil(sp, 'any', ep))
-		
-		n = e;
-		while (n != ep) {
-			tmp = tmp.concat(this.prevAll(n))
-			n = n.parentNode;
-		}
-		return r.concat(tmp.reverse());
+		return r;
 	}
 	
 

@@ -250,17 +250,46 @@
 			if (!this.collapsed()) {
 				bm = this.bookmark();
 				this.doc.body.normalize();
-
+				
 				s = bm[0].nextSibling;
 				e = bm[1].previousSibling;
 				this.rmBookmark(bm);
+				
+				while (this.dom.parents(e, function(n) { return n == s }).length) {
+					s = s.firstChild;
+				}
+				while (this.dom.parents(s, function(n) { return n == e }).length) {
+					e = e.firstChild;
+				}
 				c = this.dom.commonAncestor(s, e);
-				while (s !=c && s.parentNode != c&& this.dom.is(s, 'first')) {
+				this.rte.log(c)
+				
+				// this.rte.log(this.dom.is(c, 'onlyChild'))
+				
+				while (c.nodeName != 'BODY' && c.parentNode.nodeName != 'BODY' && this.dom.is(c, 'onlyChild')) {
+					this.rte.log('move from '+c.nodeName+' to '+c.parentNode.nodeName)
+					c = c.parentNode;
+				}
+				this.rte.log(c)
+				
+				// var t = this.dom.parents(e, function(n) { return n == s })
+				// this.rte.log(t)
+				
+				while (s !=c && s.parentNode !=c && this.dom.is(s, 'first')) {
 					s = s.parentNode;
 				}
 				while (e !=c && e.parentNode != c && this.dom.is(e, 'last')) {
 					e = e.parentNode;
 				}
+				
+				if (s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
+					s = e = s.parentNode
+				}
+				
+				this.rte.log(s)
+				this.rte.log(e)
+				// return false
+				// this.rte.log(c)
 				r = s === e ? [s] : this.dom.traverse(s, e, c);
 			}
 			return r;
