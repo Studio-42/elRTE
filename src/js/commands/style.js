@@ -8,10 +8,22 @@
 			this.rte = rte;
 			this.dom = rte.dom;
 			this.sel = rte.selection;
+			this._input = false;
 			
 			self.test = function(n) {
 				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || $(n).css(self.cssProp) == self.cssValue);
 			}
+			
+			this.rte.bind('keyup', function(e) {
+				if (self.rte.utils.isKeyChar(e.keyCode)) {
+					self._input = true;
+				} else if (self.rte.utils.isKeyArrow(e.keyCode)) {
+					self._input = false;
+				} 
+			}).bind('mouseup', function() {
+				self._input = false;
+			})
+			
 		}
 		
 		
@@ -31,58 +43,30 @@
 		this.exec = function() {
 			
 			var self = this, 
-				n    = this.sel.node(), p, bm;
+				n    = this.sel.node(), p, bm, tmp;
 				
 			if (this.sel.collapsed()) {
 				p = this.dom.parents(n, this.test, true);
-				// this.rte.log(n)
-				// this.rte.log(p)
-				// this.rte.log('length:'+p.length)
 				if (p.length) {
 					// unwrap nodes
-					// this.rte.log('unwrap')
 					bm = this.sel.bookmark();
 					if (this.dom.parent(bm[1], this.test) == p[0] 
+					&& this._input
 					&& !this.dom.nextAll(bm[1], function(t) { return !(t.nodeType == 3 && (t.nodeValue == '' || t.nodeValue == '\uFEFF'));}).length ) {
-						// carret at the end of node - set selection after node
-						this.rte.log('out')
-						// n = this.dom.next(p[0])
-						// this.rte.log('next: '+n.nodeName)
-						// if (!n) {
-						// 	n = this.dom.createTextNode("\n");
-						// 	p[0].parentNode.appendChild(n)
-						// }
-						
-						// this.sel.select(p[0])//.collapse(false)
-						this.sel.rmBookmark(bm)
-						
-						var next = this.dom.next(p[0])
-						// this.sel.selectContents(next)
-						
-						var s = this.sel.selection();
-						var r = this.rte.active.document.createRange()
-						this.rte.log(r)
-						// r.selectNodeContents(next)
-						next.parentNode.insertBefore(this.dom.createTextNode('\uFEFF'), next)
-						r.setStartBefore(next)
-						r.setEndBefore(next)
-						r.collapse(false)
-						s.removeAllRanges()
-						s.addRange(r)
-						// next.parentNode.removeChild(next.previousSibling)
-						// var pl = this.dom.createTextNode('_')
-						// next.parentNode.insertBefore(pl, next)
-						// this.sel.selectContents(next)
-						// this.sel.collapse(true)
-						// pl.parentNode.removeChild(pl)
-						// this.sel.selectContents(next)
-						// this.sel.collapse(false)
-						// this.sel.select(p[0])
-						// this.sel.collapse()
-						return true
-						// this.sel.collapse(false)
-						// this.sel.select(n).collapse(true)//.rmBookmark(bm);
-						// return true
+						// carret at the end of node and user is typing - move selection after node
+						this.sel.rmBookmark(bm);
+						this.rte.log(this._input)
+						if (!(n = this.dom.next(p[0]))) {
+							n = this.dom.createTextNode("\n");
+							n.parentNode.appendChild(n);
+						}
+						if ($.browser.webkit) {
+							n.parentNode.insertBefore((tmp = this.dom.createTextNode('\uFEFF')), n);
+							$(this.rte.active.document).one('keyup', function() {
+								tmp.nodeValue = tmp.nodeValue.replace('\uFEFF', '');
+							});
+						}
+						this.sel.select(n).collapse(true)
 						bm = this.sel.bookmark();
 						p.shift();
 					}
@@ -95,10 +79,14 @@
 					// create node
 					this.rte.log('create')
 					n = this.dom.create(this.node);
-					n.appendChild(this.dom.createTextNode($.browser.webkit ? 'b' : ''));
+					n.appendChild((tmp = this.dom.createTextNode($.browser.webkit ? '\uFEFF' : '')));
+					if ($.browser.webkit) {
+						$(this.rte.active.document).one('keyup mouseup', function() {
+							tmp.nodeValue = tmp.nodeValue.replace('\uFEFF', '');
+						});
+					}
 					if ((n = this.sel.insertNode(n))) {
-						this.sel.selectContents(n);
-						this.sel.collapse(false)
+						this.sel.selectContents(n).collapse(false);
 					}
 				}
 				return true;

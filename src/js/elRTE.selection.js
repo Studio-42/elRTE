@@ -77,6 +77,7 @@
 
 			if (this.dom.isNode(sn)) {
 				if (this.dom.isNode(en) && en !== sn) {
+					// check start node is before end node
 					r1 = this.doc.createRange();
 					r2 = this.doc.createRange();
 					r1.selectNode(sn)
@@ -196,17 +197,19 @@
 			var s = bm[0] && bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0]),
 				e = bm[1] && bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1]),
 				c = true;
-
-			this.select(s, e);
-			if ($.browser.mozilla || $.browser.opera) {
-				$.each(this.dom.nextUntil(s, e), function(i, n) {
-					if (n.nodeType == 1 || (n.textContent != '')) {
-						return c = false;
-					}
-				});
-				c && this.collapse();
+			if (this.dom.isNode(s) && this.dom.isNode(e)) {
+				this.select(s, e);
+				if ($.browser.mozilla || $.browser.opera) {
+					$.each(this.dom.nextUntil(s, e), function(i, n) {
+						if (n.nodeType == 1 || (n.textContent != '')) {
+							return c = false;
+						}
+					});
+					c && this.collapse();
+				}
+				this.dom.remove([s, e]);
 			}
-			this.dom.remove([s, e]);
+			
 			return this;
 		}
 
@@ -217,7 +220,11 @@
 		 * @return elRTE.selection
 		 **/
 		this.rmBookmark = function(bm) {
-			this.dom.remove([bm[0] && bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0]), bm[1] && bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1])]);
+			var s = bm[0] && bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0]),
+				e = bm[1] && bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1]);
+			if (this.dom.isNode(s) && this.dom.isNode(e)) {
+				this.dom.remove([s, e]);
+			}
 			return this;
 		}
 
