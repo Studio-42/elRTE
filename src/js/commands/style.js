@@ -1,104 +1,179 @@
 (function($) {
 	
-	elRTE.prototype.commands.bold = function(rte) {
-		this.name = 'bold'
-		this.title = 'Bold';
-		this.init(rte);
+	elRTE.prototype.commands._style = function() {
 		
-		this.test = function(n) {
-			if (n.nodeType == 1) {
-				return /^(B|STRONG)$/i.test(n.nodeName)
+		
+		this.init = function(rte) {
+			var self = this;
+			this.rte = rte;
+			this.dom = rte.dom;
+			this.sel = rte.selection;
+			
+			self.test = function(n) {
+				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || $(n).css(self.cssProp) == self.cssValue);
 			}
-			return false;
 		}
 		
+		
+		
 		this.state = function() {
-			return this.dom.selectionMatchAll(this.test) ? this._active : (/*this.sel.collapsed() ? this._disabled :*/ this._enabled)
+			return this.dom.testSelection(this.test, this) ? this._active : this._enabled;
+		}
+		
+		this._unwrap = function(n) {
+			if (this.regExp.test(n.nodeName)) {
+				this.dom.unwrap(n);
+			} else  {
+				$(n).css(this.cssProp, '');
+			}
 		}
 		
 		this.exec = function() {
-			var n, bm, next;
 			
+			var self = this, 
+				n    = this.sel.node(), p, bm;
+				
 			if (this.sel.collapsed()) {
-				
-				// var n = $(this.rte.active.document.body).find('strong')[0],
-				// 	e = $(this.rte.active.document.body).find('strong')[1],
-					// e2 = $(n).children('em')[0]
-				// this.sel.select(n, this.dom.create('div'))
+				p = this.dom.parents(n, this.test, true);
 				// this.rte.log(n)
-				// 
-				// return
-				n = this.dom.parent(this.sel.getNode(), this.test, null, true);
-				// this.rte.log(n)
-				if (n) {
-					bm = this.sel.getBookmark();
-					next = this.dom.next(bm[1]);
-					if ((!next || (next.nodeType==3 && next.nodeValue == '')) && n.nextSibling) {
-						this.rte.log('off')
-						this.sel.removeBookmark(bm)
-						this.sel.select(n.nextSibling)
-						this.sel.collapse(true)
+				// this.rte.log(p)
+				// this.rte.log('length:'+p.length)
+				if (p.length) {
+					// unwrap nodes
+					// this.rte.log('unwrap')
+					bm = this.sel.bookmark();
+					if (this.dom.parent(bm[1], this.test) == p[0] 
+					&& !this.dom.nextAll(bm[1], function(t) { return !(t.nodeType == 3 && (t.nodeValue == '' || t.nodeValue == '\uFEFF'));}).length ) {
+						// carret at the end of node - set selection after node
+						this.rte.log('out')
+						// n = this.dom.next(p[0])
+						// this.rte.log('next: '+n.nodeName)
+						// if (!n) {
+						// 	n = this.dom.createTextNode("\n");
+						// 	p[0].parentNode.appendChild(n)
+						// }
+						
+						// this.sel.select(p[0])//.collapse(false)
+						this.sel.rmBookmark(bm)
+						
+						var next = this.dom.next(p[0])
+						// this.sel.selectContents(next)
+						
+						var s = this.sel.selection();
+						var r = this.rte.active.document.createRange()
+						this.rte.log(r)
+						// r.selectNodeContents(next)
+						next.parentNode.insertBefore(this.dom.createTextNode('\uFEFF'), next)
+						r.setStartBefore(next)
+						r.setEndBefore(next)
+						r.collapse(false)
+						s.removeAllRanges()
+						s.addRange(r)
+						// next.parentNode.removeChild(next.previousSibling)
+						// var pl = this.dom.createTextNode('_')
+						// next.parentNode.insertBefore(pl, next)
+						// this.sel.selectContents(next)
+						// this.sel.collapse(true)
+						// pl.parentNode.removeChild(pl)
+						// this.sel.selectContents(next)
+						// this.sel.collapse(false)
+						// this.sel.select(p[0])
+						// this.sel.collapse()
 						return true
+						// this.sel.collapse(false)
+						// this.sel.select(n).collapse(true)//.rmBookmark(bm);
+						// return true
+						bm = this.sel.bookmark();
+						p.shift();
 					}
-					
-					this.dom.unwrap(n);
-					this.sel.moveToBookmark(bm)
-					// $(n.firstChild).unwrap()
-					return true
+					// unwrap parents
+					$.each(p, function(i, n) {
+						self._unwrap(n);
+					});
+					this.sel.toBookmark(bm).collapse(true);
 				} else {
-					n = this.dom.create('strong');
-					n.appendChild(this.dom.createTextNode($.browser.webkit ? '\uFEFF' : ''));
+					// create node
+					this.rte.log('create')
+					n = this.dom.create(this.node);
+					n.appendChild(this.dom.createTextNode($.browser.webkit ? 'b' : ''));
 					if ((n = this.sel.insertNode(n))) {
-						this.sel.selectContents(n).collapse(false);
+						this.sel.selectContents(n);
+						this.sel.collapse(false)
 					}
-					
-					
-					return true
 				}
-				
+				return true;
 			} else {
 				
 			}
+				
 		}
 		
 	}
 	
-	elRTE.prototype.commands.bold.prototype = elRTE.prototype.command;
+	elRTE.prototype.commands._style.prototype = elRTE.prototype.command;
 	
-	elRTE.prototype.commands.style = function() {
+	
+	elRTE.prototype.commands.bold = function(rte) {
+		this.name     = 'bold'
+		this.title    = 'Bold';
+		this.node     = { name : 'strong' };
+		this.regExp   = /^(B|STRONG)$/;
+		this.cssProp  = 'font-weight';
+		this.cssValue = 'bold';
 		
+		this.init(rte);
 		
-		this.exec = function() {
-			this.rte.log('exec style '+this.name)
-		}
 	}
 	
-	elRTE.prototype.commands.style.prototype = elRTE.prototype.command;
-
-
-	
-	elRTE.prototype.commands._bold = function(rte) {
-		this.name = 'bold'
-		this.title = 'Bold';
+	elRTE.prototype.commands.italic = function(rte) {
+		this.name     = 'italic'
+		this.title    = 'Italic';
+		this.node     = { name : 'em' };
+		this.regExp   = /^(I|EM)$/;
+		this.cssProp  = 'font-style';
+		this.cssValue = 'italic';
 		
-		this.init(rte)
+		this.init(rte);
+		
 	}
+	
+	elRTE.prototype.commands.bold.prototype = elRTE.prototype.commands.italic.prototype = new elRTE.prototype.commands._style();
+	
+	
+	// elRTE.prototype.commands.style = function() {
+	// 	
+	// 	
+	// 	this.exec = function() {
+	// 		this.rte.log('exec style '+this.name)
+	// 	}
+	// }
+	// 
+	// elRTE.prototype.commands.style.prototype = elRTE.prototype.command;
+	// 
+	// 
+	// 
+	// elRTE.prototype.commands._bold = function(rte) {
+	// 	this.name = 'bold'
+	// 	this.title = 'Bold';
+	// 	
+	// 	this.init(rte)
+	// }
 	
 	// elRTE.prototype._commands.bold.prototype = elRTE.prototype._command;
 	
 	// elRTE.prototype._commands.bold.prototype = new elRTE.prototype._commands.style()
 	
 	
-	elRTE.prototype.commands._italic = function(rte) {
-		this.name = 'italic'
-		this.title = 'Italic';
-		
-		this.init(rte)
-	}
+	// elRTE.prototype.commands._italic = function(rte) {
+	// 	this.name = 'italic'
+	// 	this.title = 'Italic';
+	// 	
+	// 	this.init(rte)
+	// }
 	
 	// elRTE.prototype._commands.bold.prototype = elRTE.prototype._command;
-	elRTE.prototype.commands._bold.prototype = 
-	elRTE.prototype.commands._italic.prototype = new elRTE.prototype.commands.style()
+	// elRTE.prototype.commands._bold.prototype = 
+	// elRTE.prototype.commands._italic.prototype = new elRTE.prototype.commands.style()
 	
 	// elRTE.prototype._commands.italic = function(rte) {
 	// 	this.name = 'italic';

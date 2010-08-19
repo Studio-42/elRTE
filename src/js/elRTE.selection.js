@@ -5,18 +5,16 @@
 		var self = this;
 		this.rte = rte;
 		this.dom = rte.dom;
-		this.log = rte.log;
-		this.debug = rte.debug;
-		this.node = null;
+		this._node = null;
 		this.win  = window;
 		this.doc  = document;
 		
-		rte.bind('focus', function() {
+		rte.bind('wysiwyg', function() {
 			// on focus - work with active document
 			self.win = self.rte.active.window;
 			self.doc = self.rte.active.document;
 		}).bind('source close', function(e) {
-			// on source or close active document switch to global objects to avoid errors
+			// on source mode or on close active document switch to global objects to avoid errors
 			if (e.type == 'source' || e.data.id == self.rte.active.id) {
 				self.win  = window;
 				self.doc  = document;
@@ -166,6 +164,77 @@
 				r.length && this.select(r[r.length-1]).collapse();
 				return r;
 			}
+		}
+	
+		/**
+		 * Insert bookmarks (spans) in begin and end of selection and return its;
+		 *
+		 * @return Array
+		 **/
+		this.bookmark = function() {
+			var r  = this.range(),
+				r1 = r.cloneRange(),
+				r2 = r.cloneRange(),
+				s  = this.dom.createBookmark(),
+				e  = this.dom.createBookmark();
+
+			r2.collapse(false);
+			r2.insertNode(e);
+			r1.collapse(true);
+			r1.insertNode(s);
+			this.select(s, e);
+			return [s, e];
+		}
+
+		/**
+		 * Move selection to bookmarks and remove it.
+		 *
+		 * @param  Array  bookmark nodes or ids
+		 * @return elRTE.selection
+		 **/
+		this.toBookmark = function(bm) {
+			var s = bm[0] && bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0]),
+				e = bm[1] && bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1]),
+				c = true;
+
+			this.select(s, e);
+			if ($.browser.mozilla || $.browser.opera) {
+				$.each(this.dom.nextUntil(s, e), function(i, n) {
+					if (n.nodeType == 1 || (n.textContent != '')) {
+						return c = false;
+					}
+				});
+				c && this.collapse();
+			}
+			this.dom.remove([s, e]);
+			return this;
+		}
+
+		/**
+		 * Remove bookmarks
+		 *
+		 * @param  Array  bookmark nodes or ids
+		 * @return elRTE.selection
+		 **/
+		this.rmBookmark = function(bm) {
+			this.dom.remove([bm[0] && bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0]), bm[1] && bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1])]);
+			return this;
+		}
+
+		/**
+		 * Return array of nodes cloned from selection 
+		 *
+		 * @return Array
+		 **/
+		this.cloneContents = function() {
+			return this.range().cloneContents()
+			return Array.prototype.slice.call(this.range().cloneContents().childNodes);
+		}
+		
+		this.node = function() {
+			var n = this.range().commonAncestorContainer;
+			return n;
+			return n.nodeType == 1 ? n : n.parentNode;
 		}
 		
 	}
@@ -358,7 +427,7 @@
 	 * @return DOMElement
 	 **/
 	elRTE.prototype.selection.prototype.getNode = function() {
-		var n = this.node || this.getRange().commonAncestorContainer;
+		var n = this._node || this.getRange().commonAncestorContainer;
 		return n.nodeType == 1 ? n : n.parentNode;
 	}
 	

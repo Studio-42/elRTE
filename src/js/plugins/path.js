@@ -28,14 +28,17 @@
 			e.data.id == rte.active.id && self.clean();
 		}).bind('wysiwyg change changePos', function(e) {
 			setTimeout(function() {
-				var n = rte.dom.parents(rte.selection.getNode(), 'all', null, true),
-					l = n.length;
-				
+				var n = rte.selection.node(),
+					p = [], 
+					l;
+				n.nodeType == 1 && !/^BODY$/.test(n.nodeName) && p.push(n);
+				p = p.concat(rte.dom.parents(rte.selection.node()));
+				l = p.length;
 				self.clean();
 				while (l--) {
 					self.panel.append(
-						$('<span>'+n[l].nodeName.toLowerCase()+(l>0 ? ' &raquo; ' : '')+'</span>')
-							.hover($.proxy( function(e) { $(this).toggleClass('elrte-highlight', e.type=='mouseenter') }, n[l] ))
+						$('<span>'+p[l].nodeName.toLowerCase()+(l>0 ? ' &raquo; ' : '')+'</span>')
+							.hover($.proxy( function(e) { $(this).toggleClass('elrte-highlight', e.type=='mouseenter') }, p[l] ))
 							// .hover((function(n) { return function(e) { $(n).toggleClass(self.cssClass, e.type=='mouseenter') } })(n[l]))
 					);
 				}

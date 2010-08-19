@@ -103,6 +103,7 @@
 		this.history = new this.history(this);
 		
 		/* load commands */
+		// @TODO check duplicate panels
 		$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
 			$.each(self.options.panels[n]||[], function(i, cn) {
 				if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
@@ -727,7 +728,6 @@
 				this.log(n+': '+m);
 			}
 		}
-
 	}
 
 	/**
@@ -736,6 +736,7 @@
 	 * @param String  message
 	 */
 	elRTE.prototype.log = function(m) {
+		// window.console && window.console.log && window.console.log.apply(null, arguments);
 		window.console && window.console.log && window.console.log(m);
 		return this;
 	}

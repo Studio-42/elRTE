@@ -11,137 +11,105 @@ elRTE.prototype.dom = function(rte) {
 	this.body = document.body;
 	this.html = document.body.parentNode;
 	
+	this.textRegExp = /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|BUTTON|CAPTION|CENTER|CITE|CODE|DD|DT|DEL|DFN|DIV|DT|EM|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|S|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|U|VAR)$/;
+	
 	this.filters = {
-		dummy         : { },
-		all           : { regexp : /.*/ },
-		block         : { regexp : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/},
-		inline        : { func : function(n) { return n.nodeType == 3 || !self.filters.block.regexp.test(n.nodeName); } },
-		text          : { 
-			regexp : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
-			func   : function(n) { return n.nodeType == 3; }
-		},
-		notText       : { func : function(n) { return !self.is(n, 'text'); } },
-		blockText     : { func : function(n) { return  self.is(n, 'block')  && self.is(n, 'text');    } },
-		inlineText    : { func : function(n) { return  self.is(n, 'inline') && self.is(n, 'text');    } },
-		body          : { regexp : /^BODY$/ },
-		headers       : { regexp : /^H[1-6]$/ },
-		table         : { regexp : /^(TABLE|CAPTION|THEAD|TBODY|TFOOT|TR|TH|TD)$/ },
-		lists         : { regexp : /^(UL|OL|DL|LI|DT|DD)$/ },
-		strong        : {
-			regexp : /^(STRONG|B)$/,
-			func   : function(n) { return $(n).css('font-weight').match(/(bold|900)/); }
-		},
-		textNode      : { func : function(n) { return n.nodeType == 3; } },
-		empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
-		notEmpty      : { func : function(n) { return !self.filters.empty.func(n); } },
-		onlyChild     : { func : function(n) { return self.filters.first.func(n) && self.filters.last.func(n); } },
-		first         : {
-			func : function(n) {
-				while ((n = self.prev(n))) {
-					if (self.filters.notEmpty.func(n)) {
-						return false;
-					}
-				}
-				return true;
-			}
-		},
-		last          : {
-			func : function(n) {
-				while ((n = self.next(n))) {
-					if (self.filters.notEmpty.func(n)) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-		
-	}
-	
-	this.regexp = {
-		// block : 
-		text : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/
-	}
-	
-	this._filters = {
 		any : /.*/,
-		element : function(n) { return n.nodeType == 1; },
-		block : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
-		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
-		text : function(n) { return n.nodeType == 3 || self.regexp.test(n.nodeName); },
-		empty : function(n) {
-			if (n.nodeType == 3) {
-				return $.trim(n.textContent.replace(/&nbsp;/gi, '')).length == 0;
-			} else if (n.nodeType == 1) {
-				if (n.nodeName == 'BR') {
-					return true;
-				}
-				if (n.nodeName == 'IMG' || n.nodeName == 'HR') {
-					return false;
-				}
-				for (var i =0; i < n.childNodes.length; i++) {
-					if (!self._filters.empty(n.childNodes[i])) {
-						return false;
-					}
-				}
-			}
-			return true;
-		},
-		notEmpty : function(n) { return !self._filters.empty(n); },
-		first : function(n) {
-			while (n.previousSibling && (n = n.previousSibling)) {
-				if (!self._filters.empty(n)) {
-					return false;
-				}
-			}
-			return true;
-		},
-		last : function(n) {
-			while (n.nextSibling && (n = n.nextSibling)) {
-				if (!self._filters.empty(n)) {
-					return false;
-				}
-			}
-			return true;
-		}
+		block : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DT|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
+		text  : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName);  },
+		textNode : function(n) { return n.nodeType == 3; },
+		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); }
 	};
 	
-	this.rte.bind('focus', function(e) {
+	// this._filters = {
+	// 	dummy         : { },
+	// 	all           : { regexp : /.*/ },
+	// 	block         : { regexp : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/},
+	// 	inline        : { func : function(n) { return n.nodeType == 3 || !self.filters.block.regexp.test(n.nodeName); } },
+	// 	text          : { 
+	// 		regexp : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
+	// 		func   : function(n) { return n.nodeType == 3; }
+	// 	},
+	// 	notText       : { func : function(n) { return !self.is(n, 'text'); } },
+	// 	blockText     : { func : function(n) { return  self.is(n, 'block')  && self.is(n, 'text');    } },
+	// 	inlineText    : { func : function(n) { return  self.is(n, 'inline') && self.is(n, 'text');    } },
+	// 	body          : { regexp : /^BODY$/ },
+	// 	headers       : { regexp : /^H[1-6]$/ },
+	// 	table         : { regexp : /^(TABLE|CAPTION|THEAD|TBODY|TFOOT|TR|TH|TD)$/ },
+	// 	lists         : { regexp : /^(UL|OL|DL|LI|DT|DD)$/ },
+	// 	strong        : {
+	// 		regexp : /^(STRONG|B)$/,
+	// 		func   : function(n) { return $(n).css('font-weight').match(/(bold|900)/); }
+	// 	},
+	// 	textNode      : { func : function(n) { return n.nodeType == 3; } },
+	// 	empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
+	// 	notEmpty      : { func : function(n) { return !self.filters.empty.func(n); } },
+	// 	onlyChild     : { func : function(n) { return self.filters.first.func(n) && self.filters.last.func(n); } },
+	// 	first         : {
+	// 		func : function(n) {
+	// 			while ((n = self.prev(n))) {
+	// 				if (self.filters.notEmpty.func(n)) {
+	// 					return false;
+	// 				}
+	// 			}
+	// 			return true;
+	// 		}
+	// 	},
+	// 	last          : {
+	// 		func : function(n) {
+	// 			while ((n = self.next(n))) {
+	// 				if (self.filters.notEmpty.func(n)) {
+	// 					return false;
+	// 				}
+	// 			}
+	// 			return true;
+	// 		}
+	// 	}
+	// 	
+	// }
+	
+	
+	this.rte.bind('wysiwyg', function(e) {
 		self.doc  = self.rte.active.document;
 		self.body = self.doc.body;
 		self.html = self.doc.body.parentNode;
-	}).bind('blur', function() {
-		self.doc  = document;
-		self.body = document.body;
-		self.html = document.body.parentNode;
+	}).bind('close source', function(e) {
+		if (e.type == 'source' || e.data.id == self.rte.active.id) {
+			self.doc  = document;
+			self.body = document.body;
+			self.html = document.body.parentNode;
+		}
 	});
 	
 	/**
 	 * Create and return DOM Element
 	 *
-	 * @param  String  Node name
-	 * @param  Array   Node attributes
+	 * @param  String|Array  Node name or node description map
 	 * @return DOMElement
 	 **/
 	this.create = function(o) {
-		if (typeof(o) == 'string') {
-			o = {name : o}
+		var n;
+		o = $.isPlainObject(o) && o.name ? o : { name : ''+o };
+		try {
+			n = this.doc.createElement(o.name);
+		} catch (e) {
+			this.rte.debug('error.dom', 'create(): unable create '+o.name);
+			n = this.doc.createElement('span');
 		}
-
-		var n = this.doc.createElement(o.name);
-
-		if (o.attr) {
-			$(n).attr(o.attr);
-		}
-		if (o['class']) {
-			$(n).addClass(o['class']);
-		}
-		if (typeof(o.css) == 'object') {
-			$(n).css(o.css);
-		}
-		return n;
+		n = $(n);
+		
+		$.isPlainObject(o.attr) && n.attr(o.attr);
+		$.isPlainObject(o.css) && n.attr(o.css);
+		o['class'] && n.addClass(o['class']);
+		return n[0];
 	}
 	
+	/**
+	 * Create and return text node with required text
+	 *
+	 * @param  String  node text
+	 * @return DOMElement
+	 **/
 	this.createTextNode = function(d) {
 		return this.doc.createTextNode(d)
 	}
@@ -152,15 +120,26 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.createBookmark = function() {
-		var b = this.create({name : 'span', attr : { id : 'elrte-bm-'+Math.random().toString().substr(2) }, 'class' : 'elrtebm'});
-		// $(b).text('1')
-		return b;
+		return this.create({
+			name    : 'span', 
+			'class' : 'elrtebm',
+			attr    : {
+				id    : 'elrte-bm-'+Math.random().toString().substr(2), 
+				elrte : 'bm' 
+			}			
+		});
 	}
 	
 	/********************************************************************************/
-	/*                                  SEARCH                                      */
+	/*                                 SELECTORS                                    */
 	/********************************************************************************/
 	
+	/**
+	 * Return true if it is node in DOM
+	 *
+	 * @param  DOMElement
+	 * @return Boolean
+	 **/
 	this.isNode = function(n) {
 		return n && n.nodeType && n.parentNode;
 	}
@@ -168,41 +147,40 @@ elRTE.prototype.dom = function(rte) {
 	/**
 	 * Return true if node matched by filter
 	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  DOMElement      node to test
+	 * @param  String|RegExp|Function  filter name or RegExp or function
 	 * @return Boolean
 	 **/
 	this.is = function(n, f) {
-		if (n && n.nodeName) {
-			// this.rte.log(n)
+		if (n && n.nodeType) {
+			f = f||'any';
 			if (typeof(f) == 'string' && this.filters[f]) {
 				f = this.filters[f];
-				return f.rule == 'and'
-					?  f.regexp && f.regexp.test(n.nodeName||'')  &&  f.func && f.func(n)
-					: (f.regexp && f.regexp.test(n.nodeName||'')) || (f.func && f.func(n));
+			}
+			if (typeof(f) == 'function') {
+				return f(n);
 			} else if (f instanceof RegExp) {
 				return f.test(n.nodeName);
-			} else if ($.isFunction(f)) {
-				return f(n);
 			}
 		}
-		
 		return false;
 	}
 	
 	/**
 	 * Return nodes matched by filter
 	 *
-	 * @param  Array         n  array of nodes to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
+	 * @param  Array                   array of nodes to test
+	 * @param  String|RegExp|Function  filter name or RegExp or function
 	 * @return Array
 	 **/
 	this.filter = function(n, f) {
-		var l = n.length||0, r = [];
+		var r = [], self = this;
 		
-		while (l--) {
-			this.is(n[l], f) && r.unshift(n[l]);
-		}
+		$.each(n||[], function(i, node) {
+			if (self.is(node, f)) {
+				r.push(node)
+			}
+		})
 		return r;
 	}
 	
@@ -211,24 +189,22 @@ elRTE.prototype.dom = function(rte) {
 	 *
 	 * @param  DOMElement               node to test
 	 * @param  String|RegExp|Function   filter name or RegExp or function
-	 * @param  Boolean                  check parent node before children
 	 * @return Array
 	 **/
-	this.find = function(n, f, addSelf) {
-		var r = addSelf && this.is(n, f) ? [n] : [], c, i;
-
-		if (n.nodeType == 1 && n.childNodes.length) {
-			c = n.childNodes;
-			for (i=0; i < c.length; i++) {
-				this.is(c[i], f) && r.push(c[i]);
-				if (c[i].nodeType == 1 && c[i].childNodes.length) {
-					r = r.concat(this.find(c[i], f));
+	this.find = function(n, f) {
+		var r = [], self = this;
+		
+		if (n && n.nodeType) {
+			$.each(n.childNodes, function(i, c) {
+				self.is(c, f) && r.push(c);
+				if (c.nodeType == 1) {
+					r = r.concat(self.find(c, f));
 				}
-			};
+			});
 		}
 		return r;
 	}
-
+	
 	/**
 	 * Return closest common parent node for 2 nodes
 	 *
@@ -306,6 +282,52 @@ elRTE.prototype.dom = function(rte) {
 	/********************************************************************************/
 
 	/**
+	 * Return parent matched by filter
+	 *
+	 * @param  DOMElement              node to test
+	 * @param  String|RegExp|Function  filter
+	 * @param  DOMElement              find parents not up this
+	 * @return DOMElement|false
+	 **/
+	this.parent = function(n, f, until) {
+		var p;
+		
+		if (this.isNode(n)) {
+			if (!until || !this.isNode(until)) {
+				until = this.body;
+			}
+			if (n != until && (p = n.parentNode) && p != until) {
+				return this.is(p, f) ? p : false;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Return all parents matched by filter
+	 *
+	 * @param  DOMElement              node to test
+	 * @param  String|RegExp|Function  filter
+	 * @param  DOMElement              find parents not up this
+	 * @return Array
+	 **/
+	this.parents = function(n, f, addSelf, until) {
+		var r = [];
+		if (!until || !this.isNode(until)) {
+			until = this.body;
+		}
+		if (this.isNode(n) && n != until) {
+			if (addSelf && this.is(n, f)) {
+				r.push(n);
+			}
+			while ((n = this.parent(n, 'any', until))) {
+				this.is(n, f) && r.push(n);
+			}
+		}
+		return r;
+	}
+	
+	/**
 	 * Return direct children nodes matched by filter
 	 *
 	 * @param  DOMElement               node to test
@@ -313,68 +335,117 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Array
 	 **/
 	this.children = function(n, f) {
-		return n.nodeType == 1 && n.childNodes.length ? this.filter(n.childNodes, f) : [];
+		return n && n.nodeType == 1 && n.childNodes.length ? this.filter(n.childNodes, f||'any') : [];
 	}
 	
 	/**
 	 * Return closest children nodes matched by filter
 	 *
-	 * @param  DOMElement               node to test
+	 * @param  DOMElement               parent node
 	 * @param  String|RegExp|Function   filter name or RegExp or function
 	 * @return Array
 	 **/
-	this.descendants = function(n, f) {
-		var r = [], c, i;
+	this.closest = function(n, f) {
+		var r = [], self = this;
 		
-		if (n.nodeType == 1 && n.childNodes.length) {
-			c = n.childNodes;
-			for (i=0; i<c.length; i++) {
-				if (this.is(c[i], f)) {
-					r.push(c[i]);
-				} else if (c[i].nodeType == 1 && c[i].childNodes.length) {
-					r = r.concat(this.descendants(c[i], f));
+		if (n && n.nodeType == 1) {
+			$.each(n.childNodes, function(i, c) {
+				if (self.is(c, f)) {
+					r.push(c);
+				} else if (c.nodeType == 1) {
+					r = r.concat(self.closest(c, f));
 				}
-			}
+			});
 		}
 		return r;
 	}
 	
 	/**
-	 * Return closest parent matched by filter
+	 * Return next sibling node matched by filter
 	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @param  DOMElement    p  if set, find parents not up this
-	 * @return DOMElement|null
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @return DOMElement
 	 **/
-	this.parent = function(n, f, p, addSelf) {
-		p = p && p.nodeType == 1 ? p : this.body;
-
-		if (addSelf && n!=p && this.is(n, f)) {
-			return n;
-		}
-		while (n && n.parentNode && n != p && (n = n.parentNode) && n != p) {
-			if (this.is(n, f)) {
-				return n;
-			}
-		}
-		return false;
+	this.next = function(n, f) {
+		return this.isNode(n) && n.nextSibling
+			? this.is(n.nextSibling, f) ? n.nextSibling : false
+			: false;
 	}
 	
 	/**
-	 * Return parents matched by filter
+	 * Return all next siblings matched by filter
 	 *
-	 * @param  DOMElement    n  node to test
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @param  DOMElement    p  if set, find parents not up one
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
 	 * @return Array
 	 **/
-	this.parents = function(n, f, p, addSelf) {
-		// var r = addSelf && this.is(n, f) ? [n] : [];
-		var r = addSelf && this.parent(n, f, null, true) ? [n] : [];
-		
-		while ((n = this.parent(n, f, p))) {
-			r.push(n);
+	this.nextAll = function(n, f) {
+		var r = [];
+		while ((n = this.next(n))) {
+			this.is(n, f) && r.push(n);
+		}
+		return r;
+	}
+	
+	/**
+	 * Return all next siblings matched by filter until required node
+	 *
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @param  DOMElement               stop node
+	 * @return Array
+	 **/
+	this.nextUntil = function(n, f, e) {
+		var r = [];
+
+		while ((n = this.next(n)) && n !== e) {
+			this.is(n, f) && r.push(n);
+		}
+		return r;
+	}
+	
+	/**
+	 * Return previous sibling node matched by filter
+	 *
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @return DOMElement
+	 **/
+	this.prev = function(n, f) {
+		return this.isNode(n) && n.previousSibling
+			? this.is(n.previousSibling, f) ? n.previousSibling : false
+			: false;
+	}
+	
+	/**
+	 * Return all previous siblings matched by filter
+	 *
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @return Array
+	 **/
+	this.prevAll = function(n, f) {
+		var r = [];
+		while ((n = this.prev(n))) {
+			this.is(n, f) && r.push(n);
+		}
+		return r;
+	}
+	
+	/**
+	 * Return all previous siblings matched by filter until required node
+	 *
+	 * @param  DOMElement               node
+	 * @param  String|RegExp|Function   filter name or RegExp or function
+	 * @param  DOMElement               stop node
+	 * @return Array
+	 **/
+	this.prevUntil = function(n, f, e) {
+		var r = [];
+
+		while ((n = this.prev(n)) && n !== e) {
+			this.is(n, f) && r.push(n);
 		}
 		return r;
 	}
@@ -418,103 +489,39 @@ elRTE.prototype.dom = function(rte) {
 		return res.concat(tmp.reverse());
 	}
 	
-	/**
-	 * Return next sibling node
-	 *
-	 * @param  DOMElement 
-	 * @return DOMElement
-	 **/
-	this.next = function(n) {
-		return n && n.nextSibling ? n.nextSibling : false;
-	}
-	
-	/**
-	 * Return all next siblings
-	 *
-	 * @param  DOMElement 
-	 * @return Array
-	 **/
-	this.nextAll = function(n) {
-		var r = [];
-		while (n && n.nextSibling && (n = n.nextSibling)) {
-			r.push(n);
-		}
-		return r;
-	}
-	
-	/**
-	 * Return next previous node
-	 *
-	 * @param  DOMElement 
-	 * @return DOMElement
-	 **/
-	this.prev = function(n) {
-		return n && n.previousSibling ? n.previousSibling : false;
-	}
-	
-	/**
-	 * Return all previous siblings
-	 *
-	 * @param  DOMElement 
-	 * @return Array
-	 **/
-	this.prevAll = function(n) {
-		var r = [];
-		while (n.previousSibling && (n = n.previousSibling)) {
-			r.push(n);
-		}
-		return r;
-	}
-	
-	
+
 	/********************************************************************************/
 	/*                             SEARCH IN SELECTION                              */
 	/********************************************************************************/
-	
 	/**
 	 * Return true if selection or any parent or any child matches filter
 	 *
 	 * @param  String|RegExp|Function f  filter name or RegExp or function
 	 * @return Boolean
 	 **/
-	this.selectionMatchAll = function(f) {
-		var n = this.rte.selection.getNode();
-		return this.is(n, f) || this.parent(n, f) || this.find(this.rte.selection.cloneContents(), f).length ? true : false;
+	this.testSelection = function(f) {
+		var n = this.rte.selection.node();
+		return this.is(n, f) || this.parents(n, f).length ? true : !!this.find(this.rte.selection.cloneContents(), f).length;
 	}
 	
-	/**
-	 * Return true if selection matches filter
-	 *
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Boolean
-	 **/
-	this.selectionMatch = function(f) {
-		return this.is(this.rte.selection.getNode(), f);
-	}
-	
-	/**
-	 * Return true if any of selection parents matches filter
-	 *
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Boolean
-	 **/
-	this.selectionHasParent = function(f) {
-		return this.parent(this.rte.selection.getNode(), f) ? true : false;
-	}
-	
-	/**
-	 * Return true if any of selection childs matches filter
-	 *
-	 * @param  String|RegExp|Function f  filter name or RegExp or function
-	 * @return Boolean
-	 **/
-	this.selectionHasChild = function(f) {
-		return this.find(this.rte.selection.cloneContents(), f).length ? true : false;
-	}
 	
 	/********************************************************************************/
 	/*                                MANIPULATION                                  */
 	/********************************************************************************/
+	
+	/**
+	 * Return node[s]
+	 *
+	 * @param  DOMElement|Array  node(s) to remove
+	 * @return elRTE.dom
+	 **/
+	this.remove = function(o) {
+		var self = this;
+		$.each(o.length ? o : [o], function(i, n) {
+			self.isNode(n) && n.parentNode.removeChild(n);
+		});
+		return this;
+	}
 	
 	/**
 	 * Wrap each node with other node
