@@ -45,6 +45,8 @@
 			var self = this, 
 				n    = this.sel.node(), p, bm, tmp;
 				
+			
+				
 			if (this.sel.collapsed()) {
 				p = this.dom.parents(n, this.test, true);
 				if (p.length) {
@@ -91,7 +93,8 @@
 				}
 				return true;
 			} else {
-				
+				var s = this.sel.get()
+				this.rte.log(s)
 			}
 				
 		}

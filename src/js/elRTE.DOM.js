@@ -18,7 +18,13 @@ elRTE.prototype.dom = function(rte) {
 		block : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DT|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
 		text  : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName);  },
 		textNode : function(n) { return n.nodeType == 3; },
-		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); }
+		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
+		// @TODO check for nested not text node
+		empty : function(n) { return n.nodeType == 1 ? !n.childNodes.length || !$.trim($(n).text()).length : !$.trim(n.nodeValue).length; },
+		notEmpty : function(n) { return !self.filters.empty(n); },
+		first : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
+		last : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
+		onlyChild : function(n) { return self.filters.first(n) && self.filters.last(n); }
 	};
 	
 	// this._filters = {
@@ -212,7 +218,7 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement
 	 * @return DOMElement
 	 **/
-	this.commonAncestor = function(s, e) {
+	this._commonAncestor = function(s, e) {
 		var c = this.body;
 		
 		if (s && e) {
@@ -451,44 +457,67 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	/**
+	 * Return closest common parent node for 2 nodes
+	 *
+	 * @param  DOMElement
+	 * @param  DOMElement
+	 * @return DOMElement
+	 **/
+	this.commonAncestor = function(s, e) {
+		var c = this.body, sp, ep, l, i=-1;
+		
+		if (this.isNode(s) && this.isNode(e)) {
+			
+			if (s === e) {
+				c = s.parentNode;
+			} else {
+				sp = this.parents(s).reverse();
+				ep = this.parents(e).reverse();
+				l = Math.min(sp.length, ep.length);
+
+				while (++i < l && sp[i] === ep[i]) {
+					c = sp[i];
+				}
+			}
+		}
+		return c;
+	}
+	
+	/**
 	 * Return list of nodes between start and end nodes
 	 *
-	 * @param  DOMElement s start node
-	 * @param  DOMElement e end node
+	 * @param  DOMElement  start node
+	 * @param  DOMElement  end node
+	 * @param  DOMElement  common nodes container
 	 * @return Array
 	 **/
-	this.traverse = function(s, e, p) {
-		var p = p||this.commonAncestor(s, e), sp = s, ep = e, n=s, res = [s], tmp = [e];
-
-		while (sp!=p && sp.parentNode != p) {
-			sp = sp.parentNode;
-		}
+	this.traverse = function(s, e, c) {
+		var c   = c||this.commonAncestor(s, e), 
+			sp  = this.parents(s, 'any', true, c).pop(), 
+			ep  = this.parents(e, 'any', true, c).pop(), 
+			n   = s, 
+			r   = [s], 
+			tmp = [e];
 		
-		while (ep!=p && ep.parentNode != p) {
-			ep = ep.parentNode;
-		}
-		
-		if (sp == ep) {
-			return [sp];
+		if (s === e) {
+			return r;
 		}
 		
 		while (n != sp) {
-			res = res.concat(this.nextAll(n));
+			r = r.concat(this.nextAll(n))
 			n = n.parentNode;
 		}
+		r = r.concat(this.nextUntil(sp, 'any', ep))
 		
-		while ((n = this.next(n)) && n != ep) {
-			res.push(n);
-		}
-
 		n = e;
 		while (n != ep) {
-			tmp = tmp.concat(this.prevAll(n));
+			tmp = tmp.concat(this.prevAll(n))
 			n = n.parentNode;
 		}
-		return res.concat(tmp.reverse());
+		return r.concat(tmp.reverse());
 	}
 	
+
 
 	/********************************************************************************/
 	/*                             SEARCH IN SELECTION                              */
