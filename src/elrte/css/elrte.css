@@ -17,8 +17,12 @@
 	background: url('../images/swf.png') 0 0 no-repeat;	
 }
 
+/* style to detect images url */
+/*.el-rte */
+.elrtetesturl { color:red; background-image:url(../images/pixel.gif);}
+
 /* панель инструментов */
-.el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; }
+.el-rte .toolbar {  background-color:#eee;background-image:url(../images/pixel.gif); padding:3px 7px 2px 7px; border:1px solid #ccc; }
 /* панель кнопок */
 .el-rte .toolbar ul {
 	display:inline-block; 

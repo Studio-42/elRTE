@@ -5,11 +5,13 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>elRTE from source</title>
-	<!--[if lte IE 9]><script src="../js/firebug.js" type="text/javascript" charset="utf-8"></script><![endif]-->
+	<!--[if lt IE 9]><script src="../js/firebug-lite.js" type="text/javascript" charset="utf-8"></script>
+	<![endif]-->
 	<!-- jQuery and plugins -->
 	<script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/jquery-ui-1.7.2.custom.min.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" href="../js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8">
+<script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
 
 	<!-- css for widgets -->
 	<link rel="stylesheet" href="ellib/css/elcommon.css" type="text/css" media="screen" title="no title" charset="utf-8">
@@ -87,6 +89,8 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
+			// window.console.log(JSON)
+
 			$('form').submit(function(e) {
 				window.console && window.console.log && window.console.log('submit')
 			})
@@ -109,8 +113,8 @@
 				
 			}
 			var rte = jQuery('#editor').elrte(opts);
-			// jQuery('#editor').elrte('val', 'content');
-
+			// jQuery('#editor').elrte('val', 'content here');
+			// alert(jQuery('#editor').elrte('val'))
 		})
 	</script>
 	
@@ -124,34 +128,27 @@
 	<!-- <object style="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" height="300" width="500"><param name="quality" value="high"><param name="movie" value="http://localhost/git/elrte-stable/files/flash/500.swf"><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://localhost/git/elrte-stable/files/flash/500.swf" type="application/x-shockwave-flash"></object> -->
 
 
-<!-- <embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://localhost/git/elrte-stable/files/flash/500.swf" style="width: 500px; height: 300px; float: none; vertical-align: baseline;" play="true" loop="true" menu="true" height="" width=""></embed> -->
+<!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed></object> -->
 	<!-- <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps/ms?ie=UTF8&amp;hl=en&amp;msa=0&amp;msid=109895569633316339579.0004564e2ac5710eda622&amp;ll=7.815809,98.33674&amp;spn=0.000361,0.004838&amp;output=embed"></iframe><br /><small>View <a href="http://maps.google.com/maps/ms?ie=UTF8&amp;hl=en&amp;msa=0&amp;msid=109895569633316339579.0004564e2ac5710eda622&amp;ll=7.815809,98.33674&amp;spn=0.000361,0.004838&amp;source=embed" style="color:#0000FF;text-align:left">World Ocean Trip</a> in a larger map</small> -->
 	<form method="post" action="post.php?debug=yes">
 	<!-- <textarea name="Name" rows="8" cols="40" id="editor2"></textarea> -->
 	<div id="editor">
 
-
+		
+		<!-- my comment -->
+		<object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385" wmode="transparent"></embed></object>
 		<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
 				DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
-				
-				
-				<h3>Вот что сообщает <a href="http://google.com">Галактический Путеводитель</a> на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</h3><div style="text-align: justify; padding-left: 0px;">&nbsp;&nbsp;<span style="background-color: rgb(255, 255, 153);">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color: rgb(255, 255, 153);">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div><br><br><hr style="width: 100%; height: 1px;" noshade="true"><br>
-<div style="padding: 15px; margin-left: 10px; float: right; width: 150px; background-color: rgb(255, 255, 153); color: rgb(255, 51, 0); text-align: center; font-size: xx-large;"><strong>DON'T<br>PANIC</strong></div><div style="text-align: justify;">&nbsp;&nbsp;In many of the more relaxed civilizations on the Outer Eastern Rim of the Galaxy, the <span class="" style="text-decoration: underline;">Hitch-Hiker's Guide</span> has already supplanted the great Encyclopaedia Galactica as the standard repository of all knowledge and wisdom, for though it has many omissions and contains much that is apocryphal, or at least wildly inaccurate, it scores over the older, more pedestrian work in two important respects. First, it is slightly cheaper; and secondly it has the words <i>DON'T PANIC</i> inscribed in large friendly letters on its cover.<br><br></div>
-				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"And the wheel," <span style="color: rgb(0, 0, 0);">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p>
-				<p style="padding-left: 40px; color: rgb(153, 51, 51);">"Ah," <span style="color: rgb(0, 0, 0);">said the marketing girl, </span>"Well, we're having a little difficulty there."</p>
-				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"Difficulty?"&nbsp;<span style="color: rgb(0, 0, 0);">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p>
-				<p style="padding-left: 40px;">The marketing girl soured him with a look.</p>
-				<p style="padding-left: 40px;"><span style="color: rgb(153, 51, 51);">"Alright, Mr. Wiseguy,"</span> she said, <span style="color: rgb(153, 51, 51);">"if you're so clever, you tell us what colour it should be."</span></p>
-				<br>
-				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"And the wheel," <span style="color: rgb(0, 0, 0);">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p>
-				<p style="padding-left: 40px; color: rgb(153, 51, 51);">"Ah," <span style="color: rgb(0, 0, 0);">said the marketing girl, </span>"Well, we're having a little difficulty there."</p>
-				<p style="padding-left: 40px; color: rgb(0, 51, 102);">"Difficulty?"&nbsp;<span style="color: rgb(0, 0, 0);">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p>
-				<p style="padding-left: 40px;">The marketing girl soured him with a look.</p>
-				<p style="padding-left: 40px;"><span style="color: rgb(153, 51, 51);">"Alright, Mr. Wiseguy,"</span> she said, <span style="color: rgb(153, 51, 51);">"if you're so clever, you tell us what colour it should be."</span></p>
-				asdfasdfasdfds asdfsadf
+				<script type="text/javascript" charset="utf-8">
+					// alert('a')
+				</script>
+				<img src="../images/marvin.jpg" width="93" height="150" alt="Marvin">
+				<b>Вот что сообщает <a href="http://google.com">Галактический Путеводитель</a> на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</b>
 	</div>
 	<input type="submit" name="" value="go" id="">
 	
 	</form>
+	
+	<!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/YQuYcGm9qLg?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/YQuYcGm9qLg?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed></object> -->
 </body>
 </html>

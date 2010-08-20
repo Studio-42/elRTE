@@ -7,6 +7,10 @@
 		this.placeholder = null;
 		this.src = {
 			url    : $('<input type="text" name="url" />').css('width', '99%'),
+			type   : $('<select name="type"/>')
+						.append('<option value="application/x-shockwave-flash">Flash</option>')
+						.append('<option value="video/quicktime">Quicktime movie</option>')
+						.append('<option value="application/x-mplayer2">Windows media</option>'),
 			width  : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
 			height : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
 			wmode  : $('<select />')
@@ -27,10 +31,47 @@
 		
 		this.command = function() {
 
-			var n = this.rte.selection.getEnd(), opts, url='', w='', h='', f, a, d;
+			var n = this.rte.selection.getEnd(), opts, url='', w='', h='', f, a, d, mid, o, wm;
+			this.rte.selection.saveIERange();
 			this.src.margin.elPaddingInput({ type : 'margin' });
 			this.placeholder = null;
 			this.swf = null;
+			if ($(n).hasClass('elrte-media') && (mid = $(n).attr('rel')) &&  this.rte.filter.scripts[mid]) {
+				this.placeholder = $(n);
+				o = this.rte.filter.scripts[mid];
+				url = '';
+				if (o.embed && o.embed.src) {
+					url = o.embed.src;
+				}
+				if (o.params && o.params.length) {
+					l = o.params.length;
+					while (l--) {
+						if (o.params[l].name == 'src' || o.params[l].name == 'movie') {
+							url =  o.params[l].value;
+						}
+					}
+				}
+				
+				if (o.embed) {
+					w = o.embed.width||parseInt(o.embed.style.width)||'';
+					h = o.embed.height||parseInt(o.embed.style.height)||'';
+					wm = o.embed.wmode||'';
+				} else if (o.obj) {
+					w = o.obj.width||parseInt(o.obj.style.width)||'';
+					h = o.obj.height||parseInt(o.obj.style.height)||'';
+					wm = o.obj.wmode||'';
+				}
+				
+				if (o.obj) {
+					f = o.obj.style.float||'';
+					a = o.obj.style['vertical-align']||'';
+				} else if (o.embed) {
+					f = o.embed.style.float||'';
+					a = o.embed.style['vertical-align']||'';
+				}
+				this.src.margin.val(n);
+				this.src.type.val(o.embed ? o.embed.type : '');
+			}
 			if ($(n).hasClass('elrte-swf-placeholder')) {
 				this.placeholder = $(n);
 				url = $(n).attr('rel');
@@ -45,6 +86,7 @@
 			this.src.width.val(w);
 			this.src.height.val(h);
 			this.src.align.val(f||a);
+			this.src.wmode.val(wm);
 			
 
 			
@@ -52,7 +94,7 @@
 			var opts = {
 				submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 				dialog : {
-					width    : 550,
+					width    : 580,
 					position : 'top',
 					title    : this.rte.i18n('Flash')
 				}
@@ -76,6 +118,7 @@
 			}
 			
 			d.append([this.rte.i18n('URL'), src], null, true);
+			d.append([this.rte.i18n('Type'), this.src.type], null, true);
 			d.append([this.rte.i18n('Size'), $('<span />').append(this.src.width).append(' x ').append(this.src.height).append(' px')], null, true)
 			d.append([this.rte.i18n('Wmode'), this.src.wmode], null, true);
 			d.append([this.rte.i18n('Alignment'), this.src.align], null, true);
@@ -163,11 +206,15 @@
 			});
 			
 			this.src.url.change(function() {
-				var url = self.rte.utils.absoluteURL($(this).val());
+				var url = self.rte.utils.absoluteURL($(this).val()), i, swf;
 				if (url) {
-					var swf = '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" style="border:1px solid #111"><param name="quality" value="high" /><param name="movie" value="'+url+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+url+'" type="application/x-shockwave-flash"></embed></object>';
-					self.preview.prepend(swf)
-					self.swf = self.preview.children('object').eq(0)
+					i = self.rte.utils.mediaInfo(self.src.type.val());
+					if (!i) {
+						i = self.rte.util.mediaInfo('application/x-shockwave-flash');
+					}
+					swf = '<object classid="'+i.classid+'" codebase="'+i.codebase+'"><param name="src" value="'+url+'" /><embed quality="high" src="'+url+'" type="'+i.type+'"></object>';
+					self.preview.children('object').remove().end().prepend(swf);
+					self.swf = self.preview.children('object').eq(0);
 				} else if (self.swf){
 					self.swf.remove();
 					self.swf = null;
@@ -182,63 +229,106 @@
 		this.set = function() {
 			self.swf = null
 			var url = this.rte.utils.absoluteURL(this.src.url.val()),
-				w = parseInt(this.src.width.val()) || 'auto',
-				h = parseInt(this.src.height.val()) || 'auto',
+				w = parseInt(this.src.width.val()) || '',
+				h = parseInt(this.src.height.val()) || '',
 				wm = this.src.wmode.val(),
 				a = this.src.align.val(),
-				f = a == 'left' || a == 'right' ? a : '';
+				f = a == 'left' || a == 'right' ? a : '',
+				mid = this.placeholder ? this.placeholder.attr('rel') : '', o, _o, c, 
+				m = this.src.margin.val(), margin;
 
-			if (url) {
-				var m = this.src.margin.val(),
-					css = {
-						width : w,
-						height : h,
-						'float' : f,
-						'vertical-align' : f ? '' : a 
-					};
-				if (m.css) {
-					css['margin'] = m.css;
-				} else {
-					css['margin-top'] = m.top;
-					css['margin-right'] = m.right;
-					css['margin-bottom'] = m.bottom;
-					css['margin-left'] = m.left;
+			
+			
+			if (!url) {
+				if (this.placeholder) {
+					this.placeholder.remove();
+					delete this.rte.filter.scripts[mid];
 				}
+			} else {
+				i = self.rte.utils.mediaInfo(self.src.type.val());
+				if (!i) {
+					i = self.rte.util.mediaInfo('application/x-shockwave-flash');
+				}
+				c = this.rte.filter.videoHostRegExp.test(url) ? url.replace(this.rte.filter.videoHostRegExp, "$2") : i.type.replace(/^\w+\/(.+)/, "$1");
 
-				if (self.placeholder) {
-					self.placeholder.css(css).attr('rel', url);
-					if (wm) {
-						self.placeholder.attr('wmode', wm);
-					} else {
-						self.placeholder.removeAttr('wmode');
+				o = {
+					obj : {
+						style : {}
+					},
+					params :[ { name : 'src', value : url } ],
+					embed :{
+						src : url,
+						type : i.type,
+						quality : 'high',
+						wmode : wm,
+						style : {}
 					}
+				};
+				
+				if (w) {
+					o.obj.width = w;
+					o.embed.width = w;
+				}
+				if (h) {
+					o.obj.height = h;
+					o.embed.height = h;
+				}
+				if (f) {
+					o.obj.style.float = f;
+				} else if (a) {
+					o.obj.style['vertical-align'] = a;
+				}
+				
+				if (m.css) {
+					margin = { margin : m.css };
 				} else {
-					this.placeholder = $(this.rte.dom.create('img'))
-						.attr('src', this.rte.filter.swfSrc)
-						.attr('rel', url)
-						.css(css)
-						.addClass('elrte-swf-placeholder');
-					if (wm) {
-						this.placeholder.attr('wmode', wm);
-					}
+					margin = {
+						'margin-top' : m.top,
+						'margin-right' : m.right,
+						'margin-bottom' : m.bottom,
+						'margin-left' : m.left
+					};
+				}
+				
+				o.obj.style = $.extend({}, o.obj.style, margin);
+				
+				if (this.placeholder && mid) {
+					_o = this.rte.filter.scripts[mid]||{};
+
+					o = $.extend(true, _o, o);
+					delete o.obj.style.width;
+					delete o.obj.style.height;
+					delete o.embed.style.width;
+					delete o.embed.style.height;
+					this.rte.filter.scripts[mid] = o;
+					this.placeholder.removeAttr('class');
+				} else {
+					var id = 'media'+Math.random().toString().substring(2);
+					this.rte.filter.scripts[id] = o;
+					this.placeholder = $(this.rte.dom.create('img')).attr('rel', id).attr('src', this.rte.filter.url+'pixel.gif');
+					var ins = true;
+				}
+				this.placeholder.attr('title', this.rte.utils.encode(url)).attr('width', w||150).attr('height', h||100).addClass('elrte-media elrte-media-'+c).css(o.obj.style);
+				if (f) {
+					this.placeholder.css('float', f).css('vertical-align', '');
+				} else if (a) {
+					this.placeholder.css('float', '').css('vertical-align', a);
+				} else {
+					this.placeholder.css('float', '').css('vertical-align', '');
+				}
+				
+				if (ins) {
+					this.rte.window.focus();
+					this.rte.selection.restoreIERange();
 					this.rte.selection.insertNode(this.placeholder.get(0));
 				}
-
-			} else {
-				if (self.placeholder) {
-					self.placeholder.remove();
-				}
 			}
-			
-			
 		}
-		
-
 		
 		this.update = function() {
 			this.domElem.removeClass('disabled');
 			var n = this.rte.selection.getNode();
-			this.domElem.toggleClass('active', n.nodeName == 'IMG' && $(n).hasClass('elrte-swf-placeholder'))
+			this.domElem.toggleClass('active', n.nodeName == 'IMG' && $(n).hasClass('elrte-media'))
 			
 		}
 		

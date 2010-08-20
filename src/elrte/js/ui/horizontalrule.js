@@ -36,7 +36,8 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 		this.src.wunit.val(_w.indexOf('px') != -1 ? 'px' : '%');
 		
 		this.src.height.val( this.rte.utils.toPixels(this.hr.css('height') || this.hr.attr('height')) || 1) ;
-		this.src.bg.val(this.rte.utils.rgb2hex(this.hr.css('background-color')) || '');
+		
+		this.src.bg.val(this.rte.utils.color2Hex(this.hr.css('background-color')));
 		this.src['class'].val(this.rte.dom.attr(this.hr, 'class'));
 		this.src.style.val(this.rte.dom.attr(this.hr, 'style'));
 		

@@ -1,397 +1,759 @@
 (function($) {
 	/**
-	 * @class Clean html and make replace/restore for some patterns
-	 *
-	 * @param elRTE
-	 * @author Dmitry (dio) Levashov dio@std42.ru
-	 * @todo - replace/restore scripts
+	 * @class Filter - clean editor content
+	 * @param elRTE editor instance
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 */
 	elRTE.prototype.filter = function(rte) {
-		var self     = this, chain, n;
-		this.rte     = rte;
-		/* make xhtml tags? */
-		this._xhtml  = rte.options.doctype.match(/xhtml/i) ? true : false;
-		/* chains of rules */
-		this._chains = {};
-		/* allowed tags */
-		this._allow = rte.options.allowTags||[];
-		/* deny tags */
-		this._deny = rte.options.denyTags||[];
-		/* swf placeholder class */
-		this.swfClass = 'elrte-swf-placeholder';
-		
-		n = $('<span />').addClass(this.swfClass).appendTo(rte.editor).text('swf')[0];
-		if (typeof n.currentStyle != "undefined") {
-			url = n.currentStyle['backgroundImage'];
-		} else {
-			url = document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image');
-		}
+		var self = this,
+			n = $('<span/>').addClass('elrtetesturl').appendTo(document.body)[0];
+		// media replacement image base url
+		this.url = (typeof(n.currentStyle )!= "undefined" ? n.currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n, null)['backgroundImage']).replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
 		$(n).remove();
-		/* swf placeholder url */
-		this.swfSrc = url ? url.replace(/^url\("?([^"]+)"?\)$/, "$1") : '';
 
-		/* create chains */
-		for (chain in this.chains) {
-			if (this.chains.hasOwnProperty(chain)) {
-				this._chains[chain] = [];
-				$.each(this.chains[chain], function() {
-					if (typeof(self.rules[this]) == 'function') {
-						self._chains[chain].push(self.rules[this]);
-					}
-				});
-			}
+		this.rte = rte;
+		// flag - return xhtml tags?
+		this.xhtml = /xhtml/i.test(rte.options.doctype);
+		// boolean attributes
+		this.boolAttrs = rte.utils.makeObject('checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected'.split(','));
+		// tag regexp
+		this.tagRegExp = /<(\/?)([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
+		// opened tag regexp
+		this.openTagRegExp = /<([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
+		// attributes regexp
+		this.attrRegExp = /(\w+)(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]+))?/g;
+		// script tag regexp
+		this.scriptRegExp = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+		// style tag regexp
+		this.styleRegExp = /(<style([^>]*)>[\s\S]*?<\/style>)/gi;
+		// link tag regexp
+		this.linkRegExp = /(<link([^>]+)>)/gi;
+		// cdata regexp
+		this.cdataRegExp = /<!\[CDATA\[([\s\S]+)\]\]>/g;
+		// object tag regexp
+		this.objRegExp = /<object([^>]*)>([\s\S]*?)<\/object>/gi;
+		// embed tag regexp
+		this.embRegExp = /<(embed)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
+		// param tag regexp
+		this.paramRegExp = /<(param)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
+		// yandex maps regexp
+		this.yMapsRegExp = /<div\s+([^>]*id\s*=\s*('|")?YMapsID[^>]*)>/gi;
+		// google maps regexp
+		this.gMapsRegExp = /<iframe\s+([^>]*src\s*=\s*"http:\/\/maps\.google\.\w+[^>]*)>([\s\S]*?)<\/iframe>/gi;
+		// video hostings url regexp
+		this.videoHostRegExp = /^(http:\/\/[\w\.]*)?(youtube|vimeo|rutube).*/i;
+		// elrte services classes regexp
+		this.serviceClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>\s*(<\/\1>)?/gi;
+		// allowed tags
+		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
+		// denied tags
+		this.denyTags = rte.options.denyTags.length ? rte.utils.makeObject(rte.options.denyTags) : null;
+		// deny attributes
+		this.denyAttr = rte.options.denyAttr ? rte.utils.makeObject(rte.options.denyAttr) : null;
+		// deny attributes for pasted html
+		this.pasteDenyAttr = rte.options.pasteDenyAttr ? rte.utils.makeObject(rte.options.pasteDenyAttr) : null;
+		// font sizes to convert size attr into css property
+		this.fontSize = ['medium', 'xx-small', 'small', 'medium','large','x-large','xx-large' ];
+		// font families regexp to detect family by font name
+		this.fontFamily = {
+			'sans-serif' : /^(arial|tahoma|verdana)$/i,
+			'serif'      : /^(times|times new roman)$/i,
+			'monospace'  : /^courier$/i
 		}
-		/* check default chains exists */
-		if (!this._chains.toSource || !this._chains.toSource.length) {
-			this._chains.toSource = [this.rules.toSource]
-		}
-		if (!this._chains.fromSource || !this._chains.fromSource.length) {
-			this._chains.fromSource = [this.rules.fromSource]
-		}
+		// scripts storage
+		this.scripts = {};
+		// cached chains of rules
+		this._chains = {};
 		
+		// cache chains
+		$.each(this.chains, function(n) {
+			self._chains[n] = [];
+			$.each(this, function(i, r) {
+				typeof(self.rules[r]) == 'function' && self._chains[n].push(self.rules[r]);
+			});
+		});
+
 		/**
-		 * Procces html in required chains 
+		 * filtering through required chain
 		 *
-		 * @param String
-		 * @param String  chain name
+		 * @param  String  chain name
+		 * @param  String  html-code
 		 * @return String
-		 */
-		this.proccess = function(html, chain) {
-			if (this._chains[chain]) {
-				$.each(this._chains[chain], function() {
-					html = this(self, html);
-				});
-			}
-			return html;
+		 **/
+		this.proccess = function(chain, html) {
+			// this.rte.log('filter: '+chain)
+			// var r = new RegExp('\uFEFF', 'gi')
+			// if (r.test(html)) {
+			// 	this.rte.log('found')
+			// 	html = html.replace(r, '')
+			// }
+			// this.rte.log(html)
+			// remove whitespace at the begin and end
+			// this.rte.log('before '+chain+': '+html)
+			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
+			// pass html through chain
+			$.each(this._chains[chain]||[], function() {
+				html = this.call(self, html);
+			});
+			// this.rte.log('after:'+html)
+			// this.rte.log(this.scripts)
+			return html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n");
 		}
 		
 		/**
-		 * Procces html in toSource chain 
+		 * wrapper for "wysiwyg" chain filtering
 		 *
-		 * @param String
+		 * @param  String  
 		 * @return String
-		 */
-		this.toSource = function(html) {
-			return this.proccess(html, 'toSource');
+		 **/
+		this.wysiwyg = function(html) {
+			return this.proccess('wysiwyg', html);
 		}
 		
 		/**
-		 * Procces html in fromSource chain 
+		 * wrapper for "source" chain filtering
 		 *
-		 * @param String
+		 * @param  String  
 		 * @return String
-		 */
-		this.fromSource = function(html) {
-			return this.proccess(html, 'fromSource');
+		 **/
+		this.source = function(html) {
+			return this.proccess('source', html);
 		}
 		
 		/**
-		 * Add user methods for replace/restore any patterns in html
+		 * wrapper for "source2source" chain filtering
 		 *
-		 * @param Function  replace method
-		 * @param Function  restore method
-		 */
-		this.addReplacement = function(rp, rs) {
-			if (typeof(rp) == 'function') {
-				this._chains.fromSource.unshift(rp);
+		 * @param  String  
+		 * @return String
+		 **/
+		this.source2source = function(html) {
+			return this.proccess('source2source', html);
+		}
+		
+		/**
+		 * wrapper for "wysiwyg2wysiwyg" chain filtering
+		 *
+		 * @param  String  
+		 * @return String
+		 **/
+		this.wysiwyg2wysiwyg = function(html) {
+			return this.proccess('wysiwyg2wysiwyg', html);
+		}
+		
+		/**
+		 * Parse attributes from string into object
+		 *
+		 * @param  String  string of attributes  
+		 * @return Object
+		 **/
+		this.parseAttrs = function(s) {
+			var a = {},
+				b = this.boolAttrs,
+				m = s.match(this.attrRegExp),
+				t, n, v;
+
+			m && $.each(m, function(i, s) {
+				t = s.split('=');
+				n = $.trim(t[0]).toLowerCase();
+				
+				if (t.length>2) {
+					t.shift();
+					v = t.join('=');
+				} else {
+					v = b[n] ||t[1]||'';
+				}
+				a[n] = $.trim(v).replace(/^('|")(.*)(\1)$/, "$2");
+			});
+
+			a.style = this.rte.utils.parseStyle(a.style);
+			a['class'] = this.rte.utils.parseClass(a['class']||'')
+			return a;
+		}
+		
+		/**
+		 * Restore attributes string from hash
+		 *
+		 * @param  Object  attributes hash
+		 * @return String
+		 **/
+		this.serializeAttrs = function(a, c) {
+			var s = [], self = this;
+
+			$.each(a, function(n, v) {
+				if (n=='style') {
+					v = self.rte.utils.serializeStyle(v, c);
+				} else if (n=='class') {
+					v = self.rte.utils.serializeClass(v);
+				} 
+				v && s.push(n+'="'+v+'"');
+			});
+			return s.join(' ');
+		}
+		
+		/**
+		 * Remove/replace denied attributes/style properties
+		 *
+		 * @param  Object  attributes hash
+		 * @param  String  tag name to wich attrs belongs 
+		 * @return Object
+		 **/
+		this.cleanAttrs = function(a, t) {
+			var self = this, ra = this.replaceAttrs;
+
+			// remove safari and mso classes
+			$.each(a['class'], function(n) {
+				/^(Apple-style-span|mso\w+)$/i.test(n) && delete a['class'][n];
+			});
+
+			function value(v) {
+				return v+(/\d$/.test(v) ? 'px' : '');
 			}
-			if (typeof(rs) == 'function') {
-				this._chains.toSource.unshift(rp);
-			}
+
+			$.each(a, function(n, v) {
+				// replace required attrs with css
+				ra[n] && ra[n].call(self, a, t);
+				// remove/fix mso styles
+				if (n == 'style') {
+					$.each(v, function(sn, sv) {
+						switch (sn) {
+							case "mso-padding-alt":
+							case "mso-padding-top-alt":
+							case "mso-padding-right-alt":
+							case "mso-padding-bottom-alt":
+							case "mso-padding-left-alt":
+							case "mso-margin-alt":
+							case "mso-margin-top-alt":
+							case "mso-margin-right-alt":
+							case "mso-margin-bottom-alt":
+							case "mso-margin-left-alt":
+							case "mso-table-layout-alt":
+							case "mso-height":
+							case "mso-width":
+							case "mso-vertical-align-alt":
+								a.style[sn.replace(/^mso-|-alt$/g, '')] = value(sv);
+								delete a.style[sn];
+								break;
+
+							case "horiz-align":
+								a.style['text-align'] = sv;
+								delete a.style[sn];
+								break;
+
+							case "vert-align":
+								a.style['vertical-align'] = sv;
+								delete a.style[sn];
+								break;
+
+							case "font-color":
+							case "mso-foreground":
+								a.style.color = sv;
+								delete a.style[sn];
+							break;
+
+							case "mso-background":
+							case "mso-highlight":
+								a.style.background = sv;
+								delete a.style[sn];
+								break;
+
+							case "mso-default-height":
+								a.style['min-height'] = value(sv);
+								delete a.style[sn];
+								break;
+
+							case "mso-default-width":
+								a.style['min-width'] = value(sv);
+								delete a.style[sn];
+								break;
+
+							case "mso-padding-between-alt":
+								a.style['border-collapse'] = 'separate';
+								a.style['border-spacing'] = value(sv);
+								delete a.style[sn];
+								break;
+
+							case "text-line-through":
+								if (sv.match(/(single|double)/i)) {
+									a.style['text-decoration'] = 'line-through';
+								}
+								delete a.style[sn];
+								break;
+
+							case "mso-zero-height":
+								if (sv == 'yes') {
+									a.style.display = 'none';
+								}
+								delete a.style[sn];
+								break;
+
+							case 'font-weight':
+								if (sv == 700) {
+									a.style['font-weight'] = 'bold';
+								}
+								break;
+
+							default:
+								if (sn.match(/^(mso|column|font-emph|lang|layout|line-break|list-image|nav|panose|punct|row|ruby|sep|size|src|tab-|table-border|text-(?!align|decor|indent|trans)|top-bar|version|vnd|word-break)/)) {
+									delete a.style[sn]
+								}
+						}
+					});
+				}
+			});
+			return a;
 		}
 		
 	}
+
+	// rules to replace tags
+	elRTE.prototype.filter.prototype.replaceTags = {
+		b         : { tag : 'strong' },
+		big       : { tag : 'span', style : {'font-size' : 'large'} },
+		center    : { tag : 'div',  style : {'text-align' : 'center'} },
+		i         : { tag : 'em' },
+		font      : { tag : 'span' },
+		nobr      : { tag : 'span', style : {'white-space' : 'nowrap'} },
+		menu      : { tag : 'ul' },
+		plaintext : { tag : 'pre' },
+		s         : { tag : 'strike' },
+		small     : { tag : 'span', style : {'font-size' : 'small'}},
+		u         : { tag : 'span', style : {'text-decoration' : 'underline'} },
+		xmp       : { tag : 'pre' }
+	}
 	
-	/**
-	 * Default rules
-	 */
-	elRTE.prototype.filter.prototype.rules = {
-		/* common cleanup tags and attrs */
-		cleanup : function(f, html) {
-			var at    = f._allow.length,
-				dt    = f._deny.length,
-				fsize = ['', 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'],
-				map   = {
-					b      : ['strong'],
-					big    : ['span', 'font-size:large'],
-					center : ['div', 'text-align:center'],
-					font   : ['span'],
-					i      : ['em'],
-					nobr   : ['span', 'white-space:nowrap'],
-					small  : ['span', 'font-size:small'],
-					u      : ['span', 'text-decoration:underline']
-				};
-			
-			if ($.browser.opera||$.browser.msie) {
-				html = f.rules.tagsToLower(f, html);
-			}
+	// rules to replace attributes
+	elRTE.prototype.filter.prototype.replaceAttrs = {
+		align : function(a, n) {
+			switch (n) {
+				case 'img':
+					a.style[a.align.match(/(left|right)/) ? 'float' : 'vertical-align'] = a.align;
+					break;
 				
-			/* Replace non-semantic tags */
-			html = html.replace(/\<(\/?)(b|i|u|font|center|nobr|big|small)(\s+[^>]*)?\>/gi, function(t, s, n, a) {
-				n = n.toLowerCase(n);
-				a = (a||'').toLowerCase(a);
-				
-				if (map[n]) {
-					if (!s && map[n][1]) {
-						a = a.indexOf('style="') == -1 ? a+' style="'+map[n][1]+'"' : a.replace('style="', 'style="'+map[n][1]+';');
-					}
-					return '<'+s+map[n][0]+a+'>';
-				}
-				return t;
-			});
-
-			/* Replace non-semantic attributes with css */
-			html = html.replace(/\<([a-z1-6]+)([^>]*\s+(border|bordercolor|color|background|bgcolor|align|valign|hspace|vspace|clear|size|face)=[^>]*)\>/gi, function(t, n, a) {
-				var attrs = {},
-					m = a.match(/([a-z]+)="([^"]*)"/gi), _t, i;
-				f.rte.log(a)
-				function style(v) {
-					if (!attrs.style) {
-						attrs.style = '';
-					}
-					attrs.style = v+';'+attrs.style;
-				}
-				if (m) {
-					for (i=0; i<m.length; i++) {
-						_t = m[i].split('=');
-						attrs[_t[0]] = _t[1].replace(/"/g, '');
-					}
-				} 
-
-				
-				if (attrs.border) {
-					style('border:'+attrs.border+'px solid '+(attrs.bordercolor||'#000'));
-					delete attrs.border;
-					delete attrs.bordercolor;
-				}
-				if (attrs.color) {
-					style('color:'+attrs.color);
-					delete attrs.color
-				}
-				if (attrs.background) {
-					style('background-image:url('+attrs.background+')');
-					delete attrs.background;
-				}
-				if (attrs.bgcolor) {
-					style('background-color:'+attrs.bgcolor);
-					delete attrs.bgcolor;
-				}
-				if (attrs.align) {
-					if (n == 'img') {
-						if (attrs.align.match(/(left|right)/)) {
-							style('float:'+attrs.align);
-						} else {
-							style('vertical-align:'+attrs.align);
-						}
-					} else if (n == 'table') {
-						if (attrs.align == 'center') {
-							style('margin-left:auto;margin-right:auto');
-						} else {
-							style('float:'+attrs.align);
-						}
+				case 'table':
+					if (a.align == 'center') {
+						a.style['margin-left'] = a.style['margin-right'] = 'auto';
 					} else {
-						style('text-align:'+attrs.align);
+						a.style['float'] = a.align;
+					}
+					break;
+					
+				default:
+					a.style['text-align'] = a.align;
+			}
+			delete a.align;
+		},
+		border : function(a) {
+			!a.style['border-width'] && (a.style['border-width'] = (parseInt(a.border)||1)+'px');
+			!a.style['border-style'] && (a.style['border-style'] = 'solid');
+			delete a.border;
+		},
+		bordercolor : function(a) {
+			!a.style['border-color'] && (a.style['border-color'] = a.bordercolor);
+			delete a.bordercolor;
+		},
+		background : function(a) {
+			!a.style['background-image'] && (a.style['background-image'] = 'url('+a.background+')');
+			delete a.background;
+		},
+		bgcolor : function(a) {
+			!a.style['background-color'] && (a.style['background-color'] = a.bgcolor);
+			delete a.bgcolor;
+		},
+		clear : function(a) {
+			a.style.clear = a.clear == 'all' ? 'both' : a.clear;
+			delete a.clear;
+		},
+		color : function(a) {
+			!a.style.color && (a.style.color = a.color);
+			delete a.color;
+		},
+		face : function(a) {
+			var f = a.face.toLowerCase();
+			$.each(this.fontFamily, function(n, r) {
+				if (f.match(r)) {
+					a.style['font-family'] = f+','+n;
+				}
+			});
+			delete a.face;
+		},
+		hspace : function(a, n) {
+			if (n == 'img') {
+				var v = parseInt(a.hspace)||0;
+				!a.style['margin-left'] && (a.style['margin-left'] = v+'px');
+				!a.style['margin-right'] && (a.style['margin-right'] = v+'px')
+				delete a.hspace;
+			}
+		},
+		size : function(a, n) {
+			if (n != 'input') {
+				a.style['font-size'] = this.fontSize[parseInt(a.size)||0]||'medium';
+				delete a.size;
+			}
+		},
+		valign : function(a) {
+			if (!a.style['vertical-align']) {
+				a.style['vertical-align'] = a.valign;
+			}
+			delete a.valign;
+		},
+		vspace : function(a, n) {
+			if (n == 'img') {
+				var v = parseInt(a.vspace)||0;
+				!a.style['margin-top'] && (a.style['margin-top'] = v+'px');
+				!a.style['margin-bottom'] && (a.style['margin-bottom'] = v+'px')
+				delete a.hspace;
+			}
+		}
+	}
+	
+	// rules collection
+	elRTE.prototype.filter.prototype.rules = {
+		/**
+		 * If this.rte.options.allowTags is set - remove all except this ones
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		allowedTags : function(html) {
+			var a = this.allowTags;
+			return a ? html.replace(this.tagRegExp, function(t, c, n) { return a[n.toLowerCase()] ? t : ''; }) : html;
+		},
+		/**
+		 * If this.rte.options.denyTags is set - remove all deny tags
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		deniedTags : function(html) {
+			var d = this.denyTags; 
+			return d ? html.replace(this.tagRegExp, function(t, c, n) { return d[n.toLowerCase()] ? '' : t }) : html;
+		},
+		
+		/**
+		 * Replace not allowed tags/attributes
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		clean : function(html) {
+			var self = this, 
+				rt   = this.replaceTags,
+				ra   = this.replaceAttrs, 
+				da   = this.denyAttr,
+				n;
+			
+			return html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
+				.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
+				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
+				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br>')
+				.replace(this.tagRegExp, function(t, c, n, a) {
+					n = n.toLowerCase();
+					
+					if (c) {
+						return '</'+(rt[n] ? rt[n].tag : n)+'>';
 					}
 					
-					delete attrs.align;
-				}
-				if (attrs.valign) {
-					style('vertical-align:'+attrs.valign);
-					delete attrs.valign;
-				}
-				if (attrs.hspace) {
-					style('margin-left:'+attrs.hspace+'px;margin-right:'+attrs.hspace+'px');
-					delete attrs.hspace;
-				}
-				if (attrs.vspace) {
-					style('margin-top:'+attrs.vspace+'px;margin-bottom:'+attrs.vspace+'px');
-					delete attrs.vspace;
-				}
-				if (attrs.size && n != 'input') {
-					if (n == 'hr') {
-						style('height:'+attrs.size+'px')
-					} else {
-						style('font-size:'+(fsize[attrs.size]||'medium'));
+					// create attributes hash and clean it
+					a = self.cleanAttrs(self.parseAttrs(a||''), n);
+					
+					if (rt[n]) {
+						rt[n].style && $.extend(a.style, rt[n].style);
+						n = rt[n].tag;
 					}
-					delete attrs.size;
-				} 
-				if (attrs.clear) {
-					style('clear:'+(attrs.clear=='all' ? 'both' : attrs.clear));
-					delete attrs.clear;
-				}
-				if (attrs.face) {
-					delete attrs.face;
-				}
-				
-				
-				a = '';
-				for (i in attrs) {
-					if (attrs.hasOwnProperty(i) && attrs[i]) {
-						a += ' '+i+'="'+attrs[i]+'"';
-					}
-				}
-				return '<'+n+a+'>';
-			})
-			
-			/* Remove not allowed tags */
-			if ( at || dt) {
-				html = html.replace(/\<(\/?)([a-z1-6]+)([^>]*)\>/gi, function(t, s, n, a) {
-					n = n.toLowerCase(n);
-					return (at && $.inArray(n, f._allow) == -1) || (dt && $.inArray(n, f._deny) != -1) ? '' : '<'+s+n+a+'>';
-				});
-			}
-			return html;
-		},
-
-		/* move tags to lowercase in ie and opera */
-		tagsToLower : function(f, html) {
-			return html.replace(/\<(\/?)([a-z1-6]+)([^\>]*)\>/ig, function(s, sl, tag, arg) { 
-				arg = arg.replace(/([a-z\-]+)\:/ig, function(s, a) { return a.toLowerCase()+':' });
-				arg = arg.replace(/([a-z\-]+)=/ig, function(s, a) { return a.toLowerCase()+'=' });
-				arg = arg.replace(/([a-z\-]+)=([a-z1-9\-]+)/ig, function(s, a, v) { return a+'="'+v+'"' })
-				return '<'+sl+tag.toLowerCase()+arg+'>';
-			})//.replace(/\<\/([a-z1-6]+)\>/ig, function(s, tag) { return '</'+tag.toLowerCase()+'>';});
-		},
-		
-		/* make xhtml tags */
-		xhtmlTags : function(f, html) {
-			return html.replace(/\<(img|hr|br)([^>\/]*)\>/gi, "<$1$2 />");
-		},
-		
-		/* proccess html for textarea */
-		toSource : function(f, html) { 
-
-			html = f.rules.restore(f, html);
-
-
-			/* clean tags & attributes */
-			html = f.rules.cleanup(f, html);
-			
-			
-			
-			/* make xhtml tags if required */
-			if (f._xhtml) {
-				html = f.rules.xhtmlTags(f, html);
-			}
-			
-			return html;
-		},
-		
-		/* proccess html for editor */
-		fromSource : function(f, html) { 
-
-			html = f.rules.replace(f, html);
-		
-			/* clean tags & attributes */
-			html = f.rules.cleanup(f, html);
-			
-			return html;
-		},
-		
-		/* replace swf with placeholder */
-		replace : function(f, html) { 
-			var n = $('<div/>').html(html);
-			
-			n.find('object[classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"]')
-				.each(function() {
-				var t = $(this),
-					url = t.children('param[name="'+($.browser.msie ? 'Movie' : 'movie')+'"]').attr('value'),
-					st  = t.attr('style')||'',
-					w   = parseInt(t.css('width')||0) || parseInt(t.attr('width')||0) || '',
-					h   = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
-					fl  = t.css('float') || t.attr('align'),
-					a   = t.css('vertical-align'),
-					wm  = t.attr('wmode')||'',
-					img = $('<img src="'+f.swfSrc+'" class="'+f.swfClass+'" rel="'+url+'" />');
-
-				img.attr('style', st).attr('wmode', wm).css({
-					width            : w?(w+'px'):'auto',
-					height           : h?h+'px':'auto',
-					'float'          : fl,
-					'vertical-align' : a
-				});
-				$(this).replaceWith(img);
-			}).end().find('embed[type="application/x-shockwave-flash"]').each(function() {
-				var t = $(this),
-					url = t.attr('src'),
-					st  = t.attr('style')||'',
-					w   = parseInt(t.css('width')||0) || parseInt(t.attr('width')||0) || '',
-					h   = parseInt(t.css('height')||0) || parseInt(t.attr('height')||0) || '',
-					fl  = t.css('float') || t.attr('align'),
-					a   = t.css('vertical-align'),
-					wm  = t.attr('wmode')||'',
-					img = $('<img src="'+f.swfSrc+'" class="'+f.swfClass+'" rel="'+url+'" />');
-					img.attr('style', st).attr('wmode', wm).css({
-						width            : w?(w+'px'):'auto',
-						height           : h?h+'px':'auto',
-						'float'          : fl,
-						'vertical-align' : a
+					
+					da && $.each(a, function(na) {
+						if (da[na]) {
+							delete a[na];
+						}
 					});
-					t.replaceWith(img);
-			})
-			
-			if (!$.browser.safari) {
-				
-				n.find('iframe[src^="http://maps.google."]').each(function() {
-					var t = $(this),
-						url = t.attr('src'),
-						w = t.attr('width'),
-						h = t.attr('height'),
-						pl = '<div class="elrte-map-placeholder" style="width:'+w+'px;height:'+h+'px;" rel="'+url+'"/>';
-
-					t.replaceWith(pl);
+					a = self.serializeAttrs(a);
+					return '<'+n+(a?' ':'')+a+'>';
 				});
-			}
-			return n.html();
 		},
 		
-		/* restore swf from placeholder */
-		restore : function(f, html) { 
-			var n = $('<div/>').html(html);
+		/**
+		 * Clean pasted html
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		cleanPaste : function(html) {
+			var self = this, d = this.pasteDenyAttr;
 
-			n.find('.elrte-map-placeholder').each(function() {
-				var t = $(this),
-					url = t.attr('rel'),
-					w = parseInt(t.css('width'))||'',
-					h = parseInt(t.css('height'))||'',
-					ifr = '<iframe src="'+url+'" width="'+w+'" height="'+h+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" />';
+			html = html
+				.replace(this.scriptRegExp, '')
+				.replace(this.styleRegExp, '')
+				.replace(this.linkRegExp, '')
+				.replace(this.cdataRegExp, '')
+				.replace(/\<\!--[\s\S]*?--\>/g, '');
+			
+			if (this.rte.options.pasteOnlyText) {
+				html = html.replace(this.tagRegExp, function(t, c, n) {
+					return /br/i.test(n) || (c && /h[1-6]|p|ol|ul|li|div|blockquote|tr/i) ? '<br>' : '';
+				}).replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
+			} else if (d) {
+				html = html.replace(this.openTagRegExp, function(t, n, a) {
+					a = self.parseAttrs(a);
+					$.each(a, function(an) {
+						if (d[an]) {
+							delete a[an];
+						}
+					});
+					a = self.serializeAttrs(a, true);
+					return '<'+n+(a?' ':'')+a+'>';
+				});
+			}
+			return html; 
+		},
+		
+		/**
+		 * Replace script/style/media etc with placeholders
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		replace : function(html) {
+			var self = this, r = this.rte.options.replace||[], n;
 
-				t.replaceWith(ifr);
+			// custom replaces if set
+			if (r.length) {
+				$.each(r, function(i, f) {
+					if (typeof(f) == 'function') {
+						html = f.call(self, html);
+					}
+				});
+			}
+
+			/**
+			 * Return media replacement - img html code
+			 *
+			 * @param Object  object to store in rel attr
+			 * @param String  media mime-type
+			 * @return String
+			 **/
+			function img(o, t) {
+				var s = src(),
+					c = s && self.videoHostRegExp.test(s) ? s.replace(self.videoHostRegExp, "$2") : t.replace(/^\w+\/(.+)/, "$1"),
+					w = parseInt((o.obj ? o.obj.width || o.obj.style.width : 0)||(o.embed ? o.embed.width || o.embed.style.width : 0))||150,
+					h = parseInt((o.obj ? o.obj.height || o.obj.style.height : 0)||(o.embed ? o.embed.height || o.embed.style.height : 0))||100,
+					id = 'media'+Math.random().toString().substring(2),
+					style ='',
+					l;
+
+				// find media src
+				function src() {
+					if (o.embed && o.embed.src) {
+						return o.embed.src;
+					}
+					if (o.params && o.params.length) {
+						l = o.params.length;
+						while (l--) {
+							if (o.params[l].name == 'src' || o.params[l].name == 'movie') {
+								return o.params[l].value;
+							}
+						}
+					}
+				}
+				if (o.obj && o.obj.style && o.obj.style.float) {
+					style = ' style="float:'+o.obj.style.float+'"';
+				}
+				self.scripts[id] = o;
+				return '<img src="'+self.url+'pixel.gif" class="elrte-media elrte-media-'+c+' elrte-protected" title="'+(s ? self.rte.utils.encode(s) : '')+'" rel="'+id+'" width="'+w+'" height="'+h+'"'+style+'>';
+			}
+			
+			html = html
+				.replace(this.styleRegExp, "<!-- ELRTE_COMMENT$1 -->")
+				.replace(this.linkRegExp,  "<!-- ELRTE_COMMENT$1-->")
+				.replace(this.cdataRegExp, "<!--[CDATA[$1]]-->")
+				.replace(this.scriptRegExp, function(t, a, s) {
+					var id;
+					if (self.denyTags.script) {
+						return '';
+					}
+					id = 'script'+Math.random().toString().substring(2);
+					a = self.parseAttrs(a);
+					!a.type && (a.type = 'text/javascript');
+					self.scripts[id] = '<script '+self.serializeAttrs(a)+">"+s+"</script>";
+					return '<!-- ELRTE_SCRIPT:'+(id)+' -->';
+				})
+				.replace(this.yMapsRegExp, function(t, a) {
+					a = self.parseAttrs(a);
+					a['class']['elrte-yandex-maps'] = 'elrte-yandex-maps';
+					return '<div '+self.serializeAttrs(a)+'>';
+				})
+				.replace(this.gMapsRegExp, function(t, a) {
+					a = self.parseAttrs(a);
+					return '<div class="elrte-google-maps" rel="'+self.rte.utils.encode(JSON.stringify(a))+'" style="width:'+(parseInt(a.width||a.style.width||100))+'px;height:'+(parseInt(a.height||a.style.height||100))+'px"></div>';
+				})
+				.replace(this.objRegExp, function(t, a, c) {
+					var m = c.match(self.embRegExp),
+						o = { obj : self.parseAttrs(a), embed : m && m.length ? self.parseAttrs(m[0].substring(7)) : null, params : [] },
+						i = self.rte.utils.mediaInfo(o.embed ? o.embed.type||'' : '', o.obj.classid||'');
+					
+					if (i) {
+						if ((m = c.match(self.paramRegExp))) {
+							$.each(m, function(i, p) {
+								o.params.push(self.parseAttrs(p.substring(6)));
+							});
+						}
+						!o.obj.classid  && (o.obj.classid  = i.classid[0]);
+						!o.obj.codebase && (o.obj.codebase = i.codebase);
+						o.embed && !o.embed.type && (o.embed.type = i.type);
+						// ie bug with empty attrs
+						o.obj.width == '1' && delete o.obj.width;
+						o.obj.height == '1' && delete o.obj.height;
+						if (o.embed) {
+							o.embed.width == '1' && delete o.embed.width;
+							o.embed.height == '1' && delete o.embed.height;
+						}
+						// self.rte.log(t)
+						return img(o, i.type);
+					}
+					return t;
+				})
+				.replace(this.embRegExp, function(t, n, a) {
+					var a = self.parseAttrs(a),
+						i = self.rte.utils.mediaInfo(a.type||'');
+					// ie bug with empty attrs
+					a.width == '1' && delete a.width;
+					a.height == '1' && delete a.height;
+					self.rte.log(a)
+					return i ? img({ embed : a }, i.type) : t;
+				})
+				.replace(/<\/(embed|param)>/gi, '');
+			// alert(html)
+			n = $('<div>'+html+'</div>');
+			// remove empty spans and merge nested spans
+			n.find('span:not([id]):not([class])').each(function() {
+				var t = $(this);
+
+				if (!t.attr('style')) {
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
+			}).end().find('span span:only-child').each(function() {
+				var t   = $(this), 
+					p   = t.parent().eq(0), 
+					tid = t.attr('id'), 
+					pid = p.attr('id'), id, s, c;
+
+				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+					c = $.trim(p.attr('class')+' '+t.attr('class'))
+					c && p.attr('class', c);
+					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+					s && p.attr('style', s);
+					id = tid||pid;
+					id && p.attr('id', id);
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
 			});
 
-			n.find('.'+f.swfClass).each(function() {
-				var t = $(this),
-					w = parseInt(t.css('width'))||'',
-					h = parseInt(t.css('height'))||'',
-					wm = t.attr('wmode'),
-					s = t.attr('style')
-					obj = '<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+t.attr('rel')+'" width="'+w+'" height="'+h+'" style="'+s+'" play="true" loop="true" menu="true" wmode="'+wm+'"> </embed>';
-					// obj = '<object style="'+(t.attr('style')||'')+'" width="'+parseInt(t.css('width'))+'" height="'+parseInt(t.css('height'))+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
-				// f.rte.log(obj)
-				t.replaceWith($(obj));
-			})
-			.end().find('.Apple-style-span').removeClass('Apple-style-span')
-			.end().find('*').each(function() {
-				var t = $(this);
-				if (t.attr('class') == '') {
-					t.removeAttr('class')
-				}
-				if (t.attr('style') == '') {
-					t.removeAttr('style')
-				}
-			})
-			
+			if (!this.rte.options.allowTextNodes) {
+				// wrap text nodes with p
+				n.contents().filter(function() {
+					return this.nodeType == 3 && $.trim(this.nodeValue);
+				}).wrap('<p/>');
+			}
+			// alert(n[0].innerHTML)
 			return n.html();
+		},
+		/**
+		 * Restore script/style/media etc from placeholders
+		 *
+		 * @param String  html code
+		 * @return String
+		 **/
+		restore : function(html) {
+			var self =this, r = this.rte.options.restore|[];
+
+			// custom restore if set
+			if (r.length) {
+				$.each(r, function(i, f) {
+					if (typeof(f) == 'function') {
+						html = f.call(self, html);
+					}
+				});
+			}
+			
+			html = html
+				.replace(/\<\!--\[CDATA\[([\s\S]*?)\]\]--\>/gi, "<![CDATA[$1]]>")
+				.replace(/\<\!--\s*ELRTE_SCRIPT\:\s*(script\d+)\s*--\>/gi, function(t, n) {
+					if (self.scripts[n]) {
+						t = self.scripts[n];
+						delete self.scripts[n];
+					}
+					return t||'';
+				})
+				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?) --\>/gi, "$1")
+				.replace(this.serviceClassRegExp, function(t, n, a, e) {
+					var a = self.parseAttrs(a), j, o = '';
+					// alert(t)
+					if (a['class']['elrte-media']) {
+						// alert(a.rel)
+						// return ''
+						// j = a.rel ? JSON.parse(self.rte.utils.decode(a.rel)) : {};
+						j = self.scripts[a.rel]||{};
+						// alert(j)
+						// j = a.rel ? $.parseJSON(self.rte.utils.decode(a.rel)) : {};
+						j.params && $.each(j.params, function(i, p) {
+							o += '<param '+self.serializeAttrs(p)+">\n";
+						});
+						j.embed && (o+='<embed '+self.serializeAttrs(j.embed)+">");
+						j.obj && (o = '<object '+self.serializeAttrs(j.obj)+">\n"+o+"\n</object>\n");
+						return o||t;
+					} else if (a['class']['elrte-google-maps']) {
+						return '<iframe '+self.serializeAttrs(JSONparse(self.rte.utils.decode(a.rel)))+'></iframe>';
+						// return '<iframe '+self.serializeAttrs($.parseJSON(self.rte.utils.decode(a.rel)))+'></iframe>';
+					} 
+					$.each(a['class'], function(n) {
+						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
+					});
+					return '<'+n+' '+self.serializeAttrs(a)+'>'+e;
+
+				});
+			
+			return html;
+		},
+		/**
+		 * compact styles and move tags and attributes names in lower case(for ie&opera)
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		compactStyles : function(html) {
+			var self = this;
+
+			return html.replace(this.tagRegExp, function(t, c, n, a) {
+				a = !c && a ? self.serializeAttrs(self.parseAttrs(a), true) : '';
+				return '<'+c+n.toLowerCase()+(a?' ':'')+a+'>';
+			});
+		},
+		/**
+		 * return xhtml tags
+		 *
+		 * @param String  html code
+		 * return String
+		 **/
+		xhtmlTags : function(html) {
+			return this.xhtml ? html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />") : html;
 		}
 	}
 	
-
 	/**
-	 * Default chains configuration
-	 */
+	 * Chains configuration
+	 * Default chains 
+	 * wysiwyg - proccess html from source for wysiwyg editor mode
+	 * source  - proccess html from wysiwyg for source editor mode
+	 * paste   - clean pasted html
+	 * wysiwyg2wysiwyg - ciclyc rule to clean html from wysiwyg for wysiwyg paste
+	 * source2source - ciclyc rule to clean html from source for source paste
+	 * deniedTags is in the end of chain to protect google maps iframe from removed
+	 **/
 	elRTE.prototype.filter.prototype.chains = {
-		toSource   : [ 'toSource' ],
-		fromSource : [ 'fromSource' ]
+		wysiwyg         : ['clean','allowedTags', 'replace', 'deniedTags', 'compactStyles'],
+		source          : ['clean','allowedTags', 'restore', 'compactStyles', 'xhtmlTags'],
+		paste           : ['clean','allowedTags', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles'],
+		wysiwyg2wysiwyg : ['clean','allowedTags', 'restore', 'replace', 'deniedTags', 'compactStyles'],
+		source2source   : ['clean','allowedTags', 'replace', 'deniedTags', 'restore', 'compactStyles', 'xhtmlTags']
 	}
 	
 

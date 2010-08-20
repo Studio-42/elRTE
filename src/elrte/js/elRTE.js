@@ -37,7 +37,7 @@ elRTE = function(target, opts) {
 	this.editor    = $('<div class="'+this.options.cssClass+'" />').append(this.toolbar).append(this.workzone).append(this.statusbar).append(this.tabsbar);
 	
 	this.doc     = null;
-	this.$doc     = null;
+	this.$doc    = null;
 	this.window  = null;
 	
 	this.utils     = new this.utils(this);
@@ -72,11 +72,11 @@ elRTE = function(target, opts) {
 				if (!$(this).hasClass('active')) {
 					self.tabsbar.children('.tab').toggleClass('active');
 					self.workzone.children().toggle();
+
 					if ($(this).hasClass('editor')) {
-						self.val(self.source.val()||' ');
+						self.updateEditor();
 						self.window.focus();
 						self.ui.update(true);
-						// self.selection.select(self.doc.body.firstChild).collapse(true);
 					} else {
 						self.updateSource();
 						self.source.focus();
@@ -104,11 +104,12 @@ elRTE = function(target, opts) {
 		html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
 	});
 	this.doc.open();
-	var s = this.filter.fromSource(content)
+	// var s = this.filter.fromSource(content)
+	var s = this.filter.wysiwyg(content)
 	this.doc.write(self.options.doctype+html+'</head><body>'+(s)+'</body></html>');
 	this.doc.close();
 	
-	this.source.val(this.filter.toSource(content));
+	// this.source.val(this.filter.toSource(content));
 	// this.log($(this.doc.body).html())
 	/* make iframe editable */
 	if ($.browser.msie) {
@@ -235,10 +236,12 @@ elRTE.prototype.close = function() {
 	this.editor.hide();
 }
 
-
+elRTE.prototype.updateEditor = function() {
+	this.val(this.source.val());
+}
 
 elRTE.prototype.updateSource = function() {
-	this.source.val(this.filter.toSource($(this.doc.body).html()));
+	this.source.val(this.filter.source($(this.doc.body).html()));
 }
 
 /**
@@ -248,19 +251,29 @@ elRTE.prototype.updateSource = function() {
  **/
 elRTE.prototype.val = function(v) {
 	if (typeof(v) == 'string') {
-		$(this.doc.body).html(this.filter.fromSource(v));
+		v = ''+v;
+		if (this.source.is(':visible')) {
+			this.source.val(this.filter.source2source(v));
+		} else {
+			if ($.browser.msie) {
+				this.doc.body.innerHTML = '<br />'+this.filter.wysiwyg(v);
+				this.doc.body.removeChild(this.doc.body.firstChild);
+			} else {
+				this.doc.body.innerHTML = this.filter.wysiwyg(v);
+			}
+			
+		}
 	} else {
-		this.updateSource();
-		return this.source.val();
+		if (this.source.is(':visible')) {
+			return this.filter.source2source(this.source.val());
+		} else {
+			return this.filter.source($(this.doc.body).html());
+		}
 	}
 }
 
 elRTE.prototype.beforeSave = function() {
-	if (this.source.is(':hidden')) {
-		this.updateSource();
-	} else {
-		this.source.val(this.filter.toSource(this.filter.fromSource(this.source.val())));
-	}
+	this.source.val(this.val()||'');
 }
 
 /**
