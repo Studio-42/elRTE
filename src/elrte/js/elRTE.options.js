@@ -31,6 +31,8 @@ elRTE.prototype.options   = {
 	toolbar         : 'normal',
 	absoluteURLs    : true,
 	allowSource     : true,
+	stripWhiteSpace : true,
+	styleWithCSS    : false,
 	fmAllow         : true,
 	fmOpen          : null,
 	/* if set all other tag will be removed */

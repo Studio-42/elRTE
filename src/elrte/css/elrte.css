@@ -22,7 +22,11 @@
 .elrtetesturl { color:red; background-image:url(../images/pixel.gif);}
 
 /* панель инструментов */
+<<<<<<< HEAD
 .el-rte .toolbar {  background-color:#eee;background-image:url(../images/pixel.gif); padding:3px 7px 2px 7px; border:1px solid #ccc; }
+=======
+.el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; white-space:normal; }
+>>>>>>> b93072fcde05f7ac03c33690f209ce16e0c05654
 /* панель кнопок */
 .el-rte .toolbar ul {
 	display:inline-block; 
@@ -52,6 +56,7 @@
     zoom: 1;
     *display: inline;
 	margin:1px 1px;
+	padding:0; /* Joomla 1.6 compat */
 	background:url('../images/elrte-toolbar.png') no-repeat; 
 	border:1px solid #ccc;	
 }
@@ -183,6 +188,8 @@
 .el-rte .toolbar ul li.el-select label {
 	height:19px;
 	padding: 3px 5px 0 5px;
+	float:none; /* Joomla 1.6 compat */
+	width:96px; /* Joomla 1.6 compat */
 }
 
 /* textarea & iframe в диплогах вставки текста */

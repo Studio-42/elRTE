@@ -180,7 +180,7 @@ function elDialogForm(o) {
 			if (t) {
 				!this.tabs[tid].table && this.table(tid);
 				var tr = jQuery('<tr />').appendTo(this.tabs[tid].table);
-				if (!$.isArray(data)) {
+				if (!jQuery.isArray(data)) {
 					tr.append(jQuery('<td />').append(data));
 				} else {
 					for (var i=0; i < data.length; i++) {
