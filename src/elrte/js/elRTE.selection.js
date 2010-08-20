@@ -77,8 +77,13 @@ elRTE.prototype.selection = function(rte) {
 	 * @param   bool  toStart  схлопнуть к начальной точке
 	 * @return  void
 	 **/
-	this.collapse = function(toStart) {
-		this.getRangeAt().collapse(toStart ? true : false);
+	this.collapse = function(st) {
+		var s = selection(),
+			r = this.getRangeAt();
+		r.collapse(st?true:false);
+		s.removeAllRanges();
+		s.addRange(r);
+		return this;
 	}
 	
 	/**

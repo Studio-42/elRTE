@@ -45,6 +45,9 @@ elRTE.prototype.options   = {
 	allowTextNodes : true,
 	/* allow browser specific styles like -moz|-webkit|-o */
 	allowBrowsersSpecStyles : false,
+	/* allow paste content into editor */
+	allowPaste : true,
+	pasteOnlyText : false,
 	/* user replacement rules */
 	replace : [],
 	/* user restore rules */

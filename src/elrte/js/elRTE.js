@@ -191,21 +191,55 @@ elRTE = function(target, opts) {
 		self.lastKey = null;
 	})
 	.bind('paste', function(e) {
-		alert('paste')
-		e.preventDefault();
-		e.stopPropagation();
-		// setTimeout( function() { 
-		// 	self.updateSource();
-		// 	$(self.doc.body).html(self.filter.fromSource(self.source.val()));
-		// }, 30);
+		
+		
+		if (!self.options.allowPaste) {
+			// paste denied 
+			e.stopPropagation();
+			e.preventDefault();
+		} else {
+			var n = $(self.dom.create('div'))[0],
+				r = self.doc.createTextNode('_');
+			self.history.add(true);
+			self.typing = true;
+			self.lastKey = null;
+			n.appendChild(r);
+			self.selection.insertNode(n);
+			self.selection.select(r);
+			setTimeout(function() {
+				if (n.parentNode) {
+					// clean sandbox content
+					$(n).html(self.filter.proccess('paste', $(n).html()));
+					r = n.lastChild;
+					self.dom.unwrap(n);
+					if (r) {
+						self.selection.select(r);
+						self.selection.collapse(false);
+					}
+				} else {
+					// smth wrong - clean all doc
+					n.parentNode && n.parentNode.removeChild(n);
+					self.val(self.filter.proccess('paste', self.filter.wysiwyg2wysiwyg($(self.doc.body).html())));
+					self.selection.select(self.doc.body.firstChild);
+					self.selection.collapse(true);
+				}
+				$(self.doc.body).mouseup(); // to activate history buutons
+			}, 15);
+		}
 	});
 	
 	if ($.browser.msie) {
 		this.$doc.bind('keyup', function(e) {
 			if (e.keyCode == 86 && (e.metaKey||e.ctrlKey)) {
+				self.history.add(true);
+				self.typing = true;
+				self.lastKey = null;
 				self.selection.saveIERange();
 				self.val(self.filter.proccess('paste', self.filter.wysiwyg2wysiwyg($(self.doc.body).html())));
 				self.selection.restoreIERange();
+				$(self.doc.body).mouseup();
+				this.ui.update();
+				
 			}
 		});
 	}
