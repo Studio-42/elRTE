@@ -179,27 +179,33 @@ elRTE = function(target, opts) {
 			self.lastKey = null;
 		} else if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 32 || e.keyCode == 13) {
 			if (e.keyCode != self.lastKey) {
-				self.history.add(true)
+				self.history.add(true);
 			}
-			self.lastKey = e.keyCode
-			self.typing = false
+			self.lastKey = e.keyCode;
+			self.typing = false;
 		}
 
-	}).bind('mouseup', function() {
+	})
+	.bind('mouseup', function() {
 		self.typing = false;
 		self.lastKey = null;
-	}).bind('paste', function(e) {
-		setTimeout( function() { 
-			self.updateSource();
-			$(self.doc.body).html(self.filter.fromSource(self.source.val()));
-		}, 30);
+	})
+	.bind('paste', function(e) {
+		alert('paste')
+		e.preventDefault();
+		e.stopPropagation();
+		// setTimeout( function() { 
+		// 	self.updateSource();
+		// 	$(self.doc.body).html(self.filter.fromSource(self.source.val()));
+		// }, 30);
 	});
 	
 	if ($.browser.msie) {
 		this.$doc.bind('keyup', function(e) {
 			if (e.keyCode == 86 && (e.metaKey||e.ctrlKey)) {
-				self.updateSource();
-				$(self.doc.body).html(self.filter.fromSource(self.source.val()));
+				self.selection.saveIERange();
+				self.val(self.filter.proccess('paste', self.filter.wysiwyg2wysiwyg($(self.doc.body).html())));
+				self.selection.restoreIERange();
 			}
 		});
 	}

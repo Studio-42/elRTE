@@ -460,6 +460,19 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	/**
+	 * Replace node with its contents
+	 *
+	 * @param  DOMElement n node
+	 * @return void
+	 **/
+	this.unwrap = function(n) {
+		while (n.firstChild) {
+			n.parentNode.insertBefore(n.firstChild, n);
+		}
+		n.parentNode.removeChild(n);
+	}
+	
+	/**
 	 * Оборачивает все содержимое ноды
 	 *
 	 * @param  DOMElement n  оборачиваемая нода

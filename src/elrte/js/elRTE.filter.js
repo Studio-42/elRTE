@@ -626,9 +626,9 @@
 			// remove empty spans and merge nested spans
 			n.find('span:not([id]):not([class])').each(function() {
 				var t = $(this);
-
+				
 				if (!t.attr('style')) {
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+					t.children().length ? self.rte.dom.unwrap(this) : t.remove();
 				}
 			}).end().find('span span:only-child').each(function() {
 				var t   = $(this), 
