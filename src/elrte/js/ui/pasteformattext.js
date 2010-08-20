@@ -15,8 +15,9 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 	var self    = this;
 	
 	this.command = function() {
-		this.rte.browser.msie && this.rte.selection.saveIERange();
-		var opts = {
+		this.rte.selection.saveIERange();
+		var self = this,
+			opts = {
 			submit : function(e, d) {
 				e.stopPropagation();
 				e.preventDefault();
@@ -27,30 +28,25 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 				width : 500,
 				title : this.rte.i18n('Paste formatted text')
 			}
-		}
-		var d = new elDialogForm(opts);
+		},
+		d = new elDialogForm(opts);
 		d.append(this.iframe).open();
 		this.doc = this.iframe.get(0).contentWindow.document;
 		html = this.rte.options.doctype
 			+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
-		if (this.rte.options.cssfiles.length) {
-			$.each(this.rte.options.cssfiles, function() {
-				html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
-			});
-		}
-		html += '</head><body>  </body></html>';	
+		html += '</head><body> <br /> </body></html>';	
 		
 		this.doc.open();
 		this.doc.write(html);
 		this.doc.close();
+
 		if (!this.rte.browser.msie) {
 			try { this.doc.designMode = "on"; } 
 			catch(e) { }
 		} else {
 			this.doc.body.contentEditable = true;
 		}
-		this.iframe.get(0).contentWindow.focus();
-
+		setTimeout(function() { self.iframe[0].contentWindow.focus(); }, 50);
 	}
 	
 	this.paste = function() {
@@ -58,8 +54,8 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 		var html = $.trim($(this.doc.body).html());
 		if (html) {
 			this.rte.history.add();
-			this.rte.browser.msie && this.rte.selection.restoreIERange();
-			this.rte.selection.insertHtml(this.rte.filter.fromSource(html));
+			this.rte.selection.restoreIERange();
+			this.rte.selection.insertHtml(this.rte.filter.wysiwyg2wysiwyg(this.rte.filter.proccess('paste', html)));
 			this.rte.ui.update(true);
 		}
 	}
