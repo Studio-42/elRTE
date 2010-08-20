@@ -22,11 +22,7 @@
 .elrtetesturl { color:red; background-image:url(../images/pixel.gif);}
 
 /* панель инструментов */
-<<<<<<< HEAD
-.el-rte .toolbar {  background-color:#eee;background-image:url(../images/pixel.gif); padding:3px 7px 2px 7px; border:1px solid #ccc; }
-=======
-.el-rte .toolbar { background:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; white-space:normal; }
->>>>>>> b93072fcde05f7ac03c33690f209ce16e0c05654
+.el-rte .toolbar {  background-color:#eee;background-image:url(../images/pixel.gif); padding:3px 7px 2px 7px; border:1px solid #ccc; white-space:normal; }
 /* панель кнопок */
 .el-rte .toolbar ul {
 	display:inline-block; 

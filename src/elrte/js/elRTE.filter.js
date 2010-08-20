@@ -140,7 +140,6 @@
 			return this.proccess('wysiwyg2wysiwyg', html);
 		}
 		
-<<<<<<< HEAD
 		/**
 		 * Parse attributes from string into object
 		 *
@@ -156,39 +155,6 @@
 			m && $.each(m, function(i, s) {
 				t = s.split('=');
 				n = $.trim(t[0]).toLowerCase();
-=======
-	}
-	
-	/**
-	 * Default rules
-	 */
-	elRTE.prototype.filter.prototype.rules = {
-		/* common cleanup tags and attrs */
-		cleanup : function(f, html) {
-			var at    = f._allow.length,
-				dt    = f._deny.length,
-				fsize = ['', 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'],
-				map   = {
-					b      : ['strong'],
-					big    : ['span', 'font-size:large'],
-					center : ['div', 'text-align:center'],
-					font   : ['span'],
-					i      : ['em'],
-					nobr   : ['span', 'white-space:nowrap'],
-					small  : ['span', 'font-size:small'],
-					u      : ['span', 'text-decoration:underline'],
-					s      : ['strike']
-				};
-			
-			if ($.browser.opera||$.browser.msie) {
-				html = f.rules.tagsToLower(f, html);
-			}
-				
-			/* Replace non-semantic tags */
-			html = html.replace(/\<(\/?)(b|i|u|s|font|center|nobr|big|small)(\s+[^>]*)?\>/gi, function(t, s, n, a) {
-				n = n.toLowerCase(n);
-				a = (a||'').toLowerCase(a);
->>>>>>> b93072fcde05f7ac03c33690f209ce16e0c05654
 				
 				if (t.length>2) {
 					t.shift();
@@ -574,7 +540,6 @@
 					style ='',
 					l;
 
-<<<<<<< HEAD
 				// find media src
 				function src() {
 					if (o.embed && o.embed.src) {
@@ -588,24 +553,6 @@
 							}
 						}
 					}
-=======
-			n.find('.'+f.swfClass).each(function() {
-				var t = $(this),
-					w = parseInt(t.css('width'))||'',
-					h = parseInt(t.css('height'))||'',
-					wm = t.attr('wmode'),
-					s = t.attr('style')
-					obj = '<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+t.attr('rel')+'" width="'+w+'" height="'+h+'" style="'+s+'" play="true" loop="true" menu="true" allowFullScreen="true" wmode="'+wm+'"> </embed>';
-					// obj = '<object style="'+(t.attr('style')||'')+'" width="'+parseInt(t.css('width'))+'" height="'+parseInt(t.css('height'))+'" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="quality" value="high" /><param name="movie" value="'+$(this).attr('rel')+'" /><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="'+$(this).attr('rel')+'" type="application/x-shockwave-flash"></embed></object>';
-				// f.rte.log(obj)
-				t.replaceWith($(obj));
-			})
-			.end().find('.Apple-style-span').removeClass('Apple-style-span')
-			.end().find('*').each(function() {
-				var t = $(this);
-				if (t.attr('class') == '') {
-					t.removeAttr('class')
->>>>>>> b93072fcde05f7ac03c33690f209ce16e0c05654
 				}
 				if (o.obj && o.obj.style && o.obj.style.float) {
 					style = ' style="float:'+o.obj.style.float+'"';
