@@ -1,6 +1,7 @@
 2010-00-00  Troex Nevelin  <troex@fury.scancode.ru>
 
 	* elRTE (1.0):
+		- [feature] update jQuery to 1.4.2 and UI to 1.8.4
 		- [feature] new filter, fixes #134, #152
 		- [bugfix] Table cell properties #156
 		- [translation] Latvian, Uldis Plotiņš <uldis.plotins@gmail.com>
