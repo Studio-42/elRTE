@@ -253,7 +253,10 @@ function elDialogForm(o) {
 
 		this.dialog.attr('unselectable', 'on').dialog('open');
 		var self = this;
-		setTimeout(function() { self.form.find(':text')[0].focus(); }, 20);
+		if (this.form && this.form.find(':text').length) {
+			setTimeout(function() { self.form.find(':text')[0].focus(); }, 20);
+		}
+		
 		return this;
 	}
 	

@@ -363,7 +363,7 @@ elRTE.prototype.utils = function(rte) {
 	 **/
 	this.color2Hex = function(c) {
 		var m;
-		// alert(c)
+		
 		c = c||'';
 		function hex(s) {
 			s = parseInt(s).toString(16);

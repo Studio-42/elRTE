@@ -19,10 +19,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			link   : 'Link',
 			adv    : 'Advanced',
 			events : 'Events',
-			id        : 'ID',
-			'class'   : 'Css class',
-			style     : 'Css style',
-			longdesc  : 'Detail description URL',
+			id       : 'ID',
+			'class'  : 'Css class',
+			style    : 'Css style',
+			longdesc : 'Detail description URL',
 			href    : 'URL',
 			target  : 'Open in',
 			title   : 'Title'
@@ -55,12 +55,6 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				style    : $('<input type="text" />').css('width', '100%'),
 				longdesc : $('<input type="text" />').css('width', '100%')
 			},
-
-			// link : {
-			// 	href  : $('<input type="text" />').css('width', '100%'),
-			// 	title : $('<input type="text" />').css('width', '100%')
-			// },
-			
 			events : {}
 		}
 		

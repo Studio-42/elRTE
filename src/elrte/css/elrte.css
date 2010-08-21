@@ -97,7 +97,7 @@
 .el-rte .toolbar ul li.unlink              {background-position:-270px -29px}
 .el-rte .toolbar ul li.anchor              {background-position:-296px -30px} 
 .el-rte .toolbar ul li.image               {background-position:-384px -2px}
-.el-rte .toolbar ul li.flash               {background-position:-410px -1px}
+.el-rte .toolbar ul li.flash               {background-position:-410px -2px}
 .el-rte .toolbar ul li.file                {background-position:-436px -3px}
 .el-rte .toolbar ul li.table               {background-position:-421px -30px}
 .el-rte .toolbar ul li.tableprops          {background-position:-602px -29px}
@@ -116,7 +116,9 @@
 .el-rte .toolbar ul li.print               {background-position:-509px -2px}
 .el-rte .toolbar ul li.horizontalrule      {background-position:-199px -29px}
 .el-rte .toolbar ul li.fullscreen          {background-position:-348px -30px}  
-.el-rte .toolbar ul li.elfinder            {background-position:-436px -2px}  
+.el-rte .toolbar ul li.elfinder            {background-position:-436px -2px}
+.el-rte .toolbar ul li.ltr                 {background-position:-855px -27px}  
+.el-rte .toolbar ul li.rtl                 {background-position:-872px -27px}  
 
 
 /* рабочая зона (обертка над iframe) */

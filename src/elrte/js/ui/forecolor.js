@@ -19,6 +19,10 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 	}
 	
 	this.defaultColor = this.rte.utils.rgb2hex( $(this.rte.doc.body).css(this.name=='forecolor' ? 'color' : 'background-color') );
+	if (this.defaultColor == 'transparent') {
+		this.defaultColor = this.name == 'forecolor' ? '#000000' : '#ffffff';
+		// alert(this.defaultColor)
+	}
 	this.picker       = this.domElem.elColorPicker(opts);
 	this.indicator    = $('<div />').addClass('color-indicator').prependTo(this.domElem);
 	
@@ -50,7 +54,16 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 			n = n.parentNode;
 		}
 		var v = $(n).css(this.name == 'forecolor' ? 'color' : 'background-color');
-		this.picker.val(v && v!='transparent' ? this.rte.utils.rgb2hex(v): this.defaultColor);
+
+		if (!v || v=='transparent') {
+			v = this.defaultColor;
+
+		} else {
+			v = this.rte.utils.rgb2hex(v);
+		}
+		this.picker.val(v)
+		// this.picker.val(!v || v=='transparent' ? this.defaultColor : this.rte.utils.rgb2hex(v));
+		// this.picker.val(v && v!='transparent' ? this.rte.utils.rgb2hex(v): this.defaultColor);
 	}
 }
 

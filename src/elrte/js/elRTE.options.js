@@ -42,7 +42,7 @@ elRTE.prototype.options   = {
 	denyAttr : ['id'],
 	pasteDenyAttr : ['id', 'name', 'class', 'style', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 	/* If false - all text nodes will be wrapped by paragraph tag */
-	allowTextNodes : true,
+	allowTextNodes : false,
 	/* allow browser specific styles like -moz|-webkit|-o */
 	allowBrowsersSpecStyles : false,
 	/* allow paste content into editor */
@@ -76,6 +76,8 @@ elRTE.prototype.options   = {
 		'justifyfull'         : 'Align full',
 		'indent'              : 'Indent',
 		'outdent'             : 'Outdent',
+		'rtl' : 'Right to left',
+		'ltr' : 'Left to right',
 		'forecolor'           : 'Font color',
 		'hilitecolor'         : 'Background color',
 		'formatblock'         : 'Format',
@@ -120,6 +122,7 @@ elRTE.prototype.options   = {
 		format     : ['formatblock', 'fontsize', 'fontname'],
 		lists      : ['insertorderedlist', 'insertunorderedlist'],
 		elements   : ['horizontalrule', 'blockquote', 'div', 'stopfloat', 'css', 'nbsp'],
+		direction  : ['ltr', 'rtl'],
 		links      : ['link', 'unlink', 'anchor'],
 		images     : ['image'],
 		media      : ['image', 'flash'],		
@@ -132,7 +135,7 @@ elRTE.prototype.options   = {
 		compact  : ['save', 'undoredo', 'style', 'alignment', 'lists', 'links', 'fullscreen'],
 		normal   : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'indent', 'lists', 'links', 'elements', 'images', 'fullscreen'],
 		complete : ['save', 'copypaste', 'undoredo', 'style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'fullscreen'],
-		maxi     : ['save', 'copypaste', 'undoredo', 'elfinder', 'style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'tables', 'fullscreen'],
+		maxi     : ['save', 'copypaste', 'undoredo', 'elfinder', 'style', 'alignment', 'direction', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'tables', 'fullscreen'],
 		eldorado : ['save', 'copypaste', 'elfinder', 'undoredo', 'style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links', 'elements', 'media', 'tables', 'fullscreen']
 		
 	},
@@ -147,6 +150,7 @@ elRTE.prototype.options   = {
 		format    : 'Text format',
 		lists     : 'Lists',
 		elements  : 'Misc elements',
+		direction : 'Script direction',
 		links     : 'Links',
 		images    : 'Images',
 		media     : 'Media',
