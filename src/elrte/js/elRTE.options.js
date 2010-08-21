@@ -39,7 +39,8 @@ elRTE.prototype.options   = {
 	allowTags : [],
 	/* if set this tags will be removed */
 	denyTags : ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'col', 'colgroup', 'iframe', 'isindex', 'frameset', 'html', 'head', 'meta', 'marquee', 'noframes', 'noembed', 'o:p', 'title', 'xml'],
-	denyAttr : ['id'],
+	denyAttr : [],
+	/* on paste event this attributes will removed from pasted html */
 	pasteDenyAttr : ['id', 'name', 'class', 'style', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 	/* If false - all text nodes will be wrapped by paragraph tag */
 	allowTextNodes : false,
@@ -47,12 +48,12 @@ elRTE.prototype.options   = {
 	allowBrowsersSpecStyles : false,
 	/* allow paste content into editor */
 	allowPaste : true,
+	/* if true - only text will be pasted (not in ie) */
 	pasteOnlyText : false,
 	/* user replacement rules */
 	replace : [],
 	/* user restore rules */
-	restore : [],
-	
+	restore : [ function(html) { return html.replace } ],
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',
@@ -110,7 +111,7 @@ elRTE.prototype.options   = {
 		'fullscreen'          : 'Toggle full screen mode',
 		'nbsp'                : 'Non breakable space',
 		'stopfloat'           : 'Stop element floating',
-		'about' : 'About this softwear'
+		'about'               : 'About this softwear'
 	},
 	panels      : {
 		save       : ['save'],

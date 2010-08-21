@@ -9,7 +9,7 @@
 			opts = {
 				submit : function(e, d) {  d.close(); },
 				dialog : {
-					width : 490,
+					width : 510,
 					title : this.rte.i18n('About this softwear'),
 					buttons     : {
 						Ok : function() { $(this).dialog('destroy'); }
@@ -33,7 +33,7 @@
 				+'<tr><td>Ricardo Obregón &lt;robregonm@gmail.com&gt;</td><td>'+this.rte.i18n('Spanish localization')+'</td></tr>'
 				+'<tr><td>Tomoaki Yoshida &lt;info@yoshida-studio.jp&gt;</td><td>'+this.rte.i18n('Japanese localization')+'</td></tr>'
 				+'<tr><td>Uldis Plotiņš &lt;uldis.plotins@gmail.com&gt;</td><td>'+this.rte.i18n('Latvian localization')+'</td></tr>'
-				+'<tr><td>Vasiliy Razumnyh &lt;rvn@std42.ru&gt;</td><td>'+this.rte.i18n('German and Ukranian localization')+'</td></tr>'
+				+'<tr><td>Vasiliy Razumnyh &lt;rvn@std42.ru&gt;</td><td>'+this.rte.i18n('German localization')+',<br/>'+this.rte.i18n('Ukranian localization')+'</td></tr>'
 				+'</table>'
 				
 				+'<div class="elrte-copy">Copyright &copy; 2009-2010, <a href="http:www.std42.ru">Studio 42 LTD</a></div>'
