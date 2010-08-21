@@ -81,8 +81,11 @@ elRTE.prototype.selection = function(rte) {
 		var s = selection(),
 			r = this.getRangeAt();
 		r.collapse(st?true:false);
-		s.removeAllRanges();
-		s.addRange(r);
+		if (!$.browser.msie) {
+			s.removeAllRanges();
+			s.addRange(r);
+			
+		}
 		return this;
 	}
 	
@@ -281,6 +284,13 @@ elRTE.prototype.selection = function(rte) {
 			} catch(e) { 
 				r = this.rte.doc.body.createTextRange(); 
 			}
+			
+			if (r.item) {
+				var n = r.item(0);
+				r = this.rte.doc.body.createTextRange();
+				r.moveToElementText(n);
+			}
+			
 			r1 = r.duplicate();
 			r2 = r.duplicate();
 			_s = this.rte.dom.create('span');
@@ -293,10 +303,6 @@ elRTE.prototype.selection = function(rte) {
 			r1.pasteHTML(_s.innerHTML);
 			r2.collapse(false);
 			r2.pasteHTML(_e.innerHTML);
-
-			// s = this.rte.doc.getElementById($(s).attr('id'));
-			// e = this.rte.doc.getElementById($(e).attr('id'));
-			
 		} else {
 				var sel = selection();
 				var r = sel.rangeCount > 0 ? sel.getRangeAt(0) : this.rte.doc.createRange();

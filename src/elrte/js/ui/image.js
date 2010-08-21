@@ -80,18 +80,19 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	
 	this.command = function() {
 		!this.src && this.init();
-		this.rte.browser.msie && this.rte.selection.saveIERange();
+		this.rte.selection.saveIERange();
 		this.src.main.border.elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' });
 		this.src.main.margin.elPaddingInput({ type : 'margin' });
 
 		this.cleanValues();
 		this.src.main.src.val('');
 		
-		var n = this.rte.selection.getEnd();
+		var n = this.rte.selection.getEnd(),
+			$n = $(n);
 		this.preview = null;
 		this.prevImg = null;
 		this.link    = null;
-		if (n.nodeName == 'IMG' && !$(n).hasClass('elrte-swf-placeholder')) {
+		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-media') && !$n.hasClass('elrte-yandex-maps') && !$n.hasClass('elrte-google-maps')) {
 			this.img     = $(n);
 		} else {
 			this.img = $(this.rte.doc.createElement('img'));
@@ -347,14 +348,15 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	
 	this.set = function() {
 		this.rte.history.add();
+		this.rte.selection.restoreIERange();
 		if (!this.prevImg || !this.prevImg.attr('width')) {
 			this.img  && this.img.remove();
 			this.link && this.rte.doc.execCommand('unlink', false, null);
 		} else {
-			if (!this.img.parents().length) {
-				this.rte.browser.msie && this.rte.selection.restoreIERange();
+			if (!this.img[0].parentNode) {
 				this.img = $(this.rte.doc.createElement('img'));
-			}
+			} 
+			
 			this.img.attr({
 					src    : this.rte.utils.absoluteURL($.trim(this.src.main.src.val())),
 					style  : $.trim(this.rte.dom.attr(this.prevImg.get(0), 'style')),
@@ -384,7 +386,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				}
 			}
 				
-			if (!this.img.parents().length) {
+			if (!this.img[0].parentNode) {
 				this.rte.selection.insertNode(this.img.get(0))
 			}
 
@@ -411,8 +413,9 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 
 	this.update = function() {
 		this.domElem.removeClass('disabled');
-		var n = this.rte.selection.getEnd();
-		if (n.nodeName == 'IMG' && !$(n).hasClass('elrte-swf-placeholder')) {
+		var n = this.rte.selection.getEnd(),
+			$n = $(n);
+		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-media') && !$n.hasClass('elrte-yandex-maps') && !$n.hasClass('elrte-google-maps')) {
 			this.domElem.addClass('active');
 		} else {
 			this.domElem.removeClass('active');
