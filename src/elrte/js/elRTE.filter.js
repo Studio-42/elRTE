@@ -579,11 +579,12 @@
 				.replace(this.yMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
 					a['class']['elrte-yandex-maps'] = 'elrte-yandex-maps';
+					a['class']['elrte-protected'] = 'elrte-protected';
 					return '<div '+self.serializeAttrs(a)+'>';
 				})
 				.replace(this.gMapsRegExp, function(t, a) {
 					a = self.parseAttrs(a);
-					return '<div class="elrte-google-maps" rel="'+self.rte.utils.encode(JSON.stringify(a))+'" style="width:'+(parseInt(a.width||a.style.width||100))+'px;height:'+(parseInt(a.height||a.style.height||100))+'px"></div>';
+					return '<div class="elrte-google-maps elrte-protected" rel="'+self.rte.utils.encode(JSON.stringify(a))+'" style="width:'+(parseInt(a.width||a.style.width||100))+'px;height:'+(parseInt(a.height||a.style.height||100))+'px"></div>';
 				})
 				.replace(this.objRegExp, function(t, a, c) {
 					var m = c.match(self.embRegExp),

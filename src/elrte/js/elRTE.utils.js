@@ -76,14 +76,7 @@ elRTE.prototype.utils = function(rte) {
 	var self     = this;
 	
 	this.rgb2hex = function(str) {
-		// alert(str)
 		return this.color2Hex(''+str)
-	    function hex(x)  {
-	    	hexDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8","9", "a", "b", "c", "d", "e", "f"];
-	        return !x  ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x% 16];
-	    }
-		var rgb = str.match(/\(([0-9]{1,3}),\s*([0-9]{1,3}),\s*([0-9]{1,3})\)/); 
-		return rgb ? "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]) : '';
 	}
 	
 	this.toPixels = function(num) {

@@ -92,7 +92,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		this.preview = null;
 		this.prevImg = null;
 		this.link    = null;
-		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-media') && !$n.hasClass('elrte-yandex-maps') && !$n.hasClass('elrte-google-maps')) {
+		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
 			this.img     = $(n);
 		} else {
 			this.img = $(this.rte.doc.createElement('img'));
@@ -397,7 +397,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		this.domElem.removeClass('disabled');
 		var n = this.rte.selection.getEnd(),
 			$n = $(n);
-		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-media') && !$n.hasClass('elrte-yandex-maps') && !$n.hasClass('elrte-google-maps')) {
+		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
 			this.domElem.addClass('active');
 		} else {
 			this.domElem.removeClass('active');

@@ -141,6 +141,9 @@
 			this.frame = frame.contentWindow.document;
 			this.preview = $(frame.contentWindow.document.body);
 			 				 
+			this.src.type.change(function() {
+				self.src.url.change();
+			});
 
 			this.src.width.change(function() {
 				if (self.swf) {
@@ -157,7 +160,7 @@
 				if (self.swf) {
 					var h = parseInt($(this).val())||'';
 					$(this).val(h);
-					self.swf.css('height', w);
+					self.swf.css('height', h);
 					self.swf.children('embed').css('height', h);
 				} else {
 					$(this).val('');
@@ -175,7 +178,7 @@
 						self.swf.children('embed').removeAttr('wmode');
 					}
 				}
-			})
+			});
 			
 			this.src.align.change(function() {
 				var v = $(this).val(), f = v=='left' || v=='right';
@@ -201,8 +204,6 @@
 						self.swf.css('margin-left', m.left);						
 					}
 				}
-
-				
 			});
 			
 			this.src.url.change(function() {
@@ -224,7 +225,7 @@
 				self.src.align.trigger('change');
 
 			}).trigger('change');
-		}
+		};
 		
 		this.set = function() {
 			self.swf = null
@@ -253,6 +254,8 @@
 
 				o = {
 					obj : {
+						classid : i.classid[0],
+						codebase : i.codebase,
 						style : {}
 					},
 					params :[ { name : 'src', value : url } ],
@@ -308,7 +311,7 @@
 					this.placeholder = $(this.rte.dom.create('img')).attr('rel', id).attr('src', this.rte.filter.url+'pixel.gif');
 					var ins = true;
 				}
-				this.placeholder.attr('title', this.rte.utils.encode(url)).attr('width', w||150).attr('height', h||100).addClass('elrte-media elrte-media-'+c).css(o.obj.style);
+				this.placeholder.attr('title', this.rte.utils.encode(url)).attr('width', w||150).attr('height', h||100).addClass('elrte-protected elrte-media elrte-media-'+c).css(o.obj.style);
 				if (f) {
 					this.placeholder.css('float', f).css('vertical-align', '');
 				} else if (a) {
