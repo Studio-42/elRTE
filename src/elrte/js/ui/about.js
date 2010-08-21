@@ -10,7 +10,7 @@
 				submit : function(e, d) {  d.close(); },
 				dialog : {
 					width : 510,
-					title : this.rte.i18n('About this softwear'),
+					title : this.rte.i18n('About this software'),
 					buttons     : {
 						Ok : function() { $(this).dialog('destroy'); }
 					}

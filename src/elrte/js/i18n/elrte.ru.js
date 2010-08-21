@@ -18,7 +18,7 @@ elRTE.prototype.i18Messages.ru = {
 	'Tables'         : 'Таблицы',
 	'File manager (elFinder)' : 'Файловый менеджер (elFinder)',
 	// названия кнопок
-	'About this softwear'     : 'О программе',
+	'About this software'     : 'О программе',
 	'Save'                    : 'Сохранить',
 	'Copy'                    : 'Копировать',
 	'Cut'                     : 'Вырезать',

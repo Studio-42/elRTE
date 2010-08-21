@@ -111,7 +111,7 @@ elRTE.prototype.options   = {
 		'fullscreen'          : 'Toggle full screen mode',
 		'nbsp'                : 'Non breakable space',
 		'stopfloat'           : 'Stop element floating',
-		'about'               : 'About this softwear'
+		'about'               : 'About this software'
 	},
 	panels      : {
 		save       : ['save'],
