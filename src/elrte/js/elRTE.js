@@ -50,16 +50,14 @@ elRTE = function(target, opts) {
 	/* init editor textarea */
 	var content = '';
 	if (target.nodeName == 'TEXTAREA') {
-
-		this.source = this.target.remove()
+		this.source = this.target;
 		this.source.insertAfter(this.iframe).hide();
 		content = this.target.val();
 	} else {
-		this.source = $('<textarea />').insertAfter(this.iframe).hide()
-		this.source.attr('name', this.target.attr('id')||this.target.attr('name'));
+		this.source = $('<textarea />').insertAfter(this.iframe).hide();
 		content = this.target.hide().html();
 	}
-
+	this.source.attr('name', this.target.attr('id')||this.target.attr('name'));
 	content = $.trim(content);
 	if (!content) {
 		content = ' ';
