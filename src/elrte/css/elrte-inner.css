@@ -19,15 +19,9 @@ body.el-rte-structure a[name] {
 	border:1px dotted #ccc;
 	background: url('../images/elrte-toolbar.png') -564px -8px no-repeat;
 }
+img { cursor: default; }
 
-.elrte-swf-placeholder {
-	border:1px solid #ccc;
-}
-
-body div.elrte-map-placeholder {
-	border:1px solid #eee;
-	background:url('../images/gm.png') center center no-repeat;
-}
+img.elrte-webkit-hl { border:1px dashed #777; }
 
 .elrtebm {
 /*	height:15px;

@@ -104,13 +104,10 @@ elRTE = function(target, opts) {
 		html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
 	});
 	this.doc.open();
-	// var s = this.filter.fromSource(content)
 	var s = this.filter.wysiwyg(content)
 	this.doc.write(self.options.doctype+html+'</head><body>'+(s)+'</body></html>');
 	this.doc.close();
 	
-	// this.source.val(this.filter.toSource(content));
-	// this.log($(this.doc.body).html())
 	/* make iframe editable */
 	if ($.browser.msie) {
 		this.doc.body.contentEditable = true;
@@ -170,7 +167,6 @@ elRTE = function(target, opts) {
 	
 	this.$doc.bind('keydown', function(e) {
 		//@todo shortcuts
-		
 		if ((e.keyCode>=48 && e.keyCode <=57) || e.keyCode==61 || e.keyCode == 109 || (e.keyCode>=65 && e.keyCode<=90) || e.keyCode==188 ||e.keyCode==190 || e.keyCode==191 || (e.keyCode>=219 && e.keyCode<=222)) {
 			if (!self.typing) {
 				self.history.add(true);
@@ -191,8 +187,6 @@ elRTE = function(target, opts) {
 		self.lastKey = null;
 	})
 	.bind('paste', function(e) {
-		
-		
 		if (!self.options.allowPaste) {
 			// paste denied 
 			e.stopPropagation();
@@ -239,9 +233,19 @@ elRTE = function(target, opts) {
 				self.selection.restoreIERange();
 				$(self.doc.body).mouseup();
 				this.ui.update();
-				
 			}
 		});
+	}
+	
+	if ($.browser.safari) {
+		this.$doc.bind('click', function(e) {
+			$(self.doc.body).find('.elrte-webkit-hl').removeClass('elrte-webkit-hl');
+			if (e.target.nodeName == 'IMG') {
+				$(e.target).addClass('elrte-webkit-hl');
+			}
+		}).bind('keyup', function(e) {
+			$(self.doc.body).find('.elrte-webkit-hl').removeClass('elrte-webkit-hl');
+		})
 	}
 	this.window.focus();
 }

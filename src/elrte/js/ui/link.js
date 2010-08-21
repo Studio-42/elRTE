@@ -11,6 +11,7 @@
 elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var self = this;
+	this.img = false;
 	
 	function init() {
 		self.labels = {
@@ -94,17 +95,20 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	}
 	
 	this.command = function() {
-		var n = this.rte.selection.getNode();
-		!this.src && init();
-		this.rte.browser.msie && this.rte.selection.saveIERange();
+		var n = this.rte.selection.getNode(),
+			sel, i, v, opts, l, r, link, href, s;
 		
+		!this.src && init();
+		this.rte.selection.saveIERange();
+
 		function isLink(n) { return n.nodeName == 'A' && n.href; }
 		
 		this.link = this.rte.dom.selfOrParentLink(n);
+		
 		if (!this.link) {
-			var sel = $.browser.msie ? this.rte.selection.selected() : this.rte.selection.selected({wrap : false});
+			sel = $.browser.msie ? this.rte.selection.selected() : this.rte.selection.selected({wrap : false});
 			if (sel.length) {
-				for (var i=0; i < sel.length; i++) {
+				for (i=0; i < sel.length; i++) {
 					if (isLink(sel[i])) {
 						this.link = sel[i];
 						break;
@@ -117,7 +121,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		}
 		
 		this.link = this.link ? $(this.link) : $(this.rte.doc.createElement('a'));
-
+		this.img = n.nodeName == 'IMG' ? n : null;
 		this.updatePopup();
 		
 		this.src.main.anchor.empty();
@@ -135,7 +139,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 				});
 		}
 		
-		var opts = {
+		opts = {
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			tabs : { show : function(e, ui) { if (ui.index==3) { self.updateOnclick(); } } },
 			close : function() {self.rte.browser.msie && self.rte.selection.restoreIERange(); },
@@ -146,14 +150,14 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 				
 			}
 		}
-		var d = new elDialogForm(opts);
+		d = new elDialogForm(opts);
 		
-		var l = $('<div />')
+		l = $('<div />')
 			.append( $('<label />').append(this.src.popup.location).append(this.rte.i18n('Location bar')))
 			.append( $('<label />').append(this.src.popup.menubar).append(this.rte.i18n('Menu bar')))
 			.append( $('<label />').append(this.src.popup.toolbar).append(this.rte.i18n('Toolbar')))				
 			.append( $('<label />').append(this.src.popup.scrollbars).append(this.rte.i18n('Scrollbars')));
-		var r = $('<div />')
+		r = $('<div />')
 			.append( $('<label />').append(this.src.popup.status).append(this.rte.i18n('Status bar')))
 			.append( $('<label />').append(this.src.popup.resizable).append(this.rte.i18n('Resizable')))
 			.append( $('<label />').append(this.src.popup.dependent).append(this.rte.i18n('Depedent')))				
@@ -172,8 +176,8 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			.separator('popup')
 			.append([l, r], 'popup', true);
 
-		var link = this.link.get(0);
-		var href = this.rte.dom.attr(link, 'href');
+		link = this.link.get(0);
+		href = this.rte.dom.attr(link, 'href');
 		this.src.main.href.val(href).change(function() {
 			$(this).val(self.rte.utils.absoluteURL($(this).val()));
 		});
@@ -200,8 +204,10 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		if (this.src.main.anchor.children().length) {
 			d.append([this.rte.i18n('Bookmark'), this.src.main.anchor.val(href)], 'main', true)
 		}
-		if (!this.rte.options.doctype.match(/xhtml/))
-		d.append([this.rte.i18n('Target'), this.src.main.target.val(this.link.attr('target')||'')], 'main', true);
+		if (!this.rte.options.doctype.match(/xhtml/)) {
+			d.append([this.rte.i18n('Target'), this.src.main.target.val(this.link.attr('target')||'')], 'main', true);
+		}
+		
 
 
 		for (var n in this.src.adv) {
@@ -228,8 +234,6 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		});
 		this.src.popup.use.change();
 		d.open();
-		setTimeout(function() { self.src.main.href.focus()}, 20);
-		
 	}
 	
 	this.update = function() {
@@ -364,33 +368,39 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	}
 	
 	this.set = function() {
+		var href, fakeURL;
 		this.updateOnclick();
-		this.rte.browser.msie && this.rte.selection.restoreIERange();
+		this.rte.selection.restoreIERange();
 		this.rte.history.add();
-		var href = this.rte.utils.absoluteURL(this.src.main.href.val());
+		href = this.rte.utils.absoluteURL(this.src.main.href.val());
 		if (!href) {
-			this.link.parents().length && this.rte.doc.execCommand('unlink', false, null);
+			// this.link.parentNode && this.rte.doc.execCommand('unlink', false, null);
+			var bm = this.rte.selection.getBookmark();
+			this.rte.dom.unwrap(this.link[0]);
+			this.rte.selection.moveToBookmark(bm)
 		} else {
-			if (!this.link.parents().length) {
-				
-				var fakeURL = '#--el-editor---'+Math.random();
-				var r =this.rte.doc.execCommand('createLink', false, fakeURL);
-
-				this.link = $('a[href="'+fakeURL+'"]', this.rte.doc);
-				this.link.each(function() {
-					var $this = $(this);
-					// удаляем ссылки вокруг пустых элементов
-					if (!$.trim($this.html()) && !$.trim($this.text())) {
-						$this.replaceWith($this.text()); //  сохраняем пробелы :)
-					}
-				});
+			if (!this.link[0].parentNode) {
+				if (this.img && this.img.parentNode) {
+					this.link = $(this.rte.dom.create('a')).attr('href', href);
+					this.rte.dom.wrap(this.img, this.link[0]);
+				} else {
+					fakeURL = '#--el-editor---'+Math.random();
+					this.rte.doc.execCommand('createLink', false, fakeURL);
+					this.link = $('a[href="'+fakeURL+'"]', this.rte.doc);
+					this.link.each(function() {
+						var $this = $(this);
+						// удаляем ссылки вокруг пустых элементов
+						if (!$.trim($this.html()) && !$.trim($this.text())) {
+							$this.replaceWith($this.text()); //  сохраняем пробелы :)
+						}
+					});
+				}
 			}
 
 			this.src.main.href.val(href);
 			for (var tab in this.src) {
 				if (tab != 'popup') {
 					for (var n in this.src[tab]) {
-
 						if (n != 'anchors') {
 							var v = $.trim(this.src[tab][n].val());
 							if (v) {
@@ -402,6 +412,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 					}
 				}
 			};
+			this.img && this.rte.selection.select(this.img);
 		}
 		this.rte.ui.update(true);
 	}

@@ -389,24 +389,6 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			if (!this.img[0].parentNode) {
 				this.rte.selection.insertNode(this.img.get(0))
 			}
-
-			// Link
-			// var href   = this.rte.utils.absoluteURL(this.src.link.href.val());
-			// var title  = $.trim(this.src.link.title.val());
-			// if (!href) {
-			// 	if (this.link) {
-			// 		this.link.replaceWith(this.prevImg);
-			// 	}
-			// } else {
-			// 	if (this.link) {
-			// 		this.link.attr('href', href).removeAttr('target').removeAttr('title');
-			// 		title  && this.alink.attr('title', title);
-			// 	} else {
-			// 		this.link = $(this.rte.doc.createElement('a')).attr('href', href);
-			// 		title  && this.link.attr('title', title);
-			// 		this.prevImg.wrap(this.link);
-			// 	}
-			// }
 		}
 		this.rte.ui.update();
 	}
