@@ -209,8 +209,8 @@
 /* colors palette */
 .el-palette { top:20px; }
 
-.el-dialogform, .el-dialogform td { font-size:.9em;}
-
+.el-dialogform, .el-dialogform td  { font-size:.9em; }
+.el-dialogform select { font-size:.9em;}
 /* диалоговые окна */
 .el-dialogform label {
 	display:block;

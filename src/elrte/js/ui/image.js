@@ -96,7 +96,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		var opts = {
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
-				width    : 520,
+				width    : 570,
 				position : 'top',
 				title    : this.rte.i18n('Image')
 			}
