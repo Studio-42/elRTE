@@ -37,12 +37,11 @@
 				+'</table>'
 				
 				+'<div class="elrte-copy">Copyright &copy; 2009-2010, <a href="http:www.std42.ru">Studio 42 LTD</a></div>'
-				+'<div class="elrte-copy">'+this.rte.i18n('For more information about this software visit the')+' <a href="http://www.elrte.org">'+this.rte.i18n('elRTE website')+'.</a></div>'
-				
+				+'<div class="elrte-copy">'+this.rte.i18n('For more information about this software visit the')+' <a href="http://www.elrte.org">'+this.rte.i18n('elRTE website')+'.</a></div>';
 			
 			d = new elDialogForm(opts);
-			d.append(txt)
-			d.open()
+			d.append(txt);
+			d.open();
 		}
 		
 		this.update = function() {
