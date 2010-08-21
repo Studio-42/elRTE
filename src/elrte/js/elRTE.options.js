@@ -109,7 +109,8 @@ elRTE.prototype.options   = {
 		'elfinder'            : 'Open file manager',
 		'fullscreen'          : 'Toggle full screen mode',
 		'nbsp'                : 'Non breakable space',
-		'stopfloat'           : 'Stop element floating'
+		'stopfloat'           : 'Stop element floating',
+		'about' : 'About this softwear'
 	},
 	panels      : {
 		save       : ['save'],
@@ -128,7 +129,7 @@ elRTE.prototype.options   = {
 		media      : ['image', 'flash'],		
 		tables     : ['table', 'tableprops', 'tablerm',  'tbrowbefore', 'tbrowafter', 'tbrowrm', 'tbcolbefore', 'tbcolafter', 'tbcolrm', 'tbcellprops', 'tbcellsmerge', 'tbcellsplit'],
 		elfinder   : ['elfinder'],
-		fullscreen : ['fullscreen']
+		fullscreen : ['fullscreen', 'about']
 	},
 	toolbars    : {
 		tiny     : ['style'],

@@ -21,8 +21,8 @@ elRTE = function(target, opts) {
 		return alert('elRTE: argument "target" is not DOM Element');
 	}
 	var self     = this, html;
-	this.version = '1.0 RC4';
-	this.build   = '20100330';
+	this.version = '1.0';
+	this.build   = '2010-08-21';
 	this.options = $.extend(true, {}, this.options, opts);
 	this.browser = $.browser;
 	this.target  = $(target);

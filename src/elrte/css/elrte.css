@@ -34,7 +34,7 @@
 	margin:0;
 	list-style:none;
 	padding:0 2px 0 5px;
-	background: url('../images/elrte-toolbar.png') -857px -2px no-repeat;	
+	background: url('../images/elrte-toolbar.png') -934px -2px no-repeat;	
 }
 /* первая панель кнопок */
 .el-rte .toolbar ul.first {
@@ -61,6 +61,7 @@
 .el-rte .toolbar ul li.active   { background-color:#c3dbef; border:1px solid #fff; }
 .el-rte .toolbar ul li.disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30);}
 /*  кнопки  */
+.el-rte .toolbar ul li.about                {background-position:-829px -5px;}
 .el-rte .toolbar ul li.save                {background-position:-30px -2px;}
 .el-rte .toolbar ul li.new                 {background-position:-55px -2px}
 .el-rte .toolbar ul li.copy                {background-position:-78px -2px}
@@ -118,7 +119,7 @@
 .el-rte .toolbar ul li.fullscreen          {background-position:-348px -30px}  
 .el-rte .toolbar ul li.elfinder            {background-position:-436px -2px}
 .el-rte .toolbar ul li.ltr                 {background-position:-855px -27px}  
-.el-rte .toolbar ul li.rtl                 {background-position:-872px -27px}  
+.el-rte .toolbar ul li.rtl                 {background-position:-855px -3px}  
 
 
 /* рабочая зона (обертка над iframe) */
@@ -168,6 +169,7 @@
 }
 .el-rte .tabsbar div.active { background: #eee; color:#444; }
 
+
 /* выпадающие меню */
 /* container for elselect */
 .el-rte .toolbar ul li.el-select {
@@ -211,6 +213,10 @@
 
 .el-dialogform, .el-dialogform td  { font-size:.9em; }
 .el-dialogform select { font-size:.9em;}
+.ui-dialog .ui-dialog-buttonpane { padding: .4em, 1em;}
+.ui-dialog .ui-dialog-buttonpane button { margin: .3em .4em .1em 0; font-size:.9em;}
+.ui-dialog .ui-dialog-titlebar { padding: .3em 1em .3em;   }
+/*.ui-dialog-buttonset { padding:0; background-color:#333;}*/
 /* диалоговые окна */
 .el-dialogform label {
 	display:block;
@@ -237,8 +243,23 @@
 	border:1px solid #ccc;
 	background-color: #eee;
 }
+.el-dialogform p { padding:.2em .3em;}
+.el-dialogform h3 { color:#555; padding:12px 0 0 0; margin:0; font-size:1.2em; }
 
+.el-dialogform h4 { color:#555;font-size:1em; padding:0; margin: 3px 9px; }
 
+.elrte-logo { 
+	width:48px; 
+	height:46px;
+	float:left; 
+	margin-right:2em;
+	margin-bottom:.5em;
+	background:url('../images/elrte-toolbar.png') -880px -7px no-repeat;
+}
+.elrte-ver { font-size:.9em; padding-left:.7em;}
+.elrte-copy { font-size:.9em; padding-left:.3em;}
+table.elrte-authors { margin-bottom:1em;}
+table.elrte-authors td { border-bottom:1px solid #eee;}
 /* widgets */
 .el-borderselect {}
 .el-borderselect table      {  margin:0; }
