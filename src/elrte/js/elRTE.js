@@ -134,19 +134,22 @@ elRTE = function(target, opts) {
 	
 	
 	/* bind updateSource to parent form submit */
-	this.target.parents('form').bind('submit', function() {
+	this.target.parents('form').bind('submit', function(e) {
+		self.source.parents('form').find('[name="el-select"]').remove()
 		self.beforeSave();
 	});
 	
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
 		self.ui.update();
-	}).bind('keyup', function(e) {
+	})
+	.bind('keyup', function(e) {
 		if ((e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {
 			// self.log('keyup '+e.keyCode)
 			self.ui.update();
 		}
-	}).bind('keydown', function(e) {
+	})
+	.bind('keydown', function(e) {
 		if ((e.metaKey || e.ctrlKey) && e.keyCode == 65) {
 			self.ui.update();
 		} else if (e.keyCode == 13) {
@@ -248,6 +251,7 @@ elRTE = function(target, opts) {
 		})
 	}
 	this.window.focus();
+	// this.log(this.editor.parents('form').find('[name="el-select"]'))
 }
 
 /**
