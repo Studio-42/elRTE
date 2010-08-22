@@ -37,6 +37,7 @@
 		/* shortcuts */
 		this.shortcuts = {};
 		this.change = false;
+		this.typing = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* active documents is in wysiwyg mode */
@@ -356,15 +357,19 @@
 			if (self.change) {
 				// cached changes
 				self.trigger('change', {originalEvent : e});
-				self.change = false;
+				self.change = self.typing = false;
 			} else if (self.utils.isKeyArrow(e.keyCode)) {
 				// carret change position
 				self.trigger('changePos', {originalEvent : e});
+				self.typing = false;
+			} else {
+				self.typing = true;
 			}
 			self.trigger(e);
 		})
 		.bind('mousedown mouseup click dblclick', function(e) {
 			e.type == 'mouseup' && self.trigger('changePos', {originalEvent : e});
+			self.typing = false;
 			self.trigger(e);
 		})
 

@@ -130,6 +130,28 @@
 			return this
 		}
 		
+		this.selectNext = function(n, c) {
+			var s = this.dom.next(n), d;
+			if (!s) {
+				s = this.dom.createTextNode("");
+				s.parentNode.appendChild(s);
+			}
+			
+			if (c && $.browser.webkit) {
+				s.parentNode.insertBefore((d = this.dom.createTextNode('\uFEFF')), s);
+				$(this.doc).one('keyup mouseup', function() {
+					d.nodeValue = d.nodeValue.replace('\uFEFF', '');
+				});
+			}
+			this.select(s);
+			this.rte.log(typeof(c))
+			if (typeof(c) != 'undefined') {
+				this.collapse(!!c);
+			}
+			
+			return this;
+		}
+		
 		/**
 		 * Insert node into selection and return node on success
 		 * Return node need to compatibility with IE selection
@@ -238,23 +260,32 @@
 			return Array.prototype.slice.call(this.range().cloneContents().childNodes);
 		}
 		
+		/**
+		 * Return selection common ancestor container
+		 *
+		 * @return DOMElement
+		 **/
 		this.node = function() {
 			var n = this.range().commonAncestorContainer;
 			return n;
 			return n.nodeType == 1 ? n : n.parentNode;
 		}
 		
+		/**
+		 * Return array of selected nodes
+		 *
+		 * @return Array
+		 **/
 		this.get = function() {
-			var r = [], bm;
+			var r = [], bm, s, e, c;
 			
 			if (!this.collapsed()) {
 				bm = this.bookmark();
 				this.doc.body.normalize();
-				
 				s = bm[0].nextSibling;
 				e = bm[1].previousSibling;
 				this.rmBookmark(bm);
-				
+				// fix selection. do this really possible?
 				while (this.dom.parents(e, function(n) { return n == s }).length) {
 					s = s.firstChild;
 				}
@@ -262,34 +293,23 @@
 					e = e.firstChild;
 				}
 				c = this.dom.commonAncestor(s, e);
-				this.rte.log(c)
-				
-				// this.rte.log(this.dom.is(c, 'onlyChild'))
-				
+				// move common ancestor container up as posiible
 				while (c.nodeName != 'BODY' && c.parentNode.nodeName != 'BODY' && this.dom.is(c, 'onlyChild')) {
 					this.rte.log('move from '+c.nodeName+' to '+c.parentNode.nodeName)
 					c = c.parentNode;
 				}
-				this.rte.log(c)
-				
-				// var t = this.dom.parents(e, function(n) { return n == s })
-				// this.rte.log(t)
-				
+				// move start node up as posiible but not up container
 				while (s !=c && s.parentNode !=c && this.dom.is(s, 'first')) {
 					s = s.parentNode;
 				}
+				// move end node up as posiible but not up container
 				while (e !=c && e.parentNode != c && this.dom.is(e, 'last')) {
 					e = e.parentNode;
 				}
-				
-				if (s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
-					s = e = s.parentNode
+				// if start is first node in container and end is end node and container is not body
+				if (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
+					s = e = s.parentNode;
 				}
-				
-				this.rte.log(s)
-				this.rte.log(e)
-				// return false
-				// this.rte.log(c)
 				r = s === e ? [s] : this.dom.traverse(s, e, c);
 			}
 			return r;

@@ -725,6 +725,91 @@ elRTE.prototype.dom = function(rte) {
 		n.parentNode.removeChild(n);
 	}
 	
+	
+	this.split = function(n, p, e, b) {
+		var r = [n], pr, c, sib;
+		
+		while (p != n) {
+			c = false;
+			pr = p.parentNode;
+			sib = e ? this.nextAll(p) : this.prevAll(p).reverse();
+			if (sib.length && (b || !this.is(pr, 'block'))) {
+				c = pr.cloneNode(false);
+				if (e) {
+					if (pr.nextSibling) {
+						pr.parentNode.insertBefore(c, pr.nextSibling);
+					} else {
+						pr.parentNode.appendChild(c);
+					}
+				} else {
+					pr.parentNode.insertBefore(c, pr);
+				}
+				$.each(sib, function() {
+					c.appendChild(this);
+				});
+			}
+			p = pr;
+		}
+		if (c) {
+			e ? r.push(c) : r.unshift(c);
+		}
+		return r;
+	}
+	
+	this.slice = function(n, s, e, b) {
+		var p, c, nodes, r = [n], tmp;
+		
+		s = this.isNode(s) ? s : n.firstChild;
+		e = this.isNode(e) ? e : n.lastChild;
+		
+		tmp = this.split(n, s, false, b);
+		r.unshift(tmp.length==2 ? tmp[0] : false)
+		tmp = this.split(n, e, true, b);
+		r.push(tmp.length==2 ? tmp[1] : false);
+		
+		return r;
+	}
+	
+	this.smartUnwrap = function(n, b, t, u) {
+		var self = this,
+			n = n && n.length ? n : [],
+			s = n[0],
+			e = n[n.length-1],
+			t = typeof(t) == 'function' ? t : function() { return false },
+			u = typeof(u) == 'function' ? u : function() { },
+			l = this.parents(s, t),
+			r = this.parents(e, t),
+			c = this.filter(n, function(n) { return t(n) || self.find(n, t).length; });
+			
+		if (l.length || r.length || c.length) {
+			(l = l.length ? l.pop() : false) && this.split(l, s, false, b);
+			(r = r.length ? r.pop() : false) && this.split(r, e, true,  b);
+			
+			l && $.each(this.parents(s, t), function() { u(this); });
+			r && $.each(this.parents(e, t), function() { u(this); });
+			$.each(c, function() {
+				$.each(self.find(this, t), function() {
+					u(this);
+				});
+				if (self.is(this, t)) {
+					if (this === s) {
+						s = this.firstChild;
+					} else if (this === e) {
+						e = this.lastChild;
+					}
+					u(this);
+				}
+			});
+		}
+		return [s, e];		
+			
+			
+			this.rte.log(l)
+			this.rte.log(r)
+			this.rte.log(c)
+			
+	}
+	
 	/**
 	 * Split node by boundary ponit. Return new node.
 	 *
@@ -733,23 +818,23 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  Boolean    before  if true split before b, by default - after
 	 * @return DOMElement
 	 **/
-	this.split = function(n, b, before) {
-		var c = n, 		
-			nodes = before 
-				? this.is(b, 'first') ? [] : this.traverse(b, n.lastChild)
-				: this.is(b, 'last')  ? [] : this.traverse(this.next(b), n.lastChild);
-
-		if (nodes.length) {
-			c = n.cloneNode(false);
-			n.nextSibling 
-				? n.parentNode.insertBefore(c, n.nextSibling) 
-				: n.parentNode.appendChild(c);
-			for (var i=0; i < nodes.length; i++) {
-				c.appendChild(nodes[i])
-			};
-		}
-		return c;
-	}
+	// this.split = function(n, b, before) {
+	// 	var c = n, 		
+	// 		nodes = before 
+	// 			? this.is(b, 'first') ? [] : this.traverse(b, n.lastChild)
+	// 			: this.is(b, 'last')  ? [] : this.traverse(this.next(b), n.lastChild);
+	// 
+	// 	if (nodes.length) {
+	// 		c = n.cloneNode(false);
+	// 		n.nextSibling 
+	// 			? n.parentNode.insertBefore(c, n.nextSibling) 
+	// 			: n.parentNode.appendChild(c);
+	// 		for (var i=0; i < nodes.length; i++) {
+	// 			c.appendChild(nodes[i])
+	// 		};
+	// 	}
+	// 	return c;
+	// }
 	
 	/**
 	 * Slice node into 3 nodes by boundary ponits. 
@@ -760,10 +845,10 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement r right boundary node
 	 * @return DOMElement
 	 **/
-	this.slice = function(n, l, r) {
-		this.split(n, r);
-		return this.split(n, l, true);
-	}
+	// this.slice = function(n, l, r) {
+	// 	this.split(n, r);
+	// 	return this.split(n, l, true);
+	// }
 	
 	/**
 	 * Unwrap part of node contents between boundary points 
@@ -773,14 +858,14 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement r right point
 	 * @return void
 	 **/
-	this.unwrapPart = function(n, l, r) {
-		var c = this.split(n, r), s = this.traverse(l, r);
-		
-		for (i=0; i < s.length; i++) {
-			c.parentNode.insertBefore(i>0 && i<s.length-1 ? self.cloneParents(s[i], n) : s[i], c);
-		};
-		return this;
-	}
+	// this.unwrapPart = function(n, l, r) {
+	// 	var c = this.split(n, r), s = this.traverse(l, r);
+	// 	
+	// 	for (i=0; i < s.length; i++) {
+	// 		c.parentNode.insertBefore(i>0 && i<s.length-1 ? self.cloneParents(s[i], n) : s[i], c);
+	// 	};
+	// 	return this;
+	// }
 	
 	/**
 	 * Return clone DOM of node parents till required parent or node itself
@@ -789,19 +874,19 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement p parent
 	 * @return DOMElement
 	 **/
-	this.cloneParents = function(n, p) {
-		var ret = n, _p = this.parents(n, 'all', p), tmp = null, i;
-		
-		for (i=0; i < _p.length; i++) {
-			if (this.is(_p[i], 'block')) {
-				break;
-			}
-			tmp = _p[i].cloneNode(false);
-			tmp.appendChild(ret);
-			ret = tmp;
-		};
-		return ret;
-	}
+	// this.cloneParents = function(n, p) {
+	// 	var ret = n, _p = this.parents(n, 'all', p), tmp = null, i;
+	// 	
+	// 	for (i=0; i < _p.length; i++) {
+	// 		if (this.is(_p[i], 'block')) {
+	// 			break;
+	// 		}
+	// 		tmp = _p[i].cloneNode(false);
+	// 		tmp.appendChild(ret);
+	// 		ret = tmp;
+	// 	};
+	// 	return ret;
+	// }
 	
 	/**
 	 * Move all child nodes from the bounding point till end of the node after node. 
@@ -810,16 +895,16 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement b bounding point
 	 * @return void
 	 **/
-	this.moveNodesAfter = function(n, b) {
-		var _n, p = n.parentNode, nodes = this.traverse(b, n.lastChild);
-
-		$.each(nodes.reverse(), function() {
-			_n = self.cloneParents(this, n);
-			n.nextSibling ? p.insertBefore(_n, n.nextSibling) : p.appendChild(_n);
-		});
-		this.is(n, 'empty') && this.unwrap(n);
-		return nodes;
-	}
+	// this.moveNodesAfter = function(n, b) {
+	// 	var _n, p = n.parentNode, nodes = this.traverse(b, n.lastChild);
+	// 
+	// 	$.each(nodes.reverse(), function() {
+	// 		_n = self.cloneParents(this, n);
+	// 		n.nextSibling ? p.insertBefore(_n, n.nextSibling) : p.appendChild(_n);
+	// 	});
+	// 	this.is(n, 'empty') && this.unwrap(n);
+	// 	return nodes;
+	// }
 	
 	/**
 	 * Move all child nodes from the begining of node till bounding point before node. 
@@ -828,39 +913,21 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  DOMElement b bounding point
 	 * @return void
 	 **/
-	this.moveNodesBefore = function(n, b) {
-		var _n, p = n.parentNode, nodes = this.traverse(n.firstChild, b);
-
-		$.each(nodes, function() {
-			p.insertBefore(self.cloneParents(this, n), n);
-		});
-		this.is(n, 'empty') && this.unwrap(n);
-		return nodes;
-	}
+	// this.moveNodesBefore = function(n, b) {
+	// 	var _n, p = n.parentNode, nodes = this.traverse(n.firstChild, b);
+	// 
+	// 	$.each(nodes, function() {
+	// 		p.insertBefore(self.cloneParents(this, n), n);
+	// 	});
+	// 	this.is(n, 'empty') && this.unwrap(n);
+	// 	return nodes;
+	// }
 	
 	
 	/********************************************************/
 	/*                      Утилиты                         */
 	/********************************************************/	
 	
-	/**
-	 * Return attribute value in lower case (stupid IE), src,href,rel,action attributes returns as is.
-	 *
-	 * @param  DOMElement 
-	 * @param  String  
-	 * @return String
-	 **/
-	this.attr = function(n, a, v) {
-		if (n && n.nodeType == 1) {
-			if (typeof(a) == 'object') {
-				return $(n).attr(a)
-			} else if (typeof(a) == 'string') {
-				return typeof(v) == 'undefined' ? $(n).attr(a) : $(n).attr(a, v);
-			}
-			// TODO test letters case in IE
-		}
-		return '';
-	}
 	
 	this.cssMatch = function(n, k, v) {
 		// alert(typeof($(n).css(k)))

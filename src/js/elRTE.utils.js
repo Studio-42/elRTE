@@ -21,8 +21,8 @@
 			33, 34, //page-up/page-down
 			35, 36, //home/end
 			45, //ins
-			91, //win/left cmd
-			93, //right cmd,
+			91, //left cmd|win
+			93, //right cmd|win
 			112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, //f1-12
 			144, //num
 			224 //cmd as think firefox
