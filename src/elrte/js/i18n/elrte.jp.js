@@ -22,6 +22,7 @@ elRTE.prototype.i18Messages.jp = {
 	'Tables'         : 'テーブル',
 	'File manager (elFinder)' : 'ファイルマネージャ(elFinder)',
 	// button names
+	'About this software'     : 'このソフトウェアについて',
 	'Save'                    : '保存',
 	'Copy'                    : 'コピー',
 	'Cut'                     : '切り取り',
@@ -160,7 +161,25 @@ elRTE.prototype.i18Messages.jp = {
 	'Groups'        : 'グループ',
 	'Cells'         : 'セル',
 	'Caption'       : 'キャプション',
-	'Inner borders' : '内部ボーダー'
+	'Inner borders' : '内部ボーダー',
+	// about
+	'About elRTE' : 'elRTEについて',
+	'Version' : 'バージョン',
+	'Licence' : 'ライセンス',
+	'elRTE is an open-source JavaScript based WYSIWYG HTML-editor.' : 'elRTEはJavascriptベースのオープンソースWYSIWYG HTMLエディタです。',
+	'Main goal of the editor - simplify work with text and formating (HTML) on sites, blogs, forums and other online services.' : 'このエディタの主な目的は、ウェブサイト、ブログ、フォーラムやその他のオンラインサービスのテキストとHTMLフォーマット入力作業をシンプルにすることです。',
+	'You can use it in any commercial or non-commercial projects.' : '商用・非商用に関わらずご利用いただけます。',
+	'Authors' : '著作者',
+	'Chief developer.' : 'チーフデベロッパー',
+	'Developer. Tech support.' : 'デベロッパー・テクニカルサポート',
+	'Interface designer.' : 'インターフェイスデザイナー',
+	'Spanish localization' : 'スペイン語化ローカライゼーション',
+	'Japanese localization' : '日本語化ローカライゼーション',
+	'Latvian localization' : 'ラトビア語化ローカライゼーション',
+	'German localization' : 'ドイツ語化ローカライゼーション',
+	'Ukranian localization' : 'ウクライナ語化ローカライゼーション',
+	'For more information about this software visit the' : '次のURLにてこのソフトウェアのより詳しい情報を公開しています。',
+	'elRTE website' : 'elRTE ウェブサイト'
 	
 	
 }
