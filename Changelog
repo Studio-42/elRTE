@@ -2,8 +2,14 @@
 
 	* elRTE (1.0):
 		- [feature] update jQuery to 1.4.2 and UI to 1.8.4
-		- [feature] new filter, fixes #134, #152
-		- [bugfix] Table cell properties #156
+		- [feature] new filter, fixes #134, #140, #152
+		- [feature] added RTL/LTR button #111
+		- [feature] better placeholders (youtube, google maps, etc...)
+		- [feature] user-defined replacements
+		- [feature] better icons from famfamfam.org
+		- [bugfix] remove needless el-select param before post #155
+		- [bugfix] table cell properties #156
+		- [bugfix] textarea not posted without name #189
 		- [translation] Latvian, Uldis Plotiņš <uldis.plotins@gmail.com>
 		- [translation] Spanish, Ricardo Obregón <robregonm@gmail.com>
 		- [translation] Japanese, Tomoaki Yoshida <info@yoshida-studio.jp>

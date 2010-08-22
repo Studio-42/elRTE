@@ -10,7 +10,7 @@
 Description
 ===========
 
-Homepage: http://elrte.ru/en
+Homepage: http://elrte.org
 E-mail:   dev@std42.ru
 
 elRTE is an open-source WYSIWYG HTML-editor written in JavaScript using
@@ -41,9 +41,10 @@ Features
  * Interface appearance is configured from one CSS file
  * No templates used
  * i18n. The editor can be easily localized into any language. Currently
-   available in English (default), Russian, German and Ukrainian languages
- * Designed to work with elFinder file manager, but can also be used with any
-   other
+   available in English, German, Japanese, Latvian, Spanish, Russian and
+   Ukrainian languages
+ * Designed to work with elFinder file manager (http://elrte.org/elfinder),
+   but also can be used with any other
  * Flexible for extensions
 
 
@@ -51,21 +52,26 @@ Requirements
 ============
 
 Modern browser. elRTE has been tested in Firefox 3.5+, Internet Explorer 7 & 8,
-Safari 4, Opera 10 and Chrome
+Safari 4/5, Opera 10 and Chrome 4/5/6
 
 
 Documentation
 =============
 
-http://elrte.ru/redmine/wiki/elrte
+http://elrte.org/redmine/wiki/elrte
 
 
 Authors
 =======
 
-Programming: Dmitry "dio" Levashov <dio@std42.ru>
-Project admin, Makefile and testing: Troex Nevelin <troex@fury.scancode.ru>
+Chief developer: Dmitry "dio" Levashov <dio@std42.ru>
+Developer, tech support: Troex Nevelin <troex@fury.scancode.ru>
 Design: Valentin Razumnih
+
+German and Ukranian localization: Vasiliy Razumnyh <rvn@std42.ru>
+Japanese localization: Tomoaki Yoshida <info@yoshida-studio.jp>
+Latvian localization: Uldis Plotiņš <uldis.plotins@gmail.com>
+Spanish localization: Ricardo Obregón <robregonm@gmail.com>
 
 We hope our tools will be helpful for you.
 
