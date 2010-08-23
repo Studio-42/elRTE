@@ -63,10 +63,10 @@
 				}
 				
 				if (o.obj) {
-					f = o.obj.style.float||'';
+					f = o.obj.style['float']||'';
 					a = o.obj.style['vertical-align']||'';
 				} else if (o.embed) {
-					f = o.embed.style.float||'';
+					f = o.embed.style['float']||'';
 					a = o.embed.style['vertical-align']||'';
 				}
 				this.src.margin.val(n);
@@ -277,7 +277,7 @@
 					o.embed.height = h;
 				}
 				if (f) {
-					o.obj.style.float = f;
+					o.obj.style['float'] = f;
 				} else if (a) {
 					o.obj.style['vertical-align'] = a;
 				}

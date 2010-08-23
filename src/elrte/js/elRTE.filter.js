@@ -554,8 +554,8 @@
 						}
 					}
 				}
-				if (o.obj && o.obj.style && o.obj.style.float) {
-					style = ' style="float:'+o.obj.style.float+'"';
+				if (o.obj && o.obj.style && o.obj.style['float']) {
+					style = ' style="float:'+o.obj.style['float']+'"';
 				}
 				self.scripts[id] = o;
 				return '<img src="'+self.url+'pixel.gif" class="elrte-media elrte-media-'+c+' elrte-protected" title="'+(s ? self.rte.utils.encode(s) : '')+'" rel="'+id+'" width="'+w+'" height="'+h+'"'+style+'>';
