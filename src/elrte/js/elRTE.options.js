@@ -53,7 +53,7 @@ elRTE.prototype.options   = {
 	/* user replacement rules */
 	replace : [],
 	/* user restore rules */
-	restore : [ function(html) { return html.replace } ],
+	restore : [],
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',
