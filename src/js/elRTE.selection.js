@@ -130,26 +130,52 @@
 			return this
 		}
 		
+		/**
+		 * Move selection into node next for required [and collapse]
+		 *
+		 * @param  DOMElement
+		 * @param  Boolean|undefined  collapse to start/end or not collapse
+		 * @return elRTE.Selection
+		 **/
 		this.selectNext = function(n, c) {
-			var s = this.dom.next(n), d;
-			if (!s) {
-				s = this.dom.createTextNode("");
-				s.parentNode.appendChild(s);
-			}
+			var s = this.dom.next(n), t;
 			
+			!s && n.parentNode.appendChild((s = this.dom.createTextNode("")));
 			if (c && $.browser.webkit) {
-				s.parentNode.insertBefore((d = this.dom.createTextNode('\uFEFF')), s);
+				s.parentNode.insertBefore((t = this.dom.createTextNode('\uFEFF')), s);
 				$(this.doc).one('keyup mouseup', function() {
-					d.nodeValue = d.nodeValue.replace('\uFEFF', '');
+					t.nodeValue = t.nodeValue.replace('\uFEFF', '');
 				});
 			}
 			this.select(s);
-			this.rte.log(typeof(c))
-			if (typeof(c) != 'undefined') {
-				this.collapse(!!c);
-			}
-			
+			c != void 0 && this.collapse(!!c);
 			return this;
+		}
+		
+		/**
+		 * Surrounds selection with new node. If selection collapsed, do some browser spec stuffs
+		 *
+		 * @param  DOMElement
+		 * @return DOMElement
+		 **/
+		this.surroundContents = function(n) {
+			var s = this.selection(),
+				r = this.range(), t;
+				
+			if (this.collapsed()) {
+				if (n = this.insertNode(n)) {
+					n.appendChild((t = this.dom.createTextNode($.browser.webkit ? '\uFEFF' : '')));
+					this.selectContents(n).collapse(false);
+					$.browser.webkit && $(this.doc).one('keyup mouseup', function() {
+							t.nodeValue = t.nodeValue.replace('\uFEFF', '');
+						});
+				}
+			} else {
+				r.surroundContents(n);
+				s.removeAllRanges();
+				s.addRange(r);
+			}
+			return n;
 		}
 		
 		/**

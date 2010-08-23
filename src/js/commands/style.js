@@ -1,161 +1,97 @@
 (function($) {
-	
+	/**
+	 * @class  parent class for bold/italic etc commands
+	 *
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands._style = function() {
 		
-		
+		/**
+		 * Inititilaze command object
+		 *
+		 * @param  elRTE  editor object
+		 * @return void
+		 **/
 		this.init = function(rte) {
 			var self = this;
 			this.rte = rte;
 			this.dom = rte.dom;
 			this.sel = rte.selection;
-			this._input = false;
-			
+			/**
+			 * Check if this command works with this node
+			 *
+			 * @param  DOMElement  
+			 * @return Boolean
+			 **/
 			this.test = function(n) {
 				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || $(n).css(self.cssProp) == self.cssValue);
 			}
-			
+			/**
+			 * Unwrap node or remove css property
+			 *
+			 * @param  DOMElement  
+			 * @return void
+			 **/
 			this.unwrap = function(n) {
 				self.regExp.test(n.nodeName) ? self.dom.unwrap(n) : $(n).css(self.cssProp, '');
 			}
-			
-			this.rte.bind('keyup', function(e) {
-				if (self.rte.utils.isKeyChar(e.keyCode)) {
-					self._input = true;
-				} else if (self.rte.utils.isKeyArrow(e.keyCode)) {
-					self._input = false;
-				} 
-			}).bind('mouseup', function() {
-				self._input = false;
-			})
-			
 		}
 		
-		
-		
+		/**
+		 * Return command state (this._disabled/this._enabled/this._active)
+		 *
+		 * @return Number
+		 **/
 		this.state = function() {
 			return this.dom.testSelection(this.test, this) ? this._active : this._enabled;
 		}
 		
-		this._unwrap = function(n) {
-			if (this.regExp.test(n.nodeName)) {
-				this.dom.unwrap(n);
-			} else  {
-				$(n).css(this.cssProp, '');
-			}
-		}
-		
+		/**
+		 * Create new nodes/unwrap existed nodes
+		 *
+		 * @return true
+		 **/
 		this.exec = function() {
+			var self = this,
+			 	c = this.sel.collapsed(), 
+				n = this.sel.node(), p, b;
 			
-			var self = this, 
-				n    = this.sel.node(), p, bm, tmp;
-				
-			
-				
-			if (this.sel.collapsed()) {
-				
-				
-				
-				p = this.dom.parents(n, this.test, true);
-				if (p.length) {
-					// unwrap nodes
-					bm = this.sel.bookmark();
-					if (this.dom.parent(bm[1], this.test) == p[0] && this.rte.typing && !this.dom.nextAll(bm[1], 'notEmpty').length) {
-						// carret at the end of node and user is typing - move selection after node
-						bm = this.sel.rmBookmark(bm).selectNext(p[0], true).bookmark();
+			if (this.state() == this._active) {
+				if (c) {
+					p = this.dom.parents(n, this.test, true);
+					b = this.sel.bookmark();
+					// carret at the end of node and user is typing - move selection after node
+					if (this.dom.parent(b[1], this.test) == p[0] && this.rte.typing && !this.dom.nextAll(b[1], 'notEmpty').length) {
+						b = this.sel.rmBookmark(b).selectNext(p[0], true).bookmark();
 						p.shift();
 					}
 					// unwrap parents
 					$.each(p, function() { self.unwrap(this); });
-					this.sel.toBookmark(bm).collapse(true);
+					this.sel.toBookmark(b).collapse(true);
 				} else {
-					// create node
-					n = this.dom.create(this.node);
-					n.appendChild((tmp = this.dom.createTextNode($.browser.webkit ? '\uFEFF' : '')));
-					if ($.browser.webkit) {
-						$(this.rte.active.document).one('keyup mouseup', function() {
-							tmp.nodeValue = tmp.nodeValue.replace('\uFEFF', '');
-						});
-					}
-					if ((n = this.sel.insertNode(n))) {
-						this.sel.selectContents(n).collapse(false);
-					}
-				}
-				return true;
-			} else {
-				
-				if (this.state() == this._active) {
-					this.rte.log('unwrap')
-					
 					n = this.dom.smartUnwrap(this.sel.get(), false, this.test, this.unwrap);
 					this.sel.select(n[0], n[1]);
-					return true
 				}
-				
-				return;
-				
-				var sel = this.sel.get(),
-					s = sel[0],
-					e = sel[sel.length-1],
-					l = this.dom.parents(s, this.test)
-					r = this.dom.parents(e, this.test),
-					c = this.dom.filter(sel, function(n) { return self.test(n) || self.dom.find(n, self.test).length; });
-
-				if (l.length || r.length || c.length) {
-					// this.rte.log('unwrap')
-					
-					l = l.length ? l.pop() : false
-					r = r.length ? r.pop() : false
-					
-					if (l == r) {
-						this.rte.log(this.dom.slice(l, s, e, false))
-					} else {
-						if (l) {
-							this.rte.log(this.dom.split(l, s))
-						}
-						if (r) {
-							this.rte.log(this.dom.split(r, e, true))
-						}
-					}
-					
-					return
-					(l = l.length ? l.pop() : false) && this.dom.split(l, s, false, false);
-					(r = r.length ? r.pop() : false) && this.dom.split(r, e, true,  false);
-					return
-					(l = l.length ? l.pop() : false) && this.dom.slice(l, s);
-					(r = r.length ? r.pop() : false) && this.dom.slice(r, null, e);
-					l && $.each(this.dom.parents(s, this.test), function() { self._unwrap(this); });
-					r && $.each(this.dom.parents(e, this.test), function() { self._unwrap(this); });
-
-					$.each(c, function() {
-						$.each(self.dom.find(this, self.test), function() {
-							self._unwrap(this);
-						});
-						if (self.dom.is(this, self.test)) {
-							if (this === s) {
-								s = this.firstChild;
-							} else if (this === e) {
-								e = this.lastChild;
-							}
-							self._unwrap(this)
-						}
-					})
-					self.rte.log(s)
-					self.rte.log(e)
-					self.sel.select(s, e)
-					
+			} else {
+				if (c) {
+					this.sel.surroundContents(this.dom.create(this.node));
 				} else {
-					this.rte.log('wrap')
+					
 				}
-				
 			}
-				
+			return true;
 		}
 		
 	}
 	
 	elRTE.prototype.commands._style.prototype = elRTE.prototype.command;
 	
-	
+	/**
+	 * @class create/remove "strong" nodes
+	 *
+	 * @param  elRTE
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.bold = function(rte) {
 		this.name     = 'bold'
 		this.title    = 'Bold';
@@ -168,6 +104,12 @@
 		
 	}
 	
+	/**
+	 * @class create/remove "em" nodes
+	 *
+	 * @param  elRTE
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.italic = function(rte) {
 		this.name     = 'italic'
 		this.title    = 'Italic';
