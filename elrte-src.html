@@ -66,7 +66,7 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				height   : 300,
-				debug : ['error'],
+				debug : ['error', 'even'],
 				toolbar  : 'default',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
@@ -74,6 +74,7 @@
 					{
 						title : 'very loooooooooooooooooooooooooooooooooooooooong doc name',
 						content : '<b>asdf</b>', 
+						name : 'doc-2',
 						closable : true
 					},
 					{ title : 't'}
@@ -84,6 +85,16 @@
 			}
 
 			var rte = jQuery('#editor').elrte(opts);
+			
+			var f = function(e) { alert(e.data.id) }
+
+			// window.console.log(rte[0].elrte.content())
+			// rte[0].elrte.content({})
+			// window.console.log(rte[0].elrte.content('elrte-editor-document-2', 'text'))
+			// rte[0].elrte.bind('change', f)
+
+			// rte[0].elrte.one('changePos', f)
+			// rte[0].elrte.unbind('changePos', f)
 			
 			// window.console.log(rte[0].elrte.content())
 			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
@@ -133,9 +144,9 @@
 		
 				
 		<p>
-			<strong><em>Полотенце,</em> <s>возможно,</s> самый необходимый  предмет ! для межзвездного путешественника.</strong>
+			<strong><em color="red">Полотенце,</em> <s>возможно,</s> самый необходимый  предмет ! для межзвездного путешественника.</strong>
 			<em>Оно <strong>имеет некоторую</strong> практическую ценность</em> - вы можете: завернуться в него, чтобы согреться, 
-			прыгая по холодным лунам Джаглан-Беты; <b>использовать</b> его, <em>как подстилку,</em><span style="color:grey">лежа на мраморном песке пляжей <span style="text-decoration:underline">Сантрагинуса V</span> и вдыхая пьянящий морской воздух; </span>
+			прыгая по холодным лунам Джаглан-Беты; <b>использовать</b> его, <em>как подстилку,</em><span style="color:red">лежа на мраморном песке пляжей <span style="text-decoration:underline">Сантрагинуса V</span> и вдыхая пьянящий морской воздух; </span>
 			спать на нем под огненно-красными звездами на пустынной планете Какрафун; 
 			сделать из него парус, <span style="font-weight:bold">чтобы <b>спуститься</b> на плоту</span> по ленивой реке Мотт; 
 			намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; 
