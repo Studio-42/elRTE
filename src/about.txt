@@ -1,0 +1,8 @@
+/*!
+ * elRTE WYSIWYG HTML-editor 1.0
+ * http://elrte.org
+ *
+ * Copyright 2010, Studio 42 Ltd.
+ * Licensed under a 3 clauses BSD license
+ */
+

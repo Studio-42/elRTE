@@ -53,7 +53,8 @@ ellib_img_obj_dst=	${IMG}/loading.gif
 
 # elRTE
 elrte_css=        	elrte.full.css
-elrte_css_obj=    	${SRC}/ellib/css/elcommon.css \
+elrte_css_obj=    	${SRC}/about.txt \
+			${SRC}/ellib/css/elcommon.css \
 			${SRC}/ellib/css/elcolorpicker.css \
 			${SRC}/ellib/css/eldialogform.css \
 			${SRC}/ellib/css/elpaddinginput.css \
@@ -62,7 +63,8 @@ elrte_css_obj=    	${SRC}/ellib/css/elcommon.css \
 
 elrte_js=         	elrte.full.js
 elrte_js_min=     	elrte.min.js
-elrte_js_obj=   	${SRC}/ellib/js/eli18n.js \
+elrte_js_obj=   	${SRC}/about.txt \
+			${SRC}/ellib/js/eli18n.js \
 			${SRC}/ellib/js/eldialogform.js \
 			${SRC}/ellib/js/jquery.elcolorpicker.js \
 			${SRC}/ellib/js/jquery.elborderselect.js \
@@ -88,7 +90,8 @@ elrte-install: elrte ellib-install
 	${CP} ${elrte_css} ${SRC}/elrte/css/elrte-inner.css ${CSS}/
 	${CP} ${elrte_js}  ${JS}/
 	${CP} ${SRC}/elrte/js/i18n/elrte.??.js ${I18N}/
-	${CP} ${SRC}/elrte/images/elrte-*      ${IMG}/
+	${CP} ${SRC}/elrte/images/*.png        ${IMG}/
+	${CP} ${SRC}/elrte/images/pixel.gif    ${IMG}/
 
 ${elrte_css}:
 	${CAT} ${elrte_css_obj} > $@
@@ -98,7 +101,8 @@ ${elrte_js}:
 
 elrte-uninstall:
 	${RM} -f ${CSS}/${elrte_css} ${CSS}/elrte-inner.css \
-	         ${JS}/${elrte_js} ${JS}/${elrte_js_min} ${I18N}/elrte.??.js ${IMG}/elrte-* 
+	         ${JS}/${elrte_js} ${JS}/${elrte_js_min} ${I18N}/elrte.??.js \
+	         ${IMG}/*.png ${IMG}/pixel.gif
 
 clean-elrte:
 	${RM} -f ${elrte_css} ${elrte_js} ${elrte_js_min} 
