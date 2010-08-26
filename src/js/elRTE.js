@@ -29,7 +29,7 @@
 		this.version   = '1.1 dev';
 		/* build date */
 		this.build     = '20100810';
-		/* is os - macos? */
+		/* is macos X? */
 		this.macos     = navigator.userAgent.indexOf('Mac') != -1;
 		/* messages language */
 		this.lang      = 'en';
@@ -100,7 +100,12 @@
 			/* called before paste in document */
 			'paste'     : []
 			};
-			
+		
+		/**
+		 * Initilize editor
+		 *
+		 * @return void
+		 **/	
 		this.init = function() {
 			var c, ui, p, id, ids=[];
 			/* object with various utilits */	
@@ -183,7 +188,7 @@
 		 * @param  String|Number  document id/index (or undefined for active document)
 		 * @return Object
 		 **/
-		this.getDocument = function(id) {
+		this.document = function(id) {
 			return this.documents[id]||this.active;
 		}
 		
@@ -219,8 +224,13 @@
 			return this;
 		}
 		
-	
-		
+		/**
+		 * Remove event listener if exists
+		 *
+		 * @param  String    event name
+		 * @param  Function  callback
+		 * @return elRTE
+		 */
 		this.unbind = function(e, c) {
 			var l = this.listeners[e] || [],
 				i = l.indexOf(c);
@@ -229,6 +239,14 @@
 			return this;
 		}
 		
+		/**
+		 * Bind callback to event(s) The callback is executed at most once per event.
+		 * To bind multiply events at once, separate events names by space
+		 *
+		 * @param  String    event name
+		 * @param  Function  callback
+		 * @return elRTE
+		 */
 		this.one = function(e, c) {
 			var self = this,
 				h = $.proxy(c, function(e) {
@@ -266,7 +284,6 @@
 			return this;
 		}
 		
-		
 		/**
 		 * Send notification to all event subscribers
 		 *
@@ -293,18 +310,13 @@
 			return this;
 		}
 		
-		this.createDocument = function(src) {
-			var d = new this.document(this.id+'-document-', src)
-		}
-		
 		/**
-		 * Open document in editor and return its id.
+		 * Open document in editor and return document id in editor.
 		 * Document may be dom element or js object:
 		 * {
 		 *   title    : document title to display in tab, not required
 		 *   name     : name for textarea, not required,if not set - id used,
 		 *   content  : document text, required,
-		 *   closable : allow close document,
 		 *   save     : object (not implemented yet)
 		 * }
 		 *
@@ -312,62 +324,89 @@
 		 * @return String
 		 **/
 		this.open = function(d) {
-			if (!d || (d.nodeType != 1 && typeof(d.content) != 'string')) {
-				return;
+			var self = this, o = this.options, html;
+			
+			function sync(d) {
+				t = d.wysiwyg() ? 'source' : 'wysiwyg';
+				d.set(self.filter.proccess(t, d.get()), t);
 			}
-			this.createDocument(d)
-			var self = this,
-				o    = this.options,
-				ndx  = ++this.ndx,
-				id   = this.id+'-document-'+ndx,
-				$d   = $(d),
-				n    = d.nodeType == 1,
-				ta  = n && d.nodeName == 'TEXTAREA',
-				c   = n ? $d[ta ? 'val' : 'html']() : ''+d.content,
-				html,
-				doc  = {
-					id        : id, 
-					ndx       : ndx, 
-					title     : d.title||this.i18n('Document')+' '+ndx,
-					closeable : $d.hasClass('closable')||d.closable||o.allowCloseDocs,
-					source    : (ta ? $d : $('<textarea name="'+((n ? $d.attr('name')||$d.attr('id') : d.name)||id)+'" />').val(c)).addClass('elrte-source'),
-					editor    : $('<iframe frameborder="0" class="elrte-editor" />')
-				};
+			
+			function doc(src) {
+				var ndx = ++self.ndx, title, $src;
+				
+				this.id     = self.id+'-document-'+ndx;
+				this.title  = self.i18n('Document')+' '+ndx;
+				this.editor = $('<iframe frameborder="0" class="elrte-editor"/>');
 
+				if (src.nodeType == 1) {
+					$src  = $(src);
+					title = $src.attr('title');
+					this.source = src.nodeName == 'TEXTAREA' ? $src : $('<textarea name="'+($src.attr('name')||$src.attr('id')||this.id)+'"/>').val($src.html());
+				} else {
+					src   = $.extend({name : '', content : '', title : ''}, src);
+					title = src.title;
+					this.source = $('<textarea name="'+(src.name||this.id)+'"/>').val(' '+src.content);
+				}
+				this.source.addClass('elrte-source');
+				if (title) {
+					this.title = title;
+				}
+
+				this.wysiwyg = function() {
+					return /* this.editor.is(':visible') ||*/ this.editor.css('display') != 'none';
+				}
+
+				this.get = function(t) {
+					return (t ? t == 'wysiwyg' : this.wysiwyg()) ? $(this.document.body).html() : this.source.val();
+				}
+				
+				this.set = function(c, t) {
+					(t ? t == 'wysiwyg' : this.wysiwyg()) ? $(this.document.body).html(c) :  this.source.val(c);
+				}
+				
+				this.focus = function() {
+					this.wysiwyg() ? this.window.focus() : this.source[0].focus();
+				}
+				
+				this.toggle = function() {
+					if (o.allowSource && this.editor.parent().is(':visible')) {
+						// self.trigger('toggle');
+						sync(this)
+						this.editor.add(this.source).toggle();
+						this.focus();
+						self.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
+					} 
+				}
+			}
+			
+			d = new doc(d);
+			
 			/* render document */
-			this.view.add(doc);
-
+			this.view.add(d);
+			
 			/* add to editor documents */
-			doc.window   = doc.editor[0].contentWindow;
-			doc.document = doc.editor[0].contentWindow.document;
-			this.documents[id] = doc;
-
+			d.window   = d.editor[0].contentWindow;
+			d.document = d.editor[0].contentWindow.document;
+			this.documents[d.id] = d;
+			
 			/* create body in iframe */
-			html = o.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
+			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
 			$.each(o.cssfiles, function() {
 				html += '<link rel="styleshwysiwygeet" type="text/css" href="'+this+'"/>';
 			});
-			doc.document.open();
-			doc.document.write(o.doctype+html+'</head><body>'+c+' </body></html>');
-			doc.document.close();
-
-			// add methods to document
-			doc.wysiwyg = (function(s) { return function() { return s.editor.is(':visible') || s.editor.css('display') != 'none'; }})(doc);
-			doc.get     = (function(s) { return function(t) { return (t ? t == 'wysiwyg' : s.wysiwyg()) ? $(s.document.body).html() : s.source.val(); }})(doc);
-			doc.set     = (function(s) { return function(c, t) { (t ? t == 'wysiwyg' : s.wysiwyg()) ? $(s.document.body).html(c) :  s.source.val(c); }})(doc);
-			doc.focus   = (function(s) { return function() { if (s.editor.parent().is(':visible')) { s.editor.is(':visible') ? s.window.focus() : s.source[0].focus();} return true; }})(doc);
-			doc.toggle  = o.allowSource
-				? (function(s) { return function() { return !!(s.editor.parent().is(':visible') && s.editor.add(s.source).toggle() && s.focus()); }})(doc)
-				: function() { return false };
-
+			
+			d.document.open();
+			d.document.write(o.doctype+html+'</head><body>'+this.filter.wysiwyg(d.get('source'))+' </body></html>');
+			d.document.close();
+			
 			/* make iframe editable */
 			if ($.browser.msie) {
-				doc.document.body.contentEditable = true;
+				d.document.body.contentEditable = true;
 			} else {
-				try { doc.document.designMode = "on"; } 
+				try { d.document.designMode = "on"; } 
 				catch(e) { }
 			}
-
+			
 			/* bind events to document */
 
 			// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
@@ -375,7 +414,7 @@
 			// i hope only a few nerds use opera on mac :)
 			// TODO test on linux/win
 			if ($.browser.opera && !this.macos) {
-				$(doc.document).bind('keydown', function(e) {
+				$(d.document).bind('keydown', function(e) {
 					if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
 						e.stopPropagation();
 						e.preventDefault();
@@ -386,8 +425,8 @@
 					}
 				});
 			}
-
-			$(doc.document).bind('paste', function(e) {
+			
+			$(d.document).bind('paste', function(e) {
 				// paste handler
 				if (!self.options.allowPaste) {
 					// paste denied 
@@ -483,13 +522,13 @@
 				self.trigger(e);
 			})
 
-			this.trigger('open', { id : doc.id });
-
-			/* load document into empty editor after editor was loaded */
-			if (!this.init && (this.count() == 1 || !o.loadDocsInBg)) {
+			this.trigger('open', { id : d.id });
+			
+			if (!this.init && this.count() == 1) {
 				this.focus(d.id);
 			}
-			return id;
+			
+			return d.id;
 		}
 		
 		/**
@@ -499,7 +538,7 @@
 		 * @return elRTE
 		 */
 		this.close = function(id) {
-			var d = this.getDocument(id);
+			var d = this.document(id);
 
 			if (d) {
 				// switch to prev/next document before close active
@@ -522,7 +561,7 @@
 		 * @return elRTE
 		 **/
 		this.focus = function(id) {
-			var d = this.getDocument(id), 
+			var d = this.document(id), 
 				a = this.active;
 
 			if (d) {
@@ -551,63 +590,8 @@
 		 * @return elRTE
 		 */
 		this.toggle = function() {
-			this.active && this.sync(this.active.id) && this.active.toggle() && this.trigger(this.active.wysiwyg() ? 'wysiwyg' : 'source');
+			this.active && this.active.toggle();
 			return this;
-		}
-		
-		/**
-		 * Sync data between editor/source in active document or in all documents
-		 * If editor is visible for now, data copy from editor to source and otherwise
-		 *
-		 * @param  String  document id, undefined to sync all documents 
-		 * @return elRTE
-		 **/
-		this.sync = function(id) {
-			var self = this, t;
-
-			$.each(id && (d = this.getDocument(id)) ? [d] : this.documents, function() {
-				t = this.wysiwyg() ? 'source' : 'wysiwyg';
-				this.set(self.filter.proccess(t, this.get()), t);
-				self.debug('sync: '+this.id);
-			});
-			return this;
-		}
-		
-		/**
-		 * Get content from required/active document
-		 * If document id not set - return active document content
-		 *
-		 * @param  String  document id 
-		 * @return String
-		 **/
-		elRTE.prototype.get = function(id, o) {
-			var d = this.getDocument(id);
-			if (d) {
-				if (!o.raw) {
-					d.wysiwyg() ? this.sync(d.id) : d.set(self.filter.proccess('source2source', d.get()));
-				}
-				return d.get('source');
-			}
-		}
-		
-		/**
-		 * Set required/active document content
-		 * If document id not set - set active document content
-		 *
-		 * @param  String   new content
-		 * @param  String   document id 
-		 * @param  Object  set options: {raw : true|false (do not clear content), quiet : true|false (do not rise change event)}
-		 * @return String
-		 **/
-		this.set = function(c, id, o) {
-			var d = this.getDocument(id);
-			if (d) {
-				o = o||{};
-				d.set(o.raw ? c : this.filter.proccess(d.wysiwyg() ? 'wysiwyg' : 'source', c));
-				d.focus();
-				!o.quiet && d == this.active && this.trigger('change', { id : d.id });
-				return true;
-			}
 		}
 		
 		/**
@@ -621,19 +605,19 @@
 		 **/
 		this.content = function() {
 			var self = this,
-				a = arguments,
-				d = this.documents[a[0]],
-				id = this.active ? this.active.id : void(0), 
+				a    = arguments,
+				d    = this.documents[a[0]],
+				id   = this.active ? this.active.id : void(0), 
 				c, o, d;
 
 			function get(id) {
-				return (d = self.getDocument(id))
-					? self.filter.proccess(d.wysiwyg() ? 'wysiwyg' : 'source2source', d.get())
+				return ((d = self.document(id)))
+					? self.filter.proccess(d.wysiwyg() ? 'source' : 'source2source', d.get())
 					: '';
 			}
 			
 			function set(id, c) {
-				if ((d = self.getDocument(id))) {
+				if ((d = self.document(id))) {
 					d.set(self.filter.proccess(d.wysiwyg() ? 'wysiwyg' : 'source', ''+c));
 					d.focus();
 					d == self.active && self.trigger('change', { id : d.id });
@@ -655,6 +639,97 @@
 			return c ? set(id, c, o) : get(id, o);
 		}
 		
+		/**
+		 * Return message translated into current language
+		 *
+		 * @param  String  message
+		 * @return String
+		 */
+		this.i18n = function(m) {
+			return this.messages[m]||m;
+		}
+		
+		/**
+		 * Return command/config options
+		 *
+		 * @param  String  config type (cmd/plugin)
+		 * @param  String  command/plugin name
+		 * @param  String  option name (if not set - return all config)
+		 * @return String|Array
+		 */
+		this._conf = function(t, n, o) {
+			var c = this.options[t == 'cmd' ? 'commandsConf' : 'pluginsConf'];
+			return o
+				? (c && c[n] ? c[n][o] : false)
+				: (c ? c[n] : false);
+		}
+
+		/**
+		 * Return command options
+		 *
+		 * @param  String  command name
+		 * @param  String  option name (if not set - return all config)
+		 * @return String|Array
+		 */
+		this.commandConf = function(n, o) {
+			return this._conf('cmd', n, o);
+		}
+		
+		/**
+		 * Return plugin options
+		 *
+		 * @param  String  plugin name
+		 * @param  String  option name (if not set - return all config)
+		 * @return String|Array
+		 */
+		this.pluginConf = function(n, o) {
+			return this._conf('pl', n, o);
+		}
+		
+		/**
+		 * Exec editor method return result
+		 *
+		 * @param  String  editor method name
+		 * @return mixed
+		 */
+		this.exec = function(cmd) {
+			var a = Array.prototype.slice.call(arguments);
+			a.shift();
+			
+			return this[cmd] ? this[cmd].apply(this, a) : false;
+			
+			return this[cmd]
+				? this[cmd].apply(this, a)
+				: this._commands[cmd] ? this._commands[cmd].exec.apply(this._commands[cmd], a) : false;
+		}
+		
+		this.cmdLoaded = function(cmd) {
+			return !!this._commands[cmd];
+		}
+		
+		this.cmdState = function(cmd) {
+			var c = this._commands[cmd]; 
+			return c ? c.state() : -1;
+		}
+		
+		this.cmdValue = function(cmd) {
+			var c = this._commands[cmd]; 
+			return c ? c.value() : false;
+		}
+		
+		/**
+		 * Exec command method "exec" return result
+		 *
+		 * @param  String  editor command name
+		 * @return mixed
+		 */
+		this.execCmd = function(cmd) {
+			var c = this._commands[cmd],
+				a = Array.prototype.slice.call(arguments);
+			a.shift();
+			return c ? c.exec.apply(c, a) : false;
+		}
+		
 		this.init();
 		this.timeEnd('load');
 		// this.log(this)
@@ -663,17 +738,6 @@
 	/*** API ***/
 
 
-	
-	elRTE.prototype.document = function(id, src) {
-		this.id = id;
-		this.title = '',
-		this.source;
-		this.editor;
-		if (src.nodeType != 1) {
-			src = $.extend({ content : ' ' }, src)
-		}
-		window.console.log(src)
-	}
 	
 	/**
 	 * Show editor if hidden
@@ -701,26 +765,7 @@
 		return this;
 	}
 	
-	/**
-	 * Exec command if exists
-	 *
-	 * @param  String  command name
-	 * @param  Object  command options
-	 * @return Boolean
-	 */
-	elRTE.prototype.exec = function(c, o) {
-		o = $.isArray(o) ? o : [];
-		// this.log(c)
-		// this.log(o)
-		if (this[c]) {
-			return this[c].apply(this, o);
-		}
-		
-		if (this._commands[c] && this._commands[c].exec(o.length?o[0]:{})) {
-			this.trigger('change');
-			return true;
-		}
-	}
+
 
 	/**
 	 * Return true if command enabled
@@ -751,30 +796,9 @@
 
 	/* SERVICE METHODS */
 	
-	/**
-	 * Return message translated into current language
-	 *
-	 * @param  String  m message
-	 * @return String
-	 */
-	elRTE.prototype.i18n = function(m) {
-		return this.messages[m]||m;
-	}
+	
 
-	elRTE.prototype._conf = function(t, n, o) {
-		var c = this.options[t == 'cmd' ? 'commandsConf' : 'pluginsConf'];
-		return o
-			? (c && c[n] ? c[n][o] : false)
-			: (c ? c[n] : false);
-	}
 
-	elRTE.prototype.commandConf = function(n, o) {
-		return this._conf('cmd', n, o);
-	}
-
-	elRTE.prototype.pluginConf = function(n, o) {
-		return this._conf('pl', n, o);
-	}
 
 	
 
@@ -844,14 +868,16 @@
 			}
 		});
 		
+		this.exec = function() {
+			var e = this[0];
+			return e && e.elrte ? e.elrte.exec.apply(e.elrte, Array.prototype.slice.call(arguments)) :false;
+		}
+		
 		if (this.length && typeof(o) == 'string') {
-			var a = Array.prototype.slice.call(arguments)
-			a.shift()
-			// window.console.log(a)
-			// return this[0].elrte.exec.apply(this[0].elrte, a)
-			return this[0].elrte.exec(o, a);
+			return this[0].elrte ? this[0].elrte.exec.apply(this[0].elrte, Array.prototype.slice.call(arguments)) : false;
 		}
 		return this;
 	}
+	
 	
 })(jQuery);

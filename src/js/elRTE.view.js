@@ -49,16 +49,16 @@
 				.hide()
 				.appendTo(this.workzone);
 			
-			if (d.closeable) {
-				tab.append($('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
-					var p = $(this).parent();
-					e.preventDefault();
-					e.stopPropagation();
-					if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
-						self.rte.close(p.attr('rel').substr(1));
-					}
-				}));
-			}
+			// if (d.closeable) {
+			// 	tab.append($('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
+			// 		var p = $(this).parent();
+			// 		e.preventDefault();
+			// 		e.stopPropagation();
+			// 		if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
+			// 			self.rte.close(p.attr('rel').substr(1));
+			// 		}
+			// 	}));
+			// }
 			this.updateTabsbar();
 		}
 

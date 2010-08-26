@@ -77,7 +77,7 @@
 						name : 'doc-2',
 						closable : true
 					},
-					{ title : 't'}
+					// { }
 					// $('#editor3')[0]
 					// {label : 'doc3', selector : '#editor2'}
 				]
@@ -86,7 +86,24 @@
 
 			var rte = jQuery('#editor').elrte(opts);
 			
-			var f = function(e) { alert(e.data.id) }
+			// window.console.log(rte[0].elrte.exec('content', 'elrte-editor-document-2', 'new contet'))
+			// rte[0].elrte.exec('fullscreen', {a : 1, b : 2})
+			window.console.log(rte.exec('isWysiwyg'))
+			rte.elrte('toggle')
+			window.console.log(rte.exec('isWysiwyg'))
+			window.console.log(rte.exec('cmdState', 'fullscreen'))
+			rte.exec('execCmd', 'fullscreen')
+			window.console.log(rte.exec('cmdState', 'fullscreen'))
+
+			window.console.log(rte.exec('content', 'elrte-editor-document-2', 'new content'))
+			// var d = rte[0].elrte.document('elrte-editor-document-2');
+			// d.toggle()
+			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
+			// rte[0].elrte.content('elrte-editor-document-2', '<b>new content</b>')
+			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
+			// rte[0].elrte.focus('elrte-editor-document-2').toggle()
+			// d.toggle()
+			// d.toggle()
 
 			// window.console.log(rte[0].elrte.content())
 			// rte[0].elrte.content({})
@@ -152,6 +169,7 @@
 			намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; 
 			обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля
 		</p>
+		
 	</div>
 
 	<input type="submit" name="" value="go" id="">

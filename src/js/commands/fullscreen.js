@@ -51,7 +51,7 @@
 		 **/
 		this.exec = function() {
 			var l = this.parents.length;
-			
+
 			if (this.editor.hasClass(this._class)) {
 				// set normal view
 				this.view.resizable(true);

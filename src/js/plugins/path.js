@@ -23,10 +23,12 @@
 		rte.bind('load', function() {
 			rte.view.statusbar.show();
 		}).bind('source', function() {
-			self.clean();
+
+			setTimeout( function() {self.clean();}, 1)
 		}).bind('close', function(e) {
 			e.data.id == rte.active.id && self.clean();
 		}).bind('wysiwyg change changePos', function(e) {
+
 			setTimeout(function() {
 				var n = rte.selection.node(),
 					p = [], 
@@ -42,7 +44,7 @@
 							// .hover((function(n) { return function(e) { $(n).toggleClass(self.cssClass, e.type=='mouseenter') } })(n[l]))
 					);
 				}
-			}, 0);
+			}, 1);
 		});
 	}
 	

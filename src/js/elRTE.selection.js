@@ -13,13 +13,13 @@
 			// on focus - work with active document
 			self.win = self.rte.active.window;
 			self.doc = self.rte.active.document;
-		}).bind('source close', function(e) {
+		}, true).bind('source close', function(e) {
 			// on source mode or on close active document switch to global objects to avoid errors
 			if (e.type == 'source' || e.data.id == self.rte.active.id) {
 				self.win  = window;
 				self.doc  = document;
 			}
-		});
+		}, true);
 		
 		/**
 		 * Return selection object
