@@ -23,18 +23,20 @@
 		}
 		
 		this.time('load')
-		var self = this;
+		var self = this, t = $(t);
 		
 		/* version */
 		this.version   = '1.1 dev';
 		/* build date */
 		this.build     = '20100810';
+		
 		/* is macos X? */
 		this.macos     = navigator.userAgent.indexOf('Mac') != -1;
 		/* messages language */
 		this.lang      = 'en';
 		/* DOM element on witch elRTE created */
-		this.target    = $(t).hide()[0];
+		this.target    = t.hide()[0];
+		this.form = t.parents('form');
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
 		/* cuurent toolbar name */
@@ -141,7 +143,7 @@
 				}
 			});
 			/* add target node as document if enabled */
-			this.options.loadTarget && this.options.documents.unshift(t);
+			this.options.loadTarget && this.options.documents.unshift(this.target);
 			/* load documents */
 			$.each(this.options.documents, function(i, d) {
 				if (id = self.open(d)) {
@@ -152,7 +154,7 @@
 			ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
 
 			/* bind to parent form save events */
-			this.view.editor.parents('form').bind('submit', function() { self.trigger('save'); });
+			this.form.bind('submit', $.proxy(this.save, this));
 
 			/* complete editor load */
 			this.trigger('load');
@@ -167,6 +169,8 @@
 			
 			delete this.init;
 		}
+		
+
 		
 		/**
 		 * Return number of loaded documents
@@ -332,20 +336,26 @@
 			}
 			
 			function doc(src) {
-				var ndx = ++self.ndx, title, $src;
+				var ndx = ++self.ndx, title, $src, ta;
 				
 				this.id     = self.id+'-document-'+ndx;
 				this.title  = self.i18n('Document')+' '+ndx;
 				this.editor = $('<iframe frameborder="0" class="elrte-editor"/>');
+				this.type   = 'post';
 
 				if (src.nodeType == 1) {
-					$src  = $(src);
-					title = $src.attr('title');
-					this.source = src.nodeName == 'TEXTAREA' ? $src : $('<textarea name="'+($src.attr('name')||$src.attr('id')||this.id)+'"/>').val($src.html());
+					$src        = $(src);
+					title       = $src.attr('title');
+					this.name   = $src.attr('name')||$src.attr('id')||id;
+					this.url    = $src.attr('rel')||'';
+					this.source = src.nodeName == 'TEXTAREA' ? $src : $('<textarea name="'+this.name+'"/>').val($src.html());
 				} else {
-					src   = $.extend({name : '', content : '', title : ''}, src);
-					title = src.title;
-					this.source = $('<textarea name="'+(src.name||this.id)+'"/>').val(' '+src.content);
+					src         = $.extend({name : '', content : '', title : '', url : '', type : ''}, src);
+					title       = src.title;
+					this.name   = src.name||this.id;
+					this.url    = src.url;
+					this.type   = src.type;
+					this.source = $('<textarea name="'+this.name+'"/>').val(' '+src.content);
 				}
 				this.source.addClass('elrte-source');
 				if (title) {
@@ -370,8 +380,7 @@
 				
 				this.toggle = function() {
 					if (o.allowSource && this.editor.parent().is(':visible')) {
-						// self.trigger('toggle');
-						sync(this)
+						sync(this);
 						this.editor.add(this.source).toggle();
 						this.focus();
 						self.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
@@ -640,15 +649,49 @@
 			return c ? set(id, c, o) : get(id, o);
 		}
 		
+		/**
+		 * Update textareas contents for required/all documents
+		 * 
+		 * @param  String  document id
+		 * @return elRTE
+		 */
 		this.updateSource = function(id) {
 			var self = this,
-				d = this.documents,
-				docs = d[id] ? [d[id]] : d;
-			this.log(docs);
-			$.each(docs, function(i, d) {
-				var w = d.wysiwyg();
-				d.set(self.filter.proccess(w ? 'source' : 'source2source', d.get()), 'source')
-			})
+				d = this.documents;
+			$.each(d[id] ? [d[id]] : d, function(i, d) {
+				d.set(self.filter.proccess(w = d.wysiwyg() ? 'source' : 'source2source', d.get()), 'source');
+			});
+			return this;
+		}
+		
+		/**
+		 * Save editor documents
+		 * If documents has own url for save - submit to this urls, others submit with parent form
+		 *
+		 * @param  Event
+		 * @return void
+		 */
+		this.save = function(e) {
+			var self = this, 
+				url  = this.form.attr('action'), 
+				t, f;
+				
+			if ((!e || !e.type) && this.form.length ) {
+				return this.form.submit();
+			} 
+
+			self.updateSource();
+			self.trigger('save');
+			t = $('<iframe name="elrte_trg" style="position:absolute;left:-1000px"/>').appendTo('body');
+			$.each(this.documents, function(i, d) {
+				if (d.url && d.url != url) {
+					f = $('<form action="'+d.url+'" method="'+(d.type||self.form.attr('method')||'post')+'" target="elrte_trg" />')
+						.append(d.source)
+						.appendTo('body')
+						.submit();
+				}
+			});
+			t.remove();
 		}
 		
 		/**

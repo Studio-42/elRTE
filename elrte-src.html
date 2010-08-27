@@ -75,7 +75,9 @@
 						title : 'very loooooooooooooooooooooooooooooooooooooooong doc name',
 						content : '<b>asdf</b>', 
 						name : 'doc-2',
-						closable : true
+						closable : true,
+						url : 'post2.php',
+						type : 'post'
 					},
 					// { }
 					// $('#editor3')[0]
@@ -111,6 +113,9 @@
 				rte.exec('val', 'elrte-editor-document-2', '<b>new content</b>')
 				rte.exec('updateSource', 'elrte-editor-document-2')
 				window.console.log(rte.exec('val', 'elrte-editor-document-2'))
+			})
+			$('#save').click(function(e) {
+				rte.exec('save')
 			})
 		})
 	</script>
@@ -158,6 +163,7 @@
 	<div id="prev" class="button">&laquo;Prev</div>
 	<div id="next" class="button">Next&raquo;</div>
 	<div id="updsrc" class="button">Update source</div>
+	<div id="save" class="button">Save</div>
 	
 	<form method="post" action="post.php" style="position:relative">
 	<div id="editor" name="abr" title="Document">
