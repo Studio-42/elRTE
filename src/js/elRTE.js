@@ -595,15 +595,16 @@
 		}
 		
 		/**
-		 * Wrapper for get/set methods
-		 * this.content() - returns active document content
-		 * this.content(id) - returns document with id content
-		 * this.content('some text..', [options]) - set active document content
-		 * this.content(id, 'some text..', [options]) - set document with id content
+		 * Get/set editor content.
+		 * Usage:
+		 * this.val() - returns active document content
+		 * this.val(id) - returns document with id content
+		 * this.val('some text..') - set active document content
+		 * this.val(id, 'some text..') - set document with id content
 		 *
 		 * @return String|Boolean
 		 **/
-		this.content = function() {
+		this.val = function() {
 			var self = this,
 				a    = arguments,
 				d    = this.documents[a[0]],
@@ -637,6 +638,17 @@
 				}
 			}
 			return c ? set(id, c, o) : get(id, o);
+		}
+		
+		this.updateSource = function(id) {
+			var self = this,
+				d = this.documents,
+				docs = d[id] ? [d[id]] : d;
+			this.log(docs);
+			$.each(docs, function(i, d) {
+				var w = d.wysiwyg();
+				d.set(self.filter.proccess(w ? 'source' : 'source2source', d.get()), 'source')
+			})
 		}
 		
 		/**
@@ -703,22 +715,50 @@
 				: this._commands[cmd] ? this._commands[cmd].exec.apply(this._commands[cmd], a) : false;
 		}
 		
+		/**
+		 * Return true if command loaded in editor
+		 *
+		 * @param  String  command name
+		 * @return Boolean
+		 */
 		this.cmdLoaded = function(cmd) {
 			return !!this._commands[cmd];
 		}
 		
+		/**
+		 * Return curent command state (-1 : disable, 0 : enabled, 1 : active)
+		 *
+		 * @param  String  command name
+		 * @return Number
+		 */
 		this.cmdState = function(cmd) {
 			var c = this._commands[cmd]; 
 			return c ? c.state() : -1;
 		}
 		
+		/**
+		 * Return true if command may be executed
+		 *
+		 * @param  String  command name
+		 * @return Boolean
+		 */
+		this.cmdEnabled = function(cmd) {
+			return this.cmdState() > -1;
+		}
+		
+		/**
+		 * Return command value if enabled
+		 *
+		 * @param  String  command name
+		 * @return String
+		 */
 		this.cmdValue = function(cmd) {
 			var c = this._commands[cmd]; 
 			return c ? c.value() : false;
 		}
 		
 		/**
-		 * Exec command method "exec" return result
+		 * Exec command method "exec" and return result
 		 *
 		 * @param  String  editor command name
 		 * @return mixed
@@ -730,104 +770,86 @@
 			return c ? c.exec.apply(c, a) : false;
 		}
 		
-		this.init();
-		this.timeEnd('load');
-		// this.log(this)
-	}
-
-	/*** API ***/
-
-
-	
-	/**
-	 * Show editor if hidden
-	 *
-	 * @return elRTE
-	 */
-	elRTE.prototype.show = function() {
-		if (this.view.editor.is(':hidden')) {
-			this.view.editor.show();
-			this.trigger('show');
+		/* SERVICE METHODS */
+		/**
+		 * send message to console log
+		 *
+		 * @param String  message
+		 */
+		this.log = function(m) {
+			// window.console && window.console.log && window.console.log.apply(null, arguments);
+			window.console && window.console.log && window.console.log(m);
 		}
-		return this;
-	}
-	
-	/**
-	 * Hide editor if visible
-	 *
-	 * @return elRTE
-	 */
-	elRTE.prototype.hide = function() {
-		if (this.view.editor.is(':visible')) {
-			this.view.editor.hide();
-			this.trigger('hide');
-		}
-		return this;
-	}
-	
-
-
-	/**
-	 * Return true if command enabled
-	 *
-	 * @return Boolean
-	 */
-	elRTE.prototype.commandEnabled = function(c) {
-		return this.commands[c] ? this.commands[c].state() > this.commands[c]._disabled : false;
-	}
-	
-	/**
-	 * Return command value if exists. (current node properties)
-	 *
-	 * @return String
-	 */
-	elRTE.prototype.commandValue = function(c) {
-		return this.commands[c] ? this.commands[c].value() : false;
-	}
-
-	/**
-	 * Return command state (-1 for disabled, 0 for enabled, 1 for active (has value))
-	 *
-	 * @return Number
-	 */
-	elRTE.prototype.commandState = function(c) {
-		return this._commands[c] ? this._commands[c].state() : false;
-	}
-
-	/* SERVICE METHODS */
-	
-	
-
-
-
-	
-
-	/**
-	 * send message to console log if debug is enabled in config
-	 *
-	 * @param String  message
-	 */
-	elRTE.prototype.debug = function(n, m) {
-		if (this.options.debug == 'all') {
-			this.log(n+': '+m);
-		} else if (this.options.debug.length) {
-			var _n = n.split('.');
-			if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
+		
+		/**
+		 * send message to console log if debug is enabled in config
+		 *
+		 * @param String  message group name
+		 * @param String  message
+		 */
+		this.debug = function(n, m) {
+			if (this.options.debug == 'all') {
 				this.log(n+': '+m);
+			} else if (this.options.debug.length) {
+				var _n = n.split('.');
+				if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
+					this.log(n+': '+m);
+				}
 			}
 		}
+		
+		/**
+		 * Switches to next document after active one
+		 *
+		 * @TODO add cmd+arrows shortcut
+		 * @return elRTE
+		 */
+		this.next = function() {
+			this.count()>1 && this.focus(this.view.getNext()||this.view.getFirst());
+			return this;
+		}
+		
+		/**
+		 * Switches to previous document before active one
+		 *
+		 * @return elRTE
+		 */
+		this.prev = function() {
+			this.count()>1 && this.focus(this.view.getPrev()||this.view.getLast());
+			return this;
+		}
+		
+		/**
+		 * Show editor if hidden
+		 *
+		 * @return elRTE
+		 */
+		this.show = function() {
+			if (this.view.editor.is(':hidden')) {
+				this.view.editor.show();
+				this.trigger('show');
+			}
+			return this;
+		}
+		
+		/**
+		 * Hide editor if visible
+		 *
+		 * @return elRTE
+		 */
+		this.hide = function() {
+			if (this.view.editor.is(':visible')) {
+				this.view.editor.hide();
+				this.trigger('hide');
+			}
+			return this;
+		}
+		
+		this.init();
+		this.timeEnd('load');
+
 	}
 
-	/**
-	 * send message to console log
-	 *
-	 * @param String  message
-	 */
-	elRTE.prototype.log = function(m) {
-		// window.console && window.console.log && window.console.log.apply(null, arguments);
-		window.console && window.console.log && window.console.log(m);
-		return this;
-	}
 
 	elRTE.prototype.time = function(l) {
 		window.console && window.console.time && window.console.time(l);
@@ -868,6 +890,9 @@
 			}
 		});
 		
+		/**
+		 * Exec command and return result ONLY for first editor
+		 */
 		this.exec = function() {
 			var e = this[0];
 			return e && e.elrte ? e.elrte.exec.apply(e.elrte, Array.prototype.slice.call(arguments)) :false;

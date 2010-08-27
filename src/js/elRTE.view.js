@@ -49,16 +49,16 @@
 				.hide()
 				.appendTo(this.workzone);
 			
-			// if (d.closeable) {
-			// 	tab.append($('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
-			// 		var p = $(this).parent();
-			// 		e.preventDefault();
-			// 		e.stopPropagation();
-			// 		if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
-			// 			self.rte.close(p.attr('rel').substr(1));
-			// 		}
-			// 	}));
-			// }
+			if (this.rte.options.allowCloseDocs) {
+				tab.append($('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
+					var p = $(this).parent();
+					e.preventDefault();
+					e.stopPropagation();
+					if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
+						self.rte.close(p.attr('rel').substr(1));
+					}
+				}));
+			}
 			this.updateTabsbar();
 		}
 
@@ -119,7 +119,7 @@
 		 * @return String
 		 */
 		this.getFirst = function() {
-			var n = this.tabsbar.children('.elrte-tab-active:first-child');
+			var n = this.tabsbar.children('.elrte-doc-tab').eq(0);
 			return n.length ? n.attr('rel').substr(1) : false;
 		}
 		
@@ -129,7 +129,7 @@
 		 * @return String
 		 */
 		this.getLast = function() {
-			var n = this.tabsbar.children('.elrte-tab-active:last-child');
+			var n = this.tabsbar.children('.elrte-doc-tab:last-child');
 			return n.length ? n.attr('rel').substr(1) : false;
 		}
 

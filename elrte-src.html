@@ -86,49 +86,32 @@
 
 			var rte = jQuery('#editor').elrte(opts);
 			
-			// window.console.log(rte[0].elrte.exec('content', 'elrte-editor-document-2', 'new contet'))
-			// rte[0].elrte.exec('fullscreen', {a : 1, b : 2})
-			window.console.log(rte.exec('isWysiwyg'))
-			rte.elrte('toggle')
-			window.console.log(rte.exec('isWysiwyg'))
-			window.console.log(rte.exec('cmdState', 'fullscreen'))
-			rte.exec('execCmd', 'fullscreen')
-			window.console.log(rte.exec('cmdState', 'fullscreen'))
-
-			window.console.log(rte.exec('content', 'elrte-editor-document-2', 'new content'))
-			// var d = rte[0].elrte.document('elrte-editor-document-2');
-			// d.toggle()
-			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
-			// rte[0].elrte.content('elrte-editor-document-2', '<b>new content</b>')
-			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
-			// rte[0].elrte.focus('elrte-editor-document-2').toggle()
-			// d.toggle()
-			// d.toggle()
-
-			// window.console.log(rte[0].elrte.content())
-			// rte[0].elrte.content({})
-			// window.console.log(rte[0].elrte.content('elrte-editor-document-2', 'text'))
-			// rte[0].elrte.bind('change', f)
-
-			// rte[0].elrte.one('changePos', f)
-			// rte[0].elrte.unbind('changePos', f)
-			
-			// window.console.log(rte[0].elrte.content())
-			// window.console.log(rte[0].elrte.content('elrte-editor-document-2'))
-			// window.console.log(rte[0].elrte.content('new active contet'))
-			// window.console.log(rte[0].elrte.content('elrte-editor-document-2', 'newsecond contet'))
-			// rte[0].elrte.content()
-			// rte[0].elrte.content('elrte-editor-document-2')
-			// rte[0].elrte.content('new contet')
-			// rte[0].elrte.content('elrte-editor-document-2', 'new contet')
-			// rte[0].elrte.exec('content', 'elrte-editor-document-2')
-			
-			// rte.elrte('hide')
-			// window.console.log(rte.elrte('commandState', 'fullscreen'))
-			// window.console.log(rte.elrte('content', null, 'elrte-editor-document-2'))
-			// window.console.log(rte.elrte('commandState', 'fullscreen'))
-			// window.console.log(rte[0].elrte.exec('isWysiwyg'))
-
+			$('#fullscreen').click(function(e) {
+				rte.exec('execCmd', 'fullscreen')
+			})
+			$('#toggle').click(function(e) {
+				rte.exec('toggle')
+			})
+			$('#hide').click(function(e) {
+				if ($(this).text() == 'Hide') {
+					rte.exec('hide')
+					$(this).text('Show')
+				} else {
+					rte.exec('show')
+					$(this).text('Hide')
+				}
+			})
+			$('#prev').click(function(e) {
+				rte.exec('prev')
+			})
+			$('#next').click(function(e) {
+				rte.exec('next')
+			})
+			$('#updsrc').click(function() {
+				rte.exec('val', 'elrte-editor-document-2', '<b>new content</b>')
+				rte.exec('updateSource', 'elrte-editor-document-2')
+				window.console.log(rte.exec('val', 'elrte-editor-document-2'))
+			})
 		})
 	</script>
 	
@@ -151,11 +134,31 @@
 			width:30px;
 			background-position: 0 0;
 		}
+		.button {
+			display: -moz-inline-stack;
+			display: inline-block;
+			zoom: 1;
+			*display: inline;
+			border:1px solid #ccc;
+			padding:3px;
+			-moz-border-radius:5px;
+			-webkit-border-radius:5px;
+			border-radius:5px;
+			background-color: #fff;
+			cursor:default;
+		}
 	</style>
 	
 </head>
 <body>
 
+	<div id="fullscreen" class="button">Fullscreen</div>
+	<div id="toggle" class="button">Toggle</div>
+	<div id="hide" class="button">Hide</div>
+	<div id="prev" class="button">&laquo;Prev</div>
+	<div id="next" class="button">Next&raquo;</div>
+	<div id="updsrc" class="button">Update source</div>
+	
 	<form method="post" action="post.php" style="position:relative">
 	<div id="editor" name="abr" title="Document">
 		
