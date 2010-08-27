@@ -46,7 +46,7 @@
 		restore : [ function(html) { return html.replace(/PLACEHODER:(\w+)/, "{$1}") } ],
 		allowPaste : true,
 		/* max undo/redo steps */
-		historySize : 0,
+		historySize : 10,
 		/* plugins to load */
 		plugins : ['source', 'path', 'wordcount', 'webkit', 'autosave'],
 		/* display or not toolbar */
@@ -59,6 +59,7 @@
 		panels : {
 			style      : ['bold', 'italic' /* , 'italic', 'underline', 'sub', 'sup'*/],
 			clean      : ['removeformat'],
+			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],
 			fullscreen : ['fullscreen'] // @todo rename it
 		},
@@ -67,19 +68,19 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : ['style', 'fullscreen', 'history']
+			'default' : ['style', 'fullscreen', 'history', 'misc']
 		},
 		/* send debug to log? */
 		debug    : false,
 		/* plugins configuration */
 		pluginsConf : {
 			wordcount : {  count : 'all'},
-			autosave  : { interval : 5 }
+			autosave  : { interval : 0 }
 		},
 		/* commands configuration */
 		commandsConf : {
 			docstructure : {
-				initState : 'off'
+				initState : 'on'
 			}
 			
 		}

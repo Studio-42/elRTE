@@ -53,14 +53,14 @@
 						active.index--;
 					}
 
-					bm = this.rte.selection.getBookmark();
+					bm = this.rte.selection.bookmark();
 					
 					l = {
 						origin : c,
 						html   : d.get('wysiwyg'),
 						bm     : [bm[0].id, bm[1].id]
 					}
-					this.rte.selection.moveToBookmark(bm);
+					this.rte.selection.toBookmark(bm);
 
 					if (r && active.levels.length) {
 						active.levels[active.levels.length-1] = l;
@@ -103,8 +103,8 @@
 				active.input && this.add(0, true);
 				active.index--;
 				active.input = 0;
-				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				this.rte.active.set(active.levels[active.index].html);
+				self.rte.selection.toBookmark(active.levels[active.index].bm);
 				this.rte.trigger('historyChange').trigger('change');
 				this.rte.debug('history.undo', (active.index+1));
 				return true;
@@ -121,8 +121,8 @@
 			if (this.canRedo()) {
 				active.index++;
 				active.input = 0;
-				this.rte.set(active.levels[active.index].html, null, {raw : true, quiet : true});
-				self.rte.selection.moveToBookmark(active.levels[active.index].bm);
+				this.rte.active.set(active.levels[active.index].html);
+				self.rte.selection.toBookmark(active.levels[active.index].bm);
 				this.rte.trigger('historyChange').trigger('change');
 				this.rte.debug('history', 'redo '+(active.index));
 				return true;

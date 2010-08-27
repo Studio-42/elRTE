@@ -401,9 +401,8 @@
 			/* create body in iframe */
 			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
 			$.each(o.cssfiles, function() {
-				html += '<link rel="styleshwysiwygeet" type="text/css" href="'+this+'"/>';
+				html += '<link rel="stylesheet" type="text/css" href="'+this+'"/>';
 			});
-			
 			d.document.open();
 			d.document.write(o.doctype+html+'</head><body>'+this.filter.wysiwyg(d.get('source'))+' </body></html>');
 			d.document.close();
