@@ -222,7 +222,14 @@
 
 /* wordcount */
 .elrte .elrte-statusbar-wordcount { float:right; font-size:x-small; }
-
+/* autosave */
+.elrte .elrte-statusbar-autosave { 
+	position:absolute;
+	left:45%;
+	padding-right:30px;
+	font-size:x-small; 
+	background:url(../images/spinner.gif) right center no-repeat; 
+}
 
 
 

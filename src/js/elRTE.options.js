@@ -48,7 +48,7 @@
 		/* max undo/redo steps */
 		historySize : 0,
 		/* plugins to load */
-		plugins : ['source', 'path', 'wordcount', 'webkit'],
+		plugins : ['source', 'path', 'wordcount', 'webkit', 'autosave'],
 		/* display or not toolbar */
 		showToolbar : true,
 		
@@ -73,7 +73,8 @@
 		debug    : false,
 		/* plugins configuration */
 		pluginsConf : {
-			wordcount : {  count : 'all'}
+			wordcount : {  count : 'all'},
+			autosave  : { interval : 5 }
 		},
 		/* commands configuration */
 		commandsConf : {
