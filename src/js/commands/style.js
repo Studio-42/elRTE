@@ -23,7 +23,17 @@
 			 * @param  DOMElement  
 			 * @return Boolean
 			 **/
+			
 			this.test = function(n) {
+				// if (n.nodeType == 1 && $(n).css(self.cssProp) == self.cssValue) {
+				// 	self.rte.log(n.nodeName)
+				// }
+				// if (n.nodeType == 1 && self.regExp.test(n.nodeName)) {
+				// 	
+				// 	return true;
+				// }
+				// 
+				// return false
 				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || $(n).css(self.cssProp) == self.cssValue);
 			}
 			/**
@@ -33,6 +43,7 @@
 			 * @return void
 			 **/
 			this.unwrap = function(n) {
+				// self.rte.log(n)
 				self.regExp.test(n.nodeName) ? self.dom.unwrap(n) : $(n).css(self.cssProp, '');
 			}
 		}
@@ -69,7 +80,8 @@
 					$.each(p, function() { self.unwrap(this); });
 					this.sel.toBookmark(b).collapse(true);
 				} else {
-					n = this.dom.smartUnwrap(this.sel.get(), false, this.test, this.unwrap);
+					
+					n = this.dom.smartUnwrap(this.sel.get(), 'inline', this.test, this.unwrap);
 					this.sel.select(n[0], n[1]);
 				}
 			} else {

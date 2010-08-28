@@ -27,52 +27,6 @@ elRTE.prototype.dom = function(rte) {
 		onlyChild : function(n) { return self.filters.first(n) && self.filters.last(n); }
 	};
 	
-	// this._filters = {
-	// 	dummy         : { },
-	// 	all           : { regexp : /.*/ },
-	// 	block         : { regexp : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/},
-	// 	inline        : { func : function(n) { return n.nodeType == 3 || !self.filters.block.regexp.test(n.nodeName); } },
-	// 	text          : { 
-	// 		regexp : /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DT|EM|FIELDSET|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|VAR)$/,
-	// 		func   : function(n) { return n.nodeType == 3; }
-	// 	},
-	// 	notText       : { func : function(n) { return !self.is(n, 'text'); } },
-	// 	blockText     : { func : function(n) { return  self.is(n, 'block')  && self.is(n, 'text');    } },
-	// 	inlineText    : { func : function(n) { return  self.is(n, 'inline') && self.is(n, 'text');    } },
-	// 	body          : { regexp : /^BODY$/ },
-	// 	headers       : { regexp : /^H[1-6]$/ },
-	// 	table         : { regexp : /^(TABLE|CAPTION|THEAD|TBODY|TFOOT|TR|TH|TD)$/ },
-	// 	lists         : { regexp : /^(UL|OL|DL|LI|DT|DD)$/ },
-	// 	strong        : {
-	// 		regexp : /^(STRONG|B)$/,
-	// 		func   : function(n) { return $(n).css('font-weight').match(/(bold|900)/); }
-	// 	},
-	// 	textNode      : { func : function(n) { return n.nodeType == 3; } },
-	// 	empty         : { func : function(n) { return (n.nodeType == 1 && (n.childNodes.length==0 || $.trim($(n).text()).length==0 )) || (n.nodeType == 3 && $.trim(n.nodeValue).length==0) || n.nodeType == 8 || n.nodeType == 4; } },
-	// 	notEmpty      : { func : function(n) { return !self.filters.empty.func(n); } },
-	// 	onlyChild     : { func : function(n) { return self.filters.first.func(n) && self.filters.last.func(n); } },
-	// 	first         : {
-	// 		func : function(n) {
-	// 			while ((n = self.prev(n))) {
-	// 				if (self.filters.notEmpty.func(n)) {
-	// 					return false;
-	// 				}
-	// 			}
-	// 			return true;
-	// 		}
-	// 	},
-	// 	last          : {
-	// 		func : function(n) {
-	// 			while ((n = self.next(n))) {
-	// 				if (self.filters.notEmpty.func(n)) {
-	// 					return false;
-	// 				}
-	// 			}
-	// 			return true;
-	// 		}
-	// 	}
-	// 	
-	// }
 	
 	
 	this.rte.bind('wysiwyg', function(e) {
@@ -212,31 +166,6 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	/**
-	 * Return closest common parent node for 2 nodes
-	 *
-	 * @param  DOMElement
-	 * @param  DOMElement
-	 * @return DOMElement
-	 **/
-	this._commonAncestor = function(s, e) {
-		var c = this.body;
-		
-		if (s && e) {
-			if (s == e) {
-				c = s;
-			} else {
-				var sp = this.parents(s, 'all', this.html, true).reverse(),
-					ep = this.parents(e, 'all', this.html, true).reverse(),
-					len = Math.min(sp.length, ep.length), i=0;
-				while (i++<len && sp[i] == ep[i]) {
-					c = sp[i];
-				}	
-			}
-		}
-		return c.nodeType != 1 && this.is(c, 'onlyChild') ? c.parentNode : c;
-	}
-	
-	/**
 	 * Return true, if all nodes in set is one parent childs
 	 *
 	 * @param  Array
@@ -288,7 +217,7 @@ elRTE.prototype.dom = function(rte) {
 	/********************************************************************************/
 
 	/**
-	 * Return parent matched by filter
+	 * Return node parent if matched by filter
 	 *
 	 * @param  DOMElement              node to test
 	 * @param  String|RegExp|Function  filter
@@ -540,6 +469,8 @@ elRTE.prototype.dom = function(rte) {
 	/*                                MANIPULATION                                  */
 	/********************************************************************************/
 	
+	
+	
 	/**
 	 * Return node[s]
 	 *
@@ -725,15 +656,32 @@ elRTE.prototype.dom = function(rte) {
 		n.parentNode.removeChild(n);
 	}
 	
+	/**
+	 * Split node on two nodes by node-separator
+	 *
+	 * @param  DOMElement  node to split
+	 * @param  DOMElement  node-separator
+	 * @param  Boolean     split direction: from end of node-separator to node end (true) or from node start to separator start (false)
+	 * @param 
+	 * @return void
+	 **/
+	this.split = function(node, sep, end, test) {
+		var r = [node], p, clone, sib;
+		// this.rte.log(node)
+		if (this.parents(sep, 'any', false, node.parentNode).pop() === node) {
+			
+		}
+
+	}
 	
-	this.split = function(n, p, e, b) {
+	this._split = function(n, p, e, b) {
 		var r = [n], pr, c, sib;
 		
 		while (p != n) {
 			c = false;
-			pr = p.parentNode;
+			pr = p.parentNode; this.rte.log(pr)
 			sib = e ? this.nextAll(p) : this.prevAll(p).reverse();
-			if (sib.length && (b || !this.is(pr, 'block'))) {
+			if (sib.length && b(pr)) {
 				c = pr.cloneNode(false);
 				if (e) {
 					if (pr.nextSibling) {
@@ -770,18 +718,275 @@ elRTE.prototype.dom = function(rte) {
 		return r;
 	}
 	
-	this.smartUnwrap = function(n, b, t, u) {
+	this.smartUnwrap = function(n, ct, t, u) {
+		var self = this, 
+			st = n[0],
+			en = n[n.length-1],
+			unw = this.filter(n, function(n) { return t(n) || self.find(n, t).length; }),
+			i = [],
+			c;
+		
+		function container(c) {
+			return c.nodeType == 1 ? c : self.parents(c, t).shift().parentNode;
+		}
+		c = container(this.commonAncestor(st, en));
+		
+		function intersect(n, dir) {
+			var r = [],
+				p = self.parents(n, t, false, c).pop(),
+				s, // siblings 
+				sm, // get siblings method
+				im, // insert node method
+				cl; // clone node
+			if (dir == 'left') {
+				sm = 'prevAll';
+				im = 'insertBefore';
+			} else {
+				sm = 'nextAll';
+				im = 'insertAfter';
+			}
+
+			if (p) {
+				while (n !== p) {
+					s = self[sm](n);
+					n = n.parentNode;
+					if (self.filter(s, 'notEmpty') && self.is(n, ct)) {
+						cl = self[im](n.cloneNode(false), n);
+						$.each(s, function() {
+							cl.appendChild(this)
+						});
+					}
+					if (self.is(n, t)) {
+						r.push(n);
+					}
+				}
+			}
+			return r;
+		}
+		
+		
+		$.each($.unique([].concat(intersect(st, 'left')).concat(intersect(en, 'right'))), function(i, n) {
+			u(n);
+		})
+		
+		$.each(unw, function(i, n) {
+			$.each(self.find(n, t), function() {
+				u(this);
+			});
+			if (n === st) {
+				st = n.firstChild;
+			} else if (n === en) {
+				en = n.lastChild;
+			}
+			u(n);
+		})
+		
+		return [st, en]
+		
+		var self = this,
+			st = n[0],
+			en = n[n.length-1],
+			c = this.commonAncestor(st, en),
+			left, right, sib, toUnwrap = [];
+		
+		
+		if (c.nodeType != 1) {
+			c = this.parents(c, t).shift().parentNode;
+		}
+		
+		function processIntersection(node, parent, test, cutTest, side) {
+			var r = [], sib, clone;
+			
+			if (parent) {
+				while (node !== parent) {
+					sib = side == 'left' ? self.prevAll(node) : self.nextAll(node);
+					node = node.parentNode;
+					if (self.filter(sib, 'notEmpty').length && self.is(node, cutTest)) {
+						clone = side == 'left' ? self.insertBefore(node.cloneNode(false), node) : self.insertAfter(node.cloneNode(false), node);
+						$.each(sib, function(i, n) {
+							clone.appendChild(this)
+						});
+					}
+					if (self.is(node, test)) {
+						r.push(node)
+					}
+				}
+			}
+			return r
+		}
+		
+		toUnwrap = toUnwrap.concat(processIntersection(st, this.parents(st, t, false, c).pop(), t, b, 'left'))
+			.concat(processIntersection(en, this.parents(en, t, false, c).pop(), t, b, 'right'))
+		
+		// left = this.parents(st, t, false, c).pop()
+		// right = this.parents(en, t, false, c).pop()
+		// this.rte.log(c)	
+		// this.rte.log(left)
+		// this.rte.log(b)
+		// if (left) {
+		// 	var node = st;
+		// 	while (node != left) {
+		// 		sib = this.prevAll(node)
+		// 		node = node.parentNode;
+		// 		if (this.filter(sib, 'notEmpty').length && this.is(node, b)) {
+		// 			var clone = this.insertBefore(node.cloneNode(false), node)
+		// 			$.each(sib, function(i, n) {
+		// 				clone.appendChild(this)
+		// 			});
+		// 		}
+		// 		if (this.is(node, t)) {
+		// 			toUnwrap.push(node)
+		// 		}
+		// 	}
+		// }
+		// 
+		// if (right) {
+		// 	var node = en;
+		// 	while (node != right) {
+		// 		sib = this.nextAll(node)
+		// 		node = node.parentNode;
+		// 		if (this.filter(sib, 'notEmpty').length && this.is(node, b)) {
+		// 			var clone = this.insertAfter(node.cloneNode(false), node)
+		// 			$.each(sib, function(i, n) {
+		// 				clone.appendChild(this)
+		// 			});
+		// 		}
+		// 		if (this.is(node, t)) {
+		// 			toUnwrap.push(node)
+		// 		}
+		// 	}
+		// }
+		
+		this.rte.log($.unique(toUnwrap))
+		$.each($.unique(toUnwrap), function(i, n) {
+			u(n)
+		})
+		return n	
+	}
+	
+	this.insertBefore = function(n, ref) {
+		return ref.parentNode.insertBefore(n, ref)
+	}
+	
+	this.insertAfter = function(n, ref) {
+		var p = ref.parentNode,
+			s = ref.nextSibling;
+		return s ? p.insertBefore(n, s) : p.appendChild(n);
+	}
+	
+	this.__smartUnwrap = function(n, b, t, u) {
+		var start = n[0],
+			end = n[n.length-1],
+			left = this.parents(start, t).pop(),
+			right = this.parents(end, t).pop(),
+			toUnwrap = [], sib;
+		
+		// this.rte.log(n)
+		this.rte.log(left)
+		this.rte.log(this.parents(start, t))
+		if (left) {
+			var node = start;
+			while (node !== left) {
+				// this.rte.log(node)
+				sib = this.prevAll(node)
+				node = node.parentNode;
+				if (sib.length && this.is(node, 'inline')) {
+					var clone = node.cloneNode(false);
+					node.parentNode.insertBefore(clone, node);
+					$.each(sib, function(i, n) {
+						clone.appendChild(this)
+					})
+					if (this.is(clone, 'empty')) {
+						clone.parentNode.removeChild(clone)
+					}
+					
+				}
+				if (this.is(node, t)) {
+					toUnwrap.push(node)
+				}
+			}
+			
+		}
+		
+		if (right) {
+			var node = end;
+			while (node !== right) {
+				sib = this.nextAll(node);
+				node = node.parentNode;
+				if (sib.length && this.is(node, 'inline')) {
+					var clone = node.cloneNode(false);
+					this.insertAfter(clone, node)
+					$.each(sib, function(i, n) {
+						clone.appendChild(this)
+					})
+					if (this.is(clone, 'empty')) {
+						clone.parentNode.removeChild(clone)
+					}
+					
+				}
+				if (this.is(node, t)) {
+					toUnwrap.push(node)
+				}
+			}
+		}
+		// this.rte.log($.unique(toUnwrap))
+		$.each($.unique(toUnwrap), function(i, n) {
+			u(n)
+		})
+		
+		return n
+	}
+	
+	this._smartUnwrap = function(n, b, t, u) {
 		var self = this,
 			n = n && n.length ? n : [],
 			s = n[0],
 			e = n[n.length-1],
-			t = typeof(t) == 'function' ? t : function() { return false },
+			a = this.commonAncestor(s, e),
+			// t = typeof(t) == 'function' ? t : function() { return false },
 			u = typeof(u) == 'function' ? u : function() { },
-			l = this.parents(s, t),
+			l = this.parents(s, 'any', false, a.parentNode),
 			r = this.parents(e, t),
 			c = this.filter(n, function(n) { return t(n) || self.find(n, t).length; });
+		this.rte.log(n)
+		this.rte.log(a)
+		this.rte.log(l)
+		
+		if (l.length) {
+			var _n = s;
 			
+			while (_n !== a) {
+				this.rte.log(_n)
+				// this.rte.log(b(_n))
+				_n = _n.parentNode;
+				this.rte.log(_n)
+				if (_n !== a && _n.nextSibling) {
+					_n = _n.nextSibling
+				}
+			}
+			
+		}
+		
+		return n
 		if (l.length || r.length || c.length) {
+			if (l.length) {
+				this.rte.log(l)
+				var p = l.pop();
+				var _n = s;
+				
+				while (_n !== p) {
+					this.rte.log(_n)
+					// this.rte.log(b(_n.parentNode))
+					if (b(_n.parentNode)) {
+						// this.rte.log(_n.parentNode)
+						var sib = [_n].concat(this.nextAll(_n))
+						this.rte.log(sib)
+					}
+					_n = _n.parentNode;
+				}
+			}
+			
+			return n;
 			(l = l.length ? l.pop() : false) && this.split(l, s, false, b);
 			(r = r.length ? r.pop() : false) && this.split(r, e, true,  b);
 			
