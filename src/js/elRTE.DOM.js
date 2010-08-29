@@ -21,7 +21,10 @@ elRTE.prototype.dom = function(rte) {
 		textNode : function(n) { return n.nodeType == 3; },
 		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
 		// @TODO check for nested not text node
-		empty : function(n) { return n.nodeType == 1 ? !n.childNodes.length || !$.trim($(n).text()).length : !$.trim(n.nodeValue).length; },
+		empty : function(n) { 
+			return n.nodeType == 1 ? !(n.childNodes.length || $.trim($(n).text().length)) : (n.nodeType == 3 ? !$.trim(n.nodeValue).length : true); 
+			// return n.nodeType == 1 ? !n.childNodes.length || !$.trim($(n).text()).length : !$.trim(n.nodeValue).length; 
+		},
 		notEmpty : function(n) { return !self.filters.empty(n); },
 		first : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
 		last : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
@@ -532,6 +535,18 @@ elRTE.prototype.dom = function(rte) {
 		return this;
 	}
 	
+	this.wrap = function(n, w) {
+		n = $.isArray(n) ? n : [n];
+		if (n.length) {
+			w = w.nodeType ? w : this.create(w);
+			this.before(w, n[0]);
+			$.each(n, function(i, n) {
+				w.appendChild(n);
+			});
+			
+		}
+	}
+	
 	/**
 	 * Replace node with its contents
 	 *
@@ -562,7 +577,8 @@ elRTE.prototype.dom = function(rte) {
 			unw = this.filter(n, function(n) { return t(n) || self.find(n, t).length; }),
 			c, f, l;
 		
-		this.rte.log(n)
+		// this.rte.log(n)
+		
 		/**
 		 * Find top parent matched by t method and return it parent node
 		 *
@@ -613,18 +629,19 @@ elRTE.prototype.dom = function(rte) {
 		$.each($.unique([].concat(intersect(st, 'left')).concat(intersect(en, 'right')) ), function(i, n) {
 			u(n);
 		});
-
+		
 		$.each(unw, function(i, n) {
 			// unwrap all child nodes
 			$.each(self.find(n, t), function() {
 				u(this);
 			});
 			if (n === st) {
-				// st = n.firstChild;
-				f = n.firstChild
-			} else if (n === en) {
-				// en = n.lastChild;
-				l = n.lastChild
+				st = n.firstChild;
+				// f = n.firstChild
+			} 
+			if (n === en) {
+				en = n.lastChild;
+				// l = n.lastChild
 			}
 			u(n);
 		});

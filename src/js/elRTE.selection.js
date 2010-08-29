@@ -302,18 +302,19 @@
 		 *
 		 * @return Array
 		 **/
-		this.get = function() {
+		this.get = function(exp) {
 			var r = [], bm, s, e, c;
 			
 			if (!this.collapsed()) {
 				bm = this.bookmark();
 				this.doc.body.normalize();
 				s = bm[0].nextSibling;
-				e = bm[1].previousSibling;
+				e = bm[1].previousSibling||bm[1].parentNode.previousSibling||this.dom.after(this.dom.createTextNode(''), bm[1]);
 				this.rmBookmark(bm);
-				// fix selection. do this really possible?
-				// this.rte.log(s)
-				// this.rte.log(e)
+				this.rte.log(s)
+				this.rte.log(e)
+				
+				// fix selection. 
 				while (this.dom.parents(e, function(n) { return n == s }).length) {
 					this.rte.log('fix1')
 					s = s.firstChild;
@@ -323,13 +324,6 @@
 					e = e.lastChild;
 				}
 				c = this.dom.commonAncestor(s, e);
-				// this.rte.log(s)
-				// this.rte.log(e)
-				// move common ancestor container up as posiible
-				// while (c.nodeName != 'BODY' && c.parentNode.nodeName != 'BODY' && this.dom.is(c, 'onlyChild')) {
-				// 	this.rte.log('move from '+c.nodeName+' to '+c.parentNode.nodeName)
-				// 	c = c.parentNode;
-				// }
 				// move start node up as posiible but not up container
 				while (s !=c && s.parentNode !=c && this.dom.is(s, 'first')) {
 					s = s.parentNode;
@@ -338,17 +332,14 @@
 				while (e !=c && e.parentNode != c && this.dom.is(e, 'last')) {
 					e = e.parentNode;
 				}
-				
+				// expand selection - move start, end and common ancestor container up as posiible
 				while (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
 					s = e = c;
 					c = c.parentNode;
+					if (!exp) {
+						break;
+					}
 				}
-				
-				// if start is first node in container and end is end node and container is not body
-				// if (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
-				// 	s = e = s.parentNode;
-				// 	c = c.parentNode
-				// }
 				// this.rte.log(s)
 				// this.rte.log(e)
 				// this.rte.log(c)

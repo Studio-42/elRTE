@@ -75,8 +75,7 @@
 					$.each(p, function() { self.unwrap(this); });
 					this.sel.toBookmark(b).collapse(true);
 				} else {
-					n = this.dom.smartUnwrap(this.sel.get(), this.test, 'inline', this.unwrap);
-					self.rte.log(n)
+					n = this.dom.smartUnwrap(this.sel.get(true), this.test, 'inline', this.unwrap);
 					this.sel.select(n[0], n[1]);
 				}
 			} else {
@@ -86,17 +85,13 @@
 					var n = this.sel.get();
 					// this.rte.log(n)
 					$.each(n, function(i, n) {
-						if (self.dom.is(n, 'block')) {
+						if (n.nodeType == 1) {
 							$(n).css(self.cssProp, self.cssValue);
-						} else if (!self.dom.is(n, 'empty')) {
-							self.rte.log(n)
-							if (n.nodeType == 1) {
-								$(n).css(self.cssProp, self.cssValue);
-							} else {
-								// self.dom.wrap(n, self.node);
-							}
+						} else if (n.nodeType == 3) {
+							self.dom.wrap(n, self.node)
 						}
 					})
+					this.sel.select(n[0], n[n.length-1]);
 				}
 			}
 			return true;
