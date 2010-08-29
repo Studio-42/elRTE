@@ -25,16 +25,7 @@
 			 **/
 			
 			this.test = function(n) {
-				// if (n.nodeType == 1 && $(n).css(self.cssProp) == self.cssValue) {
-				// 	self.rte.log(n.nodeName)
-				// }
-				// if (n.nodeType == 1 && self.regExp.test(n.nodeName)) {
-				// 	
-				// 	return true;
-				// }
-				// 
-				// return false
-				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || $(n).css(self.cssProp) == self.cssValue);
+				return n.nodeType == 1 && (self.regExp.test(n.nodeName) || self.dom.css(n, self.cssProp) == self.cssValue);
 			}
 			/**
 			 * Unwrap node or remove css property
@@ -43,8 +34,12 @@
 			 * @return void
 			 **/
 			this.unwrap = function(n) {
-				// self.rte.log(n)
-				self.regExp.test(n.nodeName) ? self.dom.unwrap(n) : $(n).css(self.cssProp, '');
+				if (self.regExp.test(n.nodeName)) {
+					self.dom.unwrap(n);
+				} else {
+					$(n).css(self.cssProp, '');
+					self.dom.is(n, 'emptySpan') && self.dom.unwrap(n);
+				}
 			}
 		}
 		
@@ -80,8 +75,7 @@
 					$.each(p, function() { self.unwrap(this); });
 					this.sel.toBookmark(b).collapse(true);
 				} else {
-					
-					n = this.dom.smartUnwrap(this.sel.get(), 'inline', this.test, this.unwrap);
+					n = this.dom.smartUnwrap(this.sel.get(), this.test, 'inline', this.unwrap);
 					this.sel.select(n[0], n[1]);
 				}
 			} else {
