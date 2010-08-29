@@ -560,8 +560,9 @@ elRTE.prototype.dom = function(rte) {
 			st = n[0],
 			en = n[n.length-1],
 			unw = this.filter(n, function(n) { return t(n) || self.find(n, t).length; }),
-			c;
+			c, f, l;
 		
+		this.rte.log(n)
 		/**
 		 * Find top parent matched by t method and return it parent node
 		 *
@@ -619,14 +620,16 @@ elRTE.prototype.dom = function(rte) {
 				u(this);
 			});
 			if (n === st) {
-				st = n.firstChild;
+				// st = n.firstChild;
+				f = n.firstChild
 			} else if (n === en) {
-				en = n.lastChild;
+				// en = n.lastChild;
+				l = n.lastChild
 			}
 			u(n);
 		});
 		
-		return [st, en];
+		return [st||f, en||l];
 	}
 	
 	
