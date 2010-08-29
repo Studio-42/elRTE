@@ -84,13 +84,18 @@
 				} else {
 					var n = this.sel.get();
 					// this.rte.log(n)
-					$.each(n, function(i, n) {
-						if (n.nodeType == 1) {
-							$(n).css(self.cssProp, self.cssValue);
-						} else if (n.nodeType == 3) {
-							self.dom.wrap(n, self.node)
-						}
-					})
+					// $.each(n, function(i, n) {
+					// 	if (n.nodeType == 1) {
+					// 		$(n).css(self.cssProp, self.cssValue);
+					// 	} else if (n.nodeType == 3) {
+					// 		self.dom.wrap(n, self.node)
+					// 	}
+					// })
+					
+					var test = function(n) { return self.dom.is(n, 'block') }
+					
+					this.dom.smartWrap(n, test, this.node)
+					
 					this.sel.select(n[0], n[n.length-1]);
 				}
 			}

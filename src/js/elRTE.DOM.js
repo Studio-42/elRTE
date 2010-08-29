@@ -547,6 +547,106 @@ elRTE.prototype.dom = function(rte) {
 		}
 	}
 	
+	// this.isSiblings
+	
+	this.smartWrap = function(nodes, test, w) {
+		var self = this,
+			buffer = [],
+			prev = nodes[0];
+			
+		function wrap() {
+			if (self.filter(buffer, 'notEmpty').length) {
+				self.wrap(buffer, w);
+			}
+			// self.rte.log(buffer);
+			buffer = [];
+		}
+		
+		$.each(nodes, function(i, n) {
+			var nested;
+			if (test(n)) {
+				wrap();
+				self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, w)
+			} else if ((nested = self.closest(n, test)).length) {
+				self.rte.log(nested)
+				
+				
+				
+				$.each(nested, function(i) {
+					var before = self.traverse(i == 0 ? n.firstChild : nested[i-1], this);
+					self.rte.log('before')
+					before.pop()
+					self.rte.log(before)
+					self.smartWrap(before , test, w);
+					
+					self.smartWrap(Array.prototype.slice.call(this.childNodes) , test, w)
+					
+					if (i == nested.length-1) {
+						var after = self.traverse(this, n.lastChild)
+						self.rte.log('after')
+						after.shift()
+						self.rte.log(after)
+						self.smartWrap(after , test, w);
+					}
+				})
+				
+				
+			} else {
+				if (!self.isSiblings([n, prev])) {
+					// self.rte.log('wrap')
+					wrap();
+					
+					
+					
+				}
+				// self.rte.log('add')
+				buffer.push(n)
+			}
+			prev = n;
+		});
+		
+		wrap();
+	}
+	
+	this.correctsmartWrap = function(nodes, test, wrapNode) {
+		var self = this, 
+			toWrap = [],
+			prev = nodes[0];
+		
+		function wrap() {
+			if (self.filter(toWrap, 'notEmpty').length) {
+				self.wrap(toWrap, wrapNode);
+			}
+			
+			self.rte.log(toWrap)
+			toWrap = []
+		}
+		
+		$.each(nodes, function(i, n) {
+			
+			var sib = prev && self.isSiblings([n, prev]);
+			var innerWrap = test(n);
+			// self.rte.log(n)
+			// self.rte.log(sib)
+			if (innerWrap) {
+				// toWrap = toWrap.concat(self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, wrap))
+				wrap()
+				self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, wrapNode)
+			} else {
+				// self.rte.log(n)
+				if (!self.isSiblings([n, prev])) {
+					// self.rte.log('wrap')
+					wrap()
+				}
+				// self.rte.log('add')
+				toWrap.push(n)
+			}
+			
+			prev = n;
+		})
+		wrap()
+	}
+	
 	/**
 	 * Replace node with its contents
 	 *

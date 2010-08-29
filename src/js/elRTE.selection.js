@@ -311,8 +311,8 @@
 				s = bm[0].nextSibling;
 				e = bm[1].previousSibling||bm[1].parentNode.previousSibling||this.dom.after(this.dom.createTextNode(''), bm[1]);
 				this.rmBookmark(bm);
-				this.rte.log(s)
-				this.rte.log(e)
+				// this.rte.log(s)
+				// this.rte.log(e)
 				
 				// fix selection. 
 				while (this.dom.parents(e, function(n) { return n == s }).length) {
