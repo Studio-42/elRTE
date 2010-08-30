@@ -17,11 +17,12 @@
 		
 		/**
 		 * Exec history command (undo/redo)
+		 * Not return true because history call trigger "change" itself 
 		 *
 		 * @return Number
 		 **/
 		this.exec = function() {
-			return this.rte.history[this.name]();
+			this.rte.history[this.name]();
 		}
 		
 		/**

@@ -75,7 +75,6 @@
 				$(window).bind('resize', resize);
 			}
 			this.updateUI(this.state());
-			return true;
 		}
 		
 		/**
