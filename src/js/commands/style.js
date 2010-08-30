@@ -6,17 +6,16 @@
 	 **/
 	elRTE.prototype.commands._style = function() {
 		
+		
+		
 		/**
 		 * Inititilaze command object
 		 *
 		 * @param  elRTE  editor object
 		 * @return void
 		 **/
-		this.init = function(rte) {
+		this.init = function() {
 			var self = this;
-			this.rte = rte;
-			this.dom = rte.dom;
-			this.sel = rte.selection;
 			/**
 			 * Check if this command works with this node
 			 *
@@ -76,6 +75,7 @@
 					this.sel.toBookmark(b).collapse(true);
 				} else {
 					n = this.dom.smartUnwrap(this.sel.get(true), this.test, 'inline', this.unwrap);
+					this.rte.log(n)
 					this.sel.select(n[0], n[1]);
 				}
 			} else {
@@ -86,7 +86,7 @@
 					// this.rte.log(n)
 					this.dom.smartWrap(n, 'block', this.node);
 					
-					this.sel.select(n[0], n[n.length-1]);
+					this.rte.selection.select(n[0], n[n.length-1]);
 				}
 			}
 			return true;
@@ -102,15 +102,15 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.bold = function(rte) {
-		this.name     = 'bold'
+	elRTE.prototype.commands.bold = function(name) {
+		this.name     = name;
 		this.title    = 'Bold';
 		this.node     = { name : 'strong' };
 		this.regExp   = /^(B|STRONG)$/;
 		this.cssProp  = 'font-weight';
 		this.cssValue = 'bold';
 		
-		this.init(rte);
+		this.init();
 		
 	}
 	
@@ -120,15 +120,15 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.italic = function(rte) {
-		this.name     = 'italic'
+	elRTE.prototype.commands.italic = function(name) {
+		this.name     = name;
 		this.title    = 'Italic';
 		this.node     = { name : 'em' };
 		this.regExp   = /^(I|EM)$/;
 		this.cssProp  = 'font-style';
 		this.cssValue = 'italic';
 		
-		this.init(rte);
+		this.init();
 		
 	}
 	

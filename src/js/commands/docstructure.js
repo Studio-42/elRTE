@@ -4,12 +4,12 @@
 	 * @class Display document structure
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.docstructure = function(rte) {
-		this.name     = 'docstructure';
+	elRTE.prototype.commands.docstructure = function(n) {
+		this.name     = n;
 		this.title    = 'Toggle display document structure';
 		this.cssClass = 'elrte-structure';
 	
-		this.init(rte);
+		// this.init(rte);
 		
 		/**
 		 * Return command state

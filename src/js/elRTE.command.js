@@ -110,7 +110,11 @@
 					e.preventDefault();
 					e.stopPropagation();
 					self.rte.focus();
-					!$(this).hasClass(this.classDisabled) && self.exec() && self.rte.trigger('change');
+					if (!$(this).hasClass(this.classDisabled)) {
+						self.rte.trigger('exec');
+						self.exec() && self.rte.trigger('change')
+					}
+					// !$(this).hasClass(this.classDisabled) && self.exec() && self.rte.trigger('change');
 				}).hover(function(e) {
 					$(this).toggleClass('elrte-ui-hover', e.type == 'mouseenter' && !$(this).hasClass(this.classDisabled));
 				});
@@ -132,5 +136,15 @@
 			});
 		}
 	}
+	
+	
+	// elRTE.prototype.command.prototype = { a : 'a' }
+	
+	elRTE.prototype.cmd = function(rte) {
+		this.rte = rte;
+		this.dom = rte.dom;
+		this.sel = rte.selection;
+	}
+
 	
 })(jQuery);

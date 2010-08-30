@@ -17,15 +17,15 @@
 			20, //caps
 			22, 24, 26, //opera hack
 			27, // esc
-			37, 38, 39, 40, //arrows
-			33, 34, //page-up/page-down
-			35, 36, //home/end
+			//37, 38, 39, 40, //arrows
+			//33, 34, //page-up/page-down
+			//35, 36, //home/end
 			45, //ins
 			91, //left cmd|win
 			93, //right cmd|win
 			112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, //f1-12
 			144, //num
-			224 //cmd as think firefox
+			224 //cmd as firefox think 
 		]
 		
 		if ($.browser.opera) {
@@ -96,7 +96,7 @@
 		 * @param   Number  key code
 		 * @return  Boolean
 		 **/
-		this.isKeyChar = function(c) { return !(this.isKeyService(c) || this.isKeyDel(c)) && c < 6200; }
+		this.isKeyChar = function(c) { return !(this.isKeyService(c) || this.isKeyArrow(c) || this.isKeyDel(c)) && c < 6200; }
 		
 		/**
 		 * Return true if code is delete/backspace code

@@ -5,17 +5,17 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.fullscreen = function(rte) {
+	elRTE.prototype.commands.fullscreen = function(n) {
 		var self   = this;
-		this.rte   = rte;
-		this.name  = 'fullscreen';
+		// this.rte   = rte;
+		this.name  = n;
 		this.title = 'Full screen';
 		/* view object */
-		this.view = rte.view;
+		this.view = this.rte.view;
 		/* editor node */
-		this.editor = rte.view.editor;
+		this.editor = this.rte.view.editor;
 		/* workzone node */
-		this.wz = rte.view.workzone;
+		this.wz = this.rte.view.workzone;
 		/* workzone height */
 		this.height = 0;
 		/* difference between editor and workzone heights */
@@ -26,7 +26,7 @@
 		this._class = 'elrte-fullscreen';
 		
 		/* remember height, delta and parents with position=relative */
-		rte.bind('load', function() {
+		this.rte.bind('load', function() {
 			self.height = self.wz.height();
 			self.delta  = self.editor.outerHeight()-self.height;
 			self.editor.parents().each(function() {

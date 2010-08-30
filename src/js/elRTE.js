@@ -40,7 +40,7 @@
 		/* editor config */
 		this.options   = $.extend(true, {}, this.options, o);
 		/* cuurent toolbar name */
-		this.toolbar   = this.options.toolbars[this.options.toolbar] ? this.options.toolbar : 'default';
+		// this.toolbar   = this.options.toolbars[this.options.toolbar] ? this.options.toolbar : 'default';
 		/* messages */
 		this.messages  = this.i18Messages[this.options.lang]||{};
 		/* loaded commands */
@@ -49,7 +49,11 @@
 		this._plugins   = {};
 		/* shortcuts */
 		this.shortcuts = {};
+		this.CHANGE_KBD = 1;
+		this.CHANGE_DEL = 2;
+		this.CHANGE_CMD = 3;
 		this.change = false;
+		this.chagePos = false;
 		this.typing = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
@@ -124,10 +128,15 @@
 			this.history = new this.history(this);
 			/* load commands */
 			// @TODO check duplicate panels
+			// this.constructor.prototype.cmd = new this.constructor.prototype.cmd(this)
+			this.command.init(this)
 			$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
 				$.each(self.options.panels[n]||[], function(i, cn) {
 					if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
-						self._commands[cn] = new c(self);
+						
+						self._commands[cn] = new c(cn);
+						// self.log(self._commands[cn].init)
+						// self._commands[cn].init(self, cn)
 						if ((ui = self._commands[cn].ui())) {
 							self.view.addUI(ui, n);
 						}
@@ -497,7 +506,8 @@
 				if (!e.isPropagationStopped()) {
 					if (c == 9){
 						// on tab pressed insert spaces
-						e.stopPropagation();
+						// @todo - collapse before insertHtml?
+						// e.stopPropagation();
 						e.preventDefault();
 						self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
 					} 
@@ -506,26 +516,37 @@
 					// but i dont know other method to catch emacs-like shortcuts ctrl+(a|e|d)
 					// another minus - we rise change twice on ctrl+x/ctrl-v
 					// but i think its not a big deal ;)
-					self.change = self.utils.isKeyDel(c) || c == 13 || c == 9 || (self.utils.isKeyChar(c) && (!self.selection.collapsed() || e.ctrlKey || (self.macos&&e.metaKey)));
+					if (self.utils.isKeyDel(c) || (c == 68 && e.ctrlKey)) {
+						self.change = self.CHANGE_DEL;
+					} else if (c == 13 || c== 9 || (self.utils.isKeyChar(c) && !self.selection.collapsed())) {
+						self.change = self.CHANGE_KBD;
+					}
+					// ctrl|meta+A, ctrl+E
+					self.changePos = (e.ctrlKey && c == 69) || ((e.ctrlKey||e.metaKey) && c == 65);
+
+					// self.change = self.utils.isKeyDel(c) || c == 13 || c== 9 || (self.utils.isKeyChar(c) && (!self.selection.collapsed()/* || e.ctrlKey || (self.macos&&e.metaKey)*/));
 					self.trigger(e);
 				}
 			})
 			.bind('keyup', function(e) {
+				self.typing = !self.utils.isKeyService(e.keyCode)
+
 				if (self.change) {
 					// cached changes
-					self.trigger('change', {originalEvent : e});
-					self.change = self.typing = false;
-				} else if (self.utils.isKeyArrow(e.keyCode)) {
+					self.trigger('change', {event : e, type : self.change});
+					self.change = false;
+				} else if (self.changePos || self.utils.isKeyArrow(e.keyCode)) {
 					// carret change position
-					self.trigger('changePos', {originalEvent : e});
-					self.typing = false;
+					self.trigger('changePos', {event : e});
+					self.changePos = false;
 				} else {
-					self.typing = true;
+					// self.typing = true;
 				}
 				self.trigger(e);
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {
-				e.type == 'mouseup' && self.trigger('changePos', {originalEvent : e});
+				
+				e.type == 'mouseup' && self.trigger('changePos', {event : e});
 				self.typing = false;
 				self.trigger(e);
 			})

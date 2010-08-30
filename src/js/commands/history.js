@@ -50,10 +50,10 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.undo = function(rte) {
-		this.name  = 'undo'
+	elRTE.prototype.commands.undo = function(n) {
+		this.name  = n;
 		this.title = 'Undo last action';
-		this.init(rte);
+		// this.init(rte);
 	}
 	
 	/**
@@ -62,10 +62,10 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.redo = function(rte) {
-		this.name  = 'redo'
+	elRTE.prototype.commands.redo = function(n) {
+		this.name  = n;
 		this.title = 'Redo previous action';
-		this.init(rte);
+		// this.init(rte);
 	}
 	
 	elRTE.prototype.commands.undo.prototype = elRTE.prototype.commands.redo.prototype = new elRTE.prototype.commands.history;

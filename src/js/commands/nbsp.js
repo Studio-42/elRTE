@@ -6,13 +6,13 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.nbsp = function(rte) {
+	elRTE.prototype.commands.nbsp = function(n) {
 		var self   = this;
-		this.name  = 'nbsp';
+		this.name  = n;
 		this.title = 'Non breakable space';
 		
-		this.init(rte);
-		
+		// this.init(rte);
+
 		this.exec = function() {
 			var n;
 			if ((n = this.sel.insertHtml('&nbsp;')).length) {

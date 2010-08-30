@@ -6,12 +6,12 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.stopfloat = function(rte) {
+	elRTE.prototype.commands.stopfloat = function(n) {
 		var self   = this;
-		this.name  = 'stopfloat';
+		this.name  = n;
 		this.title = 'Stop element floating';
 		
-		this.init(rte);
+		// this.init(rte);
 		
 		this.exec = function() {
 			this.sel.insertNode(this.dom.create({name : 'br', css : { clear : 'both' }}));
