@@ -16,7 +16,7 @@ elRTE.prototype.dom = function(rte) {
 	
 	this.filters = {
 		any : /.*/,
-		block : /^(ADDRESS|BLOCKQUOTE|CENTER|DD|DT|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
+		block : /^(ADDRESS|BLOCKQUOTE|CAPTION|CENTER|DD|DT|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
 		text  : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName);  },
 		textNode : function(n) { return n.nodeType == 3; },
 		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
@@ -535,77 +535,71 @@ elRTE.prototype.dom = function(rte) {
 		return this;
 	}
 	
+	/**
+	 * Wrap group of nodes with node
+	 *
+	 * @param  DOMElement|Array  node(s) to wrap
+	 * @param  DOMElement|Array  wrapper node
+	 * @return elRTE.dom
+	 **/
 	this.wrap = function(n, w) {
-		n = $.isArray(n) ? n : [n];
-		if (n.length) {
+		if (($.isArray(n) ? n : [n]).length) {
 			w = w.nodeType ? w : this.create(w);
 			this.before(w, n[0]);
 			$.each(n, function(i, n) {
 				w.appendChild(n);
 			});
-			
 		}
+		return this;
 	}
 	
-	// this.isSiblings
-	
+	/**
+	 * Wrap group of nodes with node. Can make inner or outer wrap based on test metod result
+	 *
+	 * @param  Array  node to wrap
+	 * @param  Function|String   method, return true if current node required inner wrap
+	 * @param  DOMElement|Array  wrapper node
+	 * @return elRTE.dom
+	 **/
 	this.smartWrap = function(nodes, test, w) {
-		var self = this,
+		var self   = this,
 			buffer = [],
-			prev = nodes[0];
+			prev   = nodes[0],
+			nested, before, after;
 			
 		function wrap() {
-			if (self.filter(buffer, 'notEmpty').length) {
-				self.wrap(buffer, w);
-			}
-			// self.rte.log(buffer);
+			self.filter(buffer, 'notEmpty').length && self.wrap(buffer, w);
 			buffer = [];
 		}
 		
 		$.each(nodes, function(i, n) {
-			var nested;
-			if (test(n)) {
+			if (self.is(n, test)) {
 				wrap();
 				self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, w)
 			} else if ((nested = self.closest(n, test)).length) {
-				self.rte.log(nested)
-				
-				
-				
 				$.each(nested, function(i) {
-					var before = self.traverse(i == 0 ? n.firstChild : nested[i-1], this);
-					self.rte.log('before')
-					before.pop()
-					self.rte.log(before)
+					before = self.traverse(i == 0 ? n.firstChild : nested[i-1], this);
+					before.pop();
 					self.smartWrap(before , test, w);
-					
-					self.smartWrap(Array.prototype.slice.call(this.childNodes) , test, w)
+					self.smartWrap(Array.prototype.slice.call(this.childNodes) , test, w);
 					
 					if (i == nested.length-1) {
-						var after = self.traverse(this, n.lastChild)
-						self.rte.log('after')
-						after.shift()
-						self.rte.log(after)
+						after = self.traverse(this, n.lastChild);
+						after.shift();
 						self.smartWrap(after , test, w);
 					}
-				})
-				
-				
+				});
 			} else {
 				if (!self.isSiblings([n, prev])) {
-					// self.rte.log('wrap')
 					wrap();
-					
-					
-					
 				}
-				// self.rte.log('add')
-				buffer.push(n)
+				buffer.push(n);
 			}
 			prev = n;
 		});
 		
 		wrap();
+		return this;
 	}
 	
 	this.correctsmartWrap = function(nodes, test, wrapNode) {

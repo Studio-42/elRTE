@@ -33,6 +33,7 @@
 				var n = rte.selection.node(),
 					p = [], 
 					l;
+
 				n.nodeType == 1 && !/^BODY$/.test(n.nodeName) && p.push(n);
 				p = p.concat(rte.dom.parents(rte.selection.node()));
 				l = p.length;
