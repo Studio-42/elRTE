@@ -5,7 +5,6 @@
 	 *
 	 * @param elRTE editor instance
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 * @TODO scrollTop selection after undo/redo
 	 */
 	elRTE.prototype.history = function(rte) {
 		var self      = this,
@@ -13,7 +12,7 @@
 			sel       = rte.selection,
 			storage   = {},
 			keyupLock = false,
-			reg = /<span([^>]*class\s*=\s*"[^>]*elrtebm[^>]*)>\s*(<\/span>)?/gi,
+			reg       = /<span([^>]*class\s*=\s*"[^>]*elrtebm[^>]*)>\s*(<\/span>)?/gi,
 			active;
 		
 		/**
@@ -46,10 +45,11 @@
 				bm = sel.bookmark();
 				html = d.get();
 				sel.toBookmark(bm);
-				
+				// rte.log($(d.document).scrollTop())
 				active.levels.push({
 					bm     : [bm[0].id, bm[1].id],
-					html   : html
+					html   : html,
+					scroll : parseInt($(d.document).scrollTop())
 				});
 				active.index = active.levels.length-1;
 				// rte.debug('history.add', active.levels.length+' '+active.index);
@@ -84,15 +84,20 @@
 		 * @return Boolean
 		 */
 		this.undo = function() {
+			var l, d;
 			if (this.canUndo()) {
 				if (active.change != rte.CHANGE_CMD) {
 					// add new level for pevious typing or del
 					add(rte.CHANGE_CMD, true);
 				}
-				active.index--;
+				
+				l = active.levels[--active.index];
+				d = rte.active;
+				
+				d.set(l.html);
+				sel.toBookmark(l.bm);
+				$(d.document).scrollTop(l.scroll);
 				active.change = rte.CHANGE_CMD;
-				rte.active.set(active.levels[active.index].html);
-				sel.toBookmark(active.levels[active.index].bm);
 				rte.trigger('historyChange');
 				rte.debug('history.undo', (active.index));
 				return true;
@@ -106,11 +111,15 @@
 		 * @return Boolean
 		 */
 		this.redo = function() {
+			var l, d;
 			if (this.canRedo()) {
-				active.index++;
+				l = active.levels[++active.index];
+				d = rte.active;
+				
+				d.set(l.html);
+				sel.toBookmark(l.bm);
+				$(d.document).scrollTop(l.scroll);
 				active.change = rte.CHANGE_CMD;
-				rte.active.set(active.levels[active.index].html);
-				sel.toBookmark(active.levels[active.index].bm);
 				rte.trigger('historyChange');
 				rte.debug('history', 'redo '+(active.index));
 				return true;
