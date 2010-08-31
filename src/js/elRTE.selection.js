@@ -74,8 +74,7 @@
 		this.select = function(sn, en) {
 			var s = this.selection(),
 				r = this.doc.createRange(), r1, r2;
-			// this.rte.log(sn)
-			// this.rte.log(en)
+
 			if (this.dom.isNode(sn)) {
 				if (this.dom.isNode(en) && en !== sn) {
 					// check start node is before end node

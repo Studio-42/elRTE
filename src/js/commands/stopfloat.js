@@ -11,11 +11,8 @@
 		this.name  = n;
 		this.title = 'Stop element floating';
 		
-		// this.init(rte);
-		
 		this.exec = function() {
-			this.sel.insertNode(this.dom.create({name : 'br', css : { clear : 'both' }}));
-			return true;
+			return this.sel.insertNode(this.dom.create({name : 'br', css : { clear : 'both' }}));
 		}
 		
 		this.state = function() {

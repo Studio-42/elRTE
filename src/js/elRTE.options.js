@@ -61,7 +61,7 @@
 			clean      : ['removeformat'],
 			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],
-			fullscreen : ['fullscreen'] // @todo rename it
+			fullscreen : ['source', 'fullscreen'] // @todo rename it
 		},
 		
 		panelsNames : {},

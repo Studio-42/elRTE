@@ -110,7 +110,7 @@
 					e.preventDefault();
 					e.stopPropagation();
 					self.rte.focus();
-					if (!$(this).hasClass(this.classDisabled)) {
+					if (!$(this).hasClass(self.classDisabled)) {
 						self.rte.trigger('exec', { cmd : self.name});
 						self.exec() && self.rte.trigger('change')
 					}
@@ -127,13 +127,24 @@
 		 **/
 		this._bind = function() {
 			var self = this;
-			this.rte.bind('wysiwyg change changePos', function(e) {
+			
+			this.rte.bind('wysiwyg', function() {
 				self.updateUI(self.state());
-			}).bind('close source', function(e) {
-				if (e.type == 'source' || e.data.id == self.rte.active.id) {
-					self.updateUI(self._disabled);
-				}
-			});
+			}).bind('source', function() {
+				self.updateUI(self._disabled);
+			}).bind('close', function(e) {
+				e.data.id == self.rte.active.id && self.updateUI(self._disabled);
+			}).bind('change changePos', function() {
+				self.rte.isWysiwyg() && self.updateUI(self.state());
+			})
+			
+			// this.rte.bind('wysiwyg change changePos', function(e) {
+			// 	self.updateUI(self.state());
+			// }).bind('close source', function(e) {
+			// 	if (e.type == 'source' || e.data.id == self.rte.active.id) {
+			// 		self.updateUI(self._disabled);
+			// 	}
+			// });
 		}
 	}
 	

@@ -5,6 +5,7 @@
 	 *
 	 * @param elRTE editor instance
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 * @TODO scrollTop selection after undo/redo
 	 */
 	elRTE.prototype.history = function(rte) {
 		var self      = this,
@@ -12,6 +13,7 @@
 			sel       = rte.selection,
 			storage   = {},
 			keyupLock = false,
+			reg = /<span([^>]*class\s*=\s*"[^>]*elrtebm[^>]*)>\s*(<\/span>)?/gi,
 			active;
 		
 		/**
@@ -23,13 +25,17 @@
 		 * @return void
 		 */
 		function add(c, f) {
+			if (!active) {
+				return;
+			}
 			var d = rte.active, 
 				l = active.levels[active.index],
 				bm, html;
 				
-			if (!active.levels.length || f
-			|| ((c == rte.CHANGE_CMD || (active.change != rte.CHANGE_CMD && active.change != c)) && l.origin != d.get()) ) {
+			// rte.log(active)
 				
+			if (!active.levels.length || f
+			|| ((c == rte.CHANGE_CMD || (active.change != rte.CHANGE_CMD && active.change != c)) && $.trim(l.html.replace(reg, '')) != $.trim(d.get())) ) {
 				if (active.index < active.levels.length-1) {
 					active.levels.splice(active.index+1, active.levels.length-active.index-1);
 				}
@@ -43,8 +49,7 @@
 				
 				active.levels.push({
 					bm     : [bm[0].id, bm[1].id],
-					html   : html,
-					origin : d.get()
+					html   : html
 				});
 				active.index = active.levels.length-1;
 				// rte.debug('history.add', active.levels.length+' '+active.index);
@@ -129,7 +134,7 @@
 			.bind('wysiwyg', function(e) {
 				/* set active storage and add initial level if not exists */
 				active = storage[e.data.id];
-				!active.levels.length && add(rte.CHANGE_CMD);
+				add(rte.CHANGE_CMD);
 			})
 			.bind('source', function() { 
 				/* disable active storage for source mode */
@@ -143,22 +148,20 @@
 			})
 			.bind('exec cut paste', function(e) {
 				// save snapshot before changes
-				if (e.data.cmd != 'undo' && e.data.cmd != 'redo') {
-					rte.log(e.type)
-					add(rte.CHANGE_CMD, true);
+				if (e.data.cmd != 'undo' && e.data.cmd != 'redo' && e.data.cmd != 'source') {
+					// ? if false - lost selection, true - need to control cmd names
+					add(rte.CHANGE_CMD, false);
 					keyupLock = true
 				}
 			})
 			.bind('change', function(e) {
 				// save after changes
-				rte.log('change')
 				add(e.data.type||rte.CHANGE_CMD);
 				// block following keyup - keyCode on keyup event could not be detect correctly
 				e.data.type && (keyupLock = true);
 			})
 			.bind('keyup', function(e) {
 				if (!keyupLock) {
-					rte.log('change')
 					if (rte.utils.isKeyChar(e.keyCode)) {
 						add(rte.CHANGE_KBD);
 					} else if (rte.utils.isKeyDel(e.keyCode)) {

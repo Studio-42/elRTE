@@ -55,8 +55,6 @@
 		this.CHANGE_CMD = 3;
 		this.CHANGE_POS = 4;
 		this.change = false;
-
-		this.typing = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* loaded docs number ! */

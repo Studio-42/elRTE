@@ -11,14 +11,8 @@
 		this.name  = n;
 		this.title = 'Non breakable space';
 		
-		// this.init(rte);
-
 		this.exec = function() {
-			var n;
-			if ((n = this.sel.insertHtml('&nbsp;')).length) {
-				this.sel.select(n[0]).collapse();
-				return true;
-			}
+			return this.sel.insertHtml('&nbsp;');
 		}
 		
 		this.state = function() {
