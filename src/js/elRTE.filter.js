@@ -675,7 +675,7 @@
 						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
 					});
 					return '<'+n+' '+self.serializeAttrs(a)+'>'+e;
-
+				
 				});
 			
 			return html;

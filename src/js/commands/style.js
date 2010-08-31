@@ -86,7 +86,12 @@
 					// this.rte.log(n)
 					this.dom.smartWrap(n, 'block', this.node);
 					
-					this.rte.selection.select(n[0], n[n.length-1]);
+					this.sel.select(n[0], n[n.length-1]);
+					
+					// var bm = this.sel.bookmark();
+					// this.rte.log(bm)
+					// this.sel.toBookmark(bm)
+					
 				}
 			}
 			return true;

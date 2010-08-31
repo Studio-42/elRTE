@@ -111,7 +111,7 @@
 					e.stopPropagation();
 					self.rte.focus();
 					if (!$(this).hasClass(this.classDisabled)) {
-						self.rte.trigger('exec');
+						self.rte.trigger('exec', { cmd : self.name});
 						self.exec() && self.rte.trigger('change')
 					}
 					// !$(this).hasClass(this.classDisabled) && self.exec() && self.rte.trigger('change');

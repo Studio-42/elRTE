@@ -22,7 +22,7 @@
 		 * @return Number
 		 **/
 		this.exec = function() {
-			this.rte.history[this.name]();
+			return this.rte.history[this.name]();
 		}
 		
 		/**

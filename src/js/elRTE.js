@@ -49,11 +49,13 @@
 		this._plugins   = {};
 		/* shortcuts */
 		this.shortcuts = {};
+		this.CHANGE_NO  = 0;
 		this.CHANGE_KBD = 1;
 		this.CHANGE_DEL = 2;
 		this.CHANGE_CMD = 3;
+		this.CHANGE_POS = 4;
 		this.change = false;
-		this.chagePos = false;
+
 		this.typing = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
@@ -273,26 +275,33 @@
 		 * Bind keybord shortcut to keydown event
 		 *
 		 * @param  String    shortcut pattern in form: "ctrl+shift+z"
+		 * @param  String    command name for exec trigger
 		 * @param  String    shortcut description
 		 * @param  Function  callback
-		 * @return Boolean
+		 * @return elRTE
 		 */
-		this.shortcut = function(p, d, c) {
-			var _p = p.toUpperCase().split('+'),
-				l  = _p.length, 
-				s  = { keyCode : 0, ctrlKey : false, altKey : false, shiftKey : false, metaKey : false };
+		this.shortcut = function(pt, cmd, ds, cb) {
+			var p = pt.toUpperCase().split('+'),
+				l = p.length, 
+				k = { keyCode : 0, ctrlKey : false, altKey : false, shiftKey : false, metaKey : false };
+			
 			while (l--) {
-				switch (_p[l]) {
-					case 'CTRL'  : s.ctrlKey  = true; break;
-					case 'ALT'   : s.altKey   = true; break;
-					case 'SHIFT' : s.shiftKey = true; break;
-					case 'META'  : s.metaKey  = true; break;
-					default      : s.keyCode  = _p[l].charCodeAt(0);
+				switch (p[l]) {
+					case 'CTRL'  : k.ctrlKey  = true; break;
+					case 'ALT'   : k.altKey   = true; break;
+					case 'SHIFT' : k.shiftKey = true; break;
+					case 'META'  : k.metaKey  = true; break;
+					default      : k.keyCode  = p[l].charCodeAt(0);
 				}
 			}
-			if (s.keyCode>0 && (s.altKey||s.ctrlKey||s.metaKey) && typeof(c) == 'function') {
-				this.shortcuts[p] = {pattern : s, callback : c, description : this.i18n(d)};
-				this.debug('shortcut', 'add '+p);
+			if (k.keyCode>0 && (k.altKey||k.ctrlKey||k.metaKey) && typeof(cb) == 'function') {
+				this.shortcuts[pt] = {
+					pattern     : k, 
+					callback    : cb, 
+					cmd         : cmd,
+					description : this.i18n(ds)
+				};
+				this.debug('shortcut', 'add '+pt);
 			}
 			return this;
 		}
@@ -498,7 +507,7 @@
 					if (p.keyCode == e.keyCode && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
 						e.stopPropagation();
 						e.preventDefault();
-						s.callback(e);
+						s.callback(e) && self.trigger('change');
 						return false;
 					}
 				});
@@ -511,37 +520,31 @@
 						e.preventDefault();
 						self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
 					} 
+					
 					// cache if input modify DOM or change carret/selection position
-					// not bulletproof method - we rise change event on any symbol key with ctrl|meta pressed, 
-					// but i dont know other method to catch emacs-like shortcuts ctrl+(a|e|d)
-					// another minus - we rise change twice on ctrl+x/ctrl-v
-					// but i think its not a big deal ;)
 					if (self.utils.isKeyDel(c) || (c == 68 && e.ctrlKey)) {
+						// del or ctrl+D
 						self.change = self.CHANGE_DEL;
 					} else if (c == 13 || c== 9 || (self.utils.isKeyChar(c) && !self.selection.collapsed())) {
+						// enter/tab or any char key on expanded selection
+						// @TODO ignore ctrl+key ?
 						self.change = self.CHANGE_KBD;
+					} else if (self.utils.isKeyArrow(c) || (e.ctrlKey && c == 69) || ((e.ctrlKey||e.metaKey) && c == 65)) {
+						// arrows or ctrl|meta+A, ctrl+E
+						self.change = self.CHANGE_POS;
 					}
-					// ctrl|meta+A, ctrl+E
-					self.changePos = (e.ctrlKey && c == 69) || ((e.ctrlKey||e.metaKey) && c == 65);
-
-					// self.change = self.utils.isKeyDel(c) || c == 13 || c== 9 || (self.utils.isKeyChar(c) && (!self.selection.collapsed()/* || e.ctrlKey || (self.macos&&e.metaKey)*/));
 					self.trigger(e);
 				}
 			})
 			.bind('keyup', function(e) {
 				self.typing = !self.utils.isKeyService(e.keyCode)
 
-				if (self.change) {
-					// cached changes
-					self.trigger('change', {event : e, type : self.change});
-					self.change = false;
-				} else if (self.changePos || self.utils.isKeyArrow(e.keyCode)) {
-					// carret change position
+				if (self.change == self.CHANGE_POS) {
 					self.trigger('changePos', {event : e});
-					self.changePos = false;
-				} else {
-					// self.typing = true;
+				} else if (self.change != self.CHANGE_NO) {
+					self.trigger('change', {event : e, type : self.change});
 				}
+				self.change = self.CHANGE_NO;
 				self.trigger(e);
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {
