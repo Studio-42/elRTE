@@ -47,10 +47,11 @@
 					origin : d.get()
 				});
 				active.index = active.levels.length-1;
-				rte.debug('history.add', active.levels.length+' '+active.index);
+				// rte.debug('history.add', active.levels.length+' '+active.index);
 			}
 			active.change = c;
 			rte.trigger('historyChange');
+			rte.debug('history.change', 'levels: '+active.levels.length+' index: '+active.index+' change: '+active.change);
 		}
 			
 		/**
@@ -136,24 +137,28 @@
 			})
 			.bind('keydown', function(e) {
 				// save snapshot before changes except del after del
-				if (rte.change != rte.CHANGE_NO && rte.change != rte.CHANGE_POS) {
+				if (rte.change != rte.CHANGE_NON && rte.change != rte.CHANGE_POS) {
 					add(rte.change, rte.change != rte.CHANGE_DEL);
 				}
 			})
-			.bind('exec', function(e) {
+			.bind('exec cut paste', function(e) {
 				// save snapshot before changes
 				if (e.data.cmd != 'undo' && e.data.cmd != 'redo') {
+					rte.log(e.type)
 					add(rte.CHANGE_CMD, true);
+					keyupLock = true
 				}
 			})
 			.bind('change', function(e) {
 				// save after changes
+				rte.log('change')
 				add(e.data.type||rte.CHANGE_CMD);
 				// block following keyup - keyCode on keyup event could not be detect correctly
 				e.data.type && (keyupLock = true);
 			})
 			.bind('keyup', function(e) {
 				if (!keyupLock) {
+					rte.log('change')
 					if (rte.utils.isKeyChar(e.keyCode)) {
 						add(rte.CHANGE_KBD);
 					} else if (rte.utils.isKeyDel(e.keyCode)) {

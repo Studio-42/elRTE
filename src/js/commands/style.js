@@ -40,6 +40,12 @@
 					self.dom.is(n, 'emptySpan') && self.dom.unwrap(n);
 				}
 			}
+			
+			this.rte.bind('keyup', function() {
+				self.typing = true;
+			}).bind('mouseup', function() {
+				self.typing = false;
+			})
 		}
 		
 		/**
@@ -66,7 +72,8 @@
 					p = this.dom.parents(n, this.test, true);
 					b = this.sel.bookmark();
 					// carret at the end of node and user is typing - move selection after node
-					if (this.dom.parent(b[1], this.test) == p[0] && this.rte.typing && !this.dom.nextAll(b[1], 'notEmpty').length) {
+					if (this.dom.parent(b[1], this.test) == p[0] && this.typing && !this.dom.nextAll(b[1], 'notEmpty').length) {
+
 						b = this.sel.rmBookmark(b).selectNext(p[0], true).bookmark();
 						p.shift();
 					}

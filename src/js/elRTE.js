@@ -49,7 +49,7 @@
 		this._plugins   = {};
 		/* shortcuts */
 		this.shortcuts = {};
-		this.CHANGE_NO  = 0;
+		this.CHANGE_NON  = 0;
 		this.CHANGE_KBD = 1;
 		this.CHANGE_DEL = 2;
 		this.CHANGE_CMD = 3;
@@ -328,7 +328,7 @@
 				}
 				this(e, d);
 			});
-
+			// this.prevEvent = e;
 			return this;
 		}
 		
@@ -507,6 +507,7 @@
 					if (p.keyCode == e.keyCode && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
 						e.stopPropagation();
 						e.preventDefault();
+						s.cmd && self.trigger('exec', { cmd : s.cmd });
 						s.callback(e) && self.trigger('change');
 						return false;
 					}
@@ -522,35 +523,35 @@
 					} 
 					
 					// cache if input modify DOM or change carret/selection position
-					if (self.utils.isKeyDel(c) || (c == 68 && e.ctrlKey)) {
+					if (((e.ctrlKey||e.metaKey) && (c == 67 || c == 86 || c == 88)) || (e.shiftKey && c == 45)) {
+						// ignore copy/cut/paste shortcuts
+						self.change = self.CHANGE_NON;
+					} if (self.utils.isKeyDel(c) || (c == 68 && e.ctrlKey)) {
 						// del or ctrl+D
 						self.change = self.CHANGE_DEL;
-					} else if (c == 13 || c== 9 || (self.utils.isKeyChar(c) && !self.selection.collapsed())) {
-						// enter/tab or any char key on expanded selection
-						// @TODO ignore ctrl+key ?
+					} else if (c == 13 || c== 9 || (self.utils.isKeyChar(c) && !self.selection.collapsed() && !(e.ctrlKey||e.metaKey))) {
+						// enter/tab or any char key without modificators keys on expanded selection
 						self.change = self.CHANGE_KBD;
 					} else if (self.utils.isKeyArrow(c) || (e.ctrlKey && c == 69) || ((e.ctrlKey||e.metaKey) && c == 65)) {
 						// arrows or ctrl|meta+A, ctrl+E
 						self.change = self.CHANGE_POS;
+					} else {
+						self.change = self.CHANGE_NON;
 					}
 					self.trigger(e);
 				}
 			})
 			.bind('keyup', function(e) {
-				self.typing = !self.utils.isKeyService(e.keyCode)
-
 				if (self.change == self.CHANGE_POS) {
 					self.trigger('changePos', {event : e});
-				} else if (self.change != self.CHANGE_NO) {
+				} else if (self.change != self.CHANGE_NON) {
 					self.trigger('change', {event : e, type : self.change});
 				}
-				self.change = self.CHANGE_NO;
+				self.change = self.CHANGE_NON;
 				self.trigger(e);
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {
-				
 				e.type == 'mouseup' && self.trigger('changePos', {event : e});
-				self.typing = false;
 				self.trigger(e);
 			})
 
