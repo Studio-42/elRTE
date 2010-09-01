@@ -31,8 +31,6 @@
 				l = active.levels[active.index],
 				bm, html;
 				
-			// rte.log(active)
-				
 			if (!active.levels.length || f
 			|| ((c == rte.CHANGE_CMD || (active.change != rte.CHANGE_CMD && active.change != c)) && $.trim(l.html.replace(reg, '')) != $.trim(d.get())) ) {
 				if (active.index < active.levels.length-1) {
@@ -45,14 +43,12 @@
 				bm = sel.bookmark();
 				html = d.get();
 				sel.toBookmark(bm);
-				// rte.log($(d.document).scrollTop())
 				active.levels.push({
 					bm     : [bm[0].id, bm[1].id],
 					html   : html,
 					scroll : parseInt($(d.document).scrollTop())
 				});
 				active.index = active.levels.length-1;
-				// rte.debug('history.add', active.levels.length+' '+active.index);
 			}
 			active.change = c;
 			rte.trigger('historyChange');

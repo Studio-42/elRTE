@@ -129,14 +129,15 @@
 			/* load commands */
 			// @TODO check duplicate panels
 			// this.constructor.prototype.cmd = new this.constructor.prototype.cmd(this)
-			this.command.init(this)
+			this.command.init(this);
+			delete this.command.init
 			$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
 				$.each(self.options.panels[n]||[], function(i, cn) {
 					if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
 						
 						self._commands[cn] = new c(cn);
 						// self.log(self._commands[cn].init)
-						// self._commands[cn].init(self, cn)
+						self._commands[cn].bind()
 						if ((ui = self._commands[cn].ui())) {
 							self.view.addUI(ui, n);
 						}
