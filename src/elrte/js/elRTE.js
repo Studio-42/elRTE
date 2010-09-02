@@ -227,7 +227,7 @@ elRTE = function(target, opts) {
 			self.typing = true;
 			self.lastKey = null;
 			n.appendChild(r);
-			self.selection.insertNode(n);
+			self.selection.deleteContents().insertNode(n);
 			self.selection.select(r);
 			setTimeout(function() {
 				if (n.parentNode) {

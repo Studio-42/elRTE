@@ -211,6 +211,13 @@ elRTE.prototype.selection = function(rte) {
 		return this;
 	}
 	
+	this.deleteContents = function() {
+		if (!$.browser.msie) {
+			this.getRangeAt().deleteContents();
+		}
+		return this;
+	}
+	
 	/**
 	 * Вставляет ноду в текущее выделение
 	 *
