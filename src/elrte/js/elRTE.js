@@ -54,6 +54,23 @@ elRTE = function(target, opts) {
 		this.workzone.add(this.iframe).height(this.workzone.height());
 	}
 	
+	/**
+	 * Turn editor resizable on/off if allowed
+	 *
+	 * @param  Boolean 
+	 * @return void
+	 **/
+	this.resizable = function(r) {
+		if (this.options.resizable && $.fn.resizable) {
+			if (r) {
+				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', function() {
+					self.updateHeight();
+				});
+			} else {
+				this.editor.resizable('destroy');
+			}
+		}
+	}
 	
 	/* attach editor to document */
 	this.editor.insertAfter(target);
@@ -259,6 +276,8 @@ elRTE = function(target, opts) {
 			$(self.doc.body).find('.elrte-webkit-hl').removeClass('elrte-webkit-hl');
 		})
 	}
+	
+	this.resizable(true)
 	this.window.focus();
 	// this.log(this.editor.parents('form').find('[name="el-select"]'))
 	

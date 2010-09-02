@@ -75,6 +75,7 @@ elRTE.prototype.ui.prototype.buttons.fullscreen = function(rte, name) {
 			this.domElem.addClass('active');
 		}
 		rte.updateHeight();	
+		rte.resizable(f);
 		restore();
 	}
 	
