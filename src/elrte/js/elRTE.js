@@ -57,7 +57,7 @@ elRTE = function(target, opts) {
 		this.source = $('<textarea />').insertAfter(this.iframe).hide();
 		content = this.target.hide().html();
 	}
-	this.source.attr('name', this.target.attr('id')||this.target.attr('name'));
+	this.source.attr('name', this.target.attr('name')||this.target.attr('id'));
 	content = $.trim(content);
 	if (!content) {
 		content = ' ';
