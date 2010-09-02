@@ -18,11 +18,7 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 		change  : function(c) { self.set(c) }
 	}
 	
-	this.defaultColor = this.rte.utils.rgb2hex( $(this.rte.doc.body).css(this.name=='forecolor' ? 'color' : 'background-color') );
-	if (this.defaultColor == 'transparent') {
-		this.defaultColor = this.name == 'forecolor' ? '#000000' : '#ffffff';
-		// alert(this.defaultColor)
-	}
+	this.defaultColor = this.name == 'forecolor' ? '#000000' : '#ffffff';
 	this.picker       = this.domElem.elColorPicker(opts);
 	this.indicator    = $('<div />').addClass('color-indicator').prependTo(this.domElem);
 	
@@ -50,20 +46,7 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 	this.update = function() {
 		this.domElem.removeClass('disabled');
 		var n = this.rte.selection.getNode();
-		if (n.nodeType != 1) {
-			n = n.parentNode;
-		}
-		var v = $(n).css(this.name == 'forecolor' ? 'color' : 'background-color');
-
-		if (!v || v=='transparent') {
-			v = this.defaultColor;
-
-		} else {
-			v = this.rte.utils.rgb2hex(v);
-		}
-		this.picker.val(v)
-		// this.picker.val(!v || v=='transparent' ? this.defaultColor : this.rte.utils.rgb2hex(v));
-		// this.picker.val(v && v!='transparent' ? this.rte.utils.rgb2hex(v): this.defaultColor);
+		this.picker.val(this.rte.utils.rgb2hex($(n.nodeType != 1 ? n.parentNode : n).css(this.name == 'forecolor' ? 'color' : 'background-color'))||this.defaultColor)
 	}
 }
 

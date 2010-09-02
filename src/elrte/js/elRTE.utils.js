@@ -376,7 +376,7 @@ elRTE.prototype.utils = function(rte) {
 		if ((m = c.match(this.rgbRegExp))) {
 			return '#'+hex(m[1])+hex(m[2])+hex(m[3]);
 		}
-		return c;
+		return '';
 	}
 	
 
