@@ -2,14 +2,16 @@
 /*  контейнер */
 .el-rte { 
 	font-family: Trebuchet MS, Verdana, Geneva,sans-serif;
+/*	border:1px solid #aaa;*/
 }
 .el-rte.el-fullscreen {
 	position:absolute;
-	width:100%;
-	height:100%;
+	width:99%;
+/*	height:100%;*/
 	top:0;
 	left:0;
-	z-index:101;
+	margin:0;
+/*	z-index:101;*/
 }
 
 .elrte-swf-placeholder {
@@ -153,7 +155,7 @@
 	border-top:none;
 }
 /* табы */
-.el-rte .tabsbar { display: block; margin-bottom:.7em; }
+.el-rte .tabsbar { display: block;  }
 .el-rte .tabsbar .tab {
 	float:left;  
 	margin-right:2px; 

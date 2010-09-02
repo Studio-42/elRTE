@@ -9,37 +9,73 @@
  **/
 (function($) {
 elRTE.prototype.ui.prototype.buttons.fullscreen = function(rte, name) {
+	var self     = this;
 	this.constructor.prototype.constructor.call(this, rte, name);
 	this.active  = true;
-	this.parents = [];
+	this.editor = rte.editor;
+	this.wz = rte.workzone;
 	this.height  = 0;
-	var self     = this;
+	this.delta = 0;
+	this._class = 'el-fullscreen';
+	
+	setTimeout(function() {
+		self.height  = self.wz.height();
+		self.delta   = self.editor.outerHeight()-self.height;
+	}, 50);
+	
+	
+	/**
+	 * Update editor height on window resize in fullscreen view
+	 *
+	 **/
+	function resize() {
+		self.wz.height($(window).height()-self.delta);
+		self.rte.updateHeight();
+	}
 	
 	this.command = function() {
+		var w = $(window),
+			e = this.editor,
+			p = e.parents().filter(function(i, n) { return  !/^(html|body)$/i.test(n.nodeName) && $(n).css('position') == 'relative'; }),
+			wz = this.wz,
+			c = this._class,
+			f = e.hasClass(c),
+			rte = this.rte,
+			s = this.rte.selection,
+			m = $.browser.mozilla,
+			b, h;
+
+		function save() {
+			if (m) {
+				b = s.getBookmark();
+			}
+		}
 		
-		if (this.rte.editor.hasClass('el-fullscreen')) {
-			for (var i=0; i < this.parents.length; i++) {
-				$(this.parents[i]).css('position', 'relative');
-			};
-			this.parents = [];
-			this.rte.editor.removeClass('el-fullscreen');
-			this.rte.workzone.add(this.rte.iframe).height(this.height);
+		function restore() {
+			if (m) {
+				self.wz.children().toggle();
+				self.rte.source.focus();
+				self.wz.children().toggle();
+				s.moveToBookmark(b);
+			}
+		}
+
+		save();
+		p.css('position', f ? 'relative' : 'static');	
+		
+		if (f) {
+			e.removeClass(c);
+			wz.height(this.height);
+			w.unbind('resize', resize);
 			this.domElem.removeClass('active');
 		} else {
-			this.parents = [];
-			var p = this.rte.editor.parents().each(function() {
-				
-				if (this.nodeName != 'BODY' && this.name != 'HTML' && $(this).css('position') == 'relative') {
-					self.parents.push(this);
-					$(this).css('position', 'static');
-				}
-			});
-			this.height = this.rte.workzone.height();
-			this.rte.editor.addClass('el-fullscreen');
-			var h = parseInt(this.rte.editor.height() - this.rte.toolbar.height() - this.rte.statusbar.height() - this.rte.tabsbar.height() - 17);
-			h>0 && this.rte.workzone.add(this.rte.iframe).height(h);
+			e.addClass(c).removeAttr('style');
+			wz.height(w.height() - this.delta).css('width', '100%');
+			w.bind('resize', resize);
 			this.domElem.addClass('active');
 		}
+		rte.updateHeight();	
+		restore();
 	}
 	
 	this.update = function() {

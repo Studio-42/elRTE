@@ -45,6 +45,16 @@ elRTE = function(target, opts) {
 	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.options.lang] || {}} });	
 	this.filter    = new this.filter(this)
 	
+	/**
+	 * Sync iframes/textareas height with workzone height 
+	 *
+	 * @return void
+	 */
+	this.updateHeight = function() {
+		this.workzone.add(this.iframe).height(this.workzone.height());
+	}
+	
+	
 	/* attach editor to document */
 	this.editor.insertAfter(target);
 	/* init editor textarea */
@@ -117,8 +127,9 @@ elRTE = function(target, opts) {
 	
 	if (this.options.height>0) {
 		this.workzone.height(this.options.height);
-		$(this.iframe).height(this.options.height);
-		this.source.height(this.options.height);
+		// $(this.iframe).height(this.options.height);
+		// this.source.height(this.options.height);
+		this.updateHeight();
 	}
 	
 	this.window.focus();
@@ -250,6 +261,8 @@ elRTE = function(target, opts) {
 	}
 	this.window.focus();
 	// this.log(this.editor.parents('form').find('[name="el-select"]'))
+	
+	
 }
 
 /**
