@@ -7,20 +7,23 @@
 	 *
 	 **/
 	elRTE.prototype.commands.nbsp = function(n) {
-		var self   = this;
 		this.name  = n;
 		this.title = 'Non breakable space';
 		
-		this.exec = function() {
+		this.bind = function() {
+			var self = this;
+
+			this.rte.bind('wysiwyg', function() {
+				self._setState(self.STATE_ENABLE);
+			}).bind('source close', function(e) {
+				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
+			});
+		}
+		
+		this._exec = function() {
 			return this.sel.insertHtml('&nbsp;');
 		}
-		
-		this.state = function() {
-			return this._enabled;
-		}
-		
+
 	}
-	
-	elRTE.prototype.commands.nbsp.prototype = elRTE.prototype.command;
 	
 })(jQuery);

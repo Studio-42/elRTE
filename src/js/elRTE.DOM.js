@@ -64,7 +64,7 @@ elRTE.prototype.dom = function(rte) {
 		n = $(n);
 		
 		$.isPlainObject(o.attr) && n.attr(o.attr);
-		$.isPlainObject(o.css) && n.attr(o.css);
+		$.isPlainObject(o.css) && n.css(o.css);
 		o['class'] && n.addClass(o['class']);
 		return n[0];
 	}

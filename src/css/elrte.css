@@ -35,6 +35,7 @@
 /******************  editor  *********************/
 
 .elrte {
+/*	position:absolute;*/
 	padding: 3px;
 	margin: 3px 0;
 	font:98% normal tahoma, Trebuchet ms, tahoma, sans-serif;
@@ -190,13 +191,19 @@
 .elrte .elrte-ui-fullscreen { background-position:-540px -20px; }
 .elrte .elrte-ui-bold { background-position:-160px 0; }
 .elrte .elrte-ui-italic { background-position:-180px 0; }
+.elrte .elrte-ui-underline { background-position:-200px 0; }
+.elrte .elrte-ui-strike { background-position:-220px 0; }
+.elrte .elrte-ui-sup { background-position:-260px 0; }
+.elrte .elrte-ui-sub { background-position:-240px 0; }
 
 .elrte .elrte-ui-undo { background-position:0 -20px; }
 .elrte .elrte-ui-redo { background-position:-20px -20px; }
 .elrte .elrte-ui-docstructure { background-position:-500px 0; }
 .elrte .elrte-ui-nbsp { background-position:-440px 0; }
 .elrte .elrte-ui-stopfloat { background-position:-520px 0; }
-
+.elrte .elrte-ui-source { background-position:-520px -20px; }
+.elrte .elrte-ui-ltr { background-position:-480px 0; }
+.elrte .elrte-ui-rtl { background-position:-460px 0; }
 /* ui states */
 .elrte .elrte-ui-hover    { border-color:#777; }
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }

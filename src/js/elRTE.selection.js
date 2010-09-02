@@ -98,6 +98,7 @@
 			} else {
 				this.rte.debug('error.selection', 'select(): sn is not node');
 			}
+			this.rte.focus();
 			return this;
 		}
 		

@@ -113,7 +113,7 @@
 		 * @return void
 		 **/	
 		this.init = function() {
-			var c, ui, p, id, ids=[];
+			var c, ui, p, id, ids=[], o = this.options;
 			/* object with various utilits */	
 			this.utils     = new this.utils(this)
 			/* editor view/renderer */
@@ -129,21 +129,44 @@
 			/* load commands */
 			// @TODO check duplicate panels
 			// this.constructor.prototype.cmd = new this.constructor.prototype.cmd(this)
-			this.command.init(this);
-			delete this.command.init
-			$.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
-				$.each(self.options.panels[n]||[], function(i, cn) {
-					if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
+			
+			this.command = new this.command(this)
+			
+			$.each(o.toolbars[o.toolbar]||[], function(i, p) {
+				// self.log(p)
+				$.each(o.panels[p]||[], function(i, n) {
+					
+					if (typeof((c = self.commands[n])) == 'function' && !self._commands[n]) {
 						
-						self._commands[cn] = new c(cn);
-						// self.log(self._commands[cn].init)
-						self._commands[cn].bind()
-						if ((ui = self._commands[cn].ui())) {
+						c.prototype = self.command;
+						// self.log(c)
+						var cmd = new c(n)
+						
+						cmd.bind();
+						if ((ui = cmd.ui())) {
 							self.view.addUI(ui, n);
 						}
+						// self.log(cmd)
+						self._commands[n] = cmd;
 					}
-				});
-			});
+				})
+			})
+			
+			// this.command.init(this);
+			// delete this.command.init
+			// $.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
+			// 	$.each(self.options.panels[n]||[], function(i, cn) {
+			// 		if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
+			// 			
+			// 			self._commands[cn] = new c(cn);
+			// 			// self.log(self._commands[cn].init)
+			// 			self._commands[cn].bind()
+			// 			if ((ui = self._commands[cn].ui())) {
+			// 				self.view.addUI(ui, n);
+			// 			}
+			// 		}
+			// 	});
+			// });
 			
 			/* load plugins */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
@@ -402,6 +425,7 @@
 						this.focus();
 						self.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
 					} 
+					return this;
 				}
 			}
 			

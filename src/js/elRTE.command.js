@@ -1,15 +1,15 @@
 (function($) {
 	// @TODO - autobind cmd shortcut
-	elRTE.prototype.command2 = new function() {
+	elRTE.prototype.command = function(rte) {
 		
 		/* short command description for button title */
 		this.title = '';
 		/* editor instance */
-		this.rte = null;
+		this.rte = rte;
 		/* editor DOM object */
-		this.dom = null;
+		this.dom = rte.dom;
 		/* editor selection object */
-		this.sel = null;
+		this.sel = rte.selection;
 		
 		
 		this.STATE_DISABLE = 0;
@@ -23,23 +23,15 @@
 		this._ui;
 		this._state = 0;
 		
-		this.init = function(rte) {
-			this.rte = rte;
-			this.dom = rte.dom;
-			this.sel = rte.selection;
-		}
-		
 		this.bind = function() {
 			var self = this;
 			
 			this.rte.bind('wysiwyg', function() {
-				self._setState(self._getState());
-			}).bind('source', function() {
-				self._setState(self.STATE_DISABLE);
-			}).bind('close', function(e) {
+				self._setState();
+			}).bind('source close', function(e) {
 				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
 			}).bind('change changePos', function() {
-				self.rte.isWysiwyg() && self._setState(self._getState());
+				self._state>0 && self._setState();
 			});
 		}
 		
@@ -52,6 +44,7 @@
 		}
 		
 		this.exec = function() {
+			// this.rte.log('exec')
 			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec() && this.rte.trigger('change'));
 		}
 		
@@ -60,7 +53,7 @@
 		}
 		
 		this._setState = function(s) {
-			this._state = s;
+			this._state = s === void(0) ? this._getState() : s;
 			this._ui && this._updateUI();
 		}
 		
@@ -70,22 +63,25 @@
 		
 		this._createUI = function() {
 			var self = this;
-			return $('<li class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
-				.click(function(e) {
+			return this._ui = $('<li class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
+				.mousedown(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
 					self.rte.focus();
 					self._state>0 && self.exec();
-				}).hover(function(e) {
-					$(this).toggleClass(self._hClass, e.type == 'mouseenter' && self._state);
+				})
+				.hover(function(e) {
+					$(this).toggleClass(self._hClass, e.type == 'mouseenter' && self._state>0);
 				});
 		}
 		
 		this._updateUI = function() {
-			switch (this._state) {
-				case this.STATE_DISABLE : this._ui.removeClass(this._aClass).addClass(this._dClass); break;
-				case this.STATE_ENABLE  : this._ui.removeClass(this._aClass+' '+this._dClass);       break;
-				case this.STATE_ACTIVE  : this._ui.removeClass(this._dClass).addClass(this._aClass); break;
+			if (this._ui) {
+				switch (this._state) {
+					case this.STATE_DISABLE : this._ui.removeClass(this._aClass).addClass(this._dClass); break;
+					case this.STATE_ENABLE  : this._ui.removeClass(this._aClass+' '+this._dClass);       break;
+					case this.STATE_ACTIVE  : this._ui.removeClass(this._dClass).addClass(this._aClass); break;
+				}
 			}
 		}
 		
@@ -96,7 +92,7 @@
 	 *
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.command = new function() {
+	elRTE.prototype.command_ = new function() {
 		/* command name */
 		this.name = 'command';
 		/* short command description for button title */

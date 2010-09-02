@@ -1,13 +1,12 @@
 (function($) {
 	/**
 	 * @class elRTE command fullscreen
+	 *
 	 * Toggle editor between normal/fullscreen view
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 *
 	 **/
 	elRTE.prototype.commands.fullscreen = function(n) {
 		var self   = this;
-		// this.rte   = rte;
 		this.name  = n;
 		this.title = 'Full screen';
 		/* view object */
@@ -20,21 +19,22 @@
 		this.height = 0;
 		/* difference between editor and workzone heights */
 		this.delta = 0;
-		/* parents with position=relative */
-		this.parents = [];
 		/* editor fullscreen css class */
 		this._class = 'elrte-fullscreen';
 		
-		/* remember height, delta and parents with position=relative */
-		this.rte.bind('load', function() {
-			self.height = self.wz.height();
-			self.delta  = self.editor.outerHeight()-self.height;
-			self.editor.parents().each(function() {
-				if (this.nodeName != 'BODY' && this.nodeName != 'HTML' && $(this).css('position') == 'relative') {
-					self.parents.push(this);
-				}
+		/**
+		 * remember height, delta and parents with position=relative 
+		 *
+		 **/
+		this.bind = function() {
+			var self = this, e = self.editor;
+			
+			this.rte.bind('load', function() {
+				self._setState(self.STATE_ENABLE);
+				self.height  = self.wz.height();
+				self.delta   = e.outerHeight()-self.height;
 			});
-		});
+		}
 		
 		/**
 		 * Update editor height on window resize in fullscreen view
@@ -44,46 +44,59 @@
 			self.wz.height($(window).height()-self.delta);
 			self.view.updateHeight();
 		}
-		
+
 		/**
 		 * Toggle between normal/fullscreen view
 		 *
 		 **/
-		this.exec = function() {
-			var l = this.parents.length;
-
-			if (this.editor.hasClass(this._class)) {
-				// set normal view
-				this.view.resizable(true);
-				this.editor.removeClass(this._class);
-				this.wz.height(this.height).css('width', '');
-				this.view.updateHeight();
-				$(window).unbind('resize', resize);
-				while (l--) {
-					$(this.parents[l]).css('position', 'relative');
+		this._exec = function() {
+			var w = $(window),
+				e = this.editor,
+				p = e.parents().filter(function(i, n) { return  !/^(html|body)$/i.test(n.nodeName) && $(n).css('position') == 'relative'; }),
+				wz = this.wz,
+				v = this.view,
+				c = this._class,
+				f = e.hasClass(c),
+				rte = this.rte,
+				s = this.rte.selection,
+				a = $.browser.mozilla && this.rte.isWysiwyg() ? this.rte.active : false,
+				b, h;
+				
+			function save() {
+				if (a) {
+					b = s.bookmark();
+					h = a.get();
 				}
-			} else {
-				// set fullscreen view
-				this.view.resizable(false);
-				while (l--) {
-					$(this.parents[l]).css('position', 'static');
-				}
-				this.editor.addClass(this._class).removeAttr('style');
-				this.wz.css('width', '100%');
-				this.wz.height($(window).height()-this.delta);
-				this.view.updateHeight();
-				$(window).bind('resize', resize);
 			}
-			this.updateUI(this.state());
-		}
-		
-		/**
-		 * Override parent method. No need to bind to events.
-		 * Remove disabled class instead, so this button always enabled
-		 *
-		 **/
-		this._bind = function() { 
-			this._ui.removeClass(this.classDisabled);
+			
+			function restore() {
+				if (a) {
+					// a.toggle().toggle().set(h, 'wysiwyg');
+					a.editor.add(a.source).toggle();
+					a.source[0].focus();
+					a.editor.add(a.source).toggle();
+					// a.set(h, 'wysiwyg')
+					s.toBookmark([b[0].id, b[1].id]);
+				}
+			}
+			
+			save();	
+			p.css('position', f ? 'relative' : 'static');
+				
+			if (f) {
+				e.removeClass(c);
+				wz.height(this.height)//.css('width', ''); //???
+				w.unbind('resize', resize);
+			} else {
+				e.addClass(c).removeAttr('style');
+				wz.height(w.height() - this.delta).css('width', '100%');
+				w.bind('resize', resize);
+			}
+			
+			v.updateHeight();
+			v.resizable(f);
+			restore();
+			this._setState();
 		}
 		
 		/**
@@ -91,11 +104,9 @@
 		 *
 		 * @return Number
 		 **/
-		this.state = function() {
-			return this.editor.hasClass(this._class) ? this._active : this._enabled;
+		this._getState = function() {
+			return this.rte.view.editor.hasClass(this._class) ? this.STATE_ACTIVE : this.STATE_ENABLE;
 		}
 	}
-	
-	elRTE.prototype.commands.fullscreen.prototype = elRTE.prototype.command;
 
 })(jQuery);

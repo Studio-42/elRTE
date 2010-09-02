@@ -149,7 +149,7 @@
 		}
 
 		/**
-		 * Sync iframes/textareas height with orkzone height 
+		 * Sync iframes/textareas height with workzone height 
 		 *
 		 * @return void
 		 */
