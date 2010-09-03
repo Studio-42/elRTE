@@ -81,23 +81,13 @@
 		 * @return String
 		 **/
 		this.proccess = function(chain, html) {
-			// this.rte.log('filter: '+chain)
-			// var r = new RegExp('\uFEFF', 'gi')
-			// if (r.test(html)) {
-			// 	this.rte.log('found')
-			// 	html = html.replace(r, '')
-			// }
-			// this.rte.log(html)
 			// remove whitespace at the begin and end
-			// this.rte.log('before '+chain+': '+html)
 			html = $.trim(html).replace(/^\s*(&nbsp;)+/gi, '').replace(/(&nbsp;|<br[^>]*>)+\s*$/gi, '');
 			// pass html through chain
 			$.each(this._chains[chain]||[], function() {
 				html = this.call(self, html);
 			});
-			// this.rte.log('after:'+html)
-			// this.rte.log(this.scripts)
-			return html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n");
+			return html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n")+'  ';
 		}
 		
 		/**

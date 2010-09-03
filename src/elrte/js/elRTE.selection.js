@@ -413,7 +413,6 @@ elRTE.prototype.selection = function(rte) {
 	this.getNode = function() {
 		if (!node) {
 			node = this.rte.dom.findCommonAncestor(this.getStart(), this.getEnd());
-			// self.rte.log(node)
 		}
 		return node;
 	}
