@@ -488,7 +488,7 @@
 
 					self.trigger('paste');
 					n.appendChild(r);
-					n = self.selection.insertNode(n);
+					n = self.selection.deleteContents().insertNode(n);
 					self.selection.select(n.firstChild);
 					setTimeout(function() {
 						if (n.parentNode && !r.parentNode) {

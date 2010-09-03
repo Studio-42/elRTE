@@ -279,8 +279,12 @@
 		 * @return Array
 		 **/
 		this.cloneContents = function() {
-			return this.range().cloneContents()
-			return Array.prototype.slice.call(this.range().cloneContents().childNodes);
+			return this.range().cloneContents();
+		}
+		
+		this.deleteContents = function() {
+			this.range().deleteContents();
+			return this;
 		}
 		
 		/**

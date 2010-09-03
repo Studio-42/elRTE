@@ -60,22 +60,17 @@
 				rte = this.rte,
 				s = this.rte.selection,
 				a = $.browser.mozilla && this.rte.isWysiwyg() ? this.rte.active : false,
-				b, h;
+				b;
 				
 			function save() {
-				if (a) {
-					b = s.bookmark();
-					h = a.get();
-				}
+				b = a ? s.bookmark() : false;
 			}
 			
 			function restore() {
 				if (a) {
-					// a.toggle().toggle().set(h, 'wysiwyg');
 					a.editor.add(a.source).toggle();
 					a.source[0].focus();
 					a.editor.add(a.source).toggle();
-					// a.set(h, 'wysiwyg')
 					s.toBookmark([b[0].id, b[1].id]);
 				}
 			}
@@ -85,7 +80,7 @@
 				
 			if (f) {
 				e.removeClass(c);
-				wz.height(this.height)//.css('width', ''); //???
+				wz.height(this.height);
 				w.unbind('resize', resize);
 			} else {
 				e.addClass(c).removeAttr('style');
