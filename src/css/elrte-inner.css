@@ -33,7 +33,7 @@ body.elrte-structure .elrte-anchor {
 
 .elrte-highlight {
 	background-color:#eee;
-	border:1px solid #ccc;
+	outline:1px solid #ccc;
 }
 
 .elrte-media-x-shockwave-flash,

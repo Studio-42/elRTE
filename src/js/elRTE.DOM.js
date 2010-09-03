@@ -12,24 +12,29 @@ elRTE.prototype.dom = function(rte) {
 	this.body = document.body;
 	this.html = document.body.parentNode;
 	
-	this.textRegExp = /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|BUTTON|CAPTION|CENTER|CITE|CODE|DD|DT|DEL|DFN|DIV|DT|EM|FONT|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|S|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|U|VAR)$/;
+	
+	this.textRegExp  = /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|BUTTON|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DL|DT|EM|FIELDSET|FONT|FORM|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|S|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|U|VAR|XMP)$/;
+	this.blockRegExp = /^(ADDRESS|BLOCKQUOTE|CAPTION|CENTER|COL|COLGROUP|DD|DIR|DIV|DL|DT|FIELDSET|FORM|H[1-6]|HR|LI|MENU|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/;
 	
 	this.filters = {
-		any : /.*/,
-		block : /^(ADDRESS|BLOCKQUOTE|CAPTION|CENTER|DD|DT|DIR|DIV|DL|FIELDSET|FORM|H[1-6]|HR|LI|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/,
-		text  : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName);  },
-		textNode : function(n) { return n.nodeType == 3; },
-		inline : function(n) { return n.nodeType == 3 || !self.filters.block.test(n.nodeName); },
-		// @TODO check for nested not text node
-		empty : function(n) { 
-			return n.nodeType == 1 ? !(n.childNodes.length || $.trim($(n).text().length)) : (n.nodeType == 3 ? !$.trim(n.nodeValue).length : true); 
-			// return n.nodeType == 1 ? !n.childNodes.length || !$.trim($(n).text()).length : !$.trim(n.nodeValue).length; 
-		},
-		notEmpty : function(n) { return !self.filters.empty(n); },
-		first : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
-		last : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
-		onlyChild : function(n) { return self.filters.first(n) && self.filters.last(n); },
-		emptySpan : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); }
+		any           : function()  { return true; },
+		none          : function()  { return false; },
+		block         : function(n) { return self.blockRegExp.test(n.nodeName); },
+		inline        : function(n) { return !self.blockRegExp.test(n.nodeName); },
+		text          : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName); },
+		notText       : function(n) { !self.filters.text(n); }, 
+		blockText     : function(n) { return self.filters.block(n) && self.filters.text(n); },
+		inlineText    : function(n) { return !self.filters.block(n) && self.filters.text(n); },
+		blockNotText  : function(n) { return self.filters.block(n) && !self.filters.text(n); },
+		inlineNotText : function(n) { return !self.filters.block(n) && !self.filters.text(n); },
+		textNode      : function(n) { return n.nodeType == 3; },
+		textElement   : function(n) { return n.nodeType == 1 && self.textRegExp.test(n.nodeName); },
+		empty         : function(n) { return n.nodeType == 1 ? !(n.childNodes.length || $.trim($(n).text().length)) : (n.nodeType == 3 ? !$.trim(n.nodeValue).length : true); },
+		notEmpty      : function(n) { return !self.filters.empty(n); },
+		first         : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
+		last          : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
+		onlyChild     : function(n) { return self.filters.first(n) && self.filters.last(n); },
+		emptySpan     : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); }
 	};
 	
 	
@@ -38,8 +43,9 @@ elRTE.prototype.dom = function(rte) {
 		self.doc  = self.rte.active.document;
 		self.body = self.doc.body;
 		self.html = self.doc.body.parentNode;
-	}).bind('close source', function(e) {
-		if (e.type == 'source' || e.data.id == self.rte.active.id) {
+	})
+	.bind('close source', function(e) {
+		if (e.data.id == self.rte.active.id) {
 			self.doc  = document;
 			self.body = document.body;
 			self.html = document.body.parentNode;
@@ -324,8 +330,8 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.nextAll = function(n, f) {
 		var r = [];
-		while ((n = this.next(n))) {
-			this.is(n, f) && r.push(n);
+		while ((n = this.next(n)) && this.is(n, f)) {
+			r.push(n);
 		}
 		return r;
 	}
@@ -341,8 +347,8 @@ elRTE.prototype.dom = function(rte) {
 	this.nextUntil = function(n, f, e) {
 		var r = [];
 
-		while ((n = this.next(n)) && n !== e) {
-			this.is(n, f) && r.push(n);
+		while ((n = this.next(n)) && n !== e && this.is(n, f)) {
+			r.push(n);
 		}
 		return r;
 	}
@@ -369,8 +375,8 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.prevAll = function(n, f) {
 		var r = [];
-		while ((n = this.prev(n))) {
-			this.is(n, f) && r.push(n);
+		while ((n = this.prev(n)) && this.is(n, f)) {
+			r.push(n);
 		}
 		return r;
 	}
@@ -386,8 +392,8 @@ elRTE.prototype.dom = function(rte) {
 	this.prevUntil = function(n, f, e) {
 		var r = [];
 
-		while ((n = this.prev(n)) && n !== e) {
-			this.is(n, f) && r.push(n);
+		while ((n = this.prev(n)) && n !== e && this.is(n, f)) {
+			r.push(n);
 		}
 		return r;
 	}
@@ -521,6 +527,13 @@ elRTE.prototype.dom = function(rte) {
 		return s ? p.insertBefore(n, s) : p.appendChild(n);
 	}
 	
+	this.append = function(p, n) {
+		n = n.nodeType ? [n] : n;
+		$.each(n, function(i, n) {
+			p.appendChild(n);
+		})
+	}
+	
 	/**
 	 * Return node[s]
 	 *
@@ -533,6 +546,24 @@ elRTE.prototype.dom = function(rte) {
 			self.isNode(n) && n.parentNode.removeChild(n);
 		});
 		return this;
+	}
+	
+	this.split = function(p, n, s) {
+		var c, sb;
+		if (this.parents(n, 'any', true, p).length) {
+			while (n != p) {
+				sb = this[s ? 'prevAll' : 'nextAll'](n);
+				n = n.parentNode;
+				if (this.filter(sb, 'notEmpty').length) {
+					c = n.cloneNode(false);
+					this[s ? 'before' : 'after'](c, n);
+					this.append(c, sb);
+					
+				}
+			}
+		}
+		
+		return n;
 	}
 	
 	/**
