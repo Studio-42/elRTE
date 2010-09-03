@@ -1,7 +1,5 @@
 /*@import "styling.css";*/
 
-
-
 body.el-rte-structure table, 
 body.el-rte-structure caption,
 body.el-rte-structure td, 
@@ -21,12 +19,9 @@ body.el-rte-structure a[name] {
 }
 img { cursor: default; }
 
-img.elrte-webkit-hl { border:1px dashed #777; }
+img.elrte-webkit-hl { outline:1px dashed #777; }
 
 .elrtebm {
-/*	height:15px;
-	width:2px;
-	border:1px solid #000;*/
 }
 
 .elrte-media-x-shockwave-flash,
