@@ -55,6 +55,7 @@
 		this.CHANGE_CMD = 3;
 		this.CHANGE_POS = 4;
 		this.change = false;
+		this.typing = false;
 		/* editor DOM element id. Used as base part for inner elements ids */
 		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
 		/* loaded docs number ! */
@@ -565,6 +566,7 @@
 				}
 			})
 			.bind('keyup', function(e) {
+				self.typing = true;
 				if (self.change == self.CHANGE_POS) {
 					self.trigger('changePos', {event : e});
 				} else if (self.change != self.CHANGE_NON) {
@@ -573,8 +575,11 @@
 				self.change = self.CHANGE_NON;
 				self.trigger(e);
 			})
+			.bind('mouseup', function(e) {
+				self.typing = false;
+				self.trigger('changePos', {event : e});
+			})
 			.bind('mousedown mouseup click dblclick', function(e) {
-				e.type == 'mouseup' && self.trigger('changePos', {event : e});
 				self.trigger(e);
 			})
 

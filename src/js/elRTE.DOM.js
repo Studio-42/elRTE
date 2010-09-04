@@ -182,7 +182,10 @@ elRTE.prototype.dom = function(rte) {
 	 * @param  Array
 	 * @return Boolean
 	 **/
-	this.isSiblings = function(n) {
+	this.isSiblings = function(n1, n2) {
+		return n1.previousSibling === n2 || n1.nextSibling === n2;
+		
+		
 		var l = n.length;
 		while (l--) {
 			if (n[l].parentNode != n[0].parentNode) {
@@ -588,49 +591,51 @@ elRTE.prototype.dom = function(rte) {
 	 * Wrap group of nodes with node. Can make inner or outer wrap based on test metod result
 	 *
 	 * @param  Array  node to wrap
+	 * @param  Function|String   method, return true if current node required wrap
 	 * @param  Function|String   method, return true if current node required inner wrap
-	 * @param  DOMElement|Array  wrapper node
+	 * @param  Function          wrap method
+	 * @param  Function|String   method, return true if selected nodes should be wraped (not empty nodes by default)
 	 * @return elRTE.dom
 	 **/
-	this.smartWrap = function(nodes, test, w) {
-		var self   = this,
+	this.smartWrap = function(nodes, accept, inner, wrap, test) {
+		var self = this,
 			buffer = [],
-			prev   = nodes[0],
 			nested, before, after;
-			
-		function wrap() {
-			self.filter(buffer, 'notEmpty').length && self.wrap(buffer, w);
+		
+		function wrapBuffer() {
+			if (self.filter(buffer, test||'notEmpty').length) {
+				wrap(buffer);
+			}
 			buffer = [];
 		}
-		
+			
 		$.each(nodes, function(i, n) {
-			if (self.is(n, test)) {
-				wrap();
-				self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, w)
-			} else if ((nested = self.closest(n, test)).length) {
+			if (!self.is(n, accept)) {
+				wrapBuffer();
+			} else if (self.is(n, inner)) {
+				wrapBuffer();
+				self.smartWrap(n.childNodes, accept, inner, wrap)
+			} else if ((nested = self.closest(n, inner)).length) {
 				$.each(nested, function(i) {
 					before = self.traverse(i == 0 ? n.firstChild : nested[i-1], this);
 					before.pop();
-					self.smartWrap(before , test, w);
-					self.smartWrap(Array.prototype.slice.call(this.childNodes) , test, w);
+					self.smartWrap(before, accept, inner, wrap);
+					self.smartWrap(this.childNodes, accept, inner, wrap);
 					
 					if (i == nested.length-1) {
 						after = self.traverse(this, n.lastChild);
 						after.shift();
-						self.smartWrap(after , test, w);
+						self.smartWrap(after, accept, inner, wrap);
 					}
 				});
 			} else {
-				if (!self.isSiblings([n, prev])) {
-					wrap();
+				if (buffer.length && !self.isSiblings(n, buffer[buffer.length-1])) {
+					wrapBuffer();
 				}
 				buffer.push(n);
 			}
-			prev = n;
-		});
-		
-		wrap();
-		return this;
+		})
+		wrapBuffer();	
 	}
 	
 	this.correctsmartWrap = function(nodes, test, wrapNode) {
