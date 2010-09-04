@@ -52,6 +52,8 @@
 		/* display or not toolbar */
 		showToolbar : true,
 		
+		styleWithCss : true,
+		
 		resizable : true,
 		/* cuurent toolbar name */
 		toolbar : 'default',

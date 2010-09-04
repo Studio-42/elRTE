@@ -584,7 +584,7 @@ elRTE.prototype.dom = function(rte) {
 				w.appendChild(n);
 			});
 		}
-		return this;
+		return w;
 	}
 	
 	/**

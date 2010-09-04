@@ -88,181 +88,140 @@
 	}
 	
 	/**
-	 * @class command parent class for editor commands
-	 *
+	 * @class abstract class for any text element.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.command_ = new function() {
-		/* command name */
-		this.name = 'command';
-		/* short command description for button title */
-		this.title = '';
-		/* editor instance */
-		this.rte = null;
-		/* editor DOM object */
-		this.dom = null;
-		/* editor selection object */
-		this.sel = null;
-		/* button/menu or other ui element placed on toolbar */
-		this._ui = null;
-		/* smth like constant:) command disabled at now */
-		this._disabled = -1;
-		/* command enabled */
-		this._enabled  = 0;
-		/* command active, for example command 'bold' when carret inside 'strong' node */
-		this._active   = 1;
-		/* class for active button */
-		this.classActive = 'elrte-ui-active';
-		/* class for disabled button */
-		this.classDisabled = 'elrte-ui-disabled';
-		
-		this.STATE_DISABLE = 0;
-		this.STATE_ENABLE = 1;
-		this.STATE_ACTIVE = 2;
-		this._state = 0;
-
+	elRTE.prototype.commands._textElement = {
 		/**
-		 * Initilize object
+		 * Check node for required name or css propery
 		 *
-		 * @param  elRTE  editor instance
-		 **/
-		this.init = function(rte) {
-			this.rte = rte;
-			this.dom = rte.dom;
-			this.sel = rte.selection;
-		}
-		
-		
-		this.bind = function() {
-			this.rte.log(this.name+' bind')
-			var self = this;
-			
-			this.rte.bind('wysiwyg', function() {
-				// self.updateUI(self.state());
-			}).bind('source', function() {
-				// self.updateUI(self._disabled);
-			}).bind('close', function(e) {
-				// e.data.id == self.rte.active.id && self.updateUI(self._disabled);
-			}).bind('change changePos', function() {
-				// self.rte.isWysiwyg() && self.updateUI(self.state());
-			})
-		}
-		
-		this.updateState = function(s) {
-			this._state = s;
-			if (this._ui) {
-				this._updateUI();
-			}
-		}
-		
-		/**
-		 * Create and return command ui (button)
-		 *
-		 * @return  jQuery
-		 **/
-		this.ui = function() {
-			if (!this._ui) {
-				this._ui = this._createUI();
-				this._bind();
-			}
-			return this._ui;
-		}
-		
-		/**
-		 * Execute command (abstract method)
-		 *
-		 * @param Object  command arguments
+		 * @param  DOMElement  tested node
 		 * @return Boolean
 		 **/
-		this.exec = function(o) {
-			this.rte.trigger('exec', { cmd : this.name });
-			this.rte.log('exec command '+this.name);
-			return false;
-		}
+		test : function(n) {
+			return n.nodeType == 1 && (this.regExp.test(n.nodeName) || (this.cssProp ? this.dom.css(n, this.cssProp) == this.cssVal : true));
+		},
 		
 		/**
-		 * Return command state (this._disabled/this._enabled/this._active)
-		 * (abstract method)
+		 * Return current command state
 		 *
 		 * @return Number
 		 **/
-		this.state = function() {
-			return this._disabled;
-		}
+		getState : function() {
+			return this.dom.testSelection(this.test) ? this.STATE_ACTIVE : this.STATE_ENABLE;
+		},
 		
 		/**
-		 * Change button classes based on command state
+		 * Unwrap nodes
 		 *
-		 * @param  Number  command state
+		 * @param  Array  nodes for unwrap
 		 * @return void
 		 **/
-		this.updateUI = function(s) {
-			switch (s) {
-				case this._disabled: this._ui.removeClass(this.classActive).addClass(this.classDisabled); break;
-				case this._enabled : this._ui.removeClass(this.classActive+' '+this.classDisabled);       break;
-				case this._active  : this._ui.removeClass(this.classDisabled).addClass(this.classActive); break;
+		unwrap : function(n) {
+			var d = this.dom;
+			if (this.regExp.test(n.nodeName)) {
+				d.unwrap(n);
+			} else {
+				$(n).css(this.cssProp, '');
+				d.is(n, 'empty') && d.is(n, 'inline') && d.unwrap(n);
 			}
-		}
+		},
 		
 		/**
-		 * Return current command value (selected node state for example) if enabled
-		 * (abstract method)
+		 * Wrap nodes
 		 *
-		 * @return Object
+		 * @param  Array  nodes unwrap
+		 * @return void
 		 **/
-		this.value = function() {
-			return null;
-		}
-		
-		/**
-		 * Create and return ui element (button)
-		 *
-		 * @return jQuery
-		 **/
-		this._createUI = function() {
-			var self = this;
-			return $('<li '+($.browser.msie ? 'unselectable="on" ' : '')+'class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this.classDisabled+'" title="'+this.title+'" />')
-				.click(function(e) {
-					e.preventDefault();
-					e.stopPropagation();
-					self.rte.focus();
-					if (!$(this).hasClass(self.classDisabled)) {
-						self.rte.trigger('exec', { cmd : self.name});
-						self.exec() && self.rte.trigger('change')
+		wrap : function(n) {
+			var self = this, 
+				d = this.dom,
+				p = this.cssProp,
+				v = self.cssVal,
+				w = [];
+			
+			function wrap() {
+				d.filter(w, self.testWrap||'notEmpty').length && $(d.wrap(w, { name : 'span' })).css(p, v);
+				w = [];
+			}
+			
+			if ((this.rte.options.styleWithCss || !this.node) && p) {
+				
+				$.each(n, function(i, n) {
+					if (d.is(n, 'textElement')) {
+						$(n).css(p, v);
+					} else if (self.acceptWrap(n)) {
+						w.length && !d.isSiblings(n, w[w.length-1]) && wrap();
+						w.push(n);
 					}
-					// !$(this).hasClass(this.classDisabled) && self.exec() && self.rte.trigger('change');
-				}).hover(function(e) {
-					$(this).toggleClass('elrte-ui-hover', e.type == 'mouseenter' && !$(this).hasClass(this.classDisabled));
 				});
-		}
+				wrap();
+			} else {
+				d.wrap(n, this.node);
+			}
+			
+		},
 		
 		/**
-		 * Bind update ui methods
+		 * Return true if node contents must be wrapped
+		 *
+		 * @param  DOMElement  node
+		 * @return Boolean
+		 **/
+		innerWrap : function(n) {
+			return this.rte.options.styleWithCss || !this.node ? false : this.dom.is(n, 'block');
+		},
+		
+		/**
+		 * Return true if node accepted for wrap (outer or inner)
+		 *
+		 * @param  DOMElement  node
+		 * @return Boolean
+		 **/
+		acceptWrap : function(n) {
+			return this.dom.is(n, 'text') || (n.nodeName != 'IMG' && this.dom.is(n, 'inline'));
+		},
+		
+		/**
+		 * Wrap/unwrap selection
 		 *
 		 * @return void
 		 **/
-		this._bind = function() {
-			var self = this;
+		exec : function() {
+			var self = this,
+				s = this.sel,
+				d = this.dom,
+			 	c = s.collapsed(), 
+				n = s.node(), p, b;
 			
-			this.rte.bind('wysiwyg', function() {
-				self.updateUI(self.state());
-			}).bind('source', function() {
-				self.updateUI(self._disabled);
-			}).bind('close', function(e) {
-				e.data.id == self.rte.active.id && self.updateUI(self._disabled);
-			}).bind('change changePos', function() {
-				self.rte.isWysiwyg() && self.updateUI(self.state());
-			})
-			
-			// this.rte.bind('wysiwyg change changePos', function(e) {
-			// 	self.updateUI(self.state());
-			// }).bind('close source', function(e) {
-			// 	if (e.type == 'source' || e.data.id == self.rte.active.id) {
-			// 		self.updateUI(self._disabled);
-			// 	}
-			// });
+			if (this._state == this.STATE_ACTIVE) {
+				if (c) {
+					b = s.bookmark();
+					p = b[1].parentNode;
+					if (d.is(p, this.test) && d.is(b[1], 'last')) {
+						s.rmBookmark(b).selectNext(p, true);
+					} else {
+						$.each(d.parents(n, this.test, true), function(i, n) {
+							self.unwrap(n);
+						});
+						s.toBookmark(b);
+					}
+				} else {
+					n = d.smartUnwrap(s.get(true), this.test, 'inline', this.unwrap);
+					s.select(n[0], n[1]);
+				}
+			} else {
+				if (c) {
+					s.surroundContents(d.create(this.node));
+				} else {
+					n = s.get();
+					d.smartWrap(n, this.acceptWrap, this.innerWrap||'block', this.wrap, this.testWrap||'notEmpty');
+					s.select(n[0], n[n.length-1]);
+				}
+			}
+			return true;
 		}
+		
 	}
-
 	
 })(jQuery);
