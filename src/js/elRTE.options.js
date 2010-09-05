@@ -63,10 +63,10 @@
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			direction  : ['ltr', 'rtl'],
 			edit       : ['selectall', 'removeformat'],
-			// clean      : ['removeformat'],
+
 			misc       : ['nbsp', 'stopfloat'],
-			history    : ['undo', 'redo', 'docstructure'],
-			fullscreen : ['source', 'fullscreen'] // @todo rename it
+			history    : ['undo', 'redo'],
+			fullscreen : ['docstructure', 'source', 'fullscreen'] // @todo rename it
 		},
 		
 		panelsNames : {},

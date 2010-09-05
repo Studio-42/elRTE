@@ -164,7 +164,7 @@
 
 .elrte .elrte-toolbar-panel { 
 	padding: 2px 0px 2px 7px; 
-	background:url(../images/elrte-toolbar.png) -669px 4px no-repeat;
+	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
 	display: -moz-inline-stack;
 	display: inline-block;
 	zoom: 1;
@@ -177,8 +177,8 @@
 
 
 .elrte .elrte-ui-button {
-	width:  22px;
-	height: 22px;
+	width:  20px;
+	height: 20px;
 	margin: 0 2px 0 0;
 	border: 1px solid #ccc;
 	border-radius: 3px;
@@ -188,22 +188,69 @@
 	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
 }
 
-.elrte .elrte-ui-fullscreen { background-position:-540px -20px; }
-.elrte .elrte-ui-bold { background-position:-160px 0; }
-.elrte .elrte-ui-italic { background-position:-180px 0; }
-.elrte .elrte-ui-underline { background-position:-200px 0; }
-.elrte .elrte-ui-strike { background-position:-220px 0; }
-.elrte .elrte-ui-sup { background-position:-260px 0; }
-.elrte .elrte-ui-sub { background-position:-240px 0; }
+/* panel document */
 
-.elrte .elrte-ui-undo { background-position:0 -20px; }
-.elrte .elrte-ui-redo { background-position:-20px -20px; }
-.elrte .elrte-ui-docstructure { background-position:-500px 0; }
-.elrte .elrte-ui-nbsp { background-position:-440px 0; }
-.elrte .elrte-ui-stopfloat { background-position:-520px 0; }
-.elrte .elrte-ui-source { background-position:-520px -20px; }
-.elrte .elrte-ui-ltr { background-position:-480px 0; }
-.elrte .elrte-ui-rtl { background-position:-460px 0; }
+/* panel edit */
+.elrte .elrte-ui-selectall { background-position:-60px 0; }
+.elrte .elrte-ui-removeformat { background-position:-80px 0; }
+
+/* panel style */
+.elrte .elrte-ui-bold { background-position:-200px 0; }
+.elrte .elrte-ui-italic { background-position:-220px 0; }
+.elrte .elrte-ui-underline { background-position:-240px 0; }
+.elrte .elrte-ui-strike { background-position:-260px 0; }
+.elrte .elrte-ui-sup { background-position:-280px 0; }
+.elrte .elrte-ui-sub { background-position:-300px 0; }
+
+/* panel semantic */
+.elrte .elrte-ui-ins { background-position:-320px 0; }
+.elrte .elrte-ui-del { background-position:-340px 0; }
+.elrte .elrte-ui-abbr { background-position:-360px 0; }
+.elrte .elrte-ui-cite { background-position:-380px 0; }
+/*.elrte .elrte-ui-blockquote { background-position:-400px 0; }*/
+
+/* panel direction */
+.elrte .elrte-ui-ltr { background-position:-420px 0; }
+.elrte .elrte-ui-rtl { background-position:-440px 0; }
+
+/* panel indent */
+
+/* panel lists */
+
+/* panel alignment */
+
+/* panel history */
+.elrte .elrte-ui-undo { background-position:-620px 0; }
+.elrte .elrte-ui-redo { background-position:-640px 0; }
+
+/* panel links */
+
+/* panel misc */
+.elrte .elrte-ui-nbsp { background-position:-60px -20px; }
+.elrte .elrte-ui-stopfloat { background-position:-80px -20px; }
+
+/* panel control */
+.elrte .elrte-ui-docstructure { background-position:-620px -20px; }
+.elrte .elrte-ui-source { background-position:-640px -20px; }
+.elrte .elrte-ui-fullscreen { background-position:-660px -20px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ui states */
 .elrte .elrte-ui-hover    { border-color:#777; }
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }

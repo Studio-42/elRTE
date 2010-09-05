@@ -115,7 +115,10 @@
 		 * @return void
 		 **/	
 		this.init = function() {
-			var self = this, c, ui, p, id, ids=[], o = this.options, stb = o.showToolbar;
+			var self = this, 
+				o = this.options,
+				ids=[], 
+				c, ui, p, id;
 			/* object with various utilits */	
 			this.utils     = new this.utils(this)
 			/* editor view/renderer */
@@ -128,7 +131,6 @@
 			this.filter = new this.filter(this)
 			/* history object */
 			this.history = new this.history(this);
-
 			
 			// init commands prototype
 			this.command = new this.command(this);
@@ -143,7 +145,7 @@
 						c.name = n;
 						c.bind();
 						// add ui on toolbar
-						stb && (ui = c.ui()) && self.view.addUI(ui, p);
+						o.showToolbar && (ui = c.ui()) && self.view.addUI(ui, p);
 						self._commands[n] = c;
 						// bind shortcut
 						c.shortcut && self.shortcut(c.shortcut, n, c.title, function() { return self._commands[n].exec(); });
