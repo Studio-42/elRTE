@@ -1,10 +1,9 @@
 (function($) {
 	
 	/**
-	 * @class elRTE command stopfloat
-	 * Insert br tag with style="clear:both"
+	 * @class elRTE command.
+	 * Toggle view between editor and source if allowed.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 *
 	 **/
 	elRTE.prototype.commands.source = function() {
 
@@ -12,20 +11,21 @@
 		
 		this.bind = function() {
 			var self = this;
-
-			this.rte.bind('wysiwyg', function() {
-				self._setState(self.STATE_ENABLE);
-			}).bind('source', function(e) {
-				self._setState(self.STATE_ACTIVE);
-			}).bind('close', function(e) {
-				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
-			});
+			
+			if (this.rte.options.allowSource) {
+				this.rte.bind('wysiwyg', function() {
+					self._setState(self.STATE_ENABLE);
+				}).bind('source', function(e) {
+					self._setState(self.STATE_ACTIVE);
+				}).bind('close', function(e) {
+					e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
+				});
+			}
 		}
 		
 		this._exec = function() {
 			this.rte.toggle();
 		}
-		
 	}
 	
 })(jQuery);

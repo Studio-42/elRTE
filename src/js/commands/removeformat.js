@@ -1,10 +1,10 @@
 (function($) {
 
 	/**
-	 * @class elRTE command removeformat
-	 * Remove inline tags and class/style attributes from block tags
+	 * @class elRTE command.
+	 * Unwrap inline tags and remove class/style attributes from block tags
+	 * @TODO ignore protected tags
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 *
 	 **/
 	elRTE.prototype.commands.removeformat = function() {
 		this.title = 'Clean format';

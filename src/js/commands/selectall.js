@@ -1,10 +1,9 @@
 (function($) {
 	
 	/**
-	 * @class elRTE command selectall
+	 * @class elRTE command.
 	 * Select all document's content 
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 *
 	 **/
 	elRTE.prototype.commands.selectall = function() {
 		this.title = 'Select all';

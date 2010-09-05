@@ -2,11 +2,11 @@
 	
 	/**
 	 * @class elRTE command.
-	 * Insert non breakable space into selection
+	 * Insert horizontal rule.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.nbsp = function() {
-		this.title = 'Non breakable space';
+	elRTE.prototype.commands.hr = function() {
+		this.title = 'Horizontal rule';
 		
 		this.bind = function() {
 			var self = this;
@@ -19,9 +19,8 @@
 		}
 		
 		this._exec = function() {
-			return this.sel.insertHtml('&nbsp;');
+			return this.sel.deleteContents().insertNode(this.dom.create('hr'));
 		}
-
 	}
 	
 })(jQuery);

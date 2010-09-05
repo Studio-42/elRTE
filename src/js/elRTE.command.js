@@ -1,7 +1,11 @@
 (function($) {
-	// @TODO - autobind cmd shortcut
+	/**
+	 * @class Commands prototype
+	 * Initilize by editor instance
+	 * @param  elRTE editor instance
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.command = function(rte) {
-		
 		/* short command description for button title */
 		this.title = '';
 		/* editor instance */
@@ -10,19 +14,28 @@
 		this.dom = rte.dom;
 		/* editor selection object */
 		this.sel = rte.selection;
-		
-		
+		// class "constants" - command states
 		this.STATE_DISABLE = 0;
 		this.STATE_ENABLE = 1;
 		this.STATE_ACTIVE = 2;
-		
+		// ui class for disabled command
 		this._dClass = 'elrte-ui-disabled';
+		// ui class for active command
 		this._aClass = 'elrte-ui-active';
+		// class for hovered ui
 		this._hClass = 'elrte-ui-hover';
 		/* button/menu or other ui element placed on toolbar */
 		this._ui;
+		// currents command state
 		this._state = 0;
 		
+		/**
+		 * Bind to editor events
+		 * By default, command listen "wysiwyg", "close" and "source" to switch between enable/disable states
+		 * and "change" and "changePos" events to switch between enable/active states
+		 *
+		 * @return void
+		 */
 		this.bind = function() {
 			var self = this;
 			
@@ -35,31 +48,68 @@
 			});
 		}
 		
+		/**
+		 * Return current command state
+		 *
+		 * @return Number
+		 */
 		this.state = function() {
 			return this._state;
 		}
 		
+		/**
+		 * Create ui if not exists and return it
+		 *
+		 * @return jQuery
+		 */
 		this.ui = function() {
 			return this._ui||this._createUI();
 		}
 		
+		/**
+		 * Exec command if possible and return if execed
+		 *
+		 * @return Boolean
+		 */
 		this.exec = function() {
 			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec() && this.rte.trigger('change'));
 		}
 		
+		/**
+		 * Abstact method to real command action
+		 *
+		 * @return Boolean
+		 */
 		this._exec = function() {
 			
 		}
 		
+		/**
+		 * Set command state
+		 * Should not be called from outside
+		 *
+		 * @param  Number  command state. If not set - command check it's state and set
+		 * @return void
+		 */
 		this._setState = function(s) {
 			this._state = s === void(0) ? this._getState() : s;
 			this._ui && this._updateUI();
 		}
 		
+		/**
+		 * Check command state and return it
+		 *
+		 * @return Number
+		 */
 		this._getState = function() {
 			return this.STATE_DISABLE;
 		}
 		
+		/**
+		 * Create ui (by default- simple button) and return it
+		 *
+		 * @return jQuery
+		 */
 		this._createUI = function() {
 			var self = this;
 			return this._ui = $('<li class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
@@ -74,6 +124,11 @@
 				});
 		}
 		
+		/**
+		 * Update ui classes based on current state
+		 *
+		 * @return void
+		 */
 		this._updateUI = function() {
 			if (this._ui) {
 				switch (this._state) {
@@ -87,7 +142,7 @@
 	}
 	
 	/**
-	 * @class abstract class for any text element.
+	 * Collection of mixin methods for text elements.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands._textElement = {

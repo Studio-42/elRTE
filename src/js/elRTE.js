@@ -23,43 +23,43 @@
 		}
 		
 		this.time('load')
-		var //self = this, 
-		t = $(t);
-		
 		/* version */
-		this.version   = '1.1 dev';
+		this.version = '1.1 dev';
 		/* build date */
-		this.build     = '20100810';
-		
-		/* is macos X? */
-		this.macos     = navigator.userAgent.indexOf('Mac') != -1;
-		/* messages language */
-		this.lang      = 'en';
+		this.build = '20100906';
 		/* DOM element on witch elRTE created */
-		this.target    = t.hide()[0];
+		this.target = t;
+		/* hide target */
+		t = $(t).hide();
+		/* editor DOM element id. Used as base part for inner elements ids */
+		this.id = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
+		// form 
 		this.form = t.parents('form');
 		/* editor config */
-		this.options   = $.extend(true, {}, this.options, o);
-		/* cuurent toolbar name */
-		// this.toolbar   = this.options.toolbars[this.options.toolbar] ? this.options.toolbar : 'default';
+		this.options = $.extend(true, {}, this.options, o);
+		/* messages language */
+		this.lang = 'en';
 		/* messages */
-		this.messages  = this.i18Messages[this.options.lang]||{};
+		this.messages = this.i18Messages[this.options.lang]||{};
+		/* is macosX? */
+		this.macos = navigator.userAgent.indexOf('Mac') != -1;
 		/* loaded commands */
-		this._commands  = {};
+		this._commands = {};
 		/* loaded plugins */
-		this._plugins   = {};
+		this._plugins = {};
 		/* shortcuts */
 		this.shortcuts = {};
+		/* "constants" - change source */
 		this.CHANGE_NON  = 0;
 		this.CHANGE_KBD = 1;
 		this.CHANGE_DEL = 2;
 		this.CHANGE_CMD = 3;
 		this.CHANGE_POS = 4;
+		/* cached change on keydown */
 		this.change = false;
+		/* cached typing (keyup) */
 		this.typing = false;
-		/* editor DOM element id. Used as base part for inner elements ids */
-		this.id        = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
-		/* loaded docs number ! */
+		/* max loaded doc number */
 		this.ndx = 0;
 		/* opened documents */
 		this.documents = { };
@@ -67,7 +67,7 @@
 		this.active    = null;
 		/* events listeners */
 		this.listeners = {
-			/* called once after elRTE init and load all documents */
+			/* called once after elRTE init and load documents */
 			'load'      : [],
 			/* called before? editor will be set visible */
 			'show'      : [],
@@ -75,8 +75,6 @@
 			'hide'      : [],
 			/* called after new document added to editor */
 			'open'      : [], 
-			/* called after document set active */
-			'focus'     : [], 
 			/* called after document switch to source mode */
 			'source'    : [],
 			/* called after document switch to wysiwyg mode */
@@ -117,14 +115,14 @@
 		this.init = function() {
 			var self = this, 
 				o = this.options,
-				ids=[], 
+				ids = [], 
 				c, ui, p, id;
 			/* object with various utilits */	
-			this.utils     = new this.utils(this)
+			this.utils = new this.utils(this)
 			/* editor view/renderer */
-			this.view      = new this.view(this);
+			this.view = new this.view(this);
 			/* DOM manipulation */
-			this.dom       = new this.dom(this);
+			this.dom = new this.dom(this);
 			/* selection and text range object */
 			this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
 			/* cleaning content object */
@@ -184,11 +182,8 @@
 					self.active.source[0].setSelectionRange(0,0);
 				});
 			}
-			
 			delete this.init;
 		}
-		
-
 		
 		/**
 		 * Return number of loaded documents
@@ -327,7 +322,7 @@
 
 			e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
 			
-			this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type] ? 'trigger' : 'no listeners'));
+			this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type].length ? 'trigger' : 'no listeners'));
 
 			$.each(this.listeners[e.type]||[], function() {
 				if (e.isPropagationStopped()) {
@@ -632,7 +627,7 @@
 					// get focus to doc
 					d.focus();
 					// rise events
-					this.trigger('focus').trigger(d.wysiwyg() ? 'wysiwyg' : 'source');
+					this.trigger(d.wysiwyg() ? 'wysiwyg' : 'source');
 				}
 			}
 			return this;
