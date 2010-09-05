@@ -11,7 +11,7 @@
 		this.workzone  = $('<div class="elrte-workzone" />');
 		this.statusbar = $('<div class="elrte-statusbar" />');
 		this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
-			.append(this.toolbar)
+			.append(this.toolbar.hide())
 			.append($('<div class="elrte-tabsbar-wrapper"/>').append(this.tabsbar.hide()))
 			.append(this.workzone)
 			.append(this.statusbar.hide())
@@ -21,7 +21,7 @@
 			this.workzone.height(this.rte.options.height);
 		}
 		if (!rte.options.showToolbar) {
-			this.toolbar.hide();
+			// this.toolbar.hide();
 		}
 		if ($.fn.sortable) {
 			this.tabsbar.sortable({ delay : 10});
@@ -141,11 +141,11 @@
 		 * @return void
 		 */
 		this.addUI = function(ui, pn) {
-			var p = this.toolbar.children('[name="'+pn+'"]');
+			var p = this.toolbar.show().children('[name="'+pn+'"]');
 			if (!p.length) {
 				p = $('<ul class="elrte-toolbar-panel elrte-toolbar-panel-'+pn+(!this.toolbar.children('.elrte-toolbar-panel').length ? ' elrte-toolbar-panel-first' : '')+'" name="'+pn+'" />').appendTo(this.toolbar);
 			}
-			p.append(ui)
+			p.append(ui);
 		}
 
 		/**

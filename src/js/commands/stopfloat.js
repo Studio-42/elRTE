@@ -6,8 +6,7 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.stopfloat = function(n) {
-		this.name  = n;
+	elRTE.prototype.commands.stopfloat = function() {
 		this.title = 'Stop element floating';
 		
 		this.bind = function() {

@@ -6,8 +6,7 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.nbsp = function(n) {
-		this.name  = n;
+	elRTE.prototype.commands.nbsp = function() {
 		this.title = 'Non breakable space';
 		
 		this.bind = function() {

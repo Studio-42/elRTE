@@ -6,9 +6,8 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 *
 	 **/
-	elRTE.prototype.commands.source = function(n) {
-		var self   = this;
-		this.name  = n;
+	elRTE.prototype.commands.source = function() {
+
 		this.title = 'Toggle view between editor and source';
 		
 		this.bind = function() {

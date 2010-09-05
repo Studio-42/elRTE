@@ -23,7 +23,8 @@
 		}
 		
 		this.time('load')
-		var self = this, t = $(t);
+		var //self = this, 
+		t = $(t);
 		
 		/* version */
 		this.version   = '1.1 dev';
@@ -114,7 +115,7 @@
 		 * @return void
 		 **/	
 		this.init = function() {
-			var c, ui, p, id, ids=[], o = this.options;
+			var self = this, c, ui, p, id, ids=[], o = this.options, stb = o.showToolbar;
 			/* object with various utilits */	
 			this.utils     = new this.utils(this)
 			/* editor view/renderer */
@@ -127,56 +128,29 @@
 			this.filter = new this.filter(this)
 			/* history object */
 			this.history = new this.history(this);
+
+			
+			// init commands prototype
+			this.command = new this.command(this);
 			/* load commands */
-			// @TODO check duplicate panels
-			// this.constructor.prototype.cmd = new this.constructor.prototype.cmd(this)
-			
-			this.command = new this.command(this)
-			
 			$.each(o.toolbars[o.toolbar]||[], function(i, p) {
-				// self.log(p)
+
 				$.each(o.panels[p]||[], function(i, n) {
 					
 					if (typeof((c = self.commands[n])) == 'function' && !self._commands[n]) {
-						
 						c.prototype = self.command;
-						// self.log(c)
-						var cmd = new c(n);
-						
-						cmd.bind();
-						if ((ui = cmd.ui())) {
-							self.view.addUI(ui, n);
-						}
-						
-						// self.log(cmd)
-						self._commands[n] = cmd;
-						// if (cmd.shortcut) {
-						// 	self.log(cmd.shortcut)
-						// 	self.shortcut(cmd.shortcut, n, cmd.title, function() { self.log('here'); return self._commands[n].exec(); })
-						// 	self.log(self.shortcuts)
-						// }
+						c = new c();
+						c.name = n;
+						c.bind();
+						// add ui on toolbar
+						stb && (ui = c.ui()) && self.view.addUI(ui, n);
+						self._commands[n] = c;
+						// bind shortcut
+						c.shortcut && self.shortcut(c.shortcut, n, c.title, function() { return self._commands[n].exec(); });
 					}
-				})
-			})
-			
-			this.shortcut('ctrl+m', 'bold', 'Bold', function(e) { self.log(e) })
-			this.log(this.shortcuts)
-			// this.command.init(this);
-			// delete this.command.init
-			// $.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
-			// 	$.each(self.options.panels[n]||[], function(i, cn) {
-			// 		if (typeof((c = self.commands[cn])) == 'function' && !self._commands[cn]) {
-			// 			
-			// 			self._commands[cn] = new c(cn);
-			// 			// self.log(self._commands[cn].init)
-			// 			self._commands[cn].bind()
-			// 			if ((ui = self._commands[cn].ui())) {
-			// 				self.view.addUI(ui, n);
-			// 			}
-			// 		}
-			// 	});
-			// });
-			
+				});
+			});
+
 			/* load plugins */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
 			$.each(this.options.plugins, function(i, n) {
@@ -535,11 +509,17 @@
 				self.change = false;
 				// exec shortcut callback
 				$.each(self.shortcuts, function(n, s){
-					self.log(n)
-					self.log(c)
+					
+					// self.log(c)
 					p = s.pattern;
-					self.log(p.keyCode)
-					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
+					// self.log(p.keyCode)
+					if (p.keyCode == c) {
+						self.log(c)
+						self.log(p)
+						self.log('ctrl: '+e.ctrlKey+' alt: '+e.altKey+' shift: '+e.shiftKey+' meta: '+e.metaKey)
+					}
+					
+					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
 						self.log('ok')
 						e.stopPropagation();
 						e.preventDefault();
@@ -877,6 +857,9 @@
 			return c ? c.exec.apply(c, a) : false;
 		}
 		
+		
+		
+		
 		/* SERVICE METHODS */
 		/**
 		 * send message to console log
@@ -951,6 +934,7 @@
 			}
 			return this;
 		}
+		
 		
 		this.init();
 		this.timeEnd('load');

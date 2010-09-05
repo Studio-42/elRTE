@@ -38,8 +38,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.ltr = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.ltr = function() {
 		this.title      = 'Left to right';
 		this.node       = { name : 'bdo', attr : { dir : 'ltr' }}
 		this.regExp     = /^BDO$/;
@@ -57,8 +56,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.rtl = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.rtl = function() {
 		this.title      = 'Right to left';
 		this.node       = { name : 'bdo', attr : { dir : 'rtl' }}
 		this.regExp     = /^BDO$/;

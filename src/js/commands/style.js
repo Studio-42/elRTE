@@ -5,8 +5,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.bold = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.bold = function() {
 		this.title      = 'Bold';
 		this.node       = 'strong';
 		this.regExp     = /^(B|STRONG)$/;
@@ -28,8 +27,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.italic = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.italic = function() {
 		this.title      = 'Italic';
 		this.node       = 'em';
 		this.regExp     = /^(I|EM)$/;
@@ -50,12 +48,12 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.underline = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.underline = function() {
 		this.title      = 'Underline';
 		this.regExp     = /^(U|INS)$/;
 		this.cssProp    = 'text-decoration';
 		this.cssVal     = 'underline';
+		this.shortcut   = 'ctrl+u';
 		this.test       = $.proxy(this.rte.commands._textElement.test, this);
 		this.unwrap     = $.proxy(this.rte.commands._textElement.unwrap, this);
 		this.wrap       = $.proxy(this.rte.commands._textElement.wrap, this);
@@ -70,8 +68,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.strike = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.strike = function() {
 		this.title      = 'Strike';
 		this.regExp     = /^(S|STRIKE|DEL)$/;
 		this.cssProp    = 'text-decoration';
@@ -90,8 +87,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.sub = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.sub = function() {
 		this.title      = 'Subscript';
 		this.node       = 'sub';
 		this.regExp     = /^SUB$/;
@@ -111,8 +107,7 @@
 	 * @param  String  command name
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.sup = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.sup = function() {
 		this.title      = 'Superscript';
 		this.node       = 'sup';
 		this.regExp     = /^SUP$/;

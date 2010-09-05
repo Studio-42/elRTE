@@ -41,9 +41,9 @@
 		/* allow browser specific styles like -moz|-webkit|-o */
 		allowBrowsersSpecStyles : false,
 		/* user replacement rules */
-		replace : [ function(html) { return html.replace(/\{(xz)\}/gi, "PLACEHODER:$1 ") } ],
+		replace : [ ],
 		/* user restore rules */
-		restore : [ function(html) { return html.replace(/PLACEHODER:(\w+)/, "{$1}") } ],
+		restore : [ ],
 		allowPaste : true,
 		/* max undo/redo steps */
 		historySize : 0,
@@ -72,7 +72,7 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : ['style', 'semantic', 'direction', 'misc', 'history', 'fullscreen']
+			'default' : ['style', 'semantic', 'direction', 'misc', 'history', 'fullscreen', 'style']
 		},
 		/* send debug to log? */
 		debug    : false,

@@ -5,9 +5,8 @@
 	 * Toggle editor between normal/fullscreen view
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.fullscreen = function(n) {
+	elRTE.prototype.commands.fullscreen = function() {
 		var self   = this;
-		this.name  = n;
 		this.title = 'Full screen';
 		/* view object */
 		this.view = this.rte.view;

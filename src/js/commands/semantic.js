@@ -1,6 +1,5 @@
 (function($) {
-	elRTE.prototype.commands.ins = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.ins = function() {
 		this.title      = 'Insertion';
 		this.node       = 'ins'
 		this.regExp     = /^INS$/;
@@ -13,8 +12,7 @@
 		this._getState  = $.proxy(this.rte.commands._textElement.getState, this);
 	}
 	
-	elRTE.prototype.commands.del = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.del = function() {
 		this.title      = 'Deletion';
 		this.node       = 'del'
 		this.regExp     = /^DEL$/;
@@ -27,8 +25,7 @@
 		this._getState  = $.proxy(this.rte.commands._textElement.getState, this);
 	}
 	
-	elRTE.prototype.commands.abbr = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.abbr = function() {
 		this.title      = 'Abbrevation';
 		this.node       = 'abbr'
 		this.regExp     = /^ABBR$/;
@@ -41,8 +38,7 @@
 		this._getState  = $.proxy(this.rte.commands._textElement.getState, this);
 	}
 	
-	elRTE.prototype.commands.cite = function(name) {
-		this.name       = name;
+	elRTE.prototype.commands.cite = function() {
 		this.title      = 'Citation';
 		this.node       = 'cite'
 		this.regExp     = /^CITE$/;

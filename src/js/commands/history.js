@@ -16,8 +16,7 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.undo = function(n) {
-		this.name  = n;
+	elRTE.prototype.commands.undo = function() {
 		this.title = 'Undo last action';
 		
 		this.bind = function() {
@@ -39,8 +38,7 @@
 	 * @param  elRTE
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.commands.redo = function(n) {
-		this.name  = n;
+	elRTE.prototype.commands.redo = function() {
 		this.title = 'Redo previous action';
 		
 		this.bind = function() {
