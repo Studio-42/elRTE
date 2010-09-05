@@ -143,7 +143,7 @@
 						c.name = n;
 						c.bind();
 						// add ui on toolbar
-						stb && (ui = c.ui()) && self.view.addUI(ui, n);
+						stb && (ui = c.ui()) && self.view.addUI(ui, p);
 						self._commands[n] = c;
 						// bind shortcut
 						c.shortcut && self.shortcut(c.shortcut, n, c.title, function() { return self._commands[n].exec(); });

@@ -62,8 +62,8 @@
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			direction  : ['ltr', 'rtl'],
-			edit       : ['selectall'],
-			clean      : ['removeformat'],
+			edit       : ['selectall', 'removeformat'],
+			// clean      : ['removeformat'],
 			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],
 			fullscreen : ['source', 'fullscreen'] // @todo rename it

@@ -19,6 +19,7 @@ elRTE.prototype.dom = function(rte) {
 	this.filters = {
 		any           : function()  { return true; },
 		none          : function()  { return false; },
+		element       : function(n) { return n.nodeType == 1; },
 		block         : function(n) { return self.blockRegExp.test(n.nodeName); },
 		inline        : function(n) { return !self.blockRegExp.test(n.nodeName); },
 		text          : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName); },
