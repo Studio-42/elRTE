@@ -62,6 +62,7 @@
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			direction  : ['ltr', 'rtl'],
+			edit       : ['selectall'],
 			clean      : ['removeformat'],
 			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],
@@ -72,7 +73,7 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : ['style', 'semantic', 'direction', 'misc', 'history', 'fullscreen', 'style']
+			'default' : ['edit', 'style', 'semantic', 'direction', 'misc', 'history', 'fullscreen', 'style']
 		},
 		/* send debug to log? */
 		debug    : false,

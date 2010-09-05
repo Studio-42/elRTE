@@ -350,27 +350,5 @@
 		}
 	}
 	
-	// elRTE.prototype.selection.prototype.filterSelected = function(f) {
-	// 	return this.dom.filter(this.getSelected(), f);
-	// }
-	// 
-	// elRTE.prototype.selection.prototype.wrapSelected = function(f, wf, w) {
-	// 	return this.dom.wrapAll(this.filterSelected(f), wf, w);
-	// }
-	// 
-	// elRTE.prototype.selection.prototype.selected = function(opts) {
-	// 	var o = $.extend({ filter : '', wrapFilter : '', wrapNode : ''}, opts||{}),
-	// 		s = this.getSelected();
-	// 		
-	// 	if (o.filter) {
-	// 		s = this.dom.filter(s, o.filter);
-	// 	}
-	// 	if (o.wrapFilter && o.wrapNode) {
-	// 		s = this.dom.wrapAll(s, o.wrapFilter, o.wrapNode);
-	// 	}
-	// 	return s;
-	// }
-	
-	
 	
 })(jQuery);

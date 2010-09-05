@@ -749,21 +749,6 @@
 		}
 		
 		/**
-		 * Return command/config options
-		 *
-		 * @param  String  config type (cmd/plugin)
-		 * @param  String  command/plugin name
-		 * @param  String  option name (if not set - return all config)
-		 * @return String|Array
-		 */
-		this._conf = function(t, n, o) {
-			var c = this.options[t == 'cmd' ? 'commandsConf' : 'pluginsConf'];
-			return o
-				? (c && c[n] ? c[n][o] : false)
-				: (c ? c[n] : false);
-		}
-
-		/**
 		 * Return command options
 		 *
 		 * @param  String  command name
@@ -771,7 +756,8 @@
 		 * @return String|Array
 		 */
 		this.commandConf = function(n, o) {
-			return this._conf('cmd', n, o);
+			var c = this.options['commandsConf'];
+			return o ? (c && c[n] ? c[n][o] : false) : (c ? c[n] : false);
 		}
 		
 		/**
@@ -782,7 +768,8 @@
 		 * @return String|Array
 		 */
 		this.pluginConf = function(n, o) {
-			return this._conf('pl', n, o);
+			var c = this.options['pluginConf'];
+			return o ? (c && c[n] ? c[n][o] : false) : (c ? c[n] : false);
 		}
 		
 		/**
