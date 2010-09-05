@@ -12,6 +12,7 @@
 		this.regExp     = /^(B|STRONG)$/;
 		this.cssProp    = 'font-weight';
 		this.cssVal     = 'bold';
+		this.shortcut   = 'ctrl+b';
 		this.test       = $.proxy(this.rte.commands._textElement.test, this);
 		this.unwrap     = $.proxy(this.rte.commands._textElement.unwrap, this);
 		this.wrap       = $.proxy(this.rte.commands._textElement.wrap, this);
@@ -34,6 +35,7 @@
 		this.regExp     = /^(I|EM)$/;
 		this.cssProp    = 'font-style';
 		this.cssVal     = 'italic';
+		this.shortcut   = 'ctrl+i';
 		this.test       = $.proxy(this.rte.commands._textElement.test, this);
 		this.unwrap     = $.proxy(this.rte.commands._textElement.unwrap, this);
 		this.wrap       = $.proxy(this.rte.commands._textElement.wrap, this);
@@ -51,7 +53,7 @@
 	elRTE.prototype.commands.underline = function(name) {
 		this.name       = name;
 		this.title      = 'Underline';
-		this.regExp     = /^U$/;
+		this.regExp     = /^(U|INS)$/;
 		this.cssProp    = 'text-decoration';
 		this.cssVal     = 'underline';
 		this.test       = $.proxy(this.rte.commands._textElement.test, this);
@@ -71,7 +73,7 @@
 	elRTE.prototype.commands.strike = function(name) {
 		this.name       = name;
 		this.title      = 'Strike';
-		this.regExp     = /^(S|STRIKE)$/;
+		this.regExp     = /^(S|STRIKE|DEL)$/;
 		this.cssProp    = 'text-decoration';
 		this.cssVal     = 'line-through';
 		this.test       = $.proxy(this.rte.commands._textElement.test, this);

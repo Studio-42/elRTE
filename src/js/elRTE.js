@@ -141,18 +141,26 @@
 						
 						c.prototype = self.command;
 						// self.log(c)
-						var cmd = new c(n)
+						var cmd = new c(n);
 						
 						cmd.bind();
 						if ((ui = cmd.ui())) {
 							self.view.addUI(ui, n);
 						}
+						
 						// self.log(cmd)
 						self._commands[n] = cmd;
+						// if (cmd.shortcut) {
+						// 	self.log(cmd.shortcut)
+						// 	self.shortcut(cmd.shortcut, n, cmd.title, function() { self.log('here'); return self._commands[n].exec(); })
+						// 	self.log(self.shortcuts)
+						// }
 					}
 				})
 			})
 			
+			this.shortcut('ctrl+m', 'bold', 'Bold', function(e) { self.log(e) })
+			this.log(this.shortcuts)
 			// this.command.init(this);
 			// delete this.command.init
 			// $.each(this.options.toolbars[this.options.toolbar]||[], function(i, n) {
@@ -527,8 +535,12 @@
 				self.change = false;
 				// exec shortcut callback
 				$.each(self.shortcuts, function(n, s){
+					self.log(n)
+					self.log(c)
 					p = s.pattern;
-					if (p.keyCode == e.keyCode && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
+					self.log(p.keyCode)
+					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && p.metaKey == e.metaKey) {
+						self.log('ok')
 						e.stopPropagation();
 						e.preventDefault();
 						s.cmd && self.trigger('exec', { cmd : s.cmd });

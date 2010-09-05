@@ -59,7 +59,7 @@
 		toolbar : 'default',
 		
 		panels : {
-			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub', 'ltr', 'rtl'],
+			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub', 'ltr', 'rtl', 'ins', 'del'],
 			clean      : ['removeformat'],
 			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],

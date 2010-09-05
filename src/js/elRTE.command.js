@@ -44,7 +44,6 @@
 		}
 		
 		this.exec = function() {
-			// this.rte.log('exec')
 			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec() && this.rte.trigger('change'));
 		}
 		
@@ -93,13 +92,13 @@
 	 **/
 	elRTE.prototype.commands._textElement = {
 		/**
-		 * Check node for required name or css propery
+		 * Check node by required name or css propery
 		 *
 		 * @param  DOMElement  tested node
 		 * @return Boolean
 		 **/
 		test : function(n) {
-			return n.nodeType == 1 && (this.regExp.test(n.nodeName) || (this.cssProp ? this.dom.css(n, this.cssProp) == this.cssVal : true));
+			return n.nodeType == 1 && (this.regExp.test(n.nodeName) || (this.cssProp ? this.dom.css(n, this.cssProp) == this.cssVal : false));
 		},
 		
 		/**
@@ -118,11 +117,12 @@
 		 * @return void
 		 **/
 		unwrap : function(n) {
-			var d = this.dom;
+			var d = this.dom,
+				p = this.cssProp;
 			if (this.regExp.test(n.nodeName)) {
 				d.unwrap(n);
-			} else {
-				$(n).css(this.cssProp, '');
+			} else if (p) {
+				$(n).css(p, '');
 				d.is(n, 'empty') && d.is(n, 'inline') && d.unwrap(n);
 			}
 		},
@@ -193,7 +193,7 @@
 				d = this.dom,
 			 	c = s.collapsed(), 
 				n = s.node(), p, b;
-			
+
 			if (this._state == this.STATE_ACTIVE) {
 				if (c) {
 					b = s.bookmark();
