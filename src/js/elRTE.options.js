@@ -59,7 +59,9 @@
 		toolbar : 'default',
 		
 		panels : {
-			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub', 'ltr', 'rtl', 'ins', 'del'],
+			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
+			semantic   : ['ins', 'del', 'abbr', 'cite'],
+			direction  : ['ltr', 'rtl'],
 			clean      : ['removeformat'],
 			misc       : ['nbsp', 'stopfloat'],
 			history    : ['undo', 'redo', 'docstructure'],
@@ -70,7 +72,7 @@
 		
 		toolbars : {
 			'empty' : [],
-			'default' : ['style', 'misc', 'history', 'fullscreen']
+			'default' : ['style', 'semantic', 'direction', 'misc', 'history', 'fullscreen']
 		},
 		/* send debug to log? */
 		debug    : false,
