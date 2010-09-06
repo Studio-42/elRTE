@@ -82,6 +82,7 @@
 			document   : ['save'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
+			alignment  : ['left', 'center', 'right', 'justify'],
 			direction  : ['ltr', 'rtl'],
 			edit       : ['selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr'],
@@ -93,7 +94,7 @@
 		/* toolbars presets */
 		toolbars : {
 			'empty' : [],
-			'default' : ['document', 'edit', 'style', 'semantic', 'direction', 'misc', 'history', 'control', 'style']
+			'default' : ['document', 'edit', 'style', 'semantic', 'alignment', 'direction', 'misc', 'history', 'control', 'style']
 		},
 		
 		/* --- plugins options --- */

@@ -218,6 +218,11 @@
 /* panel lists */
 
 /* panel alignment */
+.elrte .elrte-ui-left { background-position:-540px 0; }
+.elrte .elrte-ui-center { background-position:-560px 0; }
+.elrte .elrte-ui-right { background-position:-580px 0; }
+.elrte .elrte-ui-justify { background-position:-600px 0; }
+
 
 /* panel history */
 .elrte .elrte-ui-undo { background-position:-620px 0; }

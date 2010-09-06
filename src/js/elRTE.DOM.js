@@ -279,6 +279,14 @@ elRTE.prototype.dom = function(rte) {
 		return r;
 	}
 	
+	this.closestParent = function(n, f, addSelf, until) {
+		return this.parents(n, f, addSelf, until).shift();
+	}
+	
+	this.topParent = function(n, f, addSelf, until) {
+		return this.parents(n, f, addSelf, until).pop();
+	}
+	
 	/**
 	 * Return direct children nodes matched by filter
 	 *
@@ -586,6 +594,31 @@ elRTE.prototype.dom = function(rte) {
 			});
 		}
 		return w;
+	}
+	
+	this.wrapSiblings = function(n, test, wrapNode, wrapGroup, testEmpty) {
+		var self = this, 
+			w = [];
+		
+		function wrap() {
+			if (w.length && self.filter(w, testEmpty||'notEmpty').length) {
+				wrapGroup(w);
+			}
+			w = [];
+		}
+		
+		$.each(n, function(i, n) {
+			if (self.is(n, test)) {
+				wrap();
+				wrapNode(n);
+			} else {
+				if (w.length && !self.isSiblings(n, w[w.length-1])) {
+					wrap();
+				}
+				w.push(n)
+			}
+		})
+		wrap()
 	}
 	
 	/**
