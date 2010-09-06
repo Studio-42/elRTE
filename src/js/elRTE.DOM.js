@@ -15,6 +15,8 @@ elRTE.prototype.dom = function(rte) {
 	
 	this.textRegExp  = /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|BUTTON|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DL|DT|EM|FIELDSET|FONT|FORM|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|S|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|U|VAR|XMP)$/;
 	this.blockRegExp = /^(ADDRESS|BLOCKQUOTE|CAPTION|CENTER|COL|COLGROUP|DD|DIR|DIV|DL|DT|FIELDSET|FORM|H[1-6]|HR|LI|MENU|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/;
+	this.listRegExp  = /^(OL|UL)$/
+	
 	
 	this.filters = {
 		any           : function()  { return true; },
@@ -35,7 +37,8 @@ elRTE.prototype.dom = function(rte) {
 		first         : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
 		last          : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
 		onlyChild     : function(n) { return self.filters.first(n) && self.filters.last(n); },
-		emptySpan     : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); }
+		emptySpan     : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); },
+		list          : function(n) { return self.listRegExp.test(n.nodeName); }
 	};
 	
 	
@@ -586,8 +589,16 @@ elRTE.prototype.dom = function(rte) {
 	 * @return elRTE.dom
 	 **/
 	this.wrap = function(n, w) {
-		if (($.isArray(n) ? n : [n]).length) {
-			w = w.nodeType ? w : this.create(w);
+		if (!w.nodeType) {
+			w = this.create(w);
+		}
+		if (!$.isArray(n)) {
+			n = [n];
+		}
+		if (this.isNode(n[0])) {
+			// this.rte.log(n)
+			// this.rte.log(w)
+			// return
 			this.before(w, n[0]);
 			$.each(n, function(i, n) {
 				w.appendChild(n);

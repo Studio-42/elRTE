@@ -214,8 +214,14 @@
 .elrte .elrte-ui-rtl { background-position:-440px 0; }
 
 /* panel indent */
+.elrte .elrte-ui-outdent { background-position:-460px 0; }
+.elrte .elrte-ui-indent { background-position:-480px 0; }
+
 
 /* panel lists */
+.elrte .elrte-ui-ul { background-position:-500px 0; }
+.elrte .elrte-ui-ol { background-position:-520px 0; }
+
 
 /* panel alignment */
 .elrte .elrte-ui-left { background-position:-540px 0; }
