@@ -38,7 +38,8 @@ elRTE.prototype.dom = function(rte) {
 		last          : function(n) { return n.nodeName != 'BODY' && !self.nextAll(n, 'notEmpty').length; },
 		onlyChild     : function(n) { return self.filters.first(n) && self.filters.last(n); },
 		emptySpan     : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); },
-		list          : function(n) { return self.listRegExp.test(n.nodeName); }
+		list          : function(n) { return self.listRegExp.test(n.nodeName); },
+		li            : function(n) { return n.nodeName == 'LI'; }
 	};
 	
 	
@@ -128,15 +129,26 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.is = function(n, f) {
 		if (n && n.nodeType) {
-			f = f||'any';
-			if (typeof(f) == 'string' && this.filters[f]) {
-				f = this.filters[f];
-			}
-			if (typeof(f) == 'function') {
+			
+			if (!f || typeof(f) == 'string') {
+				return this.filters[f||'any'](n);
+			} else if (typeof(f) == 'function') {
 				return f(n);
 			} else if (f instanceof RegExp) {
 				return f.test(n.nodeName);
-			}
+			} else if (f && f.nodeType) {
+				return n === f;
+			} 
+			
+			// f = f||'any';
+			// if (typeof(f) == 'string' && this.filters[f]) {
+			// 	f = this.filters[f];
+			// }
+			// if (typeof(f) == 'function') {
+			// 	return f(n);
+			// } else if (f instanceof RegExp) {
+			// 	return f.test(n.nodeName);
+			// }
 		}
 		return false;
 	}
@@ -153,9 +165,9 @@ elRTE.prototype.dom = function(rte) {
 		
 		$.each(n||[], function(i, node) {
 			if (self.is(node, f)) {
-				r.push(node)
+				r.push(node);
 			}
-		})
+		});
 		return r;
 	}
 	
@@ -187,16 +199,8 @@ elRTE.prototype.dom = function(rte) {
 	 * @return Boolean
 	 **/
 	this.isSiblings = function(n1, n2) {
-		return n1.previousSibling === n2 || n1.nextSibling === n2;
-		
-		
-		var l = n.length;
-		while (l--) {
-			if (n[l].parentNode != n[0].parentNode) {
-				return false;
-			}
-		}
-		return true;
+		return n1.parentNode && n1.parentNode === n2.parentNode;
+	//	return n1.previousSibling === n2 || n1.nextSibling === n2;
 	}
 	
 	/**
@@ -331,9 +335,9 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.next = function(n, f) {
-		return this.isNode(n) && n.nextSibling
-			? this.is(n.nextSibling, f) ? n.nextSibling : false
-			: false;
+		return n.nodeType && n.nextSibling && this.is(n.nextSibling, f||'any') ? n.nextSibling : false;
+			// ? this.is(n.nextSibling, f) ? n.nextSibling : false
+			// : false;
 	}
 	
 	/**
@@ -345,8 +349,8 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.nextAll = function(n, f) {
 		var r = [];
-		while ((n = this.next(n)) && this.is(n, f)) {
-			r.push(n);
+		while ((n = this.next(n))) {
+			this.is(n, f) && r.push(n);
 		}
 		return r;
 	}
@@ -362,8 +366,8 @@ elRTE.prototype.dom = function(rte) {
 	this.nextUntil = function(n, f, e) {
 		var r = [];
 
-		while ((n = this.next(n)) && n !== e && this.is(n, f)) {
-			r.push(n);
+		while ((n = this.next(n)) && !this.is(n, e)) {
+			this.is(n, f) && r.push(n);
 		}
 		return r;
 	}
@@ -376,9 +380,9 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.prev = function(n, f) {
-		return this.isNode(n) && n.previousSibling
-			? this.is(n.previousSibling, f) ? n.previousSibling : false
-			: false;
+		return n.nodeType && n.previousSibling && this.is(n.previousSibling, f||'any') ? n.previousSibling : false;
+			// ? this.is(n.previousSibling, f) ? n.previousSibling : false
+			// : false;
 	}
 	
 	/**
@@ -390,8 +394,8 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.prevAll = function(n, f) {
 		var r = [];
-		while ((n = this.prev(n)) && this.is(n, f)) {
-			r.push(n);
+		while ((n = this.prev(n))) {
+			this.is(n, f) && r.push(n);
 		}
 		return r;
 	}
@@ -407,8 +411,8 @@ elRTE.prototype.dom = function(rte) {
 	this.prevUntil = function(n, f, e) {
 		var r = [];
 
-		while ((n = this.prev(n)) && n !== e && this.is(n, f)) {
-			r.push(n);
+		while ((n = this.prev(n)) && !this.is(n, e)) {
+			this.is(n, f) && r.push(n);
 		}
 		return r;
 	}
