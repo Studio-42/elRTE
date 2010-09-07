@@ -12,53 +12,44 @@
 			return $(n).css('text-align') == this.val ? this.STATE_ACTIVE : this.STATE_ENABLE;
 		},
 		
-		exec : function() { 
+		exec : function() {
 			var self = this, 
-				v = self.val,
-				n, f, l, s, e;
-		
-
-			if ((n = this.dom.closestParent(this.sel.node(), 'blockText', true))) {
-				$(n).css('text-align', v).find('*').css('text-align', '');
-			} else if (this.sel.collapsed()) {
-				n = this.dom.parents(this.sel.node(), 'inline', true).pop();
-				n = this.dom.prevAll(n, 'inline').reverse().concat([n]).concat(this.dom.nextAll(n, 'inline'));
-				if (this.dom.filter(n, 'notEmpty').length) {
-					this.dom.wrap(n, {name : 'p', css : { 'text-align' : v }});
-				}
-			
-			} else {
-				n = this.sel.get();
-				f = n[0];
-				l = n[n.length-1];
-				if (!(s = this.dom.closestParent(f, 'blockText', true))) {
-					s = this.dom.topParent(f, 'inline', true);
-					s = [s].concat(this.dom.prevAll(s, 'inline')).pop();
-				}
-				if (!(e = this.dom.closestParent(l, 'blockText', true))) {
-					e = this.dom.topParent(l, 'inline', true);
-					e = [e].concat(this.dom.nextAll(e, 'inline')).pop();
-				}
-				n = this.dom.traverse(s, e);
-
-				function test(n) {
-					return self.dom.is('inline');
-				}
-			
-				function align(n) {
-					$(n).css('text-align', v);
-				}
-			
-				function wrap(n) {
-					self.dom.wrap(n, { name : self.dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } });
-				}
-			
-				$.each(n, function(i, n) {
-					$(n).find('*').css('text-align', '');
-				});
-				this.dom.wrapSiblings(n, 'blockText', align, wrap, 'notEmpty');
-				this.sel.select(f, l);
+				sel  = self.sel,
+				dom  = self.dom,
+				n    = sel.collapsed() ? [sel.node()] : sel.get(), 
+				v    = self.val,
+				f    = n[0], 
+				l    = n[n.length-1],
+				s, e;
+				
+			function test(n) {
+				return self.dom.is('inline');
 			}
+		
+			function align(n) {
+				$(n).css('text-align', v);
+			}
+		
+			function wrap(n) {
+				self.dom.wrap(n, { name : self.dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } });
+			}
+			
+			if (!(s = dom.closestParent(f, 'blockText', true))) {
+				s = dom.topParent(f, 'inline', true);
+				s = [s].concat(dom.prevUntil(s, 'any', 'block')).pop();
+			}
+
+			if (!(e = dom.closestParent(l, 'blockText', true))) {
+
+				e = dom.topParent(l, 'inline', true);
+				e = [e].concat(dom.nextUntil(e, 'any', 'block')).pop();
+			}
+			n = dom.traverse(s, e);
+			$.each(n, function() {
+				$(this).find('*').css('text-align', '');
+			});
+			dom.wrapSiblings(n, 'blockText', align, wrap, 'notEmpty');
+			this.sel.select(f, l);
 			setTimeout(function() { self._setState(self.STATE_ACTIVE) }, 2);
 			return true;
 		}

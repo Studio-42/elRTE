@@ -2,13 +2,12 @@
 	
 	/**
 	 * @class elRTE command.
-	 * Insert horizontal rule.
+	 * Increase text padding or list items deep.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.indent = function() {
 		this.title = 'Indent';
-		this.step  = 20;
-	
+		this.step  = parseInt(this.rte.commandConf(this.name, 'step'))||20;
 		
 		this._exec = function() {
 			var self = this, 
@@ -40,9 +39,10 @@
 				dom.wrap(n, { name : dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'padding-left' : step+'px' } });
 			}
 			
-
 			if (lst) {
+				// there is common list node
 				if (dom.isSiblings(li1, li2) && !(dom.is(li1, 'first') && dom.is(li2, 'last'))) {
+					// list items belongs to one parent but is not it's first and last childs  
 					if (!(p = dom.prevAll(li1, 'li').shift())) {
 						dom.append((p = dom.before(dom.create('li'), li1)), dom.create('br'));
 					}
@@ -51,7 +51,8 @@
 					}
 					dom.append(ilst, dom.traverse(li1, li2));
 				} else {
-					indent(lst)
+					// list items is first and last childs  
+					indent(lst);
 				}
 			} else {
 				if (!(s = dom.closestParent(f, 'blockText', true))) {

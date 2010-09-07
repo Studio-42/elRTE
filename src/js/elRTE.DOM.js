@@ -21,7 +21,8 @@ elRTE.prototype.dom = function(rte) {
 	this.filters = {
 		any           : function()  { return true; },
 		none          : function()  { return false; },
-		element       : function(n) { return n.nodeType == 1; },
+		node          : function(n) { return !!(n && n.nodeType && n.parentNode); },
+		element       : function(n) { return !!(n && n.nodeType == 1); },
 		block         : function(n) { return self.blockRegExp.test(n.nodeName); },
 		inline        : function(n) { return !self.blockRegExp.test(n.nodeName); },
 		text          : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName); },
@@ -109,22 +110,12 @@ elRTE.prototype.dom = function(rte) {
 	/********************************************************************************/
 	/*                                 SELECTORS                                    */
 	/********************************************************************************/
-	
-	/**
-	 * Return true if it is node in DOM
-	 *
-	 * @param  DOMElement
-	 * @return Boolean
-	 **/
-	this.isNode = function(n) {
-		return n && n.nodeType && n.parentNode;
-	}
-	
+
 	/**
 	 * Return true if node matched by filter
 	 *
 	 * @param  DOMElement      node to test
-	 * @param  String|RegExp|Function  filter name or RegExp or function
+	 * @param  DOMElement|String|RegExp|Function  filter name or RegExp or function
 	 * @return Boolean
 	 **/
 	this.is = function(n, f) {
@@ -139,16 +130,7 @@ elRTE.prototype.dom = function(rte) {
 			} else if (f && f.nodeType) {
 				return n === f;
 			} 
-			
-			// f = f||'any';
-			// if (typeof(f) == 'string' && this.filters[f]) {
-			// 	f = this.filters[f];
-			// }
-			// if (typeof(f) == 'function') {
-			// 	return f(n);
-			// } else if (f instanceof RegExp) {
-			// 	return f.test(n.nodeName);
-			// }
+
 		}
 		return false;
 	}
@@ -193,9 +175,10 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	/**
-	 * Return true, if all nodes in set is one parent childs
+	 * Check two nodes to be sibglings nodes
 	 *
-	 * @param  Array
+	 * @param  DOMElement
+	 * @param  DOMElement
 	 * @return Boolean
 	 **/
 	this.isSiblings = function(n1, n2) {
@@ -250,16 +233,19 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.parent = function(n, f, until) {
 		var p;
-		
-		if (this.isNode(n)) {
-			if (!until || !this.isNode(until)) {
-				until = this.body;
-			}
-			if (n != until && (p = n.parentNode) && p != until) {
-				return this.is(p, f) ? p : false;
-			}
-		}
-		return false;
+		until = until||this.body;
+		return this.is(n, 'node') && !this.is(n, until) && (p = n.parentNode) && !this.is(p, until) && this.is(p, f) ? p : false
+
+		// if (this.is(n, 'node')) {
+		// 	// if (!until || !u) {
+		// 	// 	until = this.body;
+		// 	// }
+		// 	
+		// 	if (!this.is(n, until||this.body) && (p = n.parentNode) && !this.is(p, until||this.body)) {
+		// 		return this.is(p, f) ? p : false;
+		// 	}
+		// }
+		// return false;
 	}
 	
 	/**
@@ -272,13 +258,11 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.parents = function(n, f, addSelf, until) {
 		var r = [];
-		if (!until || !this.isNode(until)) {
-			until = this.body;
-		}
-		if (this.isNode(n) && n != until) {
-			if (addSelf && this.is(n, f)) {
-				r.push(n);
-			}
+
+		until = until||this.body;
+		if (this.is(n, 'node') && !this.is(n, until)) {
+			addSelf && this.is(n, f) && r.push(n);
+
 			while ((n = this.parent(n, 'any', until))) {
 				this.is(n, f) && r.push(n);
 			}
@@ -286,10 +270,26 @@ elRTE.prototype.dom = function(rte) {
 		return r;
 	}
 	
+	/**
+	 * Return closest node parent matched by filter
+	 *
+	 * @param  DOMElement              node to test
+	 * @param  String|RegExp|Function  filter
+	 * @param  DOMElement              find parents not up this
+	 * @return DOMElement
+	 **/
 	this.closestParent = function(n, f, addSelf, until) {
 		return this.parents(n, f, addSelf, until).shift();
 	}
 	
+	/**
+	 * Return most node top parent matched by filter
+	 *
+	 * @param  DOMElement              node to test
+	 * @param  String|RegExp|Function  filter
+	 * @param  DOMElement              find parents not up this
+	 * @return DOMElement
+	 **/
 	this.topParent = function(n, f, addSelf, until) {
 		return this.parents(n, f, addSelf, until).pop();
 	}
@@ -315,7 +315,7 @@ elRTE.prototype.dom = function(rte) {
 	this.closest = function(n, f) {
 		var r = [], self = this;
 		
-		if (n && n.nodeType == 1) {
+		if (this.is(n, 'element')) {
 			$.each(n.childNodes, function(i, c) {
 				if (self.is(c, f)) {
 					r.push(c);
@@ -335,9 +335,7 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.next = function(n, f) {
-		return n.nodeType && n.nextSibling && this.is(n.nextSibling, f||'any') ? n.nextSibling : false;
-			// ? this.is(n.nextSibling, f) ? n.nextSibling : false
-			// : false;
+		return n && n.nodeType && n.nextSibling && this.is(n.nextSibling, f||'any') ? n.nextSibling : false;
 	}
 	
 	/**
@@ -360,7 +358,7 @@ elRTE.prototype.dom = function(rte) {
 	 *
 	 * @param  DOMElement               node
 	 * @param  String|RegExp|Function   filter name or RegExp or function
-	 * @param  DOMElement               stop node
+	 * @param  DOMElement|String|RegExp|Function  filter to stop search
 	 * @return Array
 	 **/
 	this.nextUntil = function(n, f, e) {
@@ -380,9 +378,7 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.prev = function(n, f) {
-		return n.nodeType && n.previousSibling && this.is(n.previousSibling, f||'any') ? n.previousSibling : false;
-			// ? this.is(n.previousSibling, f) ? n.previousSibling : false
-			// : false;
+		return n && n.nodeType && n.previousSibling && this.is(n.previousSibling, f||'any') ? n.previousSibling : false;
 	}
 	
 	/**
@@ -405,7 +401,7 @@ elRTE.prototype.dom = function(rte) {
 	 *
 	 * @param  DOMElement               node
 	 * @param  String|RegExp|Function   filter name or RegExp or function
-	 * @param  DOMElement               stop node
+	 * @param  DOMElement|String|RegExp|Function  filter to stop search
 	 * @return Array
 	 **/
 	this.prevUntil = function(n, f, e) {
@@ -427,7 +423,7 @@ elRTE.prototype.dom = function(rte) {
 	this.commonAncestor = function(s, e) {
 		var c = this.body, sp, ep, l, i=-1;
 		
-		if (this.isNode(s) && this.isNode(e)) {
+		if (this.is(s, 'node') && this.is(e, 'node')) {
 			
 			if (s === e) {
 				c = s;
@@ -547,8 +543,8 @@ elRTE.prototype.dom = function(rte) {
 	}
 	
 	this.append = function(p, n) {
-		n = n.nodeType ? [n] : n;
-		$.each(n, function(i, n) {
+		// n = n.nodeType ? [n] : n;
+		$.each(n.nodeType ? [n] : n, function(i, n) {
 			p.appendChild(n);
 		})
 	}
@@ -562,7 +558,7 @@ elRTE.prototype.dom = function(rte) {
 	this.remove = function(o) {
 		var self = this;
 		$.each(o.length ? o : [o], function(i, n) {
-			self.isNode(n) && n.parentNode.removeChild(n);
+			self.is(n, 'node') && n.parentNode.removeChild(n);
 		});
 		return this;
 	}
@@ -599,10 +595,7 @@ elRTE.prototype.dom = function(rte) {
 		if (!$.isArray(n)) {
 			n = [n];
 		}
-		if (this.isNode(n[0])) {
-			// this.rte.log(n)
-			// this.rte.log(w)
-			// return
+		if (this.is(n[0], 'node')) {
 			this.before(w, n[0]);
 			$.each(n, function(i, n) {
 				w.appendChild(n);
@@ -627,13 +620,13 @@ elRTE.prototype.dom = function(rte) {
 				wrap();
 				wrapNode(n);
 			} else {
-				if (w.length && !self.isSiblings(n, w[w.length-1])) {
+				if (w.length && self.prev(n) != w[w.length-1]) {
 					wrap();
 				}
-				w.push(n)
+				w.push(n);
 			}
-		})
-		wrap()
+		});
+		wrap();
 	}
 	
 	/**
@@ -678,52 +671,13 @@ elRTE.prototype.dom = function(rte) {
 					}
 				});
 			} else {
-				if (buffer.length && !self.isSiblings(n, buffer[buffer.length-1])) {
+				if (buffer.length && self.prev(n) !== buffer[buffer.length-1]) {
 					wrapBuffer();
 				}
 				buffer.push(n);
 			}
 		})
 		wrapBuffer();	
-	}
-	
-	this.correctsmartWrap = function(nodes, test, wrapNode) {
-		var self = this, 
-			toWrap = [],
-			prev = nodes[0];
-		
-		function wrap() {
-			if (self.filter(toWrap, 'notEmpty').length) {
-				self.wrap(toWrap, wrapNode);
-			}
-			
-			self.rte.log(toWrap)
-			toWrap = []
-		}
-		
-		$.each(nodes, function(i, n) {
-			
-			var sib = prev && self.isSiblings([n, prev]);
-			var innerWrap = test(n);
-			// self.rte.log(n)
-			// self.rte.log(sib)
-			if (innerWrap) {
-				// toWrap = toWrap.concat(self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, wrap))
-				wrap()
-				self.smartWrap(Array.prototype.slice.call(n.childNodes) , test, wrapNode)
-			} else {
-				// self.rte.log(n)
-				if (!self.isSiblings([n, prev])) {
-					// self.rte.log('wrap')
-					wrap()
-				}
-				// self.rte.log('add')
-				toWrap.push(n)
-			}
-			
-			prev = n;
-		})
-		wrap()
 	}
 	
 	/**
@@ -733,6 +687,7 @@ elRTE.prototype.dom = function(rte) {
 	 * @return void
 	 **/
 	this.unwrap = function(n) {
+		var r = [];
 		while (n.firstChild) {
 			this.before(n.firstChild, n)
 		}

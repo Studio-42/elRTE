@@ -75,8 +75,8 @@
 			var s = this.selection(),
 				r = this.doc.createRange(), r1, r2;
 
-			if (this.dom.isNode(sn)) {
-				if (this.dom.isNode(en) && en !== sn) {
+			if (this.dom.is(sn, 'node')) {
+				if (this.dom.is(en, 'node') && en !== sn) {
 					// check start node is before end node
 					r1 = this.doc.createRange();
 					r2 = this.doc.createRange();
@@ -121,7 +121,7 @@
 			var s = this.selection(),
 				r = this.doc.createRange();
 				
-			if (this.dom.isNode(n)) {
+			if (this.dom.is(n, 'node')) {
 				r.selectNodeContents(n);
 				s.removeAllRanges();
 				s.addRange(r);
@@ -247,7 +247,7 @@
 			var s = bm && bm[0] ? (bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0])) : false,
 				e = bm && bm[1] ? (bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1])) : false, n;
 
-			if (this.dom.isNode(s) && this.dom.isNode(e)) {
+			if (this.dom.is(s, 'node') && this.dom.is(e, 'node')) {
 				this.select(s, e);
 				if ($.browser.mozilla || $.browser.opera) {
 					if ((n = s.nextSibling) && (n === e || (n.nextSibling === e && n.nodeType != 1 && n.nodeValue == '')) ) {
@@ -269,7 +269,7 @@
 			var s = bm && bm[0] ? (bm[0].nodeType == 1 ? bm[0] : this.doc.getElementById(''+bm[0])) : false,
 				e = bm && bm[1] ? (bm[1].nodeType == 1 ? bm[1] : this.doc.getElementById(''+bm[1])) : false;
 
-			this.dom.isNode(s) && this.dom.isNode(e) && this.dom.remove([s, e]);
+			this.dom.is(s, 'node') && this.dom.is(e, 'node') && this.dom.remove([s, e]);
 			return this;
 		}
 
