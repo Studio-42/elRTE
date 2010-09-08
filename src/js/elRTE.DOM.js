@@ -12,7 +12,7 @@ elRTE.prototype.dom = function(rte) {
 	this.body = document.body;
 	this.html = document.body.parentNode;
 	
-	
+	this.notTextRegExp = /^(AREA|BR|EMBED|IMG|HR|OBJECT|PARAM)$/;
 	this.textRegExp  = /^(A|ABBR|ACRONYM|ADDRESS|B|BDO|BIG|BLOCKQUOTE|BUTTON|CAPTION|CENTER|CITE|CODE|DD|DEL|DFN|DIV|DL|DT|EM|FIELDSET|FONT|FORM|H[1-6]|I|INS|KBD|LABEL|LEGEND|LI|MARQUEE|NOBR|NOEMBED|P|PRE|Q|S|SAMP|SMALL|SPAN|STRIKE|STRONG|SUB|SUP|TD|TH|TT|U|VAR|XMP)$/;
 	this.blockRegExp = /^(ADDRESS|BLOCKQUOTE|CAPTION|CENTER|COL|COLGROUP|DD|DIR|DIV|DL|DT|FIELDSET|FORM|H[1-6]|HR|LI|MENU|OBJECT|OL|P|PRE|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|UL)$/;
 	this.listRegExp  = /^(OL|UL)$/
@@ -25,14 +25,15 @@ elRTE.prototype.dom = function(rte) {
 		element       : function(n) { return !!(n && n.nodeType == 1); },
 		block         : function(n) { return self.blockRegExp.test(n.nodeName); },
 		inline        : function(n) { return !self.blockRegExp.test(n.nodeName); },
-		text          : function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName); },
-		notText       : function(n) { !self.filters.text(n); }, 
+		text          : function(n) { return n.nodeType == 3 || !self.notTextRegExp.test(n.nodeName);}, //function(n) { return n.nodeType == 3 || self.textRegExp.test(n.nodeName); },
+		notText       : function(n) { return self.notTextRegExp.test(n.nodeName); }, //function(n) { !self.filters.text(n); }, 
 		blockText     : function(n) { return self.filters.block(n) && self.filters.text(n); },
 		inlineText    : function(n) { return !self.filters.block(n) && self.filters.text(n); },
 		blockNotText  : function(n) { return self.filters.block(n) && !self.filters.text(n); },
 		inlineNotText : function(n) { return !self.filters.block(n) && !self.filters.text(n); },
 		textNode      : function(n) { return n.nodeType == 3; },
-		textElement   : function(n) { return n.nodeType == 1 && self.textRegExp.test(n.nodeName); },
+		textElement   : function(n) { return n.nodeType == 1 && self.filters.text(n); },
+		textOrBr      : function(n) { return n.nodeName == 'BR' || self.filters.text(n); },
 		empty         : function(n) { return n.nodeType == 1 ? !(n.childNodes.length || $.trim($(n).text().length)) : (n.nodeType == 3 ? !$.trim(n.nodeValue).length : true); },
 		notEmpty      : function(n) { return !self.filters.empty(n); },
 		first         : function(n) { return n.nodeName != 'BODY' && !self.prevAll(n, 'notEmpty').length; },
@@ -131,6 +132,8 @@ elRTE.prototype.dom = function(rte) {
 				return n === f;
 			} 
 
+		} else {
+			this.rte.debug('error.dom', 'is() required node, '+typeof(n)+' given')
 		}
 		return false;
 	}
@@ -603,81 +606,64 @@ elRTE.prototype.dom = function(rte) {
 		}
 		return w;
 	}
-	
-	this.wrapSiblings = function(n, test, wrapNode, wrapGroup, testEmpty) {
-		var self = this, 
-			w = [];
-		
-		function wrap() {
-			if (w.length && self.filter(w, testEmpty||'notEmpty').length) {
-				wrapGroup(w);
-			}
-			w = [];
-		}
-		
-		$.each(n, function(i, n) {
-			if (self.is(n, test)) {
-				wrap();
-				wrapNode(n);
-			} else {
-				if (w.length && self.prev(n) != w[w.length-1]) {
-					wrap();
-				}
-				w.push(n);
-			}
-		});
-		wrap();
-	}
-	
+
 	/**
-	 * Wrap group of nodes with node. Can make inner or outer wrap based on test metod result
+	 * Wrap group of siblings nodes based on rule
 	 *
-	 * @param  Array  node to wrap
-	 * @param  Function|String   method, return true if current node required wrap
-	 * @param  Function|String   method, return true if current node required inner wrap
-	 * @param  Function          wrap method
-	 * @param  Function|String   method, return true if selected nodes should be wraped (not empty nodes by default)
+	 * @param  Array   nodes to wrap
+	 * @param  Object  wrap rules
 	 * @return elRTE.dom
 	 **/
-	this.smartWrap = function(nodes, accept, inner, wrap, test) {
-		var self = this,
-			buffer = [],
-			nested, before, after;
+	this.smartWrap = function(nodes, o) {
+		var self = this, 
+			w = [], 
+			ch, a, b;
 		
-		function wrapBuffer() {
-			if (self.filter(buffer, test||'notEmpty').length) {
-				wrap(buffer);
-			}
-			buffer = [];
+		o = $.extend({
+			accept  : 'textOrBr',
+			inner   : 'blockText',
+			wrap    : function() { },
+			testCss : false,
+			setCss  : false,
+		}, o);
+
+		function wrap() {
+			self.filter(w, 'notEmpty').length && o.wrap(w);
+			w = [];
 		}
-			
+		
 		$.each(nodes, function(i, n) {
-			if (!self.is(n, accept)) {
-				wrapBuffer();
-			} else if (self.is(n, inner)) {
-				wrapBuffer();
-				self.smartWrap(n.childNodes, accept, inner, wrap)
-			} else if ((nested = self.closest(n, inner)).length) {
-				$.each(nested, function(i) {
-					before = self.traverse(i == 0 ? n.firstChild : nested[i-1], this);
-					before.pop();
-					self.smartWrap(before, accept, inner, wrap);
-					self.smartWrap(this.childNodes, accept, inner, wrap);
-					
-					if (i == nested.length-1) {
-						after = self.traverse(this, n.lastChild);
-						after.shift();
-						self.smartWrap(after, accept, inner, wrap);
-					}
-				});
-			} else {
-				if (buffer.length && self.prev(n) !== buffer[buffer.length-1]) {
-					wrapBuffer();
+			if (self.is(n, o.accept)) {
+				if (o.setCss && self.is(n, o.testCss)) {
+					wrap();
+					o.setCss(n);
+				} else if (o.inner && self.is(n, o.inner)) {
+					wrap();
+					self.smartWrap(n.childNodes, o);
+				} else if (o.inner && (ch = self.closest(n, o.inner)).length) {
+					wrap();
+					$.each(ch, function(i) {
+						b = self.traverse(i == 0 ? n.firstChild : ch[i-1], this);
+						b.pop();
+						self.smartWrap(b, o);
+						self.smartWrap(this.childNodes, o);
+
+						if (i == ch.length-1) {
+							a = self.traverse(this, n.lastChild);
+							a.shift();
+							self.smartWrap(a, o);
+						}
+					});
+				} else {
+					w.length && self.prev(n) !== w[w.length-1] && wrap();
+					w.push(n)
 				}
-				buffer.push(n);
+			} else {
+				wrap();
 			}
 		})
-		wrapBuffer();	
+		wrap();
+		return this;
 	}
 	
 	/**
@@ -782,173 +768,6 @@ elRTE.prototype.dom = function(rte) {
 		
 		return [st||f, en||l];
 	}
-	
-	
-	
-	/**
-	 * Wrap each node with other node
-	 *
-	 * @param  DOMElement|Array n node(s) to wrap
-	 * @param  DOMElement|String w wrap node or nodename 
-	 * @return void
-	 **/
-	// this.wrap = function(n, w) {
-	// 	n = $.isArray(n) ? n : [n], l = n.length;
-	// 	w = w.nodeType ? w : this.create(w);
-	// 	while (l--) {
-	// 		if (this.is(n[l], 'block') || this.is(n[l], 'text') || n[l].nodeName == 'IMG') {
-	// 			n[l].parentNode.insertBefore((w = w.cloneNode(false)), n[l]);
-	// 			w.appendChild(n[l]);
-	// 		}
-	// 	}
-	// }
-	
-	/**
-	 * Wrap group of nodes with other node
-	 *
-	 * @param  DOMElement|Array n node(s) to wrap
-	 * @param  DOMElement|String w wrap node or nodename 
-	 * @return void
-	 **/
-	// this.wrapAll = function(n, w) {
-	// 	if ($.isArray(n) && n.length>0) {
-	// 		for (i=0; i < n.length; i++) {
-	// 			i == 0 && n[i].parentNode.insertBefore((w = w.nodeType ? w : this.create(w)), n[i]);
-	// 			w.appendChild(n[i]);
-	// 		};
-	// 	}
-	// }
-	
-	/**
-	 * Wrap node contents with other node
-	 *
-	 * @param  DOMElement n node to wrap
-	 * @param  DOMElement|String w wrap node or nodename 
-	 * @return void
-	 **/
-	// this.wrapInner = function(n, w) {
-	// 	if (n.nodeType == 1 && n.childNodes.length) {
-	// 		n.insertBefore((w = w.nodeType ? w : this.create(w)), n.firstChild);
-	// 		while ((n = this.next(w))) {
-	// 			w.appendChild(n);
-	// 		}
-	// 	}
-	// }
-	
-	/**
-	 * Wrap node with other node depend on nodes types
-	 * Method use some telepathy ability :)
-	 *
-	 * @param  DOMElement n node to wrap
-	 * @param  DOMElement|String w wrap node or nodename 
-	 * @return void
-	 **/
-	// this.smartWrap = function(n, w) {
-	// 	var bn, n1, n2, i;
-	// 	
-	// 	w = w.nodeType ? w : this.create(w);
-	// 	
-	// 	if (this.is(w, 'blockText')) {
-	// 		// wrap is block text node
-	// 		if (w.nodeName == 'P') {
-	// 			// block nodes not allowed inside paragraph
-	// 			if (this.is(n, 'blockText')) {
-	// 				// wrap contents of text block node
-	// 				this.wrapInner(n, w);
-	// 			} else if (this.is(n, 'inline')) {
-	// 				// wrap any inline node
-	// 				// this.rte.log(n)
-	// 				this.wrap(n, w);
-	// 			}
-	// 		} else {
-	// 			// wrap any node
-	// 			this.wrap(n, w);
-	// 		}
-	// 	} else if (this.is(w, 'inlineText')) {
-	// 		// wrap is inline text node
-	// 		if (this.is(n, 'block') && !this.is(n, 'text')) {
-	// 			// node is table or list
-	// 			this.smartWrapAll(n.childNodes, w);
-	// 			// for (i=0; i<n.childNodes.length; i++) {
-	// 			// 	this.smartWrap(n.childNodes[i], w.cloneNode(false));
-	// 			// }
-	// 		} else if (this.is(n, 'text') && !this.is(n, 'empty')) {
-	// 			// node is non empty text node
-	// 			if ((bn = this.descendants(n, 'blockText')).length) {
-	// 				// node has child - block text node. we cannot wrapInner directly
-	// 				n1 = this.traverse(n.firstChild, bn[0]);
-	// 				n2 = this.traverse(bn[0], n.lastChild);
-	// 				n1.pop();
-	// 				n2.shift();
-	// 				// wrap nodes from node start till block child
-	// 				this.smartWrapAll(n1, w.cloneNode(false))
-	// 				// wrap block node
-	// 				this.smartWrap(bn[0], w.cloneNode(false));
-	// 				// wrap nodes from block child till node end
-	// 				this.smartWrapAll(n2, w.cloneNode(false))
-	// 			} else {
-	// 				// node does not contains block child
-	// 				if (this.is(n, 'block')) {
-	// 					this.wrapInner(n, w);
-	// 				} else {
-	// 					this.wrap(n, w);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-	
-	/**
-	 * Another one telepathy method :)
-	 * Wrap group of nodes with other node depend on nodes types and nodes relative positions
-	 *
-	 * @param  DOMElement n node to wrap
-	 * @param  DOMElement|String w wrap node or nodename 
-	 * @return void
-	 **/
-	// this.smartWrapAll = function(n, w) {
-	// 	var buffer = [], inline;
-	// 	
-	// 	w = w.nodeType == 1 ? w : this.create(w);
-	// 	inline = this.is(w, 'inline');
-	// 	
-	// 	function dropBuffer() {
-	// 		var empty = true, i;
-	// 		
-	// 		for (i=0; i < buffer.length; i++) {
-	// 			if (!self.is(buffer[i], 'empty')) {
-	// 				empty = false;
-	// 				break;
-	// 			}
-	// 		};
-	// 		if (!empty) {
-	// 			self.wrapAll(buffer, w.cloneNode(false));
-	// 		}
-	// 		buffer = [];
-	// 	}
-	// 
-	// 
-	// 	for (var i=0; i < n.length; i++) {
-	// 		if (inline && (this.is(n[i], 'blockText') || this.has(n[i], 'blockText'))) {
-	// 			dropBuffer();
-	// 			this.smartWrap(n[i], w.cloneNode(false));
-	// 		} else if (!buffer.length || n[i].parentNode == buffer[buffer.length-1].parentNode) {
-	// 			buffer.push(n[i]);
-	// 		} else {
-	// 			dropBuffer();
-	// 			this.smartWrap(n[i], w.cloneNode(false));
-	// 		}
-	// 		
-	// 	};
-	// 	dropBuffer();
-	// }
-	
-
-	
-	
-
-	
-	
 	
 	
 	/********************************************************/

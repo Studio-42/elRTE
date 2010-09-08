@@ -20,27 +20,14 @@
 				v    = self.val,
 				f    = n[0], 
 				l    = n[n.length-1],
-				s, e;
+				s, e, o;
 				
-			function test(n) {
-				return self.dom.is('inline');
-			}
-		
-			function align(n) {
-				$(n).css('text-align', v);
-			}
-		
-			function wrap(n) {
-				self.dom.wrap(n, { name : self.dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } });
-			}
-			
 			if (!(s = dom.closestParent(f, 'blockText', true))) {
 				s = dom.topParent(f, 'inline', true);
 				s = [s].concat(dom.prevUntil(s, 'any', 'block')).pop();
 			}
 
 			if (!(e = dom.closestParent(l, 'blockText', true))) {
-
 				e = dom.topParent(l, 'inline', true);
 				e = [e].concat(dom.nextUntil(e, 'any', 'block')).pop();
 			}
@@ -48,7 +35,14 @@
 			$.each(n, function() {
 				$(this).find('*').css('text-align', '');
 			});
-			dom.wrapSiblings(n, 'blockText', align, wrap, 'notEmpty');
+			o = { 
+				accept  : 'any', 
+				wrap    : function(n) { self.dom.wrap(n, { name : self.dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } }); }, 
+				inner   : false, 
+				testCss : 'blockText', 
+				setCss  : function(n) { $(n).css('text-align', v); } 
+			};
+			dom.smartWrap(n, o);
 			this.sel.select(f, l);
 			setTimeout(function() { self._setState(self.STATE_ACTIVE) }, 2);
 			return true;

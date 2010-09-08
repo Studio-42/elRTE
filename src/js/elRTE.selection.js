@@ -304,37 +304,39 @@
 		 * @return Array
 		 **/
 		this.get = function(exp) {
-			var r = [], bm, s, e, c;
+			var r = [], dom = this.dom, bm, s, e, c;
 			
 			if (!this.collapsed()) {
 				bm = this.bookmark();
 				this.doc.body.normalize();
-				s = bm[0].nextSibling;
-				e = bm[1].previousSibling||bm[1].parentNode.previousSibling||this.dom.after(this.dom.createTextNode(''), bm[1]);
+				s = dom.next(bm[0])||dom.after(dom.createTextNode(''), bm[0]);
+				e = dom.prev(bm[1])||dom.before(dom.createTextNode(''), bm[1]);
+				// s = bm[0].nextSibling;
+				// e = bm[1].previousSibling||bm[1].parentNode.previousSibling||this.dom.after(this.dom.createTextNode(''), bm[1]);
 				this.rmBookmark(bm);
 				// this.rte.log(s)
 				// this.rte.log(e)
 				
 				// fix selection. 
-				while (this.dom.parents(e, function(n) { return n == s }).length) {
+				while (dom.parents(e, function(n) { return n == s }).length) {
 					this.rte.log('fix1')
 					s = s.firstChild;
 				}
-				while (this.dom.parents(s, function(n) { return n == e }).length) {
+				while (dom.parents(s, function(n) { return n == e }).length) {
 					this.rte.log('fix2')
 					e = e.lastChild;
 				}
-				c = this.dom.commonAncestor(s, e);
+				c = dom.commonAncestor(s, e);
 				// move start node up as posiible but not up container
-				while (s !=c && s.parentNode !=c && this.dom.is(s, 'first')) {
+				while (s !=c && s.parentNode !=c && dom.is(s, 'first')) {
 					s = s.parentNode;
 				}
 				// move end node up as posiible but not up container
-				while (e !=c && e.parentNode != c && this.dom.is(e, 'last')) {
+				while (e !=c && e.parentNode != c && dom.is(e, 'last')) {
 					e = e.parentNode;
 				}
 				// expand selection - move start, end and common ancestor container up as posiible
-				while (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && this.dom.is(s, 'first') && this.dom.is(e, 'last')) {
+				while (c.nodeName != 'BODY' && s.parentNode == c && e.parentNode == c && dom.is(s, 'first') && dom.is(e, 'last')) {
 					s = e = c;
 					c = c.parentNode;
 					if (!exp) {
@@ -344,7 +346,7 @@
 				// this.rte.log(s)
 				// this.rte.log(e)
 				// this.rte.log(c)
-				r = s === e ? [s] : this.dom.traverse(s, e, c);
+				r = s === e ? [s] : dom.traverse(s, e, c);
 			}
 			return r;
 		}

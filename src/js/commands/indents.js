@@ -66,7 +66,20 @@
 					e = [e].concat(dom.nextUntil(e, 'any', 'block')).pop();
 				}
 				n = dom.traverse(s, e);
-				dom.wrapSiblings(n, 'blockText', indent, wrap, 'notEmpty');
+				
+				o = { 
+					accept  : 'any', 
+					wrap    : function(n) { dom.wrap(n, { name : dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'padding-left' : step+'px' } }); }, 
+					inner   : false, 
+					testCss : 'blockText', 
+					setCss  : function(n) {  
+							var p = (dom.is(n, 'text') ? 'padding' : 'margin')+'-left', n = $(n);
+							n.css(p, (parseInt(n.css(p)) || 0) + step + 'px');
+						} 
+				};
+				dom.smartWrap(n, o);
+				
+				// dom.wrapSiblings(n, 'blockText', indent, wrap, 'notEmpty');
 			}
 			sel.toBookmark(b);
 			return true;

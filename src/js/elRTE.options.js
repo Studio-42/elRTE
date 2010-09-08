@@ -96,8 +96,8 @@
 		/* toolbars presets */
 		toolbars : {
 			'empty' : [],
-			'default' : ['alignment', 'indents', 'control']
-			// 'default' : ['document', 'edit', 'style', 'semantic', 'alignment', 'lists','indents', 'direction', 'misc', 'history', 'control', 'style']
+			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'direction', 'control']
+
 		},
 		
 		/* --- plugins options --- */

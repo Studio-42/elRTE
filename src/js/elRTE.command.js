@@ -146,6 +146,17 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands._textElement = {
+		
+		init : function() {
+			this.useCss = (this.rte.options.styleWithCss && this.cssProp && this.cssVal) || !this.nodeName;
+			if (this.useCss) {
+				this.node = { name : 'span', css : {}};
+				this.node.css[this.cssProp] = this.cssVal;
+			} else {
+				this.node = this.nodeName;
+			}
+		},
+		
 		/**
 		 * Check node by required name or css propery
 		 *
@@ -182,59 +193,8 @@
 			}
 		},
 		
-		/**
-		 * Wrap nodes
-		 *
-		 * @param  Array  nodes unwrap
-		 * @return void
-		 **/
 		wrap : function(n) {
-			var self = this, 
-				d = this.dom,
-				p = this.cssProp,
-				v = self.cssVal,
-				w = [];
-			
-			function wrap() {
-				d.filter(w, self.testWrap||'notEmpty').length && $(d.wrap(w, { name : 'span' })).css(p, v);
-				w = [];
-			}
-			
-			if ((this.rte.options.styleWithCss || !this.node) && p) {
-				
-				$.each(n, function(i, n) {
-					if (d.is(n, 'textElement')) {
-						$(n).css(p, v);
-					} else if (self.acceptWrap(n)) {
-						w.length && !d.isSiblings(n, w[w.length-1]) && wrap();
-						w.push(n);
-					}
-				});
-				wrap();
-			} else {
-				d.wrap(n, this.node);
-			}
-			
-		},
-		
-		/**
-		 * Return true if node contents must be wrapped
-		 *
-		 * @param  DOMElement  node
-		 * @return Boolean
-		 **/
-		innerWrap : function(n) {
-			return this.rte.options.styleWithCss || !this.node ? false : this.dom.is(n, 'block');
-		},
-		
-		/**
-		 * Return true if node accepted for wrap (outer or inner)
-		 *
-		 * @param  DOMElement  node
-		 * @return Boolean
-		 **/
-		acceptWrap : function(n) {
-			return this.dom.is(n, 'text') || (n.nodeName != 'IMG' && this.dom.is(n, 'inline'));
+			this.dom.wrap(n, this.node);
 		},
 		
 		/**
@@ -247,11 +207,11 @@
 				s = this.sel,
 				d = this.dom,
 			 	c = s.collapsed(), 
-				n = s.node(), p, b;
+				n = s.node(), p, o, b = s.bookmark();
 
 			if (this._state == this.STATE_ACTIVE) {
 				if (c) {
-					b = s.bookmark();
+					// b = s.bookmark();
 					p = b[1].parentNode;
 					if (d.is(p, this.test) && d.is(b[1], 'last')) {
 						s.rmBookmark(b).selectNext(p, true);
@@ -263,16 +223,25 @@
 					}
 				} else {
 					n = d.smartUnwrap(s.get(true), this.test, 'inline', this.unwrap);
-					s.select(n[0], n[1]);
+					// s.select(n[0], n[1]);
+					s.toBookmark(b);
 				}
 			} else {
 				if (c) {
 					s.surroundContents(d.create(this.node));
 				} else {
 					n = s.get();
-					d.smartWrap(n, this.acceptWrap, this.innerWrap||'block', this.wrap, this.testWrap||'notEmpty');
-					s.select(n[0], n[n.length-1]);
+					o = { wrap : self.wrap };
+					if (this.useCss) {
+						o.inner   = false;
+						o.testCss = 'textElement';
+						o.setCss  = function(n) { $(n).css(self.cssProp, self.cssVal).find('*').css(self.cssProp, ''); };
+					}
+					d.smartWrap(n, o);
+					// s.select(n[0], n[n.length-1]);
+					
 				}
+				s.toBookmark(b);
 			}
 			return true;
 		}
