@@ -89,6 +89,7 @@
 			edit       : ['selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr'],
 			history    : ['undo', 'redo'],
+			font       : ['fontsize'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
@@ -96,7 +97,7 @@
 		/* toolbars presets */
 		toolbars : {
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'direction', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'direction', 'font', 'control']
 
 		},
 		

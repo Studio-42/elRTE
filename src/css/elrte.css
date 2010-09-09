@@ -23,11 +23,19 @@
 /******************  common stuffs  *********************/
 
 /* cross-browser inline-block */
-.elrte .elrte-ib {
+.elrte .elrte-ib,
+.elrte .elrte-toolbar ul,
+.elrte .elrte-toolbar li {
 	display: -moz-inline-stack;
 	display: inline-block;
 	zoom: 1;
 	*display: inline;
+}
+
+.elrte-rnd-3 {
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
 }
 /* style to detect images url */
 .elrte .elrte-test-url { background-image:url(../images/pixel.gif);}
@@ -165,18 +173,13 @@
 .elrte .elrte-toolbar-panel { 
 	padding: 2px 0px 2px 7px; 
 	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
-	display: -moz-inline-stack;
-	display: inline-block;
-	zoom: 1;
-	*display: inline;
 }
 .elrte .elrte-toolbar-panel-first {
 	padding-left:0;
 	background:transparent;
 }
 
-
-.elrte .elrte-ui-button {
+.elrte .elrte-ui {
 	width:  20px;
 	height: 20px;
 	margin: 0 2px 0 0;
@@ -246,16 +249,72 @@
 .elrte .elrte-ui-source { background-position:-640px -20px; }
 .elrte .elrte-ui-fullscreen { background-position:-660px -20px; }
 
+/* WIDGETS */
+/* menu */
+.elrte .elrte-ui-menu {
+	width: 120px;
+/*	overflow:hidden;*/
+	background:#fff;
+	cursor:default;
+	position:relative;
+}
 
+.elrte .elrte-ui-menu-label {
+	width:102px;
+	height:20px;
+	font-size:12px;
+	line-height:20px;
+	margin:0;
+	padding:0 0 0 5px;
+	overflow:hidden;
+	float:left;
+}
 
+.elrte .elrte-ui-menu-control {
+	float:right;
+	height:20px;
+	width:12px;
+	border-left:1px solid #ccc;
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-right-radius: 3px; 
+	-moz-border-radius-topright: 3px; 
+	-webkit-border-top-right-radius: 3px;
+	-webkit-background-clip: padding-box;
+	background:#eee url(../images/elrte-toolbar.png) -777px -22px no-repeat;
+}
 
+.elrte .elrte-ui-hover .elrte-ui-menu-control {
+	background-color:#f5f5f5;
+/*	border-color:#555;*/
+}
 
+.elrte .elrte-ui-menu-container {
+	position:absolute;
+	top:20px;
+	min-width:120px;
+	
+	border:1px solid #ccc;
+	background:#fff;
+	overflow:auto;
+}
 
+.elrte .elrte-ui-menu-item {
+	white-space: nowrap;
+/*	min-height:20px;*/
+	padding:3px 5px;
+	border-top:1px solid #eee;
+}
 
+.elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { border-top:0 solid; }
 
+.elrte .elrte-ui-menu-item.elrte-ui-hover {
+	border-color: #eee;
+	background-color:#eee;
+}
 
-
-
+.elrte .elrte-ui-menu-item-sel {
+	background-color:blue;
+}
 
 
 
@@ -264,7 +323,7 @@
 
 
 /* ui states */
-.elrte .elrte-ui-hover    { border-color:#777; }
+.elrte .elrte-ui-hover    { border-color:#999; }
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
 .elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 

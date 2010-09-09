@@ -113,7 +113,7 @@
 		 */
 		this._createUI = function() {
 			var self = this;
-			return this._ui = $('<li class="elrte-ib elrte-ui-button elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
+			return this._ui = $('<li class="elrte-ui elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
 				.mousedown(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -121,7 +121,7 @@
 					self._state>0 && self.exec();
 				})
 				.hover(function(e) {
-					$(this).toggleClass(self._hClass, e.type == 'mouseenter' && self._state>0);
+					// $(this).toggleClass(self._hClass, e.type == 'mouseenter' && self._state>0);
 				});
 		}
 		

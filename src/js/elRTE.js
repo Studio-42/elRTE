@@ -228,15 +228,18 @@
 		 * @return elRTE
 		 */
 		this.bind = function(e, c, t) {
-			var l = this.listeners;
+			var l = this.listeners, e, i, n;
 
 			if (typeof(c) == 'function') {
-				$.each($.trim(e).split(/\s+/), function(i, n) {
-					if (typeof(l[n]) == 'undefined') {
+				e = $.trim(e).split(/\s+/);
+				i = e.length;
+				while (i--) {
+					n = e[i];
+					if (l[n] === void(0)) {
 						l[n] = [];
 					}
 					l[n][t?'unshift':'push'](c);
-				});
+				}
 			}
 			return this;
 		}
@@ -267,7 +270,7 @@
 		this.one = function(e, c) {
 			var self = this,
 				h = $.proxy(c, function(e) {
-					self.unbind(e.type, h);
+					setTimeout(function() {self.unbind(e.type, h);}, 3)
 					return c.apply(this, arguments);
 				});
 			return this.bind(e, h);
@@ -323,12 +326,17 @@
 			e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
 			
 			this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type].length ? 'trigger' : 'no listeners'));
-
-			$.each(this.listeners[e.type]||[], function() {
+			var self = this;
+			$.each(this.listeners[e.type]||[], function(i, c) {
 				if (e.isPropagationStopped()) {
 					return false;
 				}
-				this(e, d);
+				try {
+					c(e, d);
+				} catch (ex) {
+					self.log('trigger exeption. event: '+e.type)
+				}
+				
 			});
 			// this.prevEvent = e;
 			return this;
@@ -944,7 +952,13 @@
 	 * elRTE commands classes
 	 *
 	 */
-	elRTE.prototype.commands = {};	
+	elRTE.prototype.commands = {};
+	
+	/**
+	 * elRTE commands classes
+	 *
+	 */
+	elRTE.prototype.ui = {};	
 
 	/**
 	 * elRTE messages

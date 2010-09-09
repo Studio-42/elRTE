@@ -145,6 +145,12 @@
 			if (!p.length) {
 				p = $('<ul class="elrte-toolbar-panel elrte-toolbar-panel-'+pn+(!this.toolbar.children('.elrte-toolbar-panel').length ? ' elrte-toolbar-panel-first' : '')+'" name="'+pn+'" />').appendTo(this.toolbar);
 			}
+			ui.hover(function() {
+				var t = $(this)
+				if (!t.hasClass('elrte-ui-disabled')) {
+					t.toggleClass('elrte-ui-hover')
+				}
+			})
 			p.append(ui);
 		}
 
