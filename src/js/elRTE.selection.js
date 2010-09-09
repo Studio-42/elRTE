@@ -149,7 +149,7 @@
 					t.nodeValue = t.nodeValue.replace('\uFEFF', '');
 				});
 			}
-			this.select(s);
+			this.select(s); 
 			c != void 0 && this.collapse(!!c);
 			return this;
 		}

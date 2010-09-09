@@ -570,11 +570,13 @@ elRTE.prototype.dom = function(rte) {
 		var c, sb;
 		if (this.parents(n, 'any', true, p).length) {
 			while (n != p) {
-				sb = this[s ? 'prevAll' : 'nextAll'](n);
+				// sb = this[s ? 'prevAll' : 'nextAll'](n);
+				sb = s ? this.prevAll(n).reverse() : this.nextAll(n); 
 				n = n.parentNode;
 				if (this.filter(sb, 'notEmpty').length) {
 					c = n.cloneNode(false);
 					this[s ? 'before' : 'after'](c, n);
+					// this.rte.log(sb)
 					this.append(c, sb);
 					
 				}
@@ -582,6 +584,10 @@ elRTE.prototype.dom = function(rte) {
 		}
 		
 		return n;
+	}
+	
+	this.slice = function(p, n) {
+		return this.split(this.split(p, n, true), n);
 	}
 	
 	/**
@@ -675,9 +681,11 @@ elRTE.prototype.dom = function(rte) {
 	this.unwrap = function(n) {
 		var r = [];
 		while (n.firstChild) {
-			this.before(n.firstChild, n)
+			r.push(n.firstChild);
+			this.before(n.firstChild, n);
 		}
 		n.parentNode.removeChild(n);
+		return r;
 	}
 	
 	/**

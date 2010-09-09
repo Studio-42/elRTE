@@ -84,7 +84,7 @@
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			alignment  : ['left', 'center', 'right', 'justify'],
 			lists      : ['ul', 'ol'],
-			indents    : ['indent'],
+			indents    : ['outdent', 'indent'],
 			direction  : ['ltr', 'rtl'],
 			edit       : ['selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr'],

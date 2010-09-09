@@ -44,7 +44,8 @@
 			}).bind('source close', function(e) {
 				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
 			}).bind('change changePos', function() {
-				self._state>0 && self._setState();
+				// self._state>0 && 
+				self._setState();
 			});
 		}
 		
@@ -214,7 +215,7 @@
 					// b = s.bookmark();
 					p = b[1].parentNode;
 					if (d.is(p, this.test) && d.is(b[1], 'last')) {
-						s.rmBookmark(b).selectNext(p, true);
+						s.rmBookmark(b).selectNext(p, true); 
 					} else {
 						$.each(d.parents(n, this.test, true), function(i, n) {
 							self.unwrap(n);
