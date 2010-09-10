@@ -33,7 +33,7 @@
 		this._exec = function() {
 			var d = this.rte.active;
 			d && $(d.document.body).toggleClass(this._class);
-			this._setState();
+			this._update();
 		}
 		
 		this._getState = function() {

@@ -1,5 +1,8 @@
 (function($) {
-
+	/**
+	 * Common bind method for undo/redo classes
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.historyBind = function() {
 		var self = this;
 		

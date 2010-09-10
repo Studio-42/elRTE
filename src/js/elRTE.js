@@ -780,7 +780,7 @@
 		
 		/**
 		 * Exec editor method return result
-		 *
+		 * @TODO add obj.cmd call support
 		 * @param  String  editor method name
 		 * @return mixed
 		 */
