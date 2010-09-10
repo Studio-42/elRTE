@@ -76,6 +76,7 @@
 				r = this.doc.createRange(), r1, r2;
 
 			if (this.dom.is(sn, 'node')) {
+				
 				if (this.dom.is(en, 'node') && en !== sn) {
 					// check start node is before end node
 					r1 = this.doc.createRange();
@@ -83,7 +84,6 @@
 					r1.selectNode(sn)
 					r2.selectNode(en);
 					if (r1.compareBoundaryPoints(r1.START_TO_END, r2) == 1) {
-						// this.rte.log('here')
 						r.setStartBefore(en);
 						r.setEndAfter(sn);
 					} else {

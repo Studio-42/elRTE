@@ -14,11 +14,11 @@
 			
 			if (this.rte.options.allowSource) {
 				this.rte.bind('wysiwyg', function() {
-					self._setState(self.STATE_ENABLE);
+					self._update(self.STATE_ENABLE);
 				}).bind('source', function(e) {
-					self._setState(self.STATE_ACTIVE);
+					self._update(self.STATE_ACTIVE);
 				}).bind('close', function(e) {
-					e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
+					e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
 				});
 			}
 		}

@@ -8,15 +8,15 @@
 	elRTE.prototype.commands.hr = function() {
 		this.title = 'Horizontal rule';
 		
-		this.bind = function() {
-			var self = this;
-
-			this.rte.bind('wysiwyg', function() {
-				self._setState(self.STATE_ENABLE);
-			}).bind('source close', function(e) {
-				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
-			});
-		}
+		// this.bind = function() {
+		// 	var self = this;
+		// 
+		// 	this.rte.bind('wysiwyg', function() {
+		// 		self._setState(self.STATE_ENABLE);
+		// 	}).bind('source close', function(e) {
+		// 		e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
+		// 	});
+		// }
 		
 		this._exec = function() {
 			return this.sel.deleteContents().insertNode(this.dom.create('hr'));

@@ -328,6 +328,18 @@
 			return c;
 		}
 	
+		this.fontsize2percents = function(s) {
+			var x = 100;
+			if (s.indexOf('pt') != -1) {
+				x = 12;
+			} else if (s.indexOf('px') != -1) {
+				x = 16;
+			} else if (s.indexOf('em') != -1) {
+				x = 1;
+			}
+			return Math.round((100*parseFloat(s, 1)/x)/10)*10;
+		}
+	
 	
 	}
 	

@@ -29,7 +29,7 @@
 			var self = this, e = self.editor;
 			
 			this.rte.bind('load', function() {
-				self._setState(self.STATE_ENABLE);
+				self._update(self.STATE_ENABLE);
 				self.height  = self.wz.height();
 				self.delta   = e.outerHeight()-self.height;
 			});
@@ -90,7 +90,7 @@
 			v.updateHeight();
 			v.resizable(f);
 			restore();
-			this._setState();
+			this._update();
 		}
 		
 		/**

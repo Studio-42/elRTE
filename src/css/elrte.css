@@ -292,7 +292,7 @@
 	position:absolute;
 	top:20px;
 	min-width:120px;
-	
+	max-height:230px;
 	border:1px solid #ccc;
 	background:#fff;
 	overflow:auto;
@@ -301,19 +301,20 @@
 .elrte .elrte-ui-menu-item {
 	white-space: nowrap;
 /*	min-height:20px;*/
-	padding:3px 5px;
+	font-size:.9em;
+	padding:3px 22px 3px 9px;
 	border-top:1px solid #eee;
 }
 
 .elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { border-top:0 solid; }
 
 .elrte .elrte-ui-menu-item.elrte-ui-hover {
-	border-color: #eee;
-	background-color:#eee;
+	border-color: #fff;
+	background-color:#c3dbef;
 }
 
 .elrte .elrte-ui-menu-item-sel {
-	background-color:blue;
+	background-color:#c3dbef;
 }
 
 

@@ -4,9 +4,9 @@
 		var self = this;
 		
 		this.rte.bind('wysiwyg historyChange', function(e) {
-			self._setState();
+			self._update();
 		}).bind('close source', function(e) {
-			e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
+			e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
 		});
 	}
 

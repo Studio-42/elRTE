@@ -39,13 +39,10 @@
 		this.bind = function() {
 			var self = this;
 			
-			this.rte.bind('wysiwyg', function() {
-				self._setState();
+			this.rte.bind('wysiwyg change changePos', function() {
+				self._update();
 			}).bind('source close', function(e) {
-				e.data.id == self.rte.active.id && self._setState(self.STATE_DISABLE);
-			}).bind('change changePos', function() {
-				// self._state>0 && 
-				self._setState();
+				e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
 			});
 		}
 		
@@ -56,6 +53,15 @@
 		 */
 		this.state = function() {
 			return this._state;
+		}
+		
+		/**
+		 * Return current command value
+		 *
+		 * @return Number
+		 */
+		this.value = function() {
+			return this._val;
 		}
 		
 		/**
@@ -70,10 +76,11 @@
 		/**
 		 * Exec command if possible and return if execed
 		 *
+		 * @param  mixed    command value if available
 		 * @return Boolean
 		 */
-		this.exec = function() {
-			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec() && this.rte.trigger('change'));
+		this.exec = function(v) {
+			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec(v) && this.rte.trigger('change'));
 		}
 		
 		/**
@@ -92,9 +99,12 @@
 		 * @param  Number  command state. If not set - command check it's state and set
 		 * @return void
 		 */
-		this._setState = function(s) {
+		this._update = function(s) {
 			this._state = s === void(0) ? this._getState() : s;
 			this._ui && this._updateUI();
+			if (this._state != this.STATE_DISABLE && this._setVal) {
+				this._setVal();
+			}
 		}
 		
 		/**
@@ -119,9 +129,6 @@
 					e.stopPropagation();
 					self.rte.focus();
 					self._state>0 && self.exec();
-				})
-				.hover(function(e) {
-					// $(this).toggleClass(self._hClass, e.type == 'mouseenter' && self._state>0);
 				});
 		}
 		

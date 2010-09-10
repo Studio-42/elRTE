@@ -1,5 +1,11 @@
 (function($) {
 
+	$(document).bind('click', function(e) {
+		var t = e.target;
+		if (!$(t).hasClass('elrte-ui-menu') || !$(t.parentNode).hasClass('elrte-ui-menu')) {
+			$('.elrte-ui-menu-container').hide();
+		}
+	});
 
 	elRTE.prototype.ui.menu = function(o, rte) {
 		var self = this;
@@ -14,37 +20,26 @@
 		
 		rte.bind('click keyup', function() {
 			self._menu && self._menu.hide();
-		})
+		});
 		
-		this._menu; // = $('<div class="elrte-ui-menu-container"></div>').hide();
+		this._menu; 
 		this._label = $('<div class="elrte-ui-menu-label">'+this.opts.label+'</div>')
-		
-	
 		this.ui = $('<li class="elrte-ui elrte-ui-menu elrte-ui-'+this.opts.name+'" />')
 			.append('<div class="elrte-ui-menu-control" />')
 			.append(this._label)
 			.mousedown(function(e) {
-				var v;
 				if (!$(this).hasClass(rte.command._dClass)) {
 					e.preventDefault();
 
-					if (!self._menu) {
-						self.init();
-					}
-					// v = self._menu.is(':visible');
-					if (!(v = self._menu.is(':visible'))) {
+					!self._menu && self.init();
+
+					if (!self._menu.is(':visible')) {
 						self._menu.find('.elrte-ui-menu-item').removeClass('elrte-ui-menu-item-sel').filter('[rel="'+self.val+'"]').addClass('elrte-ui-menu-item-sel');
 					} 
 					self._menu.slideToggle(256);
-
-					!v && setTimeout(function() {
-						$(document).one('click keyup', function(e) {
-							e.target !== self.ui[0] && e.target.parentNode !== self.ui[0] && self._menu.hide();
-						});
-					}, 2);
 				}
-				
-			})
+				rte.focus();
+			});
 		
 
 		
@@ -57,11 +52,16 @@
 			})
 			this._menu = $(m + '</div></div>').hide()
 				.appendTo(self.ui)
+				.mousedown(function(e) { 
+					e.preventDefault();
+					e.stopPropagation()
+				})
 				.find('.elrte-ui-menu-item')
 				.hover(function() { $(this).toggleClass('elrte-ui-hover') })
 				.mousedown(function() { 
-					var v = $(this).attr('rel');
-					v != self.val && cb(v); 
+					// var v = $(this).attr('rel');
+					// v != self.val && 
+					cb($(this).attr('rel')); 
 				})
 				.end();
 		}
@@ -81,7 +81,7 @@
 		
 		this.set = function(v) {
 			this.val = this.opts.vars[v] ? v : '';
-			this._label.text(this.opts.vars[this.val] ? this.opts.vars[this.val].label : this.opts.label)
+			this._label.text(this.val && this.opts.vars[this.val] ? this.opts.vars[this.val].label : this.opts.label)
 		}
 		
 	}

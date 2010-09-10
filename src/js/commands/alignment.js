@@ -44,7 +44,7 @@
 			};
 			dom.smartWrap(n, o);
 			this.sel.select(f, l);
-			setTimeout(function() { self._setState(self.STATE_ACTIVE) }, 2);
+			setTimeout(function() { self._update(self.STATE_ACTIVE) }, 2);
 			return true;
 		}
 	}

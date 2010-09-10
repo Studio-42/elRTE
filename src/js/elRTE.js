@@ -331,11 +331,12 @@
 				if (e.isPropagationStopped()) {
 					return false;
 				}
-				try {
-					c(e, d);
-				} catch (ex) {
-					self.log('trigger exeption. event: '+e.type)
-				}
+				c(e, d);
+				// try {
+				// 	c(e, d);
+				// } catch (ex) {
+				// 	self.log('trigger exeption. event: '+e.type)
+				// }
 				
 			});
 			// this.prevEvent = e;

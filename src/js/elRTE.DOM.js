@@ -495,7 +495,7 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.css = function(n, css) {
 		var c;
-		if (n.nodeType == 1) {
+		if (n && n.nodeType == 1) {
 			c = this.rte.utils.parseStyle($(n).attr('style'));
 			return css ? c[css]||'' : c;
 		}
@@ -688,6 +688,89 @@ elRTE.prototype.dom = function(rte) {
 		return r;
 	}
 	
+	this.smartUnwrap = function(n, o) {
+		var self = this,
+			st = n[0],
+			en = n[n.length-1],
+			unw, c, g, l;
+			
+		o = $.extend({
+			accept : 'none',
+			testCut : 'inline',
+			unwrap : function() { }
+		}, o);
+		
+		/**
+		 * Find top parent matched by o.accept method and return it parent node
+		 *
+		 * @param DOMElement
+		 * @return DOMElement
+		**/
+		function container(c) {
+			var p = self.parents(c, o.accept, true);
+			return p.length ? p.pop() : c;
+		}
+		
+		/**
+		 * Find node parents matched by t method, cut it by node
+		 * Return nodes list to unwrap
+		 *
+		 * @param DOMElement
+		 * @param String   cut direction
+		 * @return Array
+		**/
+		function intersect(n, dir) {
+			var r = [],
+				p = self.parents(n, o.accept, false, c.parentNode).pop(),
+				s, // siblings 
+				im = dir == 'left' ? 'before' : 'after', // insert node method
+				cl; // clone node
+			
+			if (p) {
+				while (n !== p) {
+					s = dir == 'left' ? self.prevAll(n).reverse() : self.nextAll(n);
+					n = n.parentNode;
+					if (self.filter(s, 'notEmpty').length && self.is(n, o.testCut)) {
+						cl = self[im](n.cloneNode(false), n);
+						$.each(s, function() {
+							cl.appendChild(this)
+						});
+					}
+					if (self.is(n, o.accept)) {
+						r.push(n);
+					}
+				}
+			}
+			return r;
+		}
+		
+		c = container(this.commonAncestor(st, en));
+		
+		// unwrap first/last node parents
+		$.each($.unique([].concat(intersect(st, 'left')).concat(intersect(en, 'right')) ), function(i, n) {
+			o.unwrap(n);
+		});
+		
+		unw = this.filter(n, function(n) { return o.accept(n) || self.find(n, o.accept).length; }),
+		
+		$.each(unw, function(i, n) {
+			// unwrap all child nodes
+			$.each(self.find(n, o.accept), function() {
+				o.unwrap(this);
+			});
+			if (n === st) {
+				st = n.firstChild;
+			} 
+			if (n === en) {
+				en = n.lastChild;
+			}
+			o.unwrap(n);
+		});
+		
+		return [st, en];
+		
+	}
+	
 	/**
 	 * Unwrap group of nodes.
 	 * Return first and last node to select
@@ -698,7 +781,7 @@ elRTE.prototype.dom = function(rte) {
 	 * @param Function  unwrap method
 	 * @return Array
 	**/
-	this.smartUnwrap = function(n, t, ct, u) {
+	this._smartUnwrap = function(n, t, ct, u) {
 		var self = this, 
 			st = n[0],
 			en = n[n.length-1],
