@@ -296,6 +296,7 @@
 	border:1px solid #ccc;
 	background:#fff;
 	overflow:auto;
+	z-index:10000;
 }
 
 .elrte .elrte-ui-menu-item {

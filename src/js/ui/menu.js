@@ -3,7 +3,7 @@
 	// close any menu on document click
 	$(document).bind('click', function(e) {
 		var t = e.target;
-		if (!$(t).hasClass('elrte-ui-menu') || !$(t.parentNode).hasClass('elrte-ui-menu')) {
+		if (!$(t).hasClass('elrte-ui-menu') && !$(t.parentNode).hasClass('elrte-ui-menu')) {
 			$('.elrte-ui-menu-container').hide();
 		}
 	});
