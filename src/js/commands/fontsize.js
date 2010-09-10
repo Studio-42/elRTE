@@ -1,7 +1,15 @@
 (function($) {
 	
+	/**
+	 * Common methods for fontsize and fontfamily classes
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands._font = {
 		
+		/**
+		 * Create command menu and return command ui
+		 * @return jQuery
+		 **/
 		ui : function() {
 			var rte = this.rte,
 				css = this._css,
@@ -18,11 +26,15 @@
 					style : v ? css+': '+v : ''
 				};
 			});
-			// this.rte.log(o.vars)
 			this._menu = new this.rte.ui.menu(o, rte);
-			return this._ui = this._menu.ui
+			return this._ui = this._menu.ui;
 		},
 		
+		/**
+		 * Set css property to selected text
+		 * @param  String  css property value
+		 * @return Boolean
+		 **/
 		exec : function(v) {
 			var self = this,
 				dom  = this.dom,
@@ -70,9 +82,16 @@
 				}
 			}
 			sel.toBookmark(b);
+			setTimeout(function() { self._menu.set(v); }, 2);
 			return true;
 		},
 		
+		/**
+		 * Check parents node for required css property
+		 * and update ui
+		 * 
+		 * @return Boolean
+		 **/
 		val : function() {
 			var dom = this.dom,
 				css = this._css,
@@ -100,8 +119,7 @@
 			'large'    : 'Large (18pt)',
 			'x-large'  : 'Large (24pt)',
 			'xx-large' : 'Large (36pt)'
-		}
-		
+		};
 		
 		this._exec = $.proxy(elRTE.prototype.commands._font.exec, this);
 		
@@ -109,6 +127,12 @@
 		
 		this._setVal = $.proxy(elRTE.prototype.commands._font.val, this);
 		
+		/**
+		 * Translate font-size in px|pt|% into absolute value
+		 * 
+		 * @param  String  css font-size value
+		 * @return String
+		 **/
 		this._parseVal = function(v) {
 			var x = 100;
 			
@@ -153,12 +177,10 @@
 			return this._opts[v] ? v : size2abs(v);
 		}
 		
-
 		this._getState = function() {
 			return this.STATE_ENABLE;
 		}
 	}
-	
 	
 	/**
 	 * @class elRTE command.
@@ -218,6 +240,13 @@
 		
 		this._setVal = $.proxy(elRTE.prototype.commands._font.val, this);
 		
+		/**
+		 * Check given css font-family property for known fonts
+		 * and return closets font set
+		 * 
+		 * @param  String  css font-family value
+		 * @return String
+		 **/
 		this._parseVal = function(v) {
 			var l, f;
 			
