@@ -160,6 +160,7 @@ elRTE = function(target, opts) {
 		self.beforeSave();
 	});
 	
+	// on tab press - insert \t and prevent move focus
 	this.source.bind('keydown', function(e) {
 		if (e.keyCode == 9) {
 			e.preventDefault();
@@ -174,9 +175,8 @@ elRTE = function(target, opts) {
 				this.value = before+"\t"+after;
 				this.setSelectionRange(before.length+1, before.length+1);
 			}
-			
 		}
-	})
+	});
 	
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
