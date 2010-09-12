@@ -639,12 +639,30 @@
 			});
 
 			if (!this.rte.options.allowTextNodes) {
-				// wrap text nodes with p
-				n.contents().filter(function() {
-					return this.nodeType == 3 && $.trim(this.nodeValue);
-				}).wrap('<p/>');
+				// wrap inline nodes with p
+				var dom = this.rte.dom,
+					nodes = Array.prototype.slice.call(n[0].childNodes),
+					w = [];
+				
+				function wrap() {
+					if (dom.filter(w, 'notEmpty').length) {
+						dom.wrap(w, 'p');
+					}
+					w = [];
+				}	
+				$.each(nodes, function(i, n) {
+					if (dom.is(n, 'block')) {
+						wrap();
+					} else {
+						if (w.length && n.previousSibling != w[w.length-1]) {
+							wrap();
+						}
+						w.push(n);
+					}
+				});
+				wrap();
 			}
-			// alert(n[0].innerHTML)
+			
 			return n.html();
 		},
 		/**
