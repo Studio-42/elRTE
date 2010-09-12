@@ -142,11 +142,13 @@ elRTE = function(target, opts) {
 	
 	if (this.options.height>0) {
 		this.workzone.height(this.options.height);
+		
 	}
 	this.updateHeight();
+	this.resizable(true);
 	this.window.focus();
 	
-	this.history = new this.history(this)
+	this.history = new this.history(this);
 	
 	/* init selection object */
 	this.selection = new this.selection(this);
@@ -181,6 +183,10 @@ elRTE = function(target, opts) {
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
 		self.ui.update();
+	})
+	.bind('dragstart', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 	})
 	.bind('keyup', function(e) {
 		if ((e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {
@@ -290,7 +296,7 @@ elRTE = function(target, opts) {
 		})
 	}
 	
-	this.resizable(true)
+	// this.resizable(true)
 	this.window.focus();
 	// this.log(this.editor.parents('form').find('[name="el-select"]'))
 	
