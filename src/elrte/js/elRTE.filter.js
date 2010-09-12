@@ -641,12 +641,21 @@
 			if (!this.rte.options.allowTextNodes) {
 				// wrap inline nodes with p
 				var dom = this.rte.dom,
-					nodes = Array.prototype.slice.call(n[0].childNodes),
+					nodes = [],
 					w = [];
 				
+				if ($.browser.msie) {
+					for (var i = 0; i<n[0].childNodes.length; i++) {
+						nodes.push(n[0].childNodes[i])
+					}
+				} else {
+					nodes = Array.prototype.slice.call(n[0].childNodes);
+				}
+				
+
 				function wrap() {
-					if (dom.filter(w, 'notEmpty').length) {
-						dom.wrap(w, 'p');
+					if (w.length && dom.filter(w, 'notEmpty').length) {
+						dom.wrap(w, document.createElement('p'));
 					}
 					w = [];
 				}	

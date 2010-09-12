@@ -448,14 +448,18 @@ elRTE.prototype.dom = function(rte) {
 	 * @return DOMElement
 	 **/
 	this.wrap = function(n, w) {
-		n = n.length ? n : [n];
+		n = $.isArray(n) ? n : [n];
 		w = w.nodeName ? w : this.create(w);
-		w = n[0].parentNode.insertBefore(w, n[0]);
-		$(n).each(function() {
-			if (this!=w) {
-				w.appendChild(this);
-			}
-		})
+		
+		if (n[0] && n[0].nodeType && n[0].parentNode) {
+			w = n[0].parentNode.insertBefore(w, n[0]);
+			$(n).each(function() {
+				if (this!=w) {
+					w.appendChild(this);
+				}
+			});
+		}
+		
 		return w;
 	}
 	

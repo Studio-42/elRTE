@@ -51,7 +51,7 @@ elRTE = function(target, opts) {
 	 * @return void
 	 */
 	this.updateHeight = function() {
-		this.workzone.add(this.iframe).height(this.workzone.height());
+		self.workzone.add(self.iframe).add(self.source).height(self.workzone.height());
 	}
 	
 	/**
@@ -63,11 +63,9 @@ elRTE = function(target, opts) {
 	this.resizable = function(r) {
 		if (this.options.resizable && $.fn.resizable) {
 			if (r) {
-				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', function() {
-					self.updateHeight();
-				});
+				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);
 			} else {
-				this.editor.resizable('destroy');
+				this.editor.resizable('destroy').unbind('resize', self.updateHeight);
 			}
 		}
 	}
@@ -144,11 +142,8 @@ elRTE = function(target, opts) {
 	
 	if (this.options.height>0) {
 		this.workzone.height(this.options.height);
-		// $(this.iframe).height(this.options.height);
-		// this.source.height(this.options.height);
-		this.updateHeight();
 	}
-	
+	this.updateHeight();
 	this.window.focus();
 	
 	this.history = new this.history(this)
@@ -164,6 +159,24 @@ elRTE = function(target, opts) {
 		self.source.parents('form').find('[name="el-select"]').remove()
 		self.beforeSave();
 	});
+	
+	this.source.bind('keydown', function(e) {
+		if (e.keyCode == 9) {
+			e.preventDefault();
+				
+			if ($.browser.msie) {
+				var r = document.selection.createRange();
+				r.text = "\t"+r.text;
+				this.focus();
+			} else {
+				var before = this.value.substr(0, this.selectionStart),
+					after = this.value.substr(this.selectionEnd);
+				this.value = before+"\t"+after;
+				this.setSelectionRange(before.length+1, before.length+1);
+			}
+			
+		}
+	})
 	
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
