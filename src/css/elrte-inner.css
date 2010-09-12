@@ -81,3 +81,8 @@ body.elrte-structure .elrte-anchor {
 .elrte-google-maps {
 	background-image:url(../images/google-maps.png);
 }
+
+.blue { color:blue; }
+.red { color:red; }
+.marker { background-color:yellow;}
+

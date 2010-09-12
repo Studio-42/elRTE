@@ -123,7 +123,8 @@ elRTE.prototype.dom = function(rte) {
 		if (n && n.nodeType) {
 			
 			if (!f || typeof(f) == 'string') {
-				return this.filters[f||'any'](n);
+				f = this.filters[f] ? f : 'any';
+				return this.filters[f](n);
 			} else if (typeof(f) == 'function') {
 				return f(n);
 			} else if (f instanceof RegExp) {

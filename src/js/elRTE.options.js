@@ -89,7 +89,7 @@
 			edit       : ['selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr'],
 			history    : ['undo', 'redo'],
-			font       : ['fontsize', 'fontfamily'],
+			font       : ['fontsize', 'fontfamily', 'fontstyle'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
@@ -114,6 +114,15 @@
 		commandsConf : {
 			docstructure : {
 				initState : 'on'
+			},
+			fontstyle : {
+				
+				opts : [
+					{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
+					{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
+					{ label : 'Red', selector : 'blockText', 'class' : 'red', style : 'color:red' },
+					{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true}
+				]
 			}
 			
 		}

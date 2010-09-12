@@ -299,7 +299,9 @@
 	z-index:10000;
 }
 
-.elrte .elrte-ui-menu-item {
+.elrte .elrte-ui-menu-item,
+.elrte .elrte-ui-menu-title,
+.elrte .elrte-ui-menu-header {
 	white-space: nowrap;
 /*	min-height:20px;*/
 	font-size:.9em;
@@ -309,12 +311,19 @@
 
 .elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { border-top:0 solid; }
 
+.elrte .elrte-ui-menu-title,
+.elrte .elrte-ui-menu-header {
+	background-color:#eee;
+	font-weight:bold;
+}
+
 .elrte .elrte-ui-menu-item.elrte-ui-hover {
 	border-color: #fff;
 	background-color:#c3dbef;
 }
 
-.elrte .elrte-ui-menu-item-sel {
+.elrte .elrte-ui-menu-item.elrte-ui-active {
+	border-color: #fff;
 	background-color:#c3dbef;
 }
 
@@ -364,8 +373,8 @@
 	background:url(../images/spinner.gif) right center no-repeat; 
 }
 
-
-
+.elrte .blue { color: blue;}
+.elrte .red { color: red;}
 
 
 

@@ -13,20 +13,20 @@
 		ui : function() {
 			var rte = this.rte,
 				css = this._css,
-				o = {
+				conf = {
 					name     : this.name,
 					label    : rte.i18n(this.title),
 					callback : $.proxy(this.exec, this),
-					vars     : {}
+					opts     : {}
 				};
 			
 			$.each(this._opts, function(v, l) {
-				o.vars[v] = { 
+				conf.opts[v] = { 
 					label : rte.i18n(l), 
-					style : v ? css+': '+v : ''
+					style : v != 'default' ? css+': '+v : ''
 				};
 			});
-			this._menu = new this.rte.ui.menu(o, rte);
+			this._menu = new this.rte.ui.menu(conf, rte);
 			return this._ui = this._menu.ui;
 		},
 		
@@ -43,6 +43,10 @@
 				c    = sel.collapsed(),
 				node = { name : 'span', css : {} },
 				b, n, o;
+				
+			if (v == 'default') {
+				v = '';
+			}
 				
 			// not doubled current font-size
 			if (v == this.val && v != '') {
@@ -96,7 +100,9 @@
 			var dom = this.dom,
 				css = this._css,
 				n = dom.closestParent(this.sel.node(), function(n) { return dom.css(n, css) }, true);
-			this._menu.set((this._val = this._parseVal(dom.css(n, css))));
+
+			this._val = this._parseVal(dom.css(n, css));
+			this._menu.set([this._val]);
 		}
 		
 	}
@@ -111,7 +117,7 @@
 		this._val  = '';
 		this._css  = 'font-size';
 		this._opts = {
-			''         : 'Default',
+			'default'  : 'Default',
 			'xx-small' : 'Small (8pt)',
 			'x-small'  : 'Small (10pt)',
 			'small'    : 'Small (12pt)',
@@ -192,7 +198,7 @@
 		this._val  = '';
 		this._css  = 'font-family';
 		this._opts = {
-			''                                              : this.rte.i18n('Default'),
+			'default'                                       : this.rte.i18n('Default'),
 			'andale mono,sans-serif'                        : 'Andale Mono',
 			'arial,helvetica,sans-serif'                    : 'Arial',
 			'arial black,gadget,sans-serif'                 : 'Arial Black',
@@ -242,7 +248,7 @@
 		
 		/**
 		 * Check given css font-family property for known fonts
-		 * and return closets font set
+		 * and return closests font set
 		 * 
 		 * @param  String  css font-family value
 		 * @return String
@@ -269,5 +275,175 @@
 		}
 		
 	}
+	
+	elRTE.prototype.commands.fontstyle = function() {
+		var self= this, o = this.rte.commandConf('fontstyle', 'opts'), n, l, s;
+		this.title = 'Style';
+		this._val  = [];
+		this._disabled = [];
+		this._opts = {};
+		
+		$.each(o, function(i, o) {
+			s = o.selector;
+			n = 'style'+i;
+			self._opts[n] = o;
+			if (typeof(s) == 'string' && !self.dom.filters[s]) {
+				self._opts[n].selector = (function(s) { return function(n) { return $(n).is(s); } })(s);
+			}
+		});
+		
+		
+		// this.rte.log(this._opts)
+		
+		this._exec = function(v) {
+			var self = this,
+				dom = this.dom,
+				sel = this.sel,
+				c = sel.collapsed(),
+				opts = this._opts,
+				vals = this._val,
+				o = this._opts[v] && $.inArray(v, this._disabled) == -1 ? this._opts[v] : false,
+				r, n, o
+				;
+			this.rte.log(v)
+
+			if (!o) {
+				return false;
+			}
+
+			if ($.inArray(v, this._val) != -1) {
+
+				n = dom.filter(dom.parents(sel.node(), 'element'), function(n) { return dom.is(n, o.selector) && $(n).hasClass(o['class']); });
+				$.each(n, function(i, n) {
+					$(n).removeClass(o['class']);
+				});
+				
+				if (!c) {
+					
+				}
+			} else if (!o.inline) {
+				
+				n = dom.closestParent(sel.node(), o.selector);
+				if (n) {
+					$(n).addClass(o['class']);
+				}
+				
+			} else if (!c) {
+				this.rte.log('here')
+				n = sel.get(true)
+				this.rte.log(n)
+				var c = o['class']
+				var node = { name : 'span', attr : { 'class' : c } }
+				
+				o = {
+					wrap : function(n) { dom.wrap(n, { name : 'span', attr : { 'class' : c } }) }
+				}
+
+				this.rte.log(node)
+				dom.smartWrap(n, { wrap : function(n) { dom.wrap(n, { name : 'span', attr : { 'class' : c } }) } })
+			}
+			return true;
+
+			
+			
+		}
+		
+		this._createUI = function() {
+			if (this._opts) {
+				var self = this,
+					conf = {
+						name     : this.name,
+						label    : this.rte.i18n(this.title),
+						callback : $.proxy(this.exec, this),
+						opts     : { 'reset' : { label : this.rte.i18n('Reset styles') }}
+						
+					};
+				
+				$.each(this._opts, function(c, v) {
+					conf.opts[c] = {
+						label : v.label,
+						tag   : 'span',
+						style : v.style
+					}
+				});
+				
+				this._menu = new this.rte.ui.menu(conf, this.rte);
+				return this._ui = this._menu.ui;
+			}
+		}
+		
+		this._setVal = function() {
+			var 
+				self= this,
+				dom = this.dom,
+				sel = this.sel,
+				opts = this._opts,
+				accepted = {}, val = {}, n, ch;
+			
+			this._val = [];
+			this._disabled = [];
+			
+			$.each(dom.parents(sel.node(), 'element', true), function(i, n) {
+				$.each(opts, function(i, o) {
+					if (dom.is(n, o.selector)) {
+						accepted[i] = true;
+						if ($(n).hasClass(o['class'])) {
+							val[i] = true;
+						}
+					}
+				})
+			});
+			
+			if (!sel.collapsed()) {
+				n = dom.filter(sel.cloneContents().childNodes, 'element');
+				
+				$.each(opts, function(i, o) {
+					if (!val[i]) {
+						// self.rte.log('check '+i);
+						
+						$.each(n, function(j, n) {
+							if (dom.is(n, o.selector)) {
+								accepted[i] = true;
+								if ($(n).hasClass(o['class'])) {
+									val[i] = true;
+									return false;
+								}
+							} else if ((ch = dom.closest(n, o.selector)).length) {
+								accepted[i] = true;
+								$.each(ch, function(k, n) {
+									if ($(n).hasClass(o['class'])) {
+										val[i] = true;
+										return false;
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+			
+			// this.rte.log(accepted);
+			// this.rte.log(val)
+			
+			$.each(val, function(i) {
+				self._val.push(i)
+			});
+			
+			$.each(opts, function(i, o) {
+				if (!accepted[i] && !(o.inline && !self.sel.collapsed())) {
+					self._disabled.push(i)
+				}
+			})
+			this._menu.set(this._val, this._disabled);
+			return;
+
+		}
+		
+		this._getState = function() {
+			return this.STATE_ENABLE;
+		}
+		
+	}
+	
 	
 })(jQuery);
