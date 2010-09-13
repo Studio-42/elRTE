@@ -654,6 +654,13 @@
 				wrap();
 			}
 			
+			n.find('div').each(function() {
+				var t = $(this);
+				if (t.css('page-break-after')) {
+					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>');
+				}
+			});
+			
 			return n.html();
 		},
 		/**
@@ -697,7 +704,9 @@
 						return o||t;
 					} else if (a['class']['elrte-google-maps']) {
 						return '<iframe '+self.serializeAttrs($.parseJSON(self.rte.utils.decode(a.rel)))+'></iframe>';
-					} 
+					} else if (a['class']['elrte-pagebreak']) {
+						return '<div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>';
+					}
 					$.each(a['class'], function(n) {
 						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
 					});
