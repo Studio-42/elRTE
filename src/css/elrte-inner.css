@@ -82,6 +82,13 @@ body.elrte-structure .elrte-anchor {
 	background-image:url(../images/google-maps.png);
 }
 
+.elrte-pagebreak {
+	display:block;
+	width:100%;
+	height:9px;
+	outline:1px dotted #ccc;
+}
+
 .blue { color:blue; }
 .red { color:red; }
 .marker { background-color:yellow;}

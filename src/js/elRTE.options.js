@@ -87,7 +87,7 @@
 			indents    : ['outdent', 'indent'],
 			direction  : ['ltr', 'rtl'],
 			edit       : ['selectall', 'removeformat'],
-			misc       : ['nbsp', 'stopfloat', 'hr'],
+			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle'],
 			control    : ['docstructure', 'source', 'fullscreen']
@@ -97,7 +97,7 @@
 		/* toolbars presets */
 		toolbars : {
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'direction', 'font', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'misc', 'direction', 'font', 'control']
 
 		},
 		

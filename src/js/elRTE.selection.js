@@ -207,13 +207,13 @@
 		 * @return Array|undefined
 		 **/
 		this.insertHtml = function(h) {
-			var n = this.insertNode($(this.dom.create('span')).html(h||'')[0]), r;
+			var n = this.insertNode($(this.dom.create('span')).html(h||'')[0]), l;
 			
 			if (n) {
-				r = Array.prototype.slice.call(n.childNodes);
+				l = n.lastChild;
 				this.dom.unwrap(n);
-				r.length && this.select(r[r.length-1]).collapse();
-				return r;
+				l && this.select(l).collapse();
+				return l;
 			}
 		}
 	
