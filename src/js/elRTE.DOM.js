@@ -641,7 +641,7 @@ elRTE.prototype.dom = function(rte) {
 		
 		$.each(nodes, function(i, n) {
 			if (self.is(n, o.accept)) {
-				if (o.setCss && self.is(n, o.testCss)) {
+				if (o.setCss && self.is(n, o.testCss) && n.nodeType == 1) {
 					wrap();
 					o.setCss(n);
 				} else if (o.inner && self.is(n, o.inner)) {

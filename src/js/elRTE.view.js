@@ -160,7 +160,7 @@
 		 * @return void
 		 */
 		this.updateHeight = function() {
-			this.workzone.find('.elrte-editor,.elrte-source').height(this.workzone.height());
+			self.workzone.find('.elrte-editor,.elrte-source').height(self.workzone.height());
 		}
 		
 		/**
@@ -172,11 +172,9 @@
 		this.resizable = function(r) {
 			if (this.rte.options.resizable && $.fn.resizable) {
 				if (r) {
-					this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', function() {
-						self.updateHeight();
-					});
+					this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', this.updateHeight);
 				} else {
-					this.editor.resizable('destroy');
+					this.editor.resizable('destroy').unbind('resize', this.updateHeight);
 				}
 			}
 		}

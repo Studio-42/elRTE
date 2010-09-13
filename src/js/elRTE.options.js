@@ -121,7 +121,8 @@
 					{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
 					{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
 					{ label : 'Red', selector : 'blockText', 'class' : 'red', style : 'color:red' },
-					{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true}
+					{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true},
+					{ label : 'List', selector : 'ul,ol', 'class' : 'list', style : ''}
 				]
 			}
 			

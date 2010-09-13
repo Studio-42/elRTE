@@ -297,55 +297,63 @@
 		
 		this._exec = function(v) {
 			var self = this,
-				dom = this.dom,
-				sel = this.sel,
-				c = sel.collapsed(),
+				dom  = this.dom,
+				sel  = this.sel,
+				b    =  sel.bookmark(),
+				c    = sel.collapsed(),
 				opts = this._opts,
-				vals = this._val,
-				o = this._opts[v] && $.inArray(v, this._disabled) == -1 ? this._opts[v] : false,
-				r, n, o
-				;
-			this.rte.log(v)
+				o    = opts[v] && $.inArray(v, this._disabled) == -1 ? opts[v] : false,
+				selector, cssClass, n, o;
 
 			if (!o) {
 				return false;
 			}
 
-			if ($.inArray(v, this._val) != -1) {
+			selector = o.selector;
+			cssClass = o['class'];
 
-				n = dom.filter(dom.parents(sel.node(), 'element'), function(n) { return dom.is(n, o.selector) && $(n).hasClass(o['class']); });
-				$.each(n, function(i, n) {
-					$(n).removeClass(o['class']);
-				});
-				
-				if (!c) {
-					
-				}
-			} else if (!o.inline) {
-				
-				n = dom.closestParent(sel.node(), o.selector);
-				if (n) {
-					$(n).addClass(o['class']);
-				}
-				
-			} else if (!c) {
-				this.rte.log('here')
-				n = sel.get(true)
-				this.rte.log(n)
-				var c = o['class']
-				var node = { name : 'span', attr : { 'class' : c } }
-				
-				o = {
-					wrap : function(n) { dom.wrap(n, { name : 'span', attr : { 'class' : c } }) }
-				}
-
-				this.rte.log(node)
-				dom.smartWrap(n, { wrap : function(n) { dom.wrap(n, { name : 'span', attr : { 'class' : c } }) } })
+			function test(n) {
+				return dom.is(n, selector) && $(n).hasClass(cssClass);
 			}
-			return true;
 
-			
-			
+			function unwrap(n) {
+				$(n).removeClass(cssClass); 
+				dom.is(n, 'emptySpan') && dom.unwrap(n);
+			}
+
+			function setClass(n) {
+				$(n).addClass(cssClass);
+			}
+
+			if ($.inArray(v, this._val) != -1) {
+				// rmove class from parents nodes
+				$.each(dom.filter(dom.parents(sel.node(), 'element'), test, true), function(i, n) {
+					unwrap(n);
+				});
+				// remove class from child
+				!c && dom.smartUnwrap(sel.get(true), { accept : test, unwrap : unwrap });
+			} else if (o.inline) {
+				// set class for inline nodes if selection expanded
+				!c && dom.smartWrap(sel.get(true), { testCss : selector, setCss : setClass, wrap : function(n) { dom.wrap(n, { name : 'span', attr : { 'class' : cssClass } }) } }); 
+			} else  {
+				// set class for block parent node
+				n = dom.closestParent(sel.node(), selector, true);
+				if (n) {
+					$(n).addClass(cssClass);
+				} else {
+					$.each(sel.get(true), function(i, n) {
+						if (dom.is(n, selector)) {
+							$(n).addClass(cssClass);
+						} else {
+							$.each(dom.closest(n, selector), function(i, n) {
+								$(n).addClass(cssClass);
+							});
+						}
+					});
+				}
+			}
+			sel.toBookmark(b);
+			return true;
 		}
 		
 		this._createUI = function() {

@@ -621,10 +621,37 @@
 			});
 
 			if (!this.rte.options.allowTextNodes) {
-				// wrap text nodes with p
-				n.contents().filter(function() {
-					return this.nodeType == 3 && $.trim(this.nodeValue);
-				}).wrap('<p/>');
+				// wrap inline nodes with p
+				var dom = this.rte.dom,
+					nodes = [],
+					w = [];
+				
+				if ($.browser.msie) {
+					for (var i = 0; i<n[0].childNodes.length; i++) {
+						nodes.push(n[0].childNodes[i])
+					}
+				} else {
+					nodes = Array.prototype.slice.call(n[0].childNodes);
+				}
+				
+
+				function wrap() {
+					if (w.length && dom.filter(w, 'notEmpty').length) {
+						dom.wrap(w, document.createElement('p'));
+					}
+					w = [];
+				}	
+				$.each(nodes, function(i, n) {
+					if (dom.is(n, 'block')) {
+						wrap();
+					} else {
+						if (w.length && n.previousSibling != w[w.length-1]) {
+							wrap();
+						}
+						w.push(n);
+					}
+				});
+				wrap();
 			}
 			
 			return n.html();

@@ -230,7 +230,13 @@
 						s.toBookmark(b);
 					}
 				} else {
-					n = d.smartUnwrap(s.get(true), this.test, 'inline', this.unwrap);
+					
+					var o = {
+						accept : self.test,
+						unwrap : self.unwrap
+					}
+					d.smartUnwrap(s.get(true), o);
+					// n = d.smartUnwrap(s.get(true), this.test, 'inline', this.unwrap);
 					// s.select(n[0], n[1]);
 					s.toBookmark(b);
 				}
