@@ -44,6 +44,7 @@
 		this.videoHostRegExp = /^(http:\/\/[\w\.]*)?(youtube|vimeo|rutube).*/i;
 		// elrte services classes regexp
 		this.serviceClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>\s*(<\/\1>)?/gi;
+		this.pagebreakRegExp = /<(\w+)([^>]*style\s*=\s*"[^>]*page-break[^>]*)>\s*(<\/\1>)?/gi;
 		// allowed tags
 		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
 		// denied tags
@@ -597,7 +598,6 @@
 							o.embed.width == '1' && delete o.embed.width;
 							o.embed.height == '1' && delete o.embed.height;
 						}
-						// self.rte.log(t)
 						return img(o, i.type);
 					}
 					return t;
@@ -611,8 +611,18 @@
 					self.rte.log(a)
 					return i ? img({ embed : a }, i.type) : t;
 				})
-				.replace(/<\/(embed|param)>/gi, '');
-			// alert(html)
+				.replace(/<\/(embed|param)>/gi, '')
+				// .replace(this.pagebreakRegExp, function(t, n, a) {
+				// 	self.rte.log(t+' '+n+' '+a)
+				// 	a = self.parseAttrs(a);
+				// 	a['class']['elrte-pagebreak'] = 'elrte-pagebreak';
+				// 	self.rte.log('<'+n+' '+self.serializeAttrs(a)+'>')
+				// 	return '<'+n+' '+self.serializeAttrs(a)+'>'
+				// })
+				// .replace(/<!--\s+PAGERBREAK\s+-->/g, function() {
+				// 	return '<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak">';
+				// });
+
 			n = $('<div>'+html+'</div>');
 			// remove empty spans and merge nested spans
 			n.find('span:not([id]):not([class])').each(function() {
@@ -672,6 +682,13 @@
 				wrap();
 			}
 			
+			n.find('div').each(function() {
+				var t = $(this);
+				if (t.css('page-break-after')) {
+					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>')
+				}
+			});
+			
 			return n.html();
 		},
 		/**
@@ -720,12 +737,14 @@
 						return o||t;
 					} else if (a['class']['elrte-google-maps']) {
 						return '<iframe '+self.serializeAttrs(JSONparse(self.rte.utils.decode(a.rel)))+'></iframe>';
-						// return '<iframe '+self.serializeAttrs($.parseJSON(self.rte.utils.decode(a.rel)))+'></iframe>';
-					} 
+					} else if (a['class']['elrte-pagebreak']) {
+						return '<div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>';
+						// return "<!-- PAGERBREAK -->";
+					}
 					$.each(a['class'], function(n) {
 						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
 					});
-					return '<'+n+' '+self.serializeAttrs(a)+'>'+e;
+					return '<'+n+' '+self.serializeAttrs(a)+'>'+(e||'');
 
 				});
 			

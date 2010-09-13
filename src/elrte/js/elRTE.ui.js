@@ -59,16 +59,33 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 	cleanCache && this.rte.selection.cleanCache();
 	var n    = this.rte.selection.getNode(),
 		p    = this.rte.dom.parents(n, '*'),
-		path = '';
-	if (p.length) {
-		$.each(p.reverse(), function() {
-			path += ' &raquo; '+ this.nodeName.toLowerCase();
-		});
+		path = '', name;
+		
+	function _name(n) {
+		var name = n.nodeName.toLowerCase();
+		n = $(n)
+		if (name == 'img') {
+			if (n.hasClass('elrte-media')) {
+				name = 'media';
+			} else if (n.hasClass('elrte-google-maps')) {
+				name = 'google map';
+			} else if (n.hasClass('elrte-yandex-maps')) {
+				name = 'yandex map';
+			} else if (n.hasClass('elrte-pagebreak')) {
+				name = 'pagebreak';
+			}
+		}
+		return name;
 	}
+		
+	$.each(p.reverse(), function() {
+		path += ' &raquo; '+_name(this);
+	});
+
 	if (n && n.nodeType == 1 && n.nodeName != 'BODY') {
-		path += ' &raquo; '+ n.nodeName.toLowerCase();
+		path += ' &raquo; '+_name(n);// n.nodeName.toLowerCase();
 	}
-	this.rte.statusbar.html(path)
+	this.rte.statusbar.html(path);
 	$.each(this._buttons, function() {
 		this.update();
 	});

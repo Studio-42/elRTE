@@ -214,7 +214,6 @@ elRTE = function(target, opts) {
 	this.lastKey = null;
 	
 	this.$doc.bind('keydown', function(e) {
-		//@todo shortcuts
 		if ((e.keyCode>=48 && e.keyCode <=57) || e.keyCode==61 || e.keyCode == 109 || (e.keyCode>=65 && e.keyCode<=90) || e.keyCode==188 ||e.keyCode==190 || e.keyCode==191 || (e.keyCode>=219 && e.keyCode<=222)) {
 			if (!self.typing) {
 				self.history.add(true);

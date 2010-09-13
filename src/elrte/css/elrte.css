@@ -122,7 +122,8 @@
 .el-rte .toolbar ul li.fullscreen          {background-position:-348px -30px}  
 .el-rte .toolbar ul li.elfinder            {background-position:-436px -2px}
 .el-rte .toolbar ul li.ltr                 {background-position:-855px -27px}  
-.el-rte .toolbar ul li.rtl                 {background-position:-855px -3px}  
+.el-rte .toolbar ul li.rtl                 {background-position:-855px -3px} 
+.el-rte .toolbar ul li.pagebreak           {background-position:-711px -28px}  
 
 
 /* рабочая зона (обертка над iframe) */
