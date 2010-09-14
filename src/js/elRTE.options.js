@@ -127,7 +127,7 @@
 				]
 			},
 			link : {
-				quick : true
+				// quick : true
 			}
 			
 		}

@@ -39,6 +39,7 @@
 		this.options = $.extend(true, {}, this.options, o);
 		/* messages language */
 		this.lang = 'en';
+		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* messages */
 		this.messages = this.i18Messages[this.options.lang]||{};
 		/* is macosX? */

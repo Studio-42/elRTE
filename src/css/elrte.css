@@ -23,6 +23,7 @@
 /******************  common stuffs  *********************/
 
 /* cross-browser inline-block */
+.elrte-ib,
 .elrte .elrte-ib,
 .elrte .elrte-toolbar ul,
 .elrte .elrte-toolbar li {
