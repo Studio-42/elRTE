@@ -238,11 +238,13 @@
 .elrte .elrte-ui-redo { background-position:-640px 0; }
 
 /* panel links */
+.elrte .elrte-ui-anchor { background-position:0 -20px; }
 
 /* panel misc */
 .elrte .elrte-ui-nbsp { background-position:-60px -20px; }
 .elrte .elrte-ui-stopfloat { background-position:-80px -20px; }
 .elrte .elrte-ui-hr { background-position:-100px -20px; }
+.elrte .elrte-ui-pagebreak { background-position:-600px -20px; }
 
 /* panel control */
 .elrte .elrte-ui-docstructure { background-position:-620px -20px; }
@@ -382,6 +384,16 @@
 
 
 
+/* jqueryUI fixes */
+.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .86em; }
+.ui-dialog { position: relative; padding: 0; width: 300px; }
+.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;  position: relative; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }
+.ui-dialog .ui-dialog-content { border: 0 solid; padding: .5em; margin:0; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
+/*.ui-tabs { padding: 0; zoom: 1; }
+.ui-tabs .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em 0; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }
+.ui-tabs .ui-tabs-nav li a { float: left; text-decoration: none; padding: .2em 1em; }
+.ui-tabs .ui-tabs-panel { padding: 1em 1.2em; display: block; border-width: 0; background: none; }
 
-
+*/
 

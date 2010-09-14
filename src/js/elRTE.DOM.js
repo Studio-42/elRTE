@@ -41,7 +41,8 @@ elRTE.prototype.dom = function(rte) {
 		onlyChild     : function(n) { return self.filters.first(n) && self.filters.last(n); },
 		emptySpan     : function(n) { var $n = $(n); return n.nodeName == 'SPAN' && ((!$n.attr('style') && !$n.attr('class')) || self.filters.empty(n) ); },
 		list          : function(n) { return self.listRegExp.test(n.nodeName); },
-		li            : function(n) { return n.nodeName == 'LI'; }
+		li            : function(n) { return n.nodeName == 'LI'; },
+		anchor        : function(n) { return n.nodeName == 'A' && !n.href; }
 	};
 	
 	

@@ -17,10 +17,10 @@ body.elrte-structure blockquote
 body.elrte-structure .elrte-anchor {
 	display:inline-block;
 	vertical-align:baseline;
-	width:12px; 
-	height:12px; 
-	border:1px dotted #ccc;
-	background: url('../images/elrte-toolbar.png') -564px -8px no-repeat;
+	width:20px; 
+	height:20px; 
+	outline:1px dotted #ccc;
+	background: url('../images/elrte-toolbar.png') 0 -20px no-repeat;
 }
 
 .elrtebm {

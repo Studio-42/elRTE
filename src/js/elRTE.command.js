@@ -123,13 +123,16 @@
 		 */
 		this._createUI = function() {
 			var self = this,
-				c = 'elrte-ui';
+				c    = 'elrte-ui';
 			return this._ui = $('<li class="'+c+' '+c+'-'+this.name+' '+this.uiDisableClass+'" title="'+this.title+'" />')
 				.mousedown(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
 					self.rte.focus();
-					self._state>0 && self.exec();
+					if (self._state > 0) {
+						self.dialog ? self.dialog() : self.exec();
+					}
+					// self._state>0 && self.exec();
 				});
 		}
 		

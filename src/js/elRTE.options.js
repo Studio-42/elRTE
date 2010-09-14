@@ -90,6 +90,7 @@
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
+			links      : ['anchor'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
@@ -97,7 +98,7 @@
 		/* toolbars presets */
 		toolbars : {
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'misc', 'direction', 'font', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'links', 'misc', 'direction', 'font', 'control']
 
 		},
 		
