@@ -89,7 +89,7 @@
 			edit       : ['selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
-			font       : ['fontsize', 'fontfamily', 'fontstyle'],
+			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?

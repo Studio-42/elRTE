@@ -656,7 +656,7 @@
 			
 			n.find('div').each(function() {
 				var t = $(this);
-				if (t.css('page-break-after')) {
+				if (t.css('page-break-after') == 'always') {
 					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>');
 				}
 			});

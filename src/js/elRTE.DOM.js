@@ -681,11 +681,13 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.unwrap = function(n) {
 		var r = [];
-		while (n.firstChild) {
-			r.push(n.firstChild);
-			this.before(n.firstChild, n);
+		if (n && n.nodeType) {
+			while (n.firstChild) {
+				r.push(n.firstChild);
+				this.before(n.firstChild, n);
+			}
+			n.parentNode.removeChild(n);
 		}
-		n.parentNode.removeChild(n);
 		return r;
 	}
 	

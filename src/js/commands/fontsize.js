@@ -276,6 +276,11 @@
 		
 	}
 	
+	/**
+	 * @class elRTE command.
+	 * Apply user defined css classes
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.commands.fontstyle = function() {
 		var self= this, o = this.rte.commandConf('fontstyle', 'opts'), n, l, s;
 		this.title = 'Style';
@@ -291,9 +296,6 @@
 				self._opts[n].selector = (function(s) { return function(n) { return $(n).is(s); } })(s);
 			}
 		});
-		
-		
-		// this.rte.log(this._opts)
 		
 		this._exec = function(v) {
 			var self = this,
@@ -381,8 +383,7 @@
 		}
 		
 		this._setVal = function() {
-			var 
-				self= this,
+			var self= this,
 				dom = this.dom,
 				sel = this.sel,
 				opts = this._opts,
@@ -407,7 +408,6 @@
 				
 				$.each(opts, function(i, o) {
 					if (!val[i]) {
-						// self.rte.log('check '+i);
 						
 						$.each(n, function(j, n) {
 							if (dom.is(n, o.selector)) {
@@ -430,16 +430,13 @@
 				});
 			}
 			
-			// this.rte.log(accepted);
-			// this.rte.log(val)
-			
 			$.each(val, function(i) {
-				self._val.push(i)
+				self._val.push(i);
 			});
 			
 			$.each(opts, function(i, o) {
 				if (!accepted[i] && !(o.inline && !self.sel.collapsed())) {
-					self._disabled.push(i)
+					self._disabled.push(i);
 				}
 			})
 			this._menu.set(this._val, this._disabled);
@@ -453,5 +450,77 @@
 		
 	}
 	
+	/**
+	 * @class elRTE command.
+	 * Format block node
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
+	elRTE.prototype.commands.formatblock = function() {
+		this.title = 'Format';
+		this._val  = '';
+		this._opts = {
+			'h1'      : this.rte.i18n('Heading')+' 1',
+			'h2'      : this.rte.i18n('Heading')+' 2',
+			'h3'      : this.rte.i18n('Heading')+' 3',
+			'h4'      : this.rte.i18n('Heading')+' 4',
+			'h5'      : this.rte.i18n('Heading')+' 5',
+			'h6'      : this.rte.i18n('Heading')+' 6',
+			'p'       : this.rte.i18n('Paragraph'),
+			'address' : this.rte.i18n('Address'),
+			'pre'     : this.rte.i18n('Preformatted'),
+			'div'     : this.rte.i18n('Normal (div)')
+		};
+		
+		this._exec = function(v) {
+			this.rte.log(v)
+			var dom = this.dom,
+				sel = this.sel,
+				b = sel.bookmark();
+			
+			if (this._val == v) {
+				// remove existed format
+				dom.unwrap(dom.closestParent(this.sel.node(), /^(H[1-6]|P|PRE|ADDRESS|DIV)$/, true));
+			} else {
+				// reformat block
+				try {
+					this.rte.active.document.execCommand('formatblock', false, v);
+				} catch(e) {
+					this.rte.debug('error.command', this.name);
+				}
+			}
+			sel.toBookmark(b);
+			return true;
+		}
+		
+		this._createUI = function() {
+			var rte = this.rte,
+				conf = {
+					name     : this.name,
+					label    : rte.i18n(this.title),
+					callback : $.proxy(this.exec, this),
+					opts     : {}
+				};
+			
+			$.each(this._opts, function(t, l) {
+				conf.opts[t] = { 
+					label : l, 
+					tag   : t
+				};
+			});
+			this._menu = new this.rte.ui.menu(conf, rte);
+			return this._ui = this._menu.ui;
+		}
+		
+		this._setVal = function() {
+			var n = this.dom.closestParent(this.sel.node(), /^(H[1-6]|P|PRE|ADDRESS|DIV)$/, true);
+
+			this._val = n ? n.nodeName.toLowerCase() : false;
+			this._menu.set([this._val]);
+		}
+		
+		this._getState = function() {
+			return this.STATE_ENABLE;
+		}
+	}
 	
 })(jQuery);
