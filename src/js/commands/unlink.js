@@ -50,8 +50,8 @@
 		this._exec = function() {
 			var sel = this.sel,
 				dom = this.dom, 
-				n = this._find(), 
-				l = n.length, b;
+				n   = this._find(), 
+				l   = n.length, b;
 			
 			if (l) {
 				b = sel.bookmark();

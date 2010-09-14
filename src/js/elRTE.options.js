@@ -90,7 +90,7 @@
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
-			links      : ['anchor', 'unlink'],
+			links      : ['anchor', 'link', 'unlink'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
@@ -125,6 +125,9 @@
 					{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true},
 					{ label : 'List', selector : 'ul,ol', 'class' : 'list', style : ''}
 				]
+			},
+			link : {
+				quick : true
 			}
 			
 		}

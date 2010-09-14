@@ -55,7 +55,7 @@
 			d.append(rte.i18n('Name')+' ').append(name).dialog({
 				modal   : true,
 				width   : 350,
-				title   : rte.i18n(self.name),
+				title   : rte.i18n(self.title),
 				buttons : {
 					Ok : ok,
 					Cancel : function() { $(this).dialog('close'); }
@@ -71,7 +71,7 @@
 		 **/
 		this._exec = function(name) {
 			var sel = this.sel,
-				dom = this.dom, n, l, ch;
+				dom = this.dom, n;
 			
 			this.rte.focus();
 			
