@@ -90,7 +90,7 @@
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
-			links      : ['anchor'],
+			links      : ['anchor', 'unlink'],
 			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
