@@ -9,7 +9,7 @@
 			opts = {
 				submit : function(e, d) {  d.close(); },
 				dialog : {
-					width : 520,
+					width : 550,
 					title : this.rte.i18n('About this software'),
 					buttons     : {
 						Ok : function() { $(this).dialog('destroy'); }
@@ -30,6 +30,7 @@
 				+'<tr><td>Dmitry (dio) Levashov &lt;dio@std42.ru&gt;</td><td>'+this.rte.i18n('Chief developer')+'</td></tr>'
 				+'<tr><td>Troex Nevelin &lt;troex@fury.scancode.ru&gt;</td><td>'+this.rte.i18n('Developer, tech support')+'</td></tr>'
 				+'<tr><td>Valentin Razumnyh &lt;content@std42.ru&gt;</td><td>'+this.rte.i18n('Interface designer')+'</td></tr>'
+				+'<tr><td>Evgeny eSabbath &lt;sabbath.codemg@gmail.com&gt;</td><td>'+this.rte.i18n('Developer')+'</td></tr>'
 				+'<tr><td>Artem Vasiliev</td><td>'+this.rte.i18n('Ukranian localization')+'</td></tr>'
 				+'<tr><td>Francois Mazerolle &lt;fmaz008@gmail.com&gt;</td><td>'+this.rte.i18n('French localization')+'</td></tr>'
 				+'<tr><td>Kurt Aerts</td><td>'+this.rte.i18n('Dutch localization')+'</td></tr>'

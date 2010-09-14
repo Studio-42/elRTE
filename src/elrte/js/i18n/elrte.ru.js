@@ -181,6 +181,7 @@ elRTE.prototype.i18Messages.ru = {
 	'Authors' : 'Авторы',
 	'Chief developer' : 'Ведущий разработчик',
 	'Developer, tech support' : 'Разработчик, техническая поддержка',
+	'Developer' : 'Разработчик',
 	'Interface designer' : 'Дизайнер интерфейса',
 	'Spanish localization' : 'Испанская локализация',
 	'Japanese localization' : 'Японская локализация',

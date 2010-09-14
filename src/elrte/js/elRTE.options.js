@@ -95,6 +95,7 @@ elRTE.prototype.options   = {
 		'anchor'              : 'Bookmark',
 		'image'               : 'Image',
 		'pagebreak'           : 'Page break',
+		'smiley'              : 'Smiley',
 		'flash'               : 'Flash',
 		'table'               : 'Table',
 		'tablerm'             : 'Delete table',

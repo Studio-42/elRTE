@@ -84,9 +84,7 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 		$.each(this.smileys, function(name, img) {
 			d.append($('<img src="'+url+img+'" title="'+name+'" id="'+name+'" class="elSmiley"/>').click(function() { self.set(this.id, d);	}));
 		});
-
-		d.open();
-
+		d.append('<hr/>Smiley by <a href="http://www.kolobok.us/" target="_blank">www.kolobok.us</a>').open();
 	}
 
 	this.update = function() {
