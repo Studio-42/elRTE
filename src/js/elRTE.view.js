@@ -141,14 +141,18 @@
 		 * @return void
 		 */
 		this.addUI = function(ui, pn) {
-			var p = this.toolbar.show().children('[name="'+pn+'"]');
+			var cmd = this.rte.command,
+				c = 'elrte-toolbar-panel',
+				p = this.toolbar.show().children('.'+c+'-'+pn);
+				
 			if (!p.length) {
-				p = $('<ul class="elrte-toolbar-panel elrte-toolbar-panel-'+pn+(!this.toolbar.children('.elrte-toolbar-panel').length ? ' elrte-toolbar-panel-first' : '')+'" name="'+pn+'" />').appendTo(this.toolbar);
+				p = $('<ul class="'+c+' '+c+'-'+pn+(!this.toolbar.children('.'+c).length ? ' '+c+'-first' : '')+'" />').appendTo(this.toolbar);
 			}
 			ui.hover(function() {
-				var t = $(this)
-				if (!t.hasClass('elrte-ui-disabled')) {
-					t.toggleClass('elrte-ui-hover')
+				var t = $(this);
+				
+				if (!t.hasClass(cmd.uiDisableClass)) {
+					t.toggleClass(cmd.uiHoverClass);
 				}
 			})
 			p.append(ui);

@@ -2,7 +2,7 @@
 	
 	// close any menu on document click
 	$(document).bind('click', function(e) {
-		// $('.elrte-ui-menu-container').hide();
+		$('.elrte-ui-menu-container').hide();
 	});
 
 	/**
@@ -11,17 +11,32 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.ui.menu = function(o, rte) {
-		var self = this,
-			aclass = rte.uiActiveClass,
-			dclass = rte.uiDisableClass;
-		// curent value
+		var self         = this,
+			activeClass  = rte.command.uiActiveClass,
+			disableClass = rte.command.uiDisableClass,
+			hoverClass   = rte.command.uiHoverClass;
+			
+		o = $.extend({
+			name     : 'menu',
+			label    : 'Select',
+			opts     : {},
+			callback : function() {}
+		}, o||{});
+		
+		// ui name	
+		this.name  = o.name;
+		// default text
+		this.label = o.label;
+		// options
+		this.opts = o.opts;
+		// callback
+		this.cb = o.callback;
+		// curent values (active options)
 		this._val = [];
+		// disabled options
 		this._disabled = [];
 		
-		this.name = o.name||'menu';
-		this.label = o.label||'Select';
-		this.opts  = o.opts||{};
-		this.cb    = o.callback||function() {}
+		
 		
 		// @TODO move into elRTE ?
 		rte.bind('click keyup', function() {
@@ -46,7 +61,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 				
-				if (!$(this).hasClass(dclass)) {
+				if (!$(this).hasClass(disableClass)) {
 					
 					!self._menu && self.init();
 
@@ -56,11 +71,11 @@
 							var t = $(this), 
 								v = t.attr('rel');
 								
-							t.removeClass(aclass+' '+dclass)
+							t.removeClass(activeClass+' '+disableClass);
 							if ($.inArray(v, self._disabled) != -1) {
-								t.addClass(dclass);
+								t.addClass(disableClass);
 							} else if ($.inArray(v, self._val) != -1) {
-								t.addClass(aclass);
+								t.addClass(activeClass);
 							} 
 						})
 						rte.trigger('openMenu', { menu : self.opts.name });
@@ -76,44 +91,45 @@
 		 **/
 		this.init = function() {
 			var self = this,
-				m = '<div class="elrte-rnd-3 elrte-ui-menu-container"><div class="elrte-ui-menu-inner">', 
+				cl = 'elrte-ui-menu',
+				headerClass = cl+'-header',
+				itemClass = cl+'-item',
+				m = '<div class="elrte-rnd-3 '+cl+'-container"><div class="'+cl+'-inner"><div class="'+headerClass+'">'+this.label+'</div>', 
 				cb = this.cb, l, t, s, c;
-
-			m += '<div class="elrte-ui-menu-header">'+this.label+'</div>'
 
 			$.each(this.opts, function(v, o) {
 				l = o.label;
 				s = o.style||'';
 				c = o['class']||'';
 				m += (t = o.tag)
-					? '<div class="elrte-ui-menu-item" rel="'+v+'"><'+t+' style="'+s+'" class="'+c+'">'+l+'</'+t+'></div>'
-					: '<div class="elrte-ui-menu-item '+c+'" style="'+s+'" rel="'+v+'">'+l+'</div>';
+					? '<div class="'+itemClass+'" rel="'+v+'"><'+t+' style="'+s+'" class="'+c+'">'+l+'</'+t+'></div>'
+					: '<div class="'+itemClass+' '+c+'" style="'+s+'" rel="'+v+'">'+l+'</div>';
 
 			});
 			
 			this._menu = $(m + '</div></div>')
 				.hide()
 				.appendTo(self.ui)
-				.mousedown(function(e) { 
-					// stop click on scroller
+				.bind('mousedown click', function(e) {
+					// prevent close menu on click on header and disabled items 
 					e.preventDefault();
 					e.stopPropagation();
-					// rte.log('menu click')
 				});
 				
-			this._items = this._menu.children().children('.elrte-ui-menu-item')
+			this._items = this._menu.children().children('.'+itemClass)
 				.hover(function() { 
 					var t = $(this);
-					if (!t.hasClass(dclass)) {
-						t.toggleClass(rte.uiHoverClass); 
+
+					if (!t.hasClass(disableClass)) {
+						t.toggleClass(hoverClass); 
 					}
-					
 				})
-				.mousedown(function(e) {
+				.click(function(e) {
 					var t = $(this);
-					if (!t.hasClass(dclass)) {
-						self._menu.hide()
-						cb(t.attr('rel'))
+					
+					if (!t.hasClass(disableClass)) {
+						self._menu.hide();
+						cb(t.attr('rel'));
 					}
 				});
 		}

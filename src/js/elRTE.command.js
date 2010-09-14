@@ -19,11 +19,11 @@
 		this.STATE_ENABLE = 1;
 		this.STATE_ACTIVE = 2;
 		// ui class for disabled command
-		this._dClass = 'elrte-ui-disabled';
+		this.uiDisableClass = 'elrte-ui-disabled'//rte.uiDisableClass;
 		// ui class for active command
-		this._aClass = 'elrte-ui-active';
+		this.uiActiveClass = 'elrte-ui-active'//rte.uiActiveClass;
 		// class for hovered ui
-		this._hClass = 'elrte-ui-hover';
+		this.uiHoverClass = 'elrte-ui-hover'//rte.uiHoverClass;
 		/* button/menu or other ui element placed on toolbar */
 		this._ui;
 		// currents command state
@@ -122,8 +122,9 @@
 		 * @return jQuery
 		 */
 		this._createUI = function() {
-			var self = this;
-			return this._ui = $('<li class="elrte-ui elrte-ui-'+this.name+' '+this._dClass+'" title="'+this.title+'" />')
+			var self = this,
+				c = 'elrte-ui';
+			return this._ui = $('<li class="'+c+' '+c+'-'+this.name+' '+this.uiDisableClass+'" title="'+this.title+'" />')
 				.mousedown(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -138,11 +139,13 @@
 		 * @return void
 		 */
 		this._updateUI = function() {
+			var d = this.uiDisableClass,
+				a = this.uiActiveClass;
 			if (this._ui) {
 				switch (this._state) {
-					case this.STATE_DISABLE : this._ui.removeClass(this._aClass).addClass(this._dClass); break;
-					case this.STATE_ENABLE  : this._ui.removeClass(this._aClass+' '+this._dClass);       break;
-					case this.STATE_ACTIVE  : this._ui.removeClass(this._dClass).addClass(this._aClass); break;
+					case this.STATE_DISABLE : this._ui.removeClass(a).addClass(d); break;
+					case this.STATE_ENABLE  : this._ui.removeClass(a+' '+d);       break;
+					case this.STATE_ACTIVE  : this._ui.removeClass(d).addClass(a); break;
 				}
 			}
 		}

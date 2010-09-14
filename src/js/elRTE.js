@@ -50,11 +50,11 @@
 		/* shortcuts */
 		this.shortcuts = {};
 		// ui class for disabled command
-		this.uiDisableClass = 'elrte-ui-disabled';
+		// this.uiDisableClass = 'elrte-ui-disabled';
 		// ui class for active command
-		this.uiActiveClass = 'elrte-ui-active';
+		// this.uiActiveClass = 'elrte-ui-active';
 		// class for hovered ui
-		this.uiHoverClass = 'elrte-ui-hover';
+		// this.uiHoverClass = 'elrte-ui-hover';
 		/* "constants" - change source */
 		this.CHANGE_NON  = 0;
 		this.CHANGE_KBD = 1;
