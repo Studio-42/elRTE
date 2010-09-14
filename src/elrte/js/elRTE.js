@@ -61,6 +61,7 @@ elRTE = function(target, opts) {
 	 * @return void
 	 **/
 	this.resizable = function(r) {
+		var self = this;
 		if (this.options.resizable && $.fn.resizable) {
 			if (r) {
 				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);

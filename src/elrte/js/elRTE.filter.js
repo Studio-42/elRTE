@@ -611,17 +611,7 @@
 					self.rte.log(a)
 					return i ? img({ embed : a }, i.type) : t;
 				})
-				.replace(/<\/(embed|param)>/gi, '')
-				// .replace(this.pagebreakRegExp, function(t, n, a) {
-				// 	self.rte.log(t+' '+n+' '+a)
-				// 	a = self.parseAttrs(a);
-				// 	a['class']['elrte-pagebreak'] = 'elrte-pagebreak';
-				// 	self.rte.log('<'+n+' '+self.serializeAttrs(a)+'>')
-				// 	return '<'+n+' '+self.serializeAttrs(a)+'>'
-				// })
-				// .replace(/<!--\s+PAGERBREAK\s+-->/g, function() {
-				// 	return '<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak">';
-				// });
+				.replace(/<\/(embed|param)>/gi, '');
 
 			n = $('<div>'+html+'</div>');
 			// remove empty spans and merge nested spans
@@ -684,8 +674,8 @@
 			
 			n.find('div').each(function() {
 				var t = $(this);
-				if (t.css('page-break-after')) {
-					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>')
+				if (t.css('page-break-after') == 'always') {
+					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>');
 				}
 			});
 			

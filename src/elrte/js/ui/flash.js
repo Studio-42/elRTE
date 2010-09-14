@@ -331,7 +331,7 @@
 		this.update = function() {
 			this.domElem.removeClass('disabled');
 			var n = this.rte.selection.getNode();
-			this.domElem.toggleClass('active', n.nodeName == 'IMG' && $(n).hasClass('elrte-media'))
+			this.domElem.toggleClass('active', n && n.nodeName == 'IMG' && $(n).hasClass('elrte-media'))
 			
 		}
 		
