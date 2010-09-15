@@ -1,24 +1,32 @@
 (function($) {
 	
+	/**
+	 * @class Create table, add data to table cells
+	 * 
+	 * @param  Object  table attributes
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.ui.table = function(attr) {
-		this.table = $('<table/>');
+		this.table = $('<table/>').attr(attr||{});
 		this.row = false;
 		
-		if (attr) {
-			this.table.attr(attr);
-		}
-		
-		this.add = function(el, newRow) {
-			var i;
+		this.append = function(el, newRow, attr) {
+			var i, _td;
+			
+			function td(o) {
+				_td = $('<td/>').append(o);
+				attr && _td.attr(attr);
+				return _td;
+			}
 			
 			if (newRow || !this.row) {
 				this.row = $('<tr/>').appendTo(this.table);
 			}
 			if (!$.isArray(el)) {
-				this.row.append($('<td/>').append(el));
+				this.row.append(td(el));
 			} else {
 				for (i = 0; i < el.length; i++) {
-					this.row.append($('<td/>').append(el[i]));
+					this.row.append(td(el[i]));
 				}
 			}
 			return this;
@@ -29,12 +37,48 @@
 		}
 	}
 	
+	/**
+	 * Return select from given options and add change callback
+	 * 
+	 * @param  Object    options
+	 * @param  Function  change callback
+	 * @return jQuery
+	 **/
+	elRTE.prototype.ui.select = function(opts, change) {
+		var s = '<select>';
+		$.each(opts, function(v, l) {
+			s += '<option value="'+v+'">'+l+'</option>';
+		});
+		s = $(s+'</select>');
+		change && s.change(change);
+		return s;
+	}
+	
+	/**
+	 * Return div with jqueryUI icon and click/hover callbacks
+	 * 
+	 * @param  String  icon(class) name
+	 * @param  String  title
+	 * @param  Function  click callback
+	 * @return jQuery
+	 **/
+	elRTE.prototype.ui.button = function(icon, title, callback) {
+		return $('<div class="ui-state-default ui-corner-all" title="'+title+'"><div style="width:16px;height:16px;margin:2px" class="ui-icon '+icon+'"></div></div>')
+			.click( callback )
+			.hover(function() { $(this).toggleClass('ui-state-hover') });
+	}
+	
+	/**
+	 * @class jQuery UI tabs wrapper
+	 * 
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.ui.tabs = function() {
 		this.nav = $('<ul/>');
 		this.tabs = $('<div class="elrte-tabs"/>').append(this.nav);
 		this.cnt = 1;
 		
-		this.add = function(title, cont) {
+		this.append = function(title, cont) {
 			this.nav.append($('<li><a href="#elrte-tab-'+this.cnt+'">'+title+'</a></li>'));
 			this.tabs.append($('<div id="elrte-tab-'+this.cnt+'""/>').append(cont));
 			this.cnt++;
@@ -47,14 +91,25 @@
 
 	}
 	
+	/**
+	 * @class jQuery UI dialog wrapper
+	 * 
+	 * @param  Object  options
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
 	elRTE.prototype.ui.dialog = function(o) {
-		var self =this;
 		
-		this.dialog = $('<div/>').dialog($.extend({}, { modal : true, autoOpen : false, buttons : {} }, o))
+		o = $.extend({ modal : true, width: 400, autoOpen : false, position : ['center', 100], buttons : {} }, o)
+		
+		this.dialog = $('<div/>').dialog(o)
 			.bind('dialogclose', function(e, ui) {
 				$(this).dialog('destroy').remove();
 			}).bind('dialogopen', function() {
-				$(this).find('.elrte-tabs').tabs();
+				$(this).find(':text').bind('keyup', function(e) {
+					if (e.keyCode == 13) {
+						$(this).parents('.ui-dialog').eq(0).find('button').eq(0).click();
+					}
+				}).filter('[class!="small"]').css('width', '100%').eq(0).focus();
 			});
 		
 		this.append = function(o) {
@@ -63,7 +118,8 @@
 		}
 		
 		this.open = function() {
-			this.dialog.dialog('open');
+			this.dialog.find('.elrte-tabs').tabs().end().dialog('open');
+			return this;
 		}
 		
 	}
@@ -77,7 +133,16 @@
 	 **/
 	elRTE.prototype.commands.link = function() {
 		this.title = 'Link';
-		this.quick = this.rte.commandConf('link', 'quick');
+		this.simple = this.rte.commandConf('link', 'simple');
+
+		/**
+		 * Open dialog 
+		 *
+		 * @return void
+		 **/
+		this.dialog = function() {
+			this.simple ? this._simpleDialog() : this._fullDialog();
+		}
 
 		/**
 		 * Return selected anchor if exists
@@ -103,110 +168,192 @@
 				}
 			}
 		}
-		
+
 		/**
-		 * Open dialog 
+		 * Create data for dialog
 		 *
 		 * @return void
 		 **/
-		this.dialog = function() {
-			this.quick ? this._quickDialog() : this._fullDialog();
+		this._init = function() {
+			var self = this,
+				rte = this.rte,
+				inputText = '<input type="text" />';
+			
+			this._src = {
+				main : {
+					href : {
+						label   : rte.i18n('Link URL'),
+						element : $(inputText)
+					},
+					bookmark : {
+						label : rte.i18n('Bookmark'),
+						element : $('<select/></select>')
+					},
+					title : {
+						label   : rte.i18n('Title'),
+						element : $(inputText)
+					},
+					target : {
+						label   : rte.i18n('Target'),
+						element : new rte.ui.select({ '' : rte.i18n('This window'), '_blank' : rte.i18n('New window')})
+					}
+				}
+			}
+			
+			if (rte.xhtml) {
+				delete this._src.main.target;
+			}
+			
+			if (!rte.commandConf(this.name, 'disableAdvanced')) {
+				this._src.adv = {};
+				var o = {
+					id        : 'ID',
+					'class'   : 'Css class',
+					style     : 'Css style',
+					lang      : 'Language',
+					charset   : 'Charset',
+					dir       : 'Script direction',
+					type      : 'Target MIME type',
+					rel       : 'Relationship page to target (rel)',
+					rev       : 'Relationship target to page (rev)',
+					tabindex  : 'Tab index',
+					accesskey : 'Access key'
+				};
+				$.each(o, function(n, l) {
+					self._src.adv[n] = {
+						label : rte.i18n(l),
+						element : n == 'dir' ? rte.ui.select({ '' : rte.i18n('Not set'), 'ltr' : rte.i18n('Left to right'), 'rtel' : rte.i18n('Right to left') }) : $(inputText)
+					}
+				});
+			}
+			
+			if (!rte.commandConf(this.name, 'disableEvents')) {
+				this._src.events = {}
+				$.each(['blur', 'focus', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseleave', 'keydown', 'keypup'], function(i, n) {
+					n = 'on'+n;
+					self._src.events[n] = {
+						label : rte.i18n(n),
+						element : $(inputText)
+					}
+				});
+			}
 		}
-
+		
+		/**
+		 * Return dialog options
+		 *
+		 * @param  Function  Ok button callback
+		 * @return Object
+		 **/
+		this._dialogOpts = function(cb) {
+			var opts = { title : this.rte.i18n(this.title), buttons : {} };
+			
+			opts.buttons[this.rte.i18n('Apply')] = cb;
+			opts.buttons[this.rte.i18n('Cancel')] = function() { $(this).dialog('close') };
+			return opts;
+		}
+		
 		/**
 		 * Open dialog for only link url
 		 *
 		 * @return void
 		 **/
-		this._quickDialog = function() {
+		this._simpleDialog = function() {
 			var self = this,
 				rte  = this.rte,
-				n    = this._find(),
-				d    = $('<div/>'),
-				url;
-			
-			function ok() {
-				self._exec(url.val());
-				d.dialog('close');
-			}
-			
-			url = $('<input type="text" size="27" />').val(n ? $(n).attr('href') : '').keyup(function(e) { e.keyCode == 13 && ok(); });
-			
-			d.append(rte.i18n('Link URL')+' ').append(url).dialog({
-				modal   : true,
-				width   : 350,
-				title   : rte.i18n(self.title),
-				buttons : {
-					Ok : ok,
-					Cancel : function() { $(this).dialog('close'); }
-				}
-			});
+				n    = $(this._find()||document.createElement('a')),
+				url  = $('<input type="text"/>').val(n.attr('href')||''),
+				tb   = new rte.ui.table().append([rte.i18n('Link URL'), url]),
+				opts = this._dialogOpts( function() { self._exec(url.val()); $(this).dialog('close'); } );
+
+			new rte.ui.dialog(opts).append(tb.get()).open();
 		}
 
+		/**
+		 * Open full featured dialog
+		 *
+		 * @return void
+		 **/
 		this._fullDialog = function() {
 			var self = this,
 				rte  = this.rte,
-				n    = this._find(),
-				d    = $('<div/>'),
-				tb   = new rte.ui.table(),
-				src = {
-					url : {
-						label : rte.i18n('Link URL'),
-						element : $('<input type="text" size="27" />').val(n ? $(n).attr('href') : '').keyup(function(e) { e.keyCode == 13 && ok(); })
-					},
-					title : {
-						label : rte.i18n('Title'),
-						element : $('<input type="text" size="27" />').keyup(function(e) { e.keyCode == 13 && ok(); })
-					},
-					target : {
-						label : rte.i18n('Title'),
-						element : $('<select name="target"><option val="">'+rte.i18n('This window')+'</option><option val="_blank">'+rte.i18n('New window')+'</option></select>')
+				n    = $(this._find()||document.createElement('a')),
+				bm   = this.dom.find(rte.active.document.body, 'anchor'),
+				tabs = new rte.ui.tabs(), 
+				tb = new rte.ui.table(), 
+				opts = opts = this._dialogOpts(function() {
+					var attr = {};
+					$.each(self._src, function(i, group) {
+						$.each(group, function(a, e) {
+							attr[a] = e.element.val();
+						});
+					});
+					$(this).dialog('close');
+					self._exec(attr);
+				}),
+				d = new rte.ui.dialog(opts), 
+				src, i, opts, itb, b;
+				
+			if (!this._src) {
+				this._init();
+			}
+			src = this._src;
+			
+			// create "Properties" 
+			$.each(src.main, function(attr, e) {
+				if (attr == 'bookmark') {
+					if (!bm.length) {
+						return;
 					}
-				};
-				
-				var tabs = '<div>'
-					+ '<ul>'
-					+ '<li><a href="#main">Properties</a></li>'
-					+ '<li><a href="#adv">Advanced</a></li>'
-					+'</ul>'
-					+'</div>'
-								
-				if (rte.xhtml) {
-					// delete src.target;
+					b = { '' : rte.i18n('Select bookmark') };
+					for (i = 0; i < bm.length; i++) {
+						b['#'+bm[i].name] = bm[i].name;
+					}
+					e.element = rte.ui.select(b, $.proxy(function() { this.href.element.val(this.bookmark.element.val()) }, src.main));
+					tb.append([e.label, e.element], true);
+					attr = 'href';
+				} else {
+					if (attr == 'href') {
+						itb = new rte.ui.table()
+							.append(e.element)
+							.append(rte.ui.button('ui-icon-mail-closed', rte.i18n('Link to e-mail address'), $.proxy(function() { this.val('mailto:').focus(); }, e.element)));
+			
+						if (rte.options.fmOpen) {
+							b = rte.ui.button('ui-icon-folder-open', rte.i18n('Open file manger'), $.proxy(function() { this.rte.options.fmOpen( function(url) { this.src.main.href.val(url).change(); } ); }, this) );
+							itb.append(b);
+						}
+						tb.append([e.label, itb.get()]);
+					} else {
+						tb.append([e.label, e.element], true);
+					}
 				}
+				e.element.val($(n).attr(attr)||'');
+			});
 
-				$.each(src, function(i, o) {
-					tb.add([o.label, o.element], true);
-				})
-
-				// tabs = $(tabs).append('<div id="main">main</div><div id="adv">adv</div>')
-				
-				// tb =new rte.ui.table();
-				// tb.add('test')
-				// tabs.append(($('<div id="tab-adv"/>').append(tb.get())))
-				
-				// tabs = $('<div id="tabs"><ul><li><a href="#tabs-1">Nunc tincidunt</a></li><li><a href="#tabs-2">Proin dolor</a></li><li><a href="#tabs-3">Aenean lacinia</a></li></ul><div id="tabs-1"><p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.</p></div><div id="tabs-2"><p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p></div><div id="tabs-3"><p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p><p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p></div></div>')
-				
-				tabs = new rte.ui.tabs();
-				tabs.add('Main', 'main').add('Anvanced', 'adv')
-				tabs = tabs.get()
-				
-				var dialog = new rte.ui.dialog()
-				dialog.append(tabs)
-				dialog.open()
-				
-				// $('body').append(tabs)
-				// tabs.tabs()
-				// d.append(tabs).dialog({
-				// 	modal   : true,
-				// 	width   : 350,
-				// 	title   : rte.i18n(self.title),
-				// 	buttons : {
-				// 		Ok : function() { $(this).dialog('close'); },
-				// 		Cancel : function() { $(this).dialog('close'); }
-				// 	}
-				// });
-				// tabs.tabs()
+			tabs.append(rte.i18n('Properties'), tb.get());
+			
+			// create "Advanced" tab if allowed
+			if (src.adv) {
+				tb = new rte.ui.table();
+				$.each(src.adv, function(a, e) {
+					tb.append([e.label, e.element.val($(n).attr(a)||'')], true);
+				});
+				tabs.append(rte.i18n('Advanced'), tb.get());
+			}
+			
+			// create "Events" tab if allowed
+			if (src.events) {
+				tb = new rte.ui.table();
+				$.each(src.events, function(a, e) {
+					var ev = $(n).attr(a);
+					if (ev)
+						rte.log(''+ev)
+					tb.append([e.label, e.element.val($(n).attr(a)||'')], true);
+				});
+				tabs.append(rte.i18n('Events'), tb.get());
+			}
+			
+			d.append(tabs.get()).open();
 		}
 
 		/**
@@ -219,7 +366,10 @@
 		this._exec = function(o) {
 			var self = this,
 				sel  = this.sel,
-				dom  = this.dom, n, attr = { href : '' };
+				dom  = this.dom, 
+				n    = this._find(), 
+				attr = { href : '' }, 
+				a;
 			
 			this.rte.focus();
 			
@@ -229,18 +379,23 @@
 				attr.href = ''+o;
 			}
 			
-			n = this._find();
-			
 			if (!attr.href) {
 				if (n) {
 					n = dom.unwrap(n);
 					sel.select(n[0], n[n.length-1]);
 				}
 			} else if (n) {
-				$(n).attr(attr);
-				sel.select(n);
+				n = $(n);
+				$.each(attr, function(name, val) {
+					val ? n.attr(name, val) : n.removeAttr(name);
+				});
+				sel.select(n[0]);
 			} else {
-				dom.smartWrap(sel.get(), { wrap : function(n) { dom.wrap(n, { name : 'a', attr : attr }); } });
+				a = {};
+				$.each(attr, function(name, val) {
+					val && (a[name] = val);
+				})
+				dom.smartWrap(sel.get(), { wrap : function(n) { dom.wrap(n, { name : 'a', attr : a }); } });
 			}
 			
 			return true;

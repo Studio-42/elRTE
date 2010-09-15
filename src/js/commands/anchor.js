@@ -78,7 +78,7 @@
 			if ((n = this._find())) {
 				name ? $(n).attr('name', name) : dom.remove(n);
 			} else if (name) {
-				sel.select(sel.collapse(true).insertNode(dom.create({ name: 'a', attr : { name : 'test', 'class' : 'elrte-anchor' }})));
+				sel.select(sel.collapse(true).insertNode(dom.create({ name: 'a', attr : { name : name, 'class' : 'elrte-anchor' }})));
 			}
 			
 			return true;

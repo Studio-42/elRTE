@@ -197,6 +197,7 @@
 /* panel edit */
 .elrte .elrte-ui-selectall { background-position:-60px 0; }
 .elrte .elrte-ui-removeformat { background-position:-80px 0; }
+.elrte .elrte-ui-pastetext { background-position:-140px 0; }
 
 /* panel style */
 .elrte .elrte-ui-bold { background-position:-200px 0; }
@@ -388,10 +389,9 @@
 
 
 /* jqueryUI fixes */
-.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .86em; }
-.ui-dialog { position: relative; padding: 0; width: 300px; }
-.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;  position: relative; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }
-.ui-dialog .ui-dialog-content { padding: .5em; margin:0; background: none; overflow: auto; zoom: 1; }
+.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
+.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
+.ui-dialog .ui-dialog-content { padding: .5em; }
 .ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
 /*.ui-tabs { padding: 0; zoom: 1; }
 .ui-tabs .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em 0; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }

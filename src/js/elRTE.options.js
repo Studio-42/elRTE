@@ -72,6 +72,8 @@
 		/* this attributes will be deleted from pasted text */
 		pasteDenyAttr : ['id', 'name', 'class', 'style', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 		
+		fmOpen : function(cb) { },
+		
 		/* --- paste options --- */
 		plugins : ['source', 'path', 'wordcount', 'webkit', 'autosave'],
 		
@@ -86,7 +88,7 @@
 			lists      : ['ul', 'ol'],
 			indents    : ['outdent', 'indent'],
 			direction  : ['ltr', 'rtl'],
-			edit       : ['selectall', 'removeformat'],
+			edit       : ['pastetext', 'selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
@@ -109,7 +111,7 @@
 		},
 		
 		/* --- commands options --- */
-		/* commands, wich create text elements use span tag with css instead of tags */
+		/* commands, which create text elements use span tag with css instead of tags */
 		styleWithCss : true,
 		/* commands configuration */
 		commandsConf : {
@@ -127,7 +129,9 @@
 				]
 			},
 			link : {
-				// quick : true
+				// simple : false,
+				// disableAdvanced : true,
+				// disableEvents : true
 			}
 			
 		}

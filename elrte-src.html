@@ -11,7 +11,9 @@
 
 
 	<!-- <link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
-<link rel="stylesheet" href="js/ui-themes/ui-lightness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+	<!-- <link rel="stylesheet" href="js/ui-themes/ui-lightness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
+	<link rel="stylesheet" href="js/ui-themes/smoothness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 
 
@@ -64,6 +66,7 @@
 	<script src="src/js/commands/anchor.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/link.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/unlink.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/pastetext.js" type="text/javascript" charset="utf-8"></script>
 	
 	<!-- lang -->
 	<script src="src/js/i18n/elrte.ru.js" type="text/javascript" charset="utf-8"></script>
@@ -137,7 +140,7 @@
 	</script>
 	
 	<style type="text/css" media="screen">
-		body { padding:20px;}
+/*		body { padding:20px;}*/
 /*		textarea {
 			border:2px solid blue;
 			font-size:24px;
@@ -183,10 +186,10 @@
 	
 
 	
-	<form method="post" action="post.php" _style="position:relative">
+	<form method="post" action="post.php" >
 	<div id="editor" name="abr" title="Document">
 		<p class="red">
-			asdfasdf <span class="marker">Полотенце</span>, <a href="ya.ru">возможно</a>, самый необходимый  предмет для межзвездного путешественника.
+			asdfasdf <span class="marker">Полот<a name="42"></a>енце</span>, <a href="ya.ru">возможно</a>, самый необходимый  предмет для межзвездного путешественника.
 		</p>
 		<span style="color:red;font-size:x-large;font-family:sans-serif"><a href="ya.ru">before</a></span>
 		<img src="src/images/media-quicktime.png" width="64" height="64" alt="Media Quicktime">
