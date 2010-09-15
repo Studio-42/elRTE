@@ -21,13 +21,12 @@
 		this.dialog = function() {
 			var self = this,
 				rte  = this.rte,
-				txt  = $('<textarea cols="48" rows="14" style="width:100%" />'),
-				tb   = new rte.ui.table().append(txt),
-				opts = { title : rte.i18n(this.title), width : 420, buttons : {} };
+				txt  = $('<textarea cols="60" rows="14" class="elrte-pastetext" />'),
+				opts = { title : rte.i18n(this.title), width : 520, buttons : {} };
 
-			opts.buttons[rte.i18n('Apply')]  = function() { self._exec(txt.val()); $(this).dialog('close'); };
+			opts.buttons[rte.i18n('Paste')]  = function() { self._exec(txt.val()); $(this).dialog('close'); };
 			opts.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
-			new rte.ui.dialog(opts).append(tb.get()).open();
+			new rte.ui.dialog(opts).append(txt).open();
 		}
 		
 		this._exec = function(txt) {

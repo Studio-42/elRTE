@@ -339,8 +339,19 @@
 }
 
 
+.elrte-pasteformattext {
+	width:99%;
+	height:320px;
+	border:1px solid #ccc;
+	margin-left:2px;;
+}
 
-
+textarea.elrte-pastetext {
+	width:100%;
+	border:1px solid #ccc;
+	padding:0px;
+	outline:none;
+}
 
 
 
@@ -392,8 +403,11 @@
 /* jqueryUI fixes */
 .ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
 .ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
-.ui-dialog .ui-dialog-content { padding: .5em; }
+.ui-dialog .ui-dialog-content { padding:.5em; }
 .ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
+
+.ui-dialog .ui-dialog-content table { border:1px solid #111;}
+
 /*.ui-tabs { padding: 0; zoom: 1; }
 .ui-tabs .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em 0; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }
 .ui-tabs .ui-tabs-nav li a { float: left; text-decoration: none; padding: .2em 1em; }

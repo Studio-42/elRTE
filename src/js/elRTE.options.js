@@ -70,7 +70,7 @@
 		/* If true - only text will be pasted */
 		pasteOnlyText : false,
 		/* this attributes will be deleted from pasted text */
-		pasteDenyAttr : ['id', 'name', 'class', 'style', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
+		pasteDenyAttr : ['id', 'name', 'class', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 		
 		fmOpen : function(cb) { },
 		
