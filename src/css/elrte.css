@@ -197,7 +197,8 @@
 /* panel edit */
 .elrte .elrte-ui-selectall { background-position:-60px 0; }
 .elrte .elrte-ui-removeformat { background-position:-80px 0; }
-.elrte .elrte-ui-pastetext { background-position:-140px 0; }
+.elrte .elrte-ui-pastetext { background-position:-160px 0; }
+.elrte .elrte-ui-pasteformattext { background-position:-180px 0; }
 
 /* panel style */
 .elrte .elrte-ui-bold { background-position:-200px 0; }

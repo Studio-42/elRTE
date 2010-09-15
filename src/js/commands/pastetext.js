@@ -23,10 +23,10 @@
 				rte  = this.rte,
 				txt  = $('<textarea cols="48" rows="14" style="width:100%" />'),
 				tb   = new rte.ui.table().append(txt),
-				opts = { title : this.rte.i18n(this.title), width : 420, buttons : {} };
+				opts = { title : rte.i18n(this.title), width : 420, buttons : {} };
 
-			opts.buttons[this.rte.i18n('Apply')]  = function() { self._exec(txt.val()); $(this).dialog('close'); };
-			opts.buttons[this.rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
+			opts.buttons[rte.i18n('Apply')]  = function() { self._exec(txt.val()); $(this).dialog('close'); };
+			opts.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
 			new rte.ui.dialog(opts).append(tb.get()).open();
 		}
 		

@@ -88,7 +88,7 @@
 			lists      : ['ul', 'ol'],
 			indents    : ['outdent', 'indent'],
 			direction  : ['ltr', 'rtl'],
-			edit       : ['pastetext', 'selectall', 'removeformat'],
+			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
