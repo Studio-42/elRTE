@@ -8,7 +8,7 @@
 		/**
 		 * editor instance
 		 **/
-		this.rte         = rte;
+		this.rte = rte;
 		
 		this.serviceKeys = [
 			16, //shift
@@ -88,6 +88,43 @@
 			teal    : '#008080',
 			white   : '#fffffff',
 			yellow  : '#ffff00'
+		}
+		
+		// a, e, p, n
+		this.arrowKeys = [65, 69, 78, 80];
+		
+		this.keyType = function(e) {
+			var rte = this.rte,
+				c    = e.keyCode,
+				ctrl = e.ctrlKey,
+				meta = rte.macos &&e.metaKey,
+				type = e.type,
+				r = rte.KEY_UNKNOWN;
+
+			if (type == 'keydown' || type == 'keyup') {
+				// del|backspace|ctrl+d|ctrl+k
+				if (c == 8 || c == 46 || (ctrl && (c == 68 || c == 75))) {
+					return rte.KEY_DEL;
+				} 
+				if (c == 13) {
+					return rte.KEY_ENTER;
+				}
+				// ctrl|sift etc
+				if ($.inArray(c, this.serviceKeys) != -1) {
+					return rte.KEY_SERVICE;
+				}
+				// arrows or ctrl+a|e|p|n or meta+a
+				if ((c >= 33 && c <= 40) || (c == 65 && (ctrl || meta)) || ((c == 69 || c == 78 || c == 80) && ctrl)) {
+					return rte.KEY_ARROW;
+				}
+				if (c == 9) {
+					return rte.KEY_TAB;
+				} 
+				return rte.KEY_CHAR;
+				
+				
+			}
+			return rte.KEY_UNKNOWN;
 		}
 		
 		/**

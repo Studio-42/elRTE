@@ -50,22 +50,25 @@
 		this._plugins = {};
 		/* shortcuts */
 		this.shortcuts = {};
-		// ui class for disabled command
-		// this.uiDisableClass = 'elrte-ui-disabled';
-		// ui class for active command
-		// this.uiActiveClass = 'elrte-ui-active';
-		// class for hovered ui
-		// this.uiHoverClass = 'elrte-ui-hover';
+
+		this.KEY_UNKNOWN = 0;
+		this.KEY_CHAR    = 1;
+		this.KEY_ENTER   = 2;
+		this.KEY_DEL     = 3;
+		this.KEY_TAB     = 4;
+		this.KEY_ARROW   = 5;
+		this.KEY_SERVICE = 6;
+
+		this.lastKey = 0;
+		
 		/* "constants" - change source */
-		this.CHANGE_NON  = 0;
-		this.CHANGE_KBD = 1;
-		this.CHANGE_DEL = 2;
-		this.CHANGE_CMD = 3;
-		this.CHANGE_POS = 4;
-		/* cached change on keydown */
+		// this.CHANGE_NON  = 0;
+		// this.CHANGE_KBD = 1;
+		// this.CHANGE_DEL = 2;
+		// this.CHANGE_CMD = 3;
+		// this.CHANGE_POS = 4;
+		/* cached change on keydown to rise change event after keyup */
 		this.change = false;
-		/* cached typing (keyup) */
-		this.typing = false;
 		/* max loaded doc number */
 		this.ndx = 0;
 		/* opened documents */
@@ -326,27 +329,29 @@
 		 * @return elRTE
 		 */
 		this.trigger = function(e, d) {
+			var self = this, l;
+			
 			if (!e.type) {
 				e = $.Event(''+e);
 			}
-
-			e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
+			l = this.listeners[e.type]||[];
 			
-			this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(this.listeners[e.type].length ? 'trigger' : 'no listeners'));
-			var self = this;
-			$.each(this.listeners[e.type]||[], function(i, c) {
-				if (e.isPropagationStopped()) {
-					return false;
-				}
-				c(e, d);
-				// try {
-				// 	c(e, d);
-				// } catch (ex) {
-				// 	self.log('trigger exeption. event: '+e.type)
-				// }
-				
-			});
-			// this.prevEvent = e;
+			if (l.length) {
+				e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
+				this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(l.length ? 'trigger' : 'no listeners'));
+				$.each(l, function(i, c) {
+					if (e.isPropagationStopped()) {
+						return false;
+					}
+					c(e, d);
+					// try {
+					// 	c(e, d);
+					// } catch (ex) {
+					// 	self.log('trigger exeption. event: '+e.type)
+					// }
+
+				});
+			}
 			return this;
 		}
 		
@@ -519,25 +524,17 @@
 			.bind('keydown', function(e) {
 				var p, c = e.keyCode;
 
-				self.change = false;
+				self.change  = false;
+				self.lastKey = self.utils.keyType(e);
+				
 				// exec shortcut callback
 				$.each(self.shortcuts, function(n, s){
-					
-					// self.log(c)
 					p = s.pattern;
-					// self.log(p.keyCode)
-					if (p.keyCode == c) {
-						self.log(c)
-						self.log(p)
-						self.log('ctrl: '+e.ctrlKey+' alt: '+e.altKey+' shift: '+e.shiftKey+' meta: '+e.metaKey)
-					}
-					
 					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
-						self.log('ok')
 						e.stopPropagation();
 						e.preventDefault();
 						s.cmd && self.trigger('exec', { cmd : s.cmd });
-						s.callback(e) && self.trigger('change');
+						s.callback(e) && self.trigger('change', { cmd : s.cmd });
 						return false;
 					}
 				});
@@ -546,50 +543,44 @@
 					if (c == 9){
 						// on tab pressed insert spaces
 						// @todo - collapse before insertHtml?
-						// e.stopPropagation();
 						e.preventDefault();
 						self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
 					} 
 					
-					// cache if input modify DOM or change carret/selection position
-					if (((e.ctrlKey||e.metaKey) && (c == 67 || c == 86 || c == 88)) || (e.shiftKey && c == 45)) {
-						// ignore copy/cut/paste shortcuts
-						self.change = self.CHANGE_NON;
-					} if (self.utils.isKeyDel(c) || (c == 68 && e.ctrlKey)) {
-						// del or ctrl+D
-						self.change = self.CHANGE_DEL;
-					} else if (c == 13 || c== 9 || (self.utils.isKeyChar(c) && !self.selection.collapsed() && !(e.ctrlKey||e.metaKey))) {
-						// enter/tab or any char key without modificators keys on expanded selection
-						self.change = self.CHANGE_KBD;
-					} else if (self.utils.isKeyArrow(c) || (e.ctrlKey && c == 69) || ((e.ctrlKey||e.metaKey) && c == 65)) {
-						// arrows or ctrl|meta+A, ctrl+E
-						self.change = self.CHANGE_POS;
-					} else {
-						self.change = self.CHANGE_NON;
-					}
+					// self.lastKey = self.utils.keyType(e);
+					
+					if (self.lastKey == self.KEY_ENTER 
+					||  self.lastKey == self.KEY_TAB 
+					||  self.lastKey == self.KEY_DEL 
+					|| (self.lastKey == self.KEY_CHAR && !self.selection.collapsed())) {
+						self.trigger('exec');
+						self.change = true;
+					} 
+					
 					self.trigger(e);
+
 				}
 			})
 			.bind('keyup', function(e) {
-				self.typing = true;
-				if (self.change == self.CHANGE_POS) {
-					self.trigger('changePos', {event : e});
-				} else if (self.change != self.CHANGE_NON) {
-					self.trigger('change', {event : e, type : self.change});
-				}
-				self.change = self.CHANGE_NON;
 				self.trigger(e);
+				
+				if (self.change) {
+					self.trigger('change', {event : e});
+				} else if (self.lastKey == self.KEY_ARROW) {
+					self.trigger('changePos', {event : e});
+				}
+				
+				self.lastKey = 0;
+				self.change = false;
 			})
 			.bind('mouseup', function(e) {
-				self.typing = false;
-				setTimeout(function() {
-					self.trigger('changePos', {event : e});
-				}, 1)
-				// self.trigger('changePos', {event : e});
+				self.lastKey = 0;
+				// click on selection not collapse it at moment
+				setTimeout(function() { self.trigger('changePos', {event : e}); }, 1);
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {
 				self.trigger(e);
-			})
+			});
 
 			this.trigger('open', { id : d.id });
 			

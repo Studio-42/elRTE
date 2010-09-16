@@ -24,7 +24,7 @@
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
 		alwaysShowTabs : true,
 		/* max undo/redo steps, 0 - for disable history */
-		historySize : 0,
+		historySize : 10,
 		/* send debug to log? variants: "all" - for all messages, ["source[.type]", ...] - for debug from only required objects/methods */
 		debug    : false,
 		
@@ -105,7 +105,7 @@
 			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'links', 'misc', 'direction', 'font', 'control']
 
 		},
-		toolbar : 'test',
+		// toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {

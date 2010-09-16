@@ -1,59 +1,58 @@
 (function($) {
+	
 	/**
-	 * @class elRTE history
-	 * rise event historyChange
-	 *
-	 * @param elRTE editor instance
+	 * @class History manager
+	 * @param  elRTE editor instance
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 */
+	 **/
 	elRTE.prototype.history = function(rte) {
-		var self      = this,
-			size      = parseInt(rte.options.historySize)||0,
-			sel       = rte.selection,
-			storage   = {},
-			keyupLock = false,
-			reg       = /<span([^>]*class\s*=\s*"[^>]*elrtebm[^>]*)>\s*(<\/span>)?/gi,
+		var self    = this,
+			size    = parseInt(rte.options.historySize)||0,
+			sel     = rte.selection,
+			storage = {},
+			reg     = /<span([^>]*class\s*=\s*"[^>]*elrtebm[^>]*)>\s*(<\/span>)?/gi,
 			active;
-		
-		/**
-		 * Add new level to document history. 
-		 * Rise historyChange event
-		 * 
-		 * @param Number   change type
-		 * @param Boolean  force add
-		 * @return void
-		 */
-		function add(c, f) {
+			
+		function add(force) {
+			var doc, level, curKey, bm, sel;
+			
 			if (!active) {
 				return;
 			}
-			var d = rte.active, 
-				l = active.levels[active.index],
-				bm, html;
-				
-			if (!active.levels.length || f
-			|| ((c == rte.CHANGE_CMD || (active.change != rte.CHANGE_CMD && active.change != c)) && $.trim(l.html.replace(reg, '')) != $.trim(d.get())) ) {
+			
+			key    = rte.lastKey == rte.KEY_CHAR || rte.lastKey == rte.KEY_DEL ? rte.lastKey: 0;
+			curKey = active.key;
+			doc    = rte.active;
+			level  = active.levels[active.index];
+			
+			if (!level || force || ((key == 0 || (curKey != 0 && curKey != key)) && $.trim(level.html.replace(reg, '')) != $.trim(doc.get()) ) ) {
+				// remove levels after then current
 				if (active.index < active.levels.length-1) {
 					active.levels.splice(active.index+1, active.levels.length-active.index-1);
 				}
+				// increase storage size till max allowed size
 				if (active.index >= size) {
 					active.levels.shift();
 					active.index--;
 				}
+
+				sel = rte.selection;
 				bm = sel.bookmark();
-				html = d.get();
-				sel.toBookmark(bm);
+				
 				active.levels.push({
 					bm     : [bm[0].id, bm[1].id],
-					html   : html,
-					scroll : parseInt($(d.document).scrollTop())
+					html   : doc.get(),
+					scroll : parseInt($(doc.document).scrollTop())
 				});
 				active.index = active.levels.length-1;
+				
+				sel.toBookmark(bm);
+				rte.debug('history.change', ' index: '+active.index+' key: '+active.key);
 			}
-			active.change = c;
+			
+			active.key = key;
 			rte.trigger('historyChange');
-			rte.debug('history.change', 'levels: '+active.levels.length+' index: '+active.index+' change: '+active.change);
-		}
+		}	
 			
 		/**
 		 * Return true if undo can be done
@@ -61,7 +60,7 @@
 		 * @return Boolean
 		 */
 		this.canUndo = function() {
-			return active && (active.index>0 || active.change != rte.CHANGE_CMD);
+			return active && (active.index>0 || active.key > 0);
 		}
 		
 		/**
@@ -80,22 +79,24 @@
 		 * @return Boolean
 		 */
 		this.undo = function() {
-			var l, d;
+			var level, doc;
+			
 			if (this.canUndo()) {
-				if (active.change != rte.CHANGE_CMD) {
-					// add new level for pevious typing or del
-					add(rte.CHANGE_CMD, true);
+				// add new level for pevious typing or del
+				if (active.key > 0) {
+					add(true);
 				}
 				
-				l = active.levels[--active.index];
-				d = rte.active;
+				level = active.levels[--active.index];
+				doc   = rte.active;
 				
-				d.set(l.html);
-				sel.toBookmark(l.bm);
-				$(d.document).scrollTop(l.scroll);
-				active.change = rte.CHANGE_CMD;
+				doc.set(level.html);
+				sel.toBookmark(level.bm);
+				$(doc.document).scrollTop(level.scroll);
+				active.key = 0;
+				
 				rte.trigger('historyChange');
-				rte.debug('history.undo', (active.index));
+				rte.debug('history.undo', active.index+' key: '+active.key);
 				return true;
 			}
 		}
@@ -107,29 +108,30 @@
 		 * @return Boolean
 		 */
 		this.redo = function() {
-			var l, d;
+			var level, doc;
+			
 			if (this.canRedo()) {
-				l = active.levels[++active.index];
-				d = rte.active;
+				level = active.levels[++active.index];
+				doc   = rte.active;
 				
-				d.set(l.html);
-				sel.toBookmark(l.bm);
-				$(d.document).scrollTop(l.scroll);
-				active.change = rte.CHANGE_CMD;
+				doc.set(level.html);
+				sel.toBookmark(level.bm);
+				$(doc.document).scrollTop(level.scroll);
+				active.key = 0;
 				rte.trigger('historyChange');
 				rte.debug('history', 'redo '+(active.index));
 				return true;
 			}
 		}
-		
-		if (size>0) {
+			
+		if (size > 0) {
 			
 			rte.bind('open', function(e) {
 				/* create storage for new document */
 				storage[e.data.id] = { 
 					levels : [], 
 					index  : 0, 
-					change  : rte.CHANGE_CMD
+					key    : 0
 				};
 			})
 			.bind('close', function(e) {
@@ -139,47 +141,24 @@
 			.bind('wysiwyg', function(e) {
 				/* set active storage and add initial level if not exists */
 				active = storage[e.data.id];
-				add(rte.CHANGE_CMD);
+				add(0);
 			})
 			.bind('source', function() { 
 				/* disable active storage for source mode */
 				active = null; 
 			})
-			.bind('keydown', function(e) {
-				// save snapshot before changes except del after del
-				if (rte.change != rte.CHANGE_NON && rte.change != rte.CHANGE_POS) {
-					add(rte.change, rte.change != rte.CHANGE_DEL);
+			.bind('exec change', function(e) {
+				if (e.data.cmd != 'undo' && e.data.cmd != 'redo') {
+					add();
 				}
 			})
-			.bind('exec cut paste', function(e) {
-				// save snapshot before changes
-				if (e.data.cmd != 'undo' && e.data.cmd != 'redo' && e.data.cmd != 'source') {
-					// ? if false - lost selection, true - need to control cmd names
-					add(rte.CHANGE_CMD, false);
-					keyupLock = true
+			.bind('keydown', function() {
+				if (rte.lastKey == rte.KEY_CHAR || rte.lastKey == rte.KEY_DEL) {
+					add();
 				}
 			})
-			.bind('change', function(e) {
-				// save after changes
-				add(e.data.type||rte.CHANGE_CMD);
-				// block following keyup - keyCode on keyup event could not be detect correctly
-				e.data.type && (keyupLock = true);
-			})
-			.bind('keyup', function(e) {
-				if (!keyupLock) {
-					if (rte.utils.isKeyChar(e.keyCode)) {
-						add(rte.CHANGE_KBD);
-					} else if (rte.utils.isKeyDel(e.keyCode)) {
-						add(rte.CHANGE_DEL);
-					}
-				}
-				keyupLock = false;
-			})
-			.bind('changePos', function(e) {
-				// all except changePos after changePos to avoid extra html compare
-				if (active.change != rte.CHANGE_CMD) {
-					add(rte.CHANGE_CMD);
-				}
+			.bind('changePos', function() {
+				add()
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'undo', 'Undo (Ctrl+Z)', function(e) {
 				return self.undo();
@@ -189,5 +168,6 @@
 			});
 		}
 	}
+	
 
 })(jQuery);
