@@ -251,6 +251,7 @@
 .elrte .elrte-ui-hr { background-position:-100px -20px; }
 .elrte .elrte-ui-pagebreak { background-position:-600px -20px; }
 .elrte .elrte-ui-blockquote { background-position:-400px 0; }
+.elrte .elrte-ui-div { background-position:-440px -20px; }
 
 /* panel control */
 .elrte .elrte-ui-docstructure { background-position:-620px -20px; }
