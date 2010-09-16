@@ -633,7 +633,7 @@ elRTE.prototype.dom = function(rte) {
 			inner   : 'blockText',
 			wrap    : function() { },
 			testCss : false,
-			setCss  : false,
+			setCss  : false
 		}, o);
 
 		function wrap() {

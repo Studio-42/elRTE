@@ -89,7 +89,7 @@
 			indents    : ['outdent', 'indent'],
 			direction  : ['ltr', 'rtl'],
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
-			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak'],
+			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote'],
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
 			links      : ['anchor', 'link', 'unlink'],
@@ -129,7 +129,7 @@
 				]
 			},
 			link : {
-				// simple : false,
+				// simple : true,
 				// disableAdvanced : true,
 				// disableEvents : true
 			}
