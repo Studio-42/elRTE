@@ -1,15 +1,7 @@
 (function($) {
-	/**
-	 * @class elRTE command.
-	 * Create/remove blockquote
-	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 **/
-	elRTE.prototype.commands.blockquote = function() {
-		this.title      = 'Blockquote';
-		this._regExp    = /^BLOCKQUOTE$/;
-		this._cutRegExp = /^(TABLE|UL|OL|P)$/;
-		
-		this._exec = function() {
+	
+	elRTE.prototype.commands._blockTextElement = {
+		exec : function() {
 			var dom = this.dom,
 				sel = this.sel, 
 				n, bm,
@@ -39,18 +31,48 @@
 				e = dom.topParent(l, 'any', true, c)||l;
 				s = dom.split(s, f, true);
 				e = dom.split(e, l, false);
-				n = dom.wrap(dom.traverse(s, e), 'blockquote');
+				n = dom.wrap(dom.traverse(s, e), this._node);
 				sel.select(n);
 			}
-			return true;	
-		}
+			return true;
+		},
 		
-		this._getState = function() {
+		state : function() {
 			return this.sel.collapsed() 
 				? this.dom.closestParent(this.sel.node(), this._regExp, true) ? this.STATE_ACTIVE : this.STATE_DISABLE
 				: this.STATE_ENABLE;
 		}
-
+	}
+	
+	/**
+	 * @class elRTE command.
+	 * Create/remove blockquote
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
+	elRTE.prototype.commands.blockquote = function() {
+		this.title      = 'Blockquote';
+		this._node      = 'blockquote';
+		this._regExp    = /^BLOCKQUOTE$/;
+		this._cutRegExp = /^(TABLE|UL|OL|P)$/;
+		
+		this._exec = $.proxy(this.rte.commands._blockTextElement.exec, this);
+		this._getState = $.proxy(this.rte.commands._blockTextElement.state, this);
+	}
+	
+	/**
+	 * @class elRTE command.
+	 * Create/remove div
+	 * @author Dmitry (dio) Levashov, dio@std42.ru
+	 **/
+	elRTE.prototype.commands.div = function() {
+		this.title      = 'Block element (DIV)';
+		this._node      = 'div';
+		this._regExp    = /^DIV$/;
+		this._cutRegExp = /^(TABLE|UL|OL|P)$/;
+		
+		this._exec = $.proxy(this.rte.commands._blockTextElement.exec, this);
+		this._getState = $.proxy(this.rte.commands._blockTextElement.state, this);
+		
 	}
 	
 })(jQuery);

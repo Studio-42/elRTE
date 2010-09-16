@@ -582,7 +582,10 @@
 			})
 			.bind('mouseup', function(e) {
 				self.typing = false;
-				self.trigger('changePos', {event : e});
+				setTimeout(function() {
+					self.trigger('changePos', {event : e});
+				}, 1)
+				// self.trigger('changePos', {event : e});
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {
 				self.trigger(e);

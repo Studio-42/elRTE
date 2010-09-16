@@ -93,16 +93,19 @@
 			history    : ['undo', 'redo'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
 			links      : ['anchor', 'link', 'unlink'],
-			control    : ['docstructure', 'source', 'fullscreen']
+			control    : ['docstructure', 'source', 'fullscreen'],
+			test : ['blockquote', 'div']
 		},
 		// ?
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
+			'test' : ['test'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'links', 'misc', 'direction', 'font', 'control']
 
 		},
+		toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
