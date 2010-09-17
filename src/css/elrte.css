@@ -216,8 +216,8 @@
 /*.elrte .elrte-ui-blockquote { background-position:-400px 0; }*/
 
 /* panel direction */
-.elrte .elrte-ui-ltr { background-position:-420px 0; }
-.elrte .elrte-ui-rtl { background-position:-440px 0; }
+.elrte .elrte-ui-dirltr { background-position:-420px 0; }
+.elrte .elrte-ui-dirrtl { background-position:-440px 0; }
 
 /* panel indent */
 .elrte .elrte-ui-outdent { background-position:-460px 0; }
@@ -230,10 +230,10 @@
 
 
 /* panel alignment */
-.elrte .elrte-ui-left { background-position:-540px 0; }
-.elrte .elrte-ui-center { background-position:-560px 0; }
-.elrte .elrte-ui-right { background-position:-580px 0; }
-.elrte .elrte-ui-justify { background-position:-600px 0; }
+.elrte .elrte-ui-alignleft { background-position:-540px 0; }
+.elrte .elrte-ui-aligncenter { background-position:-560px 0; }
+.elrte .elrte-ui-alignright { background-position:-580px 0; }
+.elrte .elrte-ui-alignjustify { background-position:-600px 0; }
 
 
 /* panel history */

@@ -82,19 +82,26 @@
 		/* panels configuration */
 		panels : {
 			document   : ['save'],
-			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			semantic   : ['ins', 'del', 'abbr', 'cite'],
-			alignment  : ['left', 'center', 'right', 'justify'],
-			lists      : ['ul', 'ol'],
-			indents    : ['outdent', 'indent'],
-			direction  : ['ltr', 'rtl'],
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
-			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
 			history    : ['undo', 'redo'],
+			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
+			indents    : ['outdent', 'indent'],
+			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
+			lists      : ['ul', 'ol'],
 			links      : ['anchor', 'link', 'unlink'],
-			control    : ['docstructure', 'source', 'fullscreen'],
-			test : ['blockquote', 'div']
+			
+			semantic   : ['ins', 'del', 'abbr', 'cite'],
+			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
+			
+			
+			direction  : ['dirltr', 'dirrtl'],
+			
+			
+			
+			
+			
+			control    : ['docstructure', 'source', 'fullscreen']
 		},
 		// ?
 		panelsNames : {},
@@ -102,7 +109,7 @@
 		toolbars : {
 			'test' : ['test'],
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'semantic', 'alignment', 'lists', 'indents', 'links', 'misc', 'direction', 'font', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'direction', 'control']
 
 		},
 		// toolbar : 'test',

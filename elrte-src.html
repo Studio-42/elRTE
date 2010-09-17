@@ -29,6 +29,7 @@
 	<script src="src/js/elRTE.filter.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.history.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.utils.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.mixins.js" type="text/javascript" charset="utf-8"></script>
 	
 
 	<!-- plugins -->
@@ -38,38 +39,71 @@
 	<script src="src/js/plugins/wordcount.js"    type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/plugins/autosave.js"    type="text/javascript" charset="utf-8"></script>
 
-	<!-- widgets -->
+	<!-- ui -->
+	<script src="src/js/ui/misc.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/ui/tabs.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/ui/dialog.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/ui/menu.js" type="text/javascript" charset="utf-8"></script>
 
 
 	<!-- commands -->
 	<script src="src/js/elRTE.command.js" type="text/javascript" charset="utf-8"></script>
 	
-	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/history.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/docstructure.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/nbsp.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/stopfloat.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/source.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/style.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/direction.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/semantic.js" type="text/javascript" charset="utf-8"></script>
+	<!-- document -->
+	<script src="src/js/commands/save.js" type="text/javascript" charset="utf-8"></script>
+	<!-- edit -->
+	<script src="src/js/commands/pastetext.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/pasteformattext.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/selectall.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/removeformat.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/hr.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/save.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/alignment.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/lists.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/indents.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/fontsize.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/pagebreak.js" type="text/javascript" charset="utf-8"></script>
+	<!-- history -->
+	<script src="src/js/commands/undo.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/redo.js" type="text/javascript" charset="utf-8"></script>
+	<!-- style -->
+	<script src="src/js/commands/bold.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/italic.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/underline.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/strike.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/sub.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/sup.js" type="text/javascript" charset="utf-8"></script>
+	<!-- semantic -->
+	<script src="src/js/commands/ins.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/del.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/cite.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/abbr.js" type="text/javascript" charset="utf-8"></script>
+	<!-- alignment -->
+	<script src="src/js/commands/alignleft.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/aligncenter.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/alignright.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/alignjustify.js" type="text/javascript" charset="utf-8"></script>
+	<!-- lists -->
+	<script src="src/js/commands/ul.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/ol.js" type="text/javascript" charset="utf-8"></script>
+	<!-- indent -->
+	<script src="src/js/commands/indent.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/outdent.js" type="text/javascript" charset="utf-8"></script>
+	<!-- links -->
 	<script src="src/js/commands/anchor.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/link.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/unlink.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/pastetext.js" type="text/javascript" charset="utf-8"></script>
-	<script src="src/js/commands/pasteformattext.js" type="text/javascript" charset="utf-8"></script>
+	<!-- font -->
+	<script src="src/js/commands/formatblock.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/fontsize.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/fontfamily.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/fontstyle.js" type="text/javascript" charset="utf-8"></script>
+	<!-- misc -->
+	<script src="src/js/commands/nbsp.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/stopfloat.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/hr.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/commands/blockquote.js" type="text/javascript" charset="utf-8"></script>
-	
+	<script src="src/js/commands/div.js" type="text/javascript" charset="utf-8"></script>
+	<!-- direction -->
+	<script src="src/js/commands/dirltr.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/dirrtl.js" type="text/javascript" charset="utf-8"></script>
+	<!-- control -->
+	<script src="src/js/commands/docstructure.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/source.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/commands/fullscreen.js" type="text/javascript" charset="utf-8"></script>
 	
 	<!-- lang -->
 	<script src="src/js/i18n/elrte.ru.js" type="text/javascript" charset="utf-8"></script>

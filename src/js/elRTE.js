@@ -956,6 +956,8 @@
 	 */
 	elRTE.prototype.commands = {};
 	
+	elRTE.prototype.mixins = {};
+	
 	/**
 	 * elRTE commands classes
 	 *
