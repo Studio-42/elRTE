@@ -180,7 +180,9 @@
 	background:transparent;
 }
 
-.elrte .elrte-ui {
+.elrte .elrte-ui,
+.elrte .elrte-ui-menu,
+.elrte .elrte-ui-menu-icon {
 	width:  20px;
 	height: 20px;
 	margin: 0 2px 0 0;
@@ -190,6 +192,8 @@
 	-webkit-border-radius: 3px;
 	-webkit-background-clip: padding-box;
 	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
+	cursor:default;
+	position:relative;
 }
 
 /* panel document */
@@ -222,6 +226,12 @@
 /* panel indent */
 .elrte .elrte-ui-outdent { background-position:-460px 0; }
 .elrte .elrte-ui-indent { background-position:-480px 0; }
+
+/* panel font */
+.elrte .elrte-ui-formatblock { background-position:-520px -20px; }
+.elrte .elrte-ui-fontsize { background-position:-540px -20px; }
+.elrte .elrte-ui-fontfamily { background-position:-560px -20px; }
+.elrte .elrte-ui-fontstyle { background-position:-580px -20px; }
 
 
 /* panel lists */
@@ -260,64 +270,89 @@
 
 /* WIDGETS */
 /* menu */
-.elrte .elrte-ui-menu {
-	width: 120px;
-/*	overflow:hidden;*/
+/* menu with text */
+.elrte .elrte-ui-menu { 
+	width: 120px; 
 	background:#fff;
-	cursor:default;
-	position:relative;
 }
 
-.elrte .elrte-ui-menu-label {
-	width:102px;
+/* comapct menu with icon */
+.elrte .elrte-ui-menu-icon { 
+	width: 32px; 
+	background-color:#fff;
+}
+
+/* hovered menu dont change bg color */
+.elrte .elrte-ui-hover.elrte-ui-menu,
+.elrte .elrte-ui-hover.elrte-ui-menu-icon  { 
+	background-color:#fff; 
+}
+
+/* menu wrapper */
+.elrte .elrte-ui-menu .elrte-ui-menu-wrp,
+.elrte .elrte-ui-menu-icon .elrte-ui-menu-wrp {
+	width: 100%;
 	height:20px;
+	overflow:hidden;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+/* text on menu button */
+.elrte .elrte-ui-menu-label {
+	max-width:100;
 	font-size:12px;
 	line-height:20px;
-	margin:0;
-	padding:0 0 0 5px;
+	padding-left: 5px;
 	overflow:hidden;
 	float:left;
 }
 
+/* arrow button on menu right side */
 .elrte .elrte-ui-menu-control {
 	float:right;
 	height:20px;
-	width:12px;
+	width:10px;
 	border-left:1px solid #ccc;
 	-moz-border-radius-bottomright: 3px; 
 	-webkit-border-bottom-right-radius: 3px; 
 	-moz-border-radius-topright: 3px; 
 	-webkit-border-top-right-radius: 3px;
-	-webkit-background-clip: padding-box;
-	background:#eee url(../images/elrte-toolbar.png) -777px -22px no-repeat;
+	background:#eee url(../images/elrte-toolbar.png) -778px -22px no-repeat;
 }
 
 .elrte .elrte-ui-hover .elrte-ui-menu-control {
 	background-color:#f5f5f5;
-/*	border-color:#555;*/
 }
 
 .elrte .elrte-ui-menu-container {
 	position:absolute;
 	top:20px;
 	min-width:120px;
-	max-height:250px;
+	max-height:270px;
 	border:1px solid #ccc;
 	background:#fff;
 	overflow:auto;
 	z-index:10000;
 }
 
+.elrte .elrte-ui-menu-header {
+	background-color:#eee;
+	font-weight:bold;
+}
+
 .elrte .elrte-ui-menu-item,
-.elrte .elrte-ui-menu-title,
 .elrte .elrte-ui-menu-header {
 	white-space: nowrap;
-	font-size:.9em;
-	padding:3px 22px 3px 9px;
+	font-size:.86em;
+	padding:2px 32px 2px 9px;
 	border-top:1px solid #eee;
 }
 
-.elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { border-top:0 solid; }
+.elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { 
+	border-top:0 solid; 
+}
 
 .elrte .elrte-ui-menu-item * {
 	padding:0;
@@ -325,10 +360,7 @@
 }
 
 
-.elrte .elrte-ui-menu-header {
-	background-color:#eee;
-	font-weight:bold;
-}
+
 
 .elrte .elrte-ui-menu-item.elrte-ui-hover {
 	border-color: #fff;
@@ -358,7 +390,7 @@ textarea.elrte-pastetext {
 
 
 /* ui states */
-.elrte .elrte-ui-hover    { border-color:#999; }
+.elrte .elrte-ui-hover    { border-color:#999; background-color:#f5f5f5; }
 .elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
 .elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 

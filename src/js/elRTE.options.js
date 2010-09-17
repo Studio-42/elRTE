@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock'],
+			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock' ] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -107,12 +107,12 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['test'],
+			'test' : ['style', 'font', 'control'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'direction', 'control']
 
 		},
-		// toolbar : 'test',
+		toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
@@ -129,7 +129,7 @@
 				initState : 'on'
 			},
 			fontstyle : {
-				
+				compact : true,
 				opts : [
 					{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
 					{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
@@ -142,7 +142,17 @@
 				// simple : true,
 				// disableAdvanced : true,
 				// disableEvents : true
+			},
+			formatblock : {
+				compact : true
+			},
+			fontsize : {
+				compact : true
+			},
+			fontfamily : {
+				compact : true
 			}
+			
 			
 		}
 	}

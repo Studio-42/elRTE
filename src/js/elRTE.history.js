@@ -14,7 +14,7 @@
 			active;
 			
 		function add(force) {
-			var doc, level, curKey, bm, sel;
+			var doc, level, key, curKey, bm, sel;
 			
 			if (!active) {
 				return;
