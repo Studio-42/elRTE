@@ -7,24 +7,24 @@
  * @author:    eSabbath
  *
  **/
+(function($) { 
 elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var self = this;
-        this.img = null;
-		this.url = this.rte.filter.url+'smileys/';
-		this.smileys = {
-			'smile' : 'smile.png',
-			'grin' : 'grin.png',
-			'surprised' : 'surprised.png',
-			'tongue' : 'tongue.png',
-			'unhappy' : 'unhappy.png'
-		};
-		this.width = 150;
-
+	this.img = null;
+	this.url = this.rte.filter.url+'smileys/';
+	this.smileys = {
+		'smile' : 'smile.png',
+		'grin' : 'grin.png',
+		'surprised' : 'surprised.png',
+		'tongue' : 'tongue.png',
+		'unhappy' : 'unhappy.png'
+	};
+	this.width = 150;
 
 	this.command = function() {
 		var self = this, url = this.url, d, opts, img;
-		
+
 		this.rte.browser.msie && this.rte.selection.saveIERange();
 
 		opts = {
@@ -36,7 +36,6 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 			}
 		}
 		d = new elDialogForm(opts);
-
 		$.each(this.smileys, function(name, img) {
 			d.append($('<img src="'+url+img+'" title="'+name+'" id="'+name+'" class="elSmiley"/>').click(function() { self.set(this.id, d);	}));
 		});
@@ -47,7 +46,6 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 		this.domElem.removeClass('disabled');
 		this.domElem.removeClass('active');
 	}
-
 
 	this.set = function(s, d) {
 		this.rte.browser.msie && this.rte.selection.restoreIERange();
@@ -63,5 +61,5 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 		}
 		d.close();
 	}
-
 }
+})(jQuery);

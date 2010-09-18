@@ -10,7 +10,7 @@
 	<!-- jQuery and ui -->
 	<script src="../js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/jquery-ui-1.8.5.custom.min.js" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" href="../js/ui-themes/smoothness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" charset="utf-8">
+	<link rel="stylesheet" href="../js/ui-themes/smoothness/jquery-ui-1.8.5.custom.css" type="text/css" media="screen" charset="utf-8">
 
 	<!-- css for widgets -->
 	<link rel="stylesheet" href="ellib/css/elcommon.css" type="text/css" media="screen" charset="utf-8">
@@ -28,7 +28,6 @@
 	<script src="ellib/js/jquery.elborderselect.js" type="text/javascript" charset="utf-8"></script>
 	<script src="ellib/js/jquery.elpaddinginput.js" type="text/javascript" charset="utf-8"></script>
 	<script src="ellib/js/jquery.elselect.js" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" href="../css/elfinder.css" type="text/css" media="screen" charset="utf-8">
 	
 	
 	<!-- elRTE -->
@@ -88,8 +87,11 @@
 	<script src="elrte/js/ui/smiley.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/ui/pagebreak.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/ui/about.js" type="text/javascript" charset="utf-8"></script>
-	
-	<script src="../js/elfinder.full.js" type="text/javascript" charset="utf-8"></script>
+
+	<!-- elFinder -->
+	<link rel="stylesheet" href="../../elfinder/css/elfinder.css" type="text/css" media="screen" charset="utf-8">
+	<script src="../../elfinder/js/elfinder.full.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../elfinder/js/i18n/elfinder.ru.js" type="text/javascript" charset="utf-8"></script>
 
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
@@ -108,7 +110,7 @@
 				cssfiles : ['elrte/css/elrte-inner.css'],
 				fmOpen : function(callback) {
 				       $('<div id="myelfinder"/>').elfinder({
-				          url : '../connectors/php/connector.php',
+				          url : '../../elfinder/connectors/php/connector.php',
 				          lang : 'ru',
 				          dialog : { width : 900, modal : true, title : 'Files' }, // открываем в диалоговом окне
 				          closeOnEditorCallback : true, // закрываем после выбора файла

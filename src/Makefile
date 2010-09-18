@@ -12,9 +12,16 @@ JS=   ${DST}/js
 I18N= ${DST}/js/i18n
 IMG=  ${DST}/images
 
-# used as ${COMPRESSOR} OUT IN
-COMPRESSOR=    java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
-					--charset utf8 -o
+# YUI Compressor
+COMPRESSOR= java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+			--charset utf8 \
+			-o ${elrte_js_min} ${elrte_js}
+
+# Closure Compiler
+# ADVANCED_OPTIMIZATIONS maybe someday
+#COMPRESSOR= java -jar ../../../compiler.jar \
+			--charset UTF-8 --compilation_level SIMPLE_OPTIMIZATIONS \
+			--js_output_file ${elrte_js_min} --js ${elrte_js}
 
 PHONY:     help
 all:       elrte elrte-install
@@ -92,7 +99,7 @@ elrte-install: elrte ellib-install
 	${CP} ${SRC}/elrte/js/i18n/elrte.??.js    ${I18N}/
 	${CP} ${SRC}/elrte/js/i18n/elrte.??_??.js ${I18N}/
 	${CP} ${SRC}/elrte/images/*.png           ${IMG}/
-	${CP} ${SRC}/elrte/images/pixel.gif       ${IMG}/
+	${CP} ${SRC}/elrte/images/*.gif           ${IMG}/
 	${CP} -R ${SRC}/elrte/images/smileys      ${IMG}/
 
 ${elrte_css}:
@@ -105,7 +112,7 @@ elrte-uninstall:
 	${RM} -f ${CSS}/${elrte_css} ${CSS}/elrte-inner.css \
 	         ${JS}/${elrte_js} ${JS}/${elrte_js_min} \
 			 ${I18N}/elrte.??.js ${I18N}/elrte.??_??.js \
-	         ${IMG}/*.png ${IMG}/pixel.gif
+	         ${IMG}/*.png ${IMG}/*.gif
 	${RM} -rf ${IMG}/smileys
 
 clean-elrte:
@@ -114,7 +121,7 @@ clean-elrte:
 
 # compressor
 elrte-compress:
-	${COMPRESSOR} ${elrte_js_min} ${elrte_js}
+	${COMPRESSOR}
 
 elrte-compress-install:
 	${CP} ${SRC}/${elrte_js_min} ${JS}/
