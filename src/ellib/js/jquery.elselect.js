@@ -169,7 +169,7 @@
 		value     : null,
 		src       : {},
 		select    : function(v) {  window.console &&  window.console.log && window.console.log('selected: '+v); },
-		maxHeight : 310
+		maxHeight : 410
 	}
 	
 })(jQuery);
