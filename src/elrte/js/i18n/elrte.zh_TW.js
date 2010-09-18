@@ -3,7 +3,7 @@
  * @author Tad <tad0616@gmail.com>
  */
 (function($) {
-elRTE.prototype.i18Messages.tw = {
+elRTE.prototype.i18Messages.zh_TW = {
 	'Editor' : '所見即所得',
 	'Source' : '原始碼',
 	// Panel Name

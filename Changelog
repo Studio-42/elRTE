@@ -1,3 +1,17 @@
+2010-09-15  Troex Nevelin  <troex@fury.scancode.ru>
+
+	* elRTE (1.0.1):
+		- [feature] TAB key inserts \t instead switch to next element
+		- [bugfix] textarea uses ID instead NAME on post
+		- [bugfix] clean selected area on paste
+		- [bugfix] fullscreen mode in Firefox
+		- [translation] French, Francois Mazerolle <fmaz008@gmail.com>
+		- [translation] Hungarian, Viktor Tamas <tamas.viktor@totalstudio.hu>
+		- [translation] Dutch, Kurt Aerts http://ilabsolutions.net/
+		- [translation] Polish, Andrzej Borowicz http://borowicz.info/
+		- [translation] Traditional Chinese, Tad <tad0616@gmail.com>
+
+
 2010-08-25  Troex Nevelin  <troex@fury.scancode.ru>
 
 	* elRTE (1.0):

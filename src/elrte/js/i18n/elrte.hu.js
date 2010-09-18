@@ -1,4 +1,8 @@
-(function($) {
+/**
+ * Hungarian translation
+ * @author Viktor Tamas <tamas.viktor@totalstudio.hu>
+ */
+ (function($) {
 elRTE.prototype.i18Messages.hu = {
     'Editor' : 'Szerkesztő',
     'Source' : 'Forrás',
