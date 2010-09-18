@@ -14,6 +14,7 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 	
 	this.command = function() {
 		var opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); d.close(); self.set();  },
 			dialog : {
 				title : this.rte.i18n('Bookmark')

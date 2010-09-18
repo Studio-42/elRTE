@@ -45,6 +45,8 @@
 		// elrte services classes regexp
 		this.serviceClassRegExp = /<(\w+)([^>]*class\s*=\s*"[^>]*elrte-[^>]*)>\s*(<\/\1>)?/gi;
 		this.pagebreakRegExp = /<(\w+)([^>]*style\s*=\s*"[^>]*page-break[^>]*)>\s*(<\/\1>)?/gi;
+		
+		this.pbRegExp = new RegExp('<!-- pagebreak -->', 'gi');
 		// allowed tags
 		this.allowTags = rte.options.allowTags.length ? rte.utils.makeObject(rte.options.allowTags) : null;
 		// denied tags
@@ -611,7 +613,11 @@
 					self.rte.log(a)
 					return i ? img({ embed : a }, i.type) : t;
 				})
-				.replace(/<\/(embed|param)>/gi, '');
+				.replace(/<\/(embed|param)>/gi, '')
+				.replace(this.pbRegExp, function() {
+					return '<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>';
+				});
+
 
 			n = $('<div>'+html+'</div>');
 			// remove empty spans and merge nested spans
@@ -637,6 +643,8 @@
 					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
 				}
 			});
+
+			
 
 			if (!this.rte.options.allowTextNodes) {
 				// wrap inline nodes with p
@@ -671,13 +679,6 @@
 				});
 				wrap();
 			}
-			
-			n.find('div').each(function() {
-				var t = $(this);
-				if (t.css('page-break-after') == 'always') {
-					t.replaceWith('<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>');
-				}
-			});
 			
 			return n.html();
 		},
@@ -728,8 +729,7 @@
 					} else if (a['class']['elrte-google-maps']) {
 						return '<iframe '+self.serializeAttrs(JSONparse(self.rte.utils.decode(a.rel)))+'></iframe>';
 					} else if (a['class']['elrte-pagebreak']) {
-						return '<div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>';
-						// return "<!-- PAGERBREAK -->";
+						return '<!-- pagebreak -->';
 					}
 					$.each(a['class'], function(n) {
 						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 

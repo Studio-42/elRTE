@@ -166,6 +166,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		this.src.main.bgimg.val(bgimg!='none' ? bgimg : '');
 
 		var opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
 				width : 530,

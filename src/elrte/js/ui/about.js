@@ -7,6 +7,7 @@
 			var opts, d, txt;
 			
 			opts = {
+				rtl : rte.rtl,
 				submit : function(e, d) {  d.close(); },
 				dialog : {
 					width : 550,

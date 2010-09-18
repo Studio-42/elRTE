@@ -115,10 +115,10 @@ elRTE.prototype.ui.prototype.buttons.tbcellprops = function(rte, name) {
 		this.src.main.apply.val('');
 		
 		var opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
-				width : 490,
-				// width : 'auto',
+				width : 520,
 				title : this.rte.i18n('Table cell properties')
 			}
 		}

@@ -94,6 +94,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		}
 		
 		var opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
 				width    : 570,

@@ -27,7 +27,13 @@ elRTE = function(target, opts) {
 	this.browser = $.browser;
 	this.target  = $(target);
 	
+	this.lang      = (''+this.options.lang).toLowerCase();
+	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.lang] || {}} });
+	this.rtl = !!(/^(ar|fa|he)$/.test(this.lang) && this.i18Messages[this.lang]);
 	
+	if (this.rtl) {
+		this.options.cssClass += ' el-rte-rtl';
+	}
 	this.toolbar   = $('<div class="toolbar"/>');
 	this.iframe    = document.createElement('iframe');
 	// this.source    = $('<textarea />').hide();
@@ -40,10 +46,9 @@ elRTE = function(target, opts) {
 	this.$doc    = null;
 	this.window  = null;
 	
-	this.utils     = new this.utils(this);
-	this.dom       = new this.dom(this);
-	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.options.lang] || {}} });	
-	this.filter    = new this.filter(this)
+	this.utils  = new this.utils(this);
+	this.dom    = new this.dom(this);
+	this.filter = new this.filter(this)
 	
 	/**
 	 * Sync iframes/textareas height with workzone height 

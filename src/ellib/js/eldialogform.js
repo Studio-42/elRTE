@@ -60,6 +60,11 @@ function elDialogForm(o) {
 	};
 
 	this.opts = jQuery.extend(true, defaults, o, {dialog : { autoOpen : false, close : function() { self.close(); } }});
+	
+	if (this.opts.rtl) {
+		this.opts['class'] += ' el-dialogform-rtl';
+	}
+	
 	if (o && o.dialog && o.dialog.buttons && typeof(o.dialog.buttons) == 'object') {
 		this.opts.dialog.buttons = o.dialog.buttons;
 	}

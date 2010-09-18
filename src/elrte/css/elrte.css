@@ -25,6 +25,9 @@
 
 /* панель инструментов */
 .el-rte .toolbar {  background-color:#eee; padding:3px 7px 2px 7px; border:1px solid #ccc; white-space:normal; }
+
+.el-rte-rtl .toolbar { direction: rtl; }
+
 /* панель кнопок */
 .el-rte .toolbar ul {
 	position:relative;
@@ -172,7 +175,7 @@
 	cursor: default;
 }
 .el-rte .tabsbar div.active { background: #eee; color:#444; }
-
+.el-rte-rtl .tabsbar .tab  { float:right; }
 
 /* выпадающие меню */
 /* container for elselect */

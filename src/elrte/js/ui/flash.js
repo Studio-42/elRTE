@@ -92,6 +92,7 @@
 			
 
 			var opts = {
+				rtl : this.rte.rtl,
 				submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 				dialog : {
 					width    : 580,

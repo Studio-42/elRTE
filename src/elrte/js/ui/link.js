@@ -140,6 +140,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		}
 		
 		opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			tabs : { show : function(e, ui) { if (ui.index==3) { self.updateOnclick(); } } },
 			close : function() {self.rte.browser.msie && self.rte.selection.restoreIERange(); },

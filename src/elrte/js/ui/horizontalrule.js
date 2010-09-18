@@ -42,6 +42,7 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 		this.src.style.val(this.rte.dom.attr(this.hr, 'style'));
 		
 		var opts = {
+			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
 				title : this.rte.i18n('Horizontal rule')

@@ -69,7 +69,7 @@ img.elrte-webkit-hl { outline:1px dashed #777; }
 }
 
 .elrte-pagebreak {
-
+	display:block;
 	clear:both;
 	width:100%;
 	height:7px;
@@ -77,4 +77,13 @@ img.elrte-webkit-hl { outline:1px dashed #777; }
 	outline-left:none;
 	outline-right:none;
 	background:transparent url(../images/pagebreak.gif) center center no-repeat;
+}
+
+.elrte-pagebreak:after {
+  content: ".";
+  display: block;
+  font-size:0;
+  height: 0;
+  clear: both;
+  visibility: hidden;
 }

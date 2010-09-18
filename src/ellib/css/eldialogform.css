@@ -1,7 +1,17 @@
 /* dialog container */
 .ui-widget .el-dialogform {
 	padding:5px 3px;
+
 }
+
+.ui-widget .el-dialogform-rtl {
+	direction: rtl;
+}
+
+.ui-widget .el-dialogform-rtl .ui-tabs-nav li {
+	float:right;
+}
+
 .el-dialogform div.tab:hover { background:transparent; }
 .ui-dialog .ui-dialog-title, .ui-dialog .ui-dialog-content {
 	font-size:.9em;

@@ -55,6 +55,7 @@ elRTE.prototype.options   = {
 	replace : [],
 	/* user restore rules */
 	restore : [],
+	pagebreak : '<div style="page-break-after: always;"></div>', //'<!-- pagebreak -->',
 	buttons         : {
 		'save'                : 'Save',
 		'copy'                : 'Copy',
