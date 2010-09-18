@@ -59,7 +59,9 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 	cleanCache && this.rte.selection.cleanCache();
 	var n    = this.rte.selection.getNode(),
 		p    = this.rte.dom.parents(n, '*'),
-		path = '', name;
+		rtl = this.rte.rtl,
+		sep  = rtl ? ' &laquo; ' : ' &raquo; ', 
+		path = '', name, i;
 		
 	function _name(n) {
 		var name = n.nodeName.toLowerCase();
@@ -77,14 +79,19 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 		}
 		return name;
 	}
-		
-	$.each(p.reverse(), function() {
-		path += ' &raquo; '+_name(this);
-	});
-
+	
 	if (n && n.nodeType == 1 && n.nodeName != 'BODY') {
-		path += ' &raquo; '+_name(n);// n.nodeName.toLowerCase();
+		p.unshift(n);
 	}
+	
+	if (!rtl) {
+		p = p.reverse();
+	}
+	
+	for (i=0; i < p.length; i++) {
+		path += (i>0 ? sep : '')+_name(p[i]);
+	}
+	
 	this.rte.statusbar.html(path);
 	$.each(this._buttons, function() {
 		this.update();

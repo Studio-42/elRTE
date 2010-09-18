@@ -133,8 +133,9 @@ elRTE = function(target, opts) {
 		html += '<link rel="stylesheet" type="text/css" href="'+this+'" />';
 	});
 	this.doc.open();
-	var s = this.filter.wysiwyg(content)
-	this.doc.write(self.options.doctype+html+'</head><body>'+(s)+'</body></html>');
+	var s = this.filter.wysiwyg(content),
+		cl = this.rtl ? ' class="el-rte-rtl"' : '';
+	this.doc.write(self.options.doctype+html+'</head><body'+cl+'>'+(s)+'</body></html>');
 	this.doc.close();
 	
 	/* make iframe editable */

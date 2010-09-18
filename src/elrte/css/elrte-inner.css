@@ -1,4 +1,8 @@
 
+body.el-rte-rtl, body.el-rte-rtl * {
+	direction:rtl;
+} 
+
 body.el-rte-structure table, 
 body.el-rte-structure caption,
 body.el-rte-structure td, 

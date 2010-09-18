@@ -159,6 +159,12 @@
 	border-top:1px solid #ccc;	
 	border-top:none;
 }
+
+.el-rte-rtl .statusbar {
+	direction:rtl;
+/*	text-align:right;*/
+}
+
 /* табы */
 .el-rte .tabsbar { display: block;  }
 .el-rte .tabsbar .tab {
