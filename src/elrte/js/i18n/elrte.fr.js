@@ -1,6 +1,7 @@
 /**
  * French translation
  * @author Francois Mazerolle <fmaz008@gmail.com>
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.fr = {

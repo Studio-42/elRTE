@@ -1,6 +1,7 @@
 /**
  * Polish translation
  * @author Andrzej Borowicz
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.pl = {

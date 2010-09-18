@@ -1,4 +1,8 @@
-// German language
+/*
+ * German translation
+ * @author Vasiliy Razumnyh <rvn@std42.ru>
+ * @version 2010-09-18
+ */
 (function($) {
 elRTE.prototype.i18Messages.de = {
 	'Editor' : 'Editor',
