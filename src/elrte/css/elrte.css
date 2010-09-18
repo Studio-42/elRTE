@@ -221,6 +221,9 @@
 	margin:16px 0 2px 2px;
 	background-color: #000;
 }
+.el-rte-rtl .toolbar ul li div.color-indicator {
+	margin:16px 2px 2px 0;
+}
 /* colors palette */
 .el-palette { top:20px; }
 
