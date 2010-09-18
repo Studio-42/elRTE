@@ -1,6 +1,7 @@
 /**
  * Latvian translation
  * @author Uldis Plotiņš <uldis.plotins@gmail.com>
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.lv = {

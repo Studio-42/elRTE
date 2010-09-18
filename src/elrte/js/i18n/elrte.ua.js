@@ -1,3 +1,8 @@
+/*
+ * Ukranian translation
+ * @author Artem Vasilyev
+ * @version 2010-09-18
+ */
 (function($) {
 elRTE.prototype.i18Messages.ua = {
 	'Editor' : 'Редактор',

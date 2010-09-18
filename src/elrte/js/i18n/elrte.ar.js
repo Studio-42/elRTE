@@ -1,5 +1,8 @@
-// tawfekov@gmail.com
-// Arabic translation by tawfek daghistani
+/**
+ * Arabic translation
+ * @author tawfek daghistani <tawfekov@gmail.com>
+ * @version 2010-09-18
+ */
 (function($) {
 elRTE.prototype.i18Messages.ar = {
 	'Editor' : 'المحرر',
@@ -11,6 +14,7 @@ elRTE.prototype.i18Messages.ar = {
 	'Colors'         : 'الألوان',
 	'Alignment'      : 'المحاذاة',
 	'Indent/Outdent' : 'مسافة بادئة / مسافة خاتمة',
+	'Indent/Outdent' : '',
 	'Text format'    : 'التنسيق',
 	'Lists'          : 'قوائم',
 	'Misc elements'  : 'عناصر متنوعة',
@@ -43,6 +47,18 @@ elRTE.prototype.i18Messages.ar = {
 	'Background color'        : 'لون الخلفية',
 	'Indent'                  : 'مسافة بادئة', 
 	'Outdent'                 : 'مسافة خاتمة', 
+	'Underline'               : '',
+	'Strikethrough'           : '',
+	'Superscript'             : '',
+	'Subscript'               : '',
+	'Align left'              : 'محاذاة إلى اليسار',
+	'Ailgn right'             : 'محاذاة إلى اليمين ',
+	'Align center'            : 'محاذاة إل المنتصف',
+	'Align full'              : '',
+	'Font color'              : 'لون الخط',
+	'Background color'        : 'لون الخلفية',
+	'Indent'                  : '',
+	'Outdent'                 : '',
 	'Format'                  : 'النتسيق',
 	'Font size'               : 'قياس الخط',
 	'Font'                    : 'الخط',
@@ -70,14 +86,17 @@ elRTE.prototype.i18Messages.ar = {
 	'Table properties'        : 'خصائص الجدول',
 	'Toggle full screen mode' : 'عرض بكامل الشاشة',
 	'Open file manager'       : 'افتح مستكشف الملفات',
-	'Non breakable space'     : 'Non-breaking space',
-	'Stop element floating'   : 'Stop element floating',
+	'Non breakable space'     : '',
+	'Stop element floating'   : '',
 	// dialogs
 	'Warning' : 'تنبيه',
 	'Properies' : 'خصائص',
 	'Popup' : 'نافذة منبئقة',
 	'Advanced' : 'متقدم',
 	'Events' : 'الأحداث',
+	'Popup' : '',
+	'Advanced' : '',
+	'Events' : '',
 	'Width' : 'العرض',
 	'Height' : 'الارتفاع',
 	'Left'   : 'اليسار',
@@ -87,6 +106,10 @@ elRTE.prototype.i18Messages.ar = {
 	'Background' : 'الخلفية',
 	'Css class' : 'Css نمط',
 	'Css style' : 'Css تنسيق',
+	'Border' : '',
+	'Background' : '',
+	'Css class' : '',
+	'Css style' : '',
 	'No' : 'لا',
 	'Title' : 'العنوان',
 	'Script direction' : 'اتجاه النص',
@@ -110,6 +133,12 @@ elRTE.prototype.i18Messages.ar = {
 	'Heading 4' : 'عنوان رئيسي 4',
 	'Heading 5' : 'عنوان رئيسي 5',
 	'Heading 6' : 'عنوان رئيسي 6',	
+	'Heading 1' : '',
+	'Heading 2' : '',
+	'Heading 3' : '',
+	'Heading 4' : '',
+	'Heading 5' : '',
+	'Heading 6' : '',
 	'Paragraph' : 'مقطع نصي ',
 	'Address' : 'العنوان',
 	'Preformatted' : '',
@@ -139,6 +168,13 @@ elRTE.prototype.i18Messages.ar = {
 	'Resizable' : 'متغير الحجم',
 	'Depedent' : 'Abhängig (Netscape)',
 	'Add return false' : 'إضافة (return false)',
+	'Menu bar' : '',
+	'Toolbar' : 'قائمة الأدوات',
+	'Scrollbars' : '',
+	'Status bar' : '',
+	'Resizable' : 'متغير الحجم',
+	'Depedent' : '',
+	'Add return false' : '',
 	'Target MIME type' : 'MIME type',
 	'Relationship page to target (rel)' : '',
 	'Relationship target to page (rev)' : '',
@@ -153,13 +189,13 @@ elRTE.prototype.i18Messages.ar = {
 	// table
 	'Spacing'       : 'مسافات (spacing)',
 	'Padding'       : 'الهامش (padding)',
+	'Spacing'       : '',
+	'Padding'       : '',
 	'Rows'          : 'الصفوف',
 	'Columns'       : 'الأعمدة',
 	'Groups'        : 'المجموعات',
 	'Cells'         : 'خلايا',
 	'Caption'       : 'العنوان',
 	'Inner borders' : 'حدود داخلية'
-	
-	
 }
 })(jQuery);

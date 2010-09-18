@@ -1,8 +1,8 @@
 /**
- * Dutch Translation
- * ---
- * @author     Kurt Aerts
- * @link       http://ilabsolutions.net/
+ * Dutch translation
+ * @author Kurt Aerts
+ * @link http://ilabsolutions.net/
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.nl = {
@@ -114,7 +114,7 @@ elRTE.prototype.i18Messages.nl = {
 	'Heading 3' : '',
 	'Heading 4' : '',
 	'Heading 5' : '',
-	'Heading 6' : '',	
+	'Heading 6' : '',
 	'Paragraph' : '',
 	'Address' : '',
 	'Preformatted':'',

@@ -1,6 +1,7 @@
 /**
  * Spanish translation
  * @author Ricardo Obregón <robregonm@gmail.com>
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.es = {

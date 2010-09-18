@@ -1,6 +1,7 @@
 /**
  * Traditional Chinese translation
  * @author Tad <tad0616@gmail.com>
+ * @version 2010-09-18
  */
 (function($) {
 elRTE.prototype.i18Messages.zh_TW = {
