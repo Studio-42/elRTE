@@ -576,8 +576,12 @@
 					return '<div '+self.serializeAttrs(a)+'>';
 				})
 				.replace(this.gMapsRegExp, function(t, a) {
+					var id = 'gmaps'+Math.random().toString().substring(2), w, h;
 					a = self.parseAttrs(a);
-					return '<div class="elrte-google-maps elrte-protected" rel="'+self.rte.utils.encode(JSON.stringify(a))+'" style="width:'+(parseInt(a.width||a.style.width||100))+'px;height:'+(parseInt(a.height||a.style.height||100))+'px"></div>';
+					w = parseInt(a.width||a.style.width||100);
+					h = parseInt(a.height||a.style.height||100);
+					self.scripts[id] = t;
+					return '<img src="'+self.url+'pixel.gif" class="elrte-google-maps elrte-protected" id="'+id+'" style="width:'+w+'px;height:'+h+'px">';
 				})
 				.replace(this.objRegExp, function(t, a, c) {
 					var m = c.match(self.embRegExp),
@@ -615,7 +619,7 @@
 				})
 				.replace(/<\/(embed|param)>/gi, '')
 				.replace(this.pbRegExp, function() {
-					return '<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak"/>';
+					return '<img src="'+self.url+'pixel.gif" class="elrte-protected elrte-pagebreak">';
 				});
 
 
@@ -727,7 +731,12 @@
 						j.obj && (o = '<object '+self.serializeAttrs(j.obj)+">\n"+o+"\n</object>\n");
 						return o||t;
 					} else if (a['class']['elrte-google-maps']) {
-						return '<iframe '+self.serializeAttrs(JSONparse(self.rte.utils.decode(a.rel)))+'></iframe>';
+						var t = '';
+						if (self.scripts[a.id]) {
+							t = self.scripts[a.id];
+							delete self.scripts[a.id]
+						}
+						return t;
 					} else if (a['class']['elrte-pagebreak']) {
 						return '<!-- pagebreak -->';
 					}

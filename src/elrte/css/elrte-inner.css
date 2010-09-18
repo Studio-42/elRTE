@@ -69,6 +69,7 @@ img.elrte-webkit-hl { outline:1px dashed #777; }
 	background-image:url(../images/yandex-maps.png);
 }
 .elrte-google-maps {
+	display: block;
 	background-image:url(../images/google-maps.png);
 }
 
