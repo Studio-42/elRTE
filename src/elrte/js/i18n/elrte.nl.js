@@ -1,5 +1,6 @@
 /**
  * Dutch Translation
+ * ---
  * @author     Kurt Aerts
  * @link       http://ilabsolutions.net/
  */
@@ -54,10 +55,10 @@ elRTE.prototype.i18Messages.nl = {
 	'Unordered list': 'Ongeordende lijst',
 	'Horizontal rule': 'Horizontale regel',
 	'Blockquote': '',
-	'Block element (DIV)'  : 'DIV element',
+	'Block element (DIV)'  : '',
 	'Link': 'Link',
-	'Delete link': 'Verwijder link',
-	'Bookmark': 'Bladwijzer',
+	'Delete link': 'Verwijder mo,l',
+	'Bookmark': '',
 	'Image': 'Afbeelding',
 	'Table': 'Tabel',
 	'Delete table': 'Verwijder tabel',
@@ -67,11 +68,11 @@ elRTE.prototype.i18Messages.nl = {
 	'Insert column before': 'Invoegen voor kolom',
 	'Insert column after': 'Invoegen na kolom',
 	'Delete column': 'Verwijder kolom',
-	'Merge table cells': 'Cellen samenvoegen',
-	'Split table cell': 'Cel opdelen',
+	'Merge table cells': 'Samenvoegen tabel cellen',
+	'Split table cell': '',
 	'Toggle display document structure': '',
-	'Table cell properties': 'Cell opties',
-	'Table properties': 'Tabel opties',
+	'Table cell properties': '',
+	'Table properties': '',
 	'Toggle full screen mode' : '(toggle) Volledig scherm',
 	'Open file manager'       : 'Open bestandsmanager',
 	'Non breakable space'   : '',
@@ -108,13 +109,13 @@ elRTE.prototype.i18Messages.nl = {
 // Copy
 	'This operation is disabled in your browser on security reason. Use shortcut instead. ' : 'Deze operatie is uitgeschakeld in jou browser voor beveiligings redenen. Gebruik de snelkoppeling.',
 // Format
-	'Heading 1' : 'Koptekst 1',
-	'Heading 2' : 'Koptekst 2',
-	'Heading 3' : 'Koptekst 3',
-	'Heading 4' : 'Koptekst 4',
-	'Heading 5' : 'Koptekst 5',
-	'Heading 6' : 'Koptekst 6',
-	'Paragraph' : 'Paragraaf',
+	'Heading 1' : '',
+	'Heading 2' : '',
+	'Heading 3' : '',
+	'Heading 4' : '',
+	'Heading 5' : '',
+	'Heading 6' : '',	
+	'Paragraph' : '',
 	'Address' : '',
 	'Preformatted':'',
 // Font size
@@ -126,11 +127,11 @@ elRTE.prototype.i18Messages.nl = {
 	'Large (24pt)': 'Groter (24pt)',
 	'Large (36pt)': 'Grootst (36pt)',
 // Bookmark
-	'Bookmark name': 'Bladwijzer naam',
+	'Bookmark name': '',
 // Link
 	'Link URL': '',
 	'Target': 'Doel',
-	'Select bookmark' : 'Selecteer bladwijzer',
+	'Select bookmark' : '',
 	'Open link in popup window': '',
 	'URL':'',
 	'Window name': 'Venster naam',

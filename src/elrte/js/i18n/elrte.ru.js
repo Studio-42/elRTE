@@ -188,6 +188,14 @@ elRTE.prototype.i18Messages.ru = {
 	'Latvian localization' : 'Латвийская локализация',
 	'German localization' : 'Немецкая локализация',
 	'Ukranian localization' : 'Украинская локализация',
+	'Persian (farsi) localization' : 'Персидская (фарси) локализация',
+	'Arabic localization' : 'Арабская локализация',
+	'RTL support' : 'Поддержка RTL',
+	'French localization' : 'Французская локализация',
+	'Dutch localization' : 'Голландская локализация',
+	'Hungarian localization' : 'Венгерская локализация',
+	'Polish localization' : 'Польская локализация',
+	'Traditional Chinese localization' : 'Китайская (традиционная) локализация',
 	'For more information about this software visit the' : 'Подробная информация и форум тех. поддержки',
 	'elRTE website' : 'на сайте elRTE' 
 	
