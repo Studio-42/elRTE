@@ -36,6 +36,7 @@
 		this.embRegExp = /<(embed)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
 		// param tag regexp
 		this.paramRegExp = /<(param)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
+		this.vimeoRegExp = /<(iframe)\s+([^>]*src\s*=\s*"http:\/\/[^"]+vimeo\.com\/\w+[^>]*)>([\s\S]*?)<\/iframe>/gi;
 		// yandex maps regexp
 		this.yMapsRegExp = /<div\s+([^>]*id\s*=\s*('|")?YMapsID[^>]*)>/gi;
 		// google maps regexp
@@ -614,8 +615,15 @@
 					// ie bug with empty attrs
 					a.width == '1' && delete a.width;
 					a.height == '1' && delete a.height;
-					self.rte.log(a)
 					return i ? img({ embed : a }, i.type) : t;
+				})
+				.replace(this.vimeoRegExp, function(t, n, a) {
+					a = self.parseAttrs(a);
+					delete a.frameborder;
+					a.width == '1' && delete a.width;
+					a.height == '1' && delete a.height;
+					a.type = 'application/x-shockwave-flash';
+					return img({ embed : a }, 'application/x-shockwave-flash');
 				})
 				.replace(/<\/(embed|param)>/gi, '')
 				.replace(this.pbRegExp, function() {
