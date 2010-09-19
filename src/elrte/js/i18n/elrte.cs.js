@@ -1,8 +1,4 @@
-/**
- * Czech translation
- * @author Michal Marek <mich.marek@gmail.com>
- * @version 2010-09-19
- */
+// czech language
 (function($) {
 elRTE.prototype.i18Messages.cs = {
 	'Editor' : 'Editor',
@@ -163,5 +159,7 @@ elRTE.prototype.i18Messages.cs = {
 	'Cells'         : 'Buňky',
 	'Caption'       : 'Popisek',
 	'Inner borders' : 'Vnitřní rámečky'
+	
+	
 }
 })(jQuery);

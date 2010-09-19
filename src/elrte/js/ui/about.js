@@ -38,6 +38,7 @@
 				+'<tr><td>Artem Vasiliev</td><td>'+this.rte.i18n('Ukranian localization')+'</td></tr>'
 				+'<tr><td>Francois Mazerolle &lt;fmaz008@gmail.com&gt;</td><td>'+this.rte.i18n('French localization')+'</td></tr>'
 				+'<tr><td>Kurt Aerts</td><td>'+this.rte.i18n('Dutch localization')+'</td></tr>'
+				+'<tr><td>Michal Marek &lt;fmich.marek@gmail.com&gt;</td><td>'+this.rte.i18n('Czech localization')+'</td></tr>'
 				+'<tr><td>Ricardo Obregón &lt;robregonm@gmail.com&gt;</td><td>'+this.rte.i18n('Spanish localization')+'</td></tr>'
 				+'<tr><td>Saleh Souzanchi &lt;saleh.souzanchi@gmail.com&gt;</td><td>'+this.rte.i18n('Persian (farsi) localization')+'</td></tr>'
 				+'<tr><td>Tawfek Daghistani &lt;tawfekov@gmail.com&gt;</td><td>'+this.rte.i18n('Arabic localization')+', '+this.rte.i18n('RTL support')+'</td></tr>'
