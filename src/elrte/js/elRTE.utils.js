@@ -364,6 +364,10 @@ elRTE.prototype.utils = function(rte) {
 	this.color2Hex = function(c) {
 		var m;
 		
+		if (c.indexOf('#') === 0) {
+			return c;
+		}
+		
 		c = c||'';
 		function hex(s) {
 			s = parseInt(s).toString(16);
