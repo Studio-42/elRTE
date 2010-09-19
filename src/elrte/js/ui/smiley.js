@@ -15,12 +15,18 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 	this.url = this.rte.filter.url+'smileys/';
 	this.smileys = {
 		'smile' : 'smile.png',
-		'grin' : 'grin.png',
-		'surprised' : 'surprised.png',
+		'happy' : 'happy.png',
 		'tongue' : 'tongue.png',
+		'surprised' : 'surprised.png',
+		'waii' : 'waii.png',
+		'wink' : 'wink.png',
+		'evilgrin' : 'evilgrin.png',
+		'grin' : 'grin.png',
+		
+		
 		'unhappy' : 'unhappy.png'
 	};
-	this.width = 150;
+	this.width = 120;
 
 	this.command = function() {
 		var self = this, url = this.url, d, opts, img;
@@ -29,7 +35,7 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 
 		opts = {
 			dialog : {
-				height  : 'auto',
+				height  : 120,
 				width   : this.width,
 				title   : this.rte.i18n('Smiley'),
 				buttons : {}
@@ -37,7 +43,7 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 		}
 		d = new elDialogForm(opts);
 		$.each(this.smileys, function(name, img) {
-			d.append($('<img src="'+url+img+'" title="'+name+'" id="'+name+'" class="elSmiley"/>').click(function() { self.set(this.id, d);	}));
+			d.append($('<img src="'+url+img+'" title="'+name+'" id="'+name+'" class="el-rte-smiley"/>').click(function() { self.set(this.id, d);	}));
 		});
 		d.open();
 	}
