@@ -7,22 +7,17 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.pagebreak = function() {
-		var self = this;
-		this.title = 'Page break';
-		this._class = 'elrte-pagebreak'
-		
-		this.rte.bind('mousedown', function(e) {
-			if ($(e.target).hasClass(self._class)) {
-				e.preventDefault();
-			}
-		})
-		
+		this.title    = 'Page break';
+		this.cssClass = 'elrte-pagebreak'
+
 		this._exec = function() {
-			this.sel.insertHtml('<img src="'+this.rte.filter.url+'pixel.gif" class="elrte-protected '+this._class+'" />');
+			this.sel.insertHtml('<img src="'+this.rte.filter.url+'pixel.gif" class="elrte-protected '+this.cssClass+'" />');
 		}
 		
-		this._getState = function() {
-			return this.STATE_ENABLE;
+		this.events = {
+			'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
+			'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); },
+			'mousedown'    : function(e) { $(e.target).hasClass(this.cssClass) && e.preventDefault(); }
 		}
 	}
 	

@@ -22,20 +22,6 @@
 		this._class = 'elrte-fullscreen';
 		
 		/**
-		 * remember height, delta and parents with position=relative 
-		 *
-		 **/
-		// this.bind = function() {
-		// 	var self = this, e = self.editor;
-		// 	
-		// 	this.rte.bind('load', function() {
-		// 		self._update(self.STATE_ENABLE);
-		// 		self.height  = self.wz.height();
-		// 		self.delta   = e.outerHeight()-self.height;
-		// 	});
-		// }
-		
-		/**
 		 * Update editor height on window resize in fullscreen view
 		 *
 		 **/
@@ -103,7 +89,7 @@
 		}
 		
 		this.events = {
-			'load'      : function() { 
+			'load' : function() { 
 				this._setState(this.STATE_ENABLE); 
 				this.height  = this.wz.height();
 				this.delta   = this.editor.outerHeight()-this.height;
