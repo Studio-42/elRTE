@@ -12,8 +12,9 @@
 			return this.sel.selectAll();
 		}
 		
-		this._getState = function() {
-			return this.STATE_ENABLE;
+		this.events = {
+			'wysiwyg' : function() { this._setState(this.STATE_ENABLE); },
+			'source close'   : function() { this.rte.count() == 1 && this._setState(this.STATE_DISABLE); }
 		}
 	}
 	

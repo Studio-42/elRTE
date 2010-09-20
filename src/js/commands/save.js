@@ -15,7 +15,7 @@
 		
 		this.events = {
 			'wysiwyg' : function() { this._setState(this.STATE_ENABLE); },
-			'close' : function() { this.rte.count() == 1 && this._setState(this.STATE_DISABLE); }
+			'close'   : function() { this.rte.count() == 1 && this._setState(this.STATE_DISABLE); }
 		}
 	}
 	
