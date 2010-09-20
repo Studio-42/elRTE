@@ -1,6 +1,6 @@
-2010-09-15  Troex Nevelin  <troex@fury.scancode.ru>
+2010-09-20  Troex Nevelin  <troex@fury.scancode.ru>
 
-	* elRTE (1.0.1):
+	* elRTE (1.1):
 		- [feature] TAB now key inserts '\t' instead switch to next element in
 		  source view
 		- [feature] completed RTL support
@@ -19,6 +19,7 @@
 		- [translation] Arabic, tawfek daghistani <tawfekov@gmail.com>
 		- [translation] Persian (Farsi), Saleh soozanchi <info@soozanchi.ir>
 		- [translation] Italian, Ugo Punzolo <sadraczerouno@gmail.com>
+		- [translation] Czech, Michal Marek <mich.marek@gmail.com>
 
 
 
