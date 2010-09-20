@@ -85,6 +85,7 @@
 		 */
 		this.exec = function(v) {
 			if (this._state > 0) {
+				this.rte.focus();
 				this.rte.trigger('exec', {cmd : this.name});
 				
 				if (v === void(0) && this.dialog) {

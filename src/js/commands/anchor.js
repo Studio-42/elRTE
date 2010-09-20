@@ -42,11 +42,11 @@
 			var self = this,
 				rte  = this.rte,
 				n    = this._find(),
-				name  = $('<input type="text" size="22" />').val(n ? $(n).attr('name')||'' : ''),
+				name = $('<input type="text" size="22" />').val(n ? $(n).attr('name')||'' : ''),
 				tb   = new rte.ui.table().append(rte.i18n('Bookmark name')).append(name),
 				opts = { title : rte.i18n(this.title), buttons : {} };
 
-			opts.buttons[rte.i18n('Apply')]  = function() { self._exec(name.val()); $(this).dialog('close'); };
+			opts.buttons[rte.i18n('Apply')]  = function() { self.exec(name.val()); $(this).dialog('close'); };
 			opts.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
 			new rte.ui.dialog(opts).append(tb.get()).open();
 		}
@@ -58,19 +58,16 @@
 		 * @return void
 		 **/
 		this._exec = function(name) {
-			var sel = this.sel,
-				dom = this.dom, 
+			var sel  = this.sel,
+				dom  = this.dom, 
 				attr = { name : name, title : name, 'class' : 'elrte-anchor' },
 				n;
-			
-			this.rte.focus();
 			
 			if ((n = this._find())) {
 				name ? $(n).attr(attr) : dom.remove(n);
 			} else if (name) {
 				sel.select(sel.collapse(true).insertNode(dom.create({ name: 'a', attr : attr})));
 			}
-			
 			return true;
 		}
 
