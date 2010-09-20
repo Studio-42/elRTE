@@ -25,15 +25,15 @@
 		 * remember height, delta and parents with position=relative 
 		 *
 		 **/
-		this.bind = function() {
-			var self = this, e = self.editor;
-			
-			this.rte.bind('load', function() {
-				self._update(self.STATE_ENABLE);
-				self.height  = self.wz.height();
-				self.delta   = e.outerHeight()-self.height;
-			});
-		}
+		// this.bind = function() {
+		// 	var self = this, e = self.editor;
+		// 	
+		// 	this.rte.bind('load', function() {
+		// 		self._update(self.STATE_ENABLE);
+		// 		self.height  = self.wz.height();
+		// 		self.delta   = e.outerHeight()-self.height;
+		// 	});
+		// }
 		
 		/**
 		 * Update editor height on window resize in fullscreen view
@@ -90,7 +90,7 @@
 			v.updateHeight();
 			v.resizable(f);
 			restore();
-			this._update();
+			this.update();
 		}
 		
 		/**
@@ -100,6 +100,14 @@
 		 **/
 		this._getState = function() {
 			return this.rte.view.editor.hasClass(this._class) ? this.STATE_ACTIVE : this.STATE_ENABLE;
+		}
+		
+		this.events = {
+			'load'      : function() { 
+				this._setState(this.STATE_ENABLE); 
+				this.height  = this.wz.height();
+				this.delta   = this.editor.outerHeight()-this.height;
+			}
 		}
 	}
 
