@@ -1,7 +1,7 @@
 /*
  * Russian translation
  * @author Dmitry Levashov <dio@std42.ru>
- * @version 2010-09-19
+ * @version 2010-09-20
  */
 (function($) {
 elRTE.prototype.i18Messages.ru = {
@@ -191,7 +191,7 @@ elRTE.prototype.i18Messages.ru = {
 	'Spanish localization' : 'Испанская локализация',
 	'Czech localization' : 'Чешская локализация',
 	'Japanese localization' : 'Японская локализация',
-	'Latvian localization' : 'Латвийская локализация',
+	'Latvian localization' : 'Латышская локализация',
 	'German localization' : 'Немецкая локализация',
 	'Ukranian localization' : 'Украинская локализация',
 	'Persian (farsi) localization' : 'Персидская (фарси) локализация',

@@ -1,6 +1,7 @@
 /**
  * Italian translation
  * @author Ugo Punzolo <sadraczerouno@gmail.com>
+ * @version 2010-09-20
  */
 (function($) {
 elRTE.prototype.i18Messages.it = {
