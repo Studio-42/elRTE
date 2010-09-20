@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
-			test : ['unlink', 'nbsp'],
+			test : ['unlink', 'stopfloat', 'nbsp'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
