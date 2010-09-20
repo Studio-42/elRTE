@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
-			test : ['unlink', 'stopfloat', 'nbsp', 'hr', 'fullscreen', 'pagebreak'],
+			test : ['unlink', 'stopfloat', 'nbsp', 'hr', 'docstructure', 'fullscreen', 'pagebreak'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
@@ -126,7 +126,7 @@
 		/* commands configuration */
 		commandsConf : {
 			docstructure : {
-				initState : 'on'
+				initActive : true
 			},
 			fontstyle : {
 				compact : true,

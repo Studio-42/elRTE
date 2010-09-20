@@ -28,13 +28,15 @@
 		 *
 		 * @return void
 		 */
-		this.init = function() {
+		this.init = function(conf) {
 			var self = this,
 				rte  = this.rte;
 				
 			this.title = rte.i18n(this.title);
-			this._conf = rte.commandConf(this.name) || {};
+			this._conf = conf;
 			this._listeners = [];
+			
+			this._onInit && this._onInit();
 			$.each(this.events, function(e, c) {
 				rte.bind(e, $.proxy(c, self));
 			});

@@ -151,7 +151,7 @@
 						c.prototype = self.command;
 						c = new c();
 						c.name = n;
-						self._commands[n] = c.init();;
+						self._commands[n] = c.init(o.commandsConf[n]||{});
 					}
 				});
 			});

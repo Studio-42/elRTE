@@ -5,25 +5,8 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.docstructure = function() {
-		this.title  = 'Toggle display document structure';
-		this._class = 'elrte-structure';
-	
-		this.bind = function() {
-			var self = this;
-			
-			if (this.rte.commandConf(this.name, 'initState') == 'on') {
-				// add css class to each new document if enabled
-				this.rte.bind('open', function(e) {
-					$(self.rte.document(e.data.id).document.body).addClass(self._class);
-				});
-			}
-			
-			this.rte.bind('wysiwyg', function() {
-				self._update();
-			}).bind('source close', function(e) {
-				e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
-			});
-		}
+		this.title    = 'Toggle display document structure';
+		this.cssClass = 'elrte-structure';
 
 		/**
 		 * Toggle document structure highlight
@@ -32,15 +15,26 @@
 		 **/
 		this._exec = function() {
 			var d = this.rte.active;
-			d && $(d.document.body).toggleClass(this._class);
-			this._update();
+			d && $(d.document.body).toggleClass(this.cssClass);
+			this.update();
 		}
 		
 		this._getState = function() {
 			var d = this.rte.active;
-			return d ? $(d.document.body).hasClass(this._class) ? this.STATE_ACTIVE : this.STATE_ENABLE : this.STATE_DISABLE;
+			return d ? $(d.document.body).hasClass(this.cssClass) ? this.STATE_ACTIVE : this.STATE_ENABLE : this.STATE_DISABLE;
 		}
 		
+		this.events = {
+			'wysiwyg'      : this.update,
+			'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+		}
+		
+		this._onInit = function() {
+			// add css class to every new document
+			if (this._conf.initActive) {
+				this.events.open = function(e) { $(this.rte.document(e.data.id).document.body).addClass(this.cssClass) };
+			}
+		}
 	}
 	
 })(jQuery);
