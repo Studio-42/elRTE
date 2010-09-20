@@ -190,7 +190,7 @@
 					if (attr == 'href') {
 						itb = new rte.ui.table()
 							.append(e.element)
-							.append(rte.ui.button('ui-icon-mail-closed', rte.i18n('Link to e-mail address'), $.proxy(function() { this.val('mailto:').focus(); }, e.element)));
+							.append(rte.ui.iconButton('ui-icon-mail-closed', rte.i18n('Link to e-mail address'), $.proxy(function() { this.val('mailto:').focus(); }, e.element)));
 			
 						if (rte.options.fmOpen) {
 							b = rte.ui.button('ui-icon-folder-open', rte.i18n('Open file manger'), $.proxy(function() { this.rte.options.fmOpen( function(url) { this.src.main.href.val(url).change(); } ); }, this) );

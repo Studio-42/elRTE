@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
-			
+			test : ['unlink', 'nbsp'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
@@ -107,7 +107,7 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['style', 'font', 'control'],
+			'test' : ['test', 'dummy'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'direction', 'control']
 

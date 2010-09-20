@@ -62,10 +62,41 @@
 	 * @param  Function  click callback
 	 * @return jQuery
 	 **/
-	elRTE.prototype.ui.button = function(icon, title, callback) {
+	elRTE.prototype.ui.iconButton = function(icon, title, callback) {
 		return $('<div class="ui-state-default ui-corner-all" title="'+title+'"><div style="width:16px;height:16px;margin:2px" class="ui-icon '+icon+'"></div></div>')
 			.click( callback )
 			.hover(function() { $(this).toggleClass('ui-state-hover') });
+	}
+	
+	elRTE.prototype.ui.button = function(cmd, type, widget) {
+		var name  = cmd.name,
+			title = cmd.title, 
+			c     = 'elrte-ui elrte-ui-'+name+' elrte-ui-disabled',
+			b     = '';
+		
+		if (type == 'menu') {
+			c += ' elrte-ui-menu';
+			b = '<div class="elrte-ui-menu-control"/><span class="elrte-ui-menu-label">'+title+'</span>';
+		} else if (type == 'compact-menu') {
+			c += ' elrte-ui-menu-icon';
+			b = '<div class="elrte-ui-menu-wrp"><div class="elrte-ui-menu-control"/>'+title+'</div>';
+		}
+
+		b = $('<li class="'+c+'">'+b+'</li>')
+		return widget ? b.elrtebutton(widget) : b;
+		
+	}
+	
+	
+	elRTE.prototype.ui.menuButton = function(name, title, compact) {
+		var c    = 'elrte-ui',
+			mc   = c+'-menu',
+			bc = c+' '+mc+(compact ? '-icon ' : ' ')+c+'-'+name,
+			label = compact ? '' : '<span class="'+mc+'-label">'+title+'</span>';
+			
+		return 	$('<li class="'+bc+'" title="'+title+'"><div class="'+mc+'-wrp"><div class="'+mc+'-control"/>'+label+'</div></li>');
+		
+			
 	}
 	
 })(jQuery);

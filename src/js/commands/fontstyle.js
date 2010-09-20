@@ -116,7 +116,20 @@
 					style : v.style
 				}
 			});
-			return this._ui = $('<li class="'+c+' '+mc+(cmp ? '-icon ' : ' ')+c+'-'+name+'" title="'+lbl+'"><div class="'+mc+'-wrp"><div class="'+mc+'-control"/>'+l+'</div></li>').elrtemenu(conf, rte);
+			var cont = '<div rel="" class="elrte-ui-menu-header">'+this.title+'</div>';
+			$.each(this._opts, function(c, v) {
+				cont += '<div rel="'+c+'" class="elrte-ui-menu-item"><span style="'+v.style+'">'+v.label+'</span></div>'
+			})
+			var o = {
+				html : cont,
+				callback : $.proxy(this.exec, this)
+			};
+			
+			var w = $('<div/>').elrtewidgetmenu(o, rte)
+			
+			return this._ui = rte.ui.button(this, 'compact-menu', w)
+			
+			return this._ui = rte.ui.menuButton(name, rte.i18n(this.title), cmp).elrtemenu(conf, rte);
 		}
 		
 		this._setVal = function() {

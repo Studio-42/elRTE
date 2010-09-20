@@ -133,6 +133,33 @@
 			return n.length ? n.attr('rel').substr(1) : false;
 		}
 
+		this.buildUI = function(tb, commands) {
+			var self = this,
+				pl = tb.length,
+				pc = 'elrte-toolbar-panel',
+				cn, cl, cmd, button, panel;
+			
+			while (pl--) {
+				panel = $('<ul class="'+pc+' '+pc+'-'+(pn = tb[pl])+'"/>');
+				cn = this.rte.options.panels[pn]||[];
+				cl = cn.length;
+				while (cl--) {
+					cmd = commands[cn[cl]]
+					if (cmd) {
+						panel.prepend(this.rte.ui.button(cmd))
+					}
+				}
+				if (panel.children().length) {
+					this.toolbar.prepend(panel)
+				}
+			}
+			
+			if (this.toolbar.children().length) {
+				this.toolbar.show()
+			}
+			
+		}
+
 		/**
 		 * Add button on required toolbar's panel 
 		 *

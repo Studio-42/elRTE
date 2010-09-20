@@ -16,34 +16,45 @@
 		this.sel = rte.selection;
 		// class "constants" - command states
 		this.STATE_DISABLE = 0;
-		this.STATE_ENABLE = 1;
-		this.STATE_ACTIVE = 2;
-		// ui class for disabled command
-		this.uiDisableClass = 'elrte-ui-disabled'//rte.uiDisableClass;
-		// ui class for active command
-		this.uiActiveClass = 'elrte-ui-active'//rte.uiActiveClass;
-		// class for hovered ui
-		this.uiHoverClass = 'elrte-ui-hover'//rte.uiHoverClass;
-		/* button/menu or other ui element placed on toolbar */
-		this._ui;
+		this.STATE_ENABLE  = 1;
+		this.STATE_ACTIVE  = 2;
 		// currents command state
 		this._state = 0;
+		// command config
+		this._conf = {};
 		
 		/**
-		 * Bind to editor events
-		 * By default, command listen "wysiwyg", "close" and "source" to switch between enable/disable states
-		 * and "change" and "changePos" events to switch between enable/active states
+		 * Initilize command
 		 *
 		 * @return void
 		 */
-		this.bind = function() {
-			var self = this;
-			
-			this.rte.bind('wysiwyg change changePos', function() {
-				self._update();
-			}).bind('source close', function(e) {
-				e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
+		this.init = function() {
+			var self = this,
+				rte  = this.rte;
+				
+			this.title = rte.i18n(this.title);
+			this._conf = rte.commandConf(this.name) || {};
+			this._listeners = [];
+			$.each(this.events, function(e, c) {
+				rte.bind(e, $.proxy(c, self));
 			});
+			
+			if (this.shortcut) {
+				rte.shortcut(this.shortcut, this.name, this.title, function() { return self.exec(); });
+			}
+			return this;
+		}
+		
+		/**
+		 * Method for ui to bind to command change state event
+		 *
+		 * @param  Function  callback
+		 * @return void
+		 */
+		this.bind = function(c) {
+			if (typeof(c) === 'function') {
+				this._listeners.push(c);
+			}
 		}
 		
 		/**
@@ -65,22 +76,31 @@
 		}
 		
 		/**
-		 * Create ui if not exists and return it
-		 *
-		 * @return jQuery
-		 */
-		this.ui = function() {
-			return this._ui||this._createUI();
-		}
-		
-		/**
 		 * Exec command if possible and return if execed
 		 *
 		 * @param  mixed    command value if available
 		 * @return Boolean
 		 */
 		this.exec = function(v) {
-			return !!(this._state && this.rte.trigger('exec', {cmd : this.name}) && this._exec(v) && this.rte.trigger('change'));
+			if (this._state > 0) {
+				this.rte.trigger('exec', {cmd : this.name});
+				
+				if (v === void(0) && this.dialog) {
+					this.dialog();
+				} else {
+					return !!(this._exec(v) && this.rte.trigger('change'));
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * Update command state
+		 *
+		 * @return void
+		 */
+		this.update = function() {
+			this._setState(this._getState());
 		}
 		
 		/**
@@ -93,21 +113,6 @@
 		}
 		
 		/**
-		 * Set command state
-		 * Should not be called from outside
-		 *
-		 * @param  Number  command state. If not set - command check it's state and set
-		 * @return void
-		 */
-		this._update = function(s) {
-			this._state = s === void(0) ? this._getState() : s;
-			this._ui && this._updateUI();
-			if (this._state != this.STATE_DISABLE && this._setVal) {
-				this._setVal();
-			}
-		}
-		
-		/**
 		 * Check command state and return it
 		 *
 		 * @return Number
@@ -117,40 +122,31 @@
 		}
 		
 		/**
-		 * Create ui (by default- simple button) and return it
+		 * Set command state
+		 * If it changed - notify listeners (ui)
 		 *
-		 * @return jQuery
+		 * @param  Number  new state
+		 * @return void
 		 */
-		this._createUI = function() {
-			var self = this,
-				c    = 'elrte-ui';
-			return this._ui = $('<li class="'+c+' '+c+'-'+this.name+' '+this.uiDisableClass+'" title="'+this.title+'" />')
-				.mousedown(function(e) {
-					e.preventDefault();
-					e.stopPropagation();
-					self.rte.focus();
-					if (self._state > 0) {
-						self.dialog ? self.dialog() : self.exec();
-					}
-					// self._state>0 && self.exec();
-				});
+		this._setState = function(s) {
+			var _s = this._state, l;
+			this._state = s;
+			
+			if (this._state != _s) {
+				l = this._listeners.length;
+				while (l--) {
+					this._listeners[l](this);
+				}
+			}
 		}
 		
 		/**
-		 * Update ui classes based on current state
+		 * Editor events to bind
 		 *
-		 * @return void
 		 */
-		this._updateUI = function() {
-			var d = this.uiDisableClass,
-				a = this.uiActiveClass;
-			if (this._ui) {
-				switch (this._state) {
-					case this.STATE_DISABLE : this._ui.removeClass(a).addClass(d); break;
-					case this.STATE_ENABLE  : this._ui.removeClass(a+' '+d);       break;
-					case this.STATE_ACTIVE  : this._ui.removeClass(d).addClass(a); break;
-				}
-			}
+		this.events = {
+			'wysiwyg change changePos' : this.update,
+			'close source' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
 		}
 		
 	}

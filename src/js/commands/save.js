@@ -24,6 +24,10 @@
 			this.rte.save();
 		}
 		
+		this._getState = function() {
+			return this.STATE_ENABLE;
+		}
+		
 	}
 	
 })(jQuery);

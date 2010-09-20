@@ -151,15 +151,13 @@
 						c.prototype = self.command;
 						c = new c();
 						c.name = n;
-						c.bind();
-						// add ui on toolbar
-						o.showToolbar && (ui = c.ui()) && self.view.addUI(ui, p);
-						self._commands[n] = c;
-						// bind shortcut
-						c.shortcut && self.shortcut(c.shortcut, n, c.title, function() { return self._commands[n].exec(); });
+						self._commands[n] = c.init();;
 					}
 				});
 			});
+
+			this.view.buildUI(o.toolbars[o.toolbar], this._commands)
+
 
 			/* load plugins */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
