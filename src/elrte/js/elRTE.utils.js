@@ -212,7 +212,7 @@ elRTE.prototype.utils = function(rte) {
 		var st = {}, a = this.rte.options.allowBrowsersSpecStyles, t, n, v;
 		
 		if (typeof(s) == 'string' && s.length) {
-			$.each(s.split(';'), function() {
+			$.each(s.replace(/&quot;/gi, "'").split(';'), function() {
 				t = this.toString().split(':');
 				if (t[0] && t[1]) {
 					n = $.trim(t[0]).toLowerCase();
