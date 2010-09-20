@@ -201,6 +201,7 @@ elRTE.prototype.i18Messages.ru = {
 	'Dutch localization' : 'Голландская локализация',
 	'Hungarian localization' : 'Венгерская локализация',
 	'Polish localization' : 'Польская локализация',
+	'Italian localization' : 'Итальянская локализация',
 	'Traditional Chinese localization' : 'Китайская (традиционная) локализация',
 	'For more information about this software visit the' : 'Подробная информация и форум тех. поддержки',
 	'elRTE website' : 'на сайте elRTE' 
