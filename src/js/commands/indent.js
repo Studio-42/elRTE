@@ -7,7 +7,6 @@
 	 **/
 	elRTE.prototype.commands.indent = function() {
 		this.title = 'Indent';
-		this.step  = parseInt(this.rte.commandConf(this.name, 'step'))||20;
 		
 		this._exec = function() {
 			var self = this, 
@@ -75,9 +74,15 @@
 			return true;
 		}
 		
-		this._getState = function() {
-			return this.STATE_ENABLE;
+		this._onInit = function() {
+			this.step  = parseInt(this._conf.step)||20;
 		}
+		
+		this.events = {
+			'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
+			'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+		}
+		
 	}
 	
 })(jQuery);
