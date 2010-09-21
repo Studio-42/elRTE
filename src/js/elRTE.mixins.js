@@ -377,18 +377,5 @@
 		}
 	}
 	
-	/**
-	 * Common bind method for undo/redo classes
-	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 **/
-	elRTE.prototype.mixins.historyBind = function() {
-		var self = this;
-		
-		this.rte.bind('wysiwyg historyChange', function(e) {
-			self._update();
-		}).bind('close source', function(e) {
-			e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
-		});
-	}
 	
 })(jQuery);
