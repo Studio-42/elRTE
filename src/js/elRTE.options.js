@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
-			test : ['unlink', 'stopfloat', 'nbsp', 'selectall', 'hr', 'anchor', 'link', 'outdent', 'indent', 'docstructure', 'removeformat', 'fullscreen', 'pagebreak'],
+			test : ['unlink', 'stopfloat', 'nbsp', 'selectall', 'hr', 'anchor', 'link', 'outdent', 'indent', 'bold', 'docstructure', 'removeformat', 'fullscreen', 'pagebreak'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
@@ -107,7 +107,7 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['document', 'test', 'dummy'],
+			'test' : ['document', 'edi', 'history'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'direction', 'control']
 
