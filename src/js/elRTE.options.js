@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontsize', 'fontfamily', 'fontstyle', 'formatblock' ] ,
+			font       : [/*'fontsize', 'fontfamily', */'fontstyle' /*, 'formatblock' */] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -109,7 +109,7 @@
 		toolbars : {
 			'test' : ['document', 'edit', 'history', 'style', 'semantic', 'lists'],
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'font-', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
 
 		},
 		toolbar : 'default',

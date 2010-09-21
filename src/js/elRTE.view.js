@@ -137,7 +137,7 @@
 			var self = this,
 				pl = tb.length,
 				pc = 'elrte-toolbar-panel',
-				cn, cl, cmd, button, panel;
+				cn, cl, cmd, bn, button, panel;
 			
 			while (pl--) {
 				panel = $('<ul class="'+pc+' '+pc+'-'+(pn = tb[pl])+'"/>');
@@ -146,7 +146,10 @@
 				while (cl--) {
 					cmd = commands[cn[cl]]
 					if (cmd) {
-						panel.prepend(this.rte.ui.button(cmd))
+						bt = cmd.buttonType;
+						button = this.rte.ui[bt]||this.rte.ui.button;
+						// self.rte.log(button) 
+						panel.prepend(button(cmd))
 					}
 				}
 				if (panel.children().length) {
