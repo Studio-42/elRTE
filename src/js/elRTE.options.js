@@ -85,14 +85,14 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : [/*'fontsize', 'fontfamily', */'fontstyle' /*, 'formatblock' */] ,
+			font       : ['fontfamily', 'fontsize', /*, 'fontstyle', 'formatblock' */] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
 			links      : ['anchor', 'link', 'unlink'],
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
-			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div'],
+			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
 			test : ['unlink', 'stopfloat', 'nbsp', 'selectall', 'hr', 'anchor', 'link', 'outdent', 'indent', 'bold', 'docstructure', 'removeformat', 'fullscreen', 'pagebreak'],
 			
 			direction  : ['dirltr', 'dirrtl'],
@@ -147,7 +147,7 @@
 				compact : true
 			},
 			fontsize : {
-				compact : true
+				textOnButton : true
 			},
 			fontfamily : {
 				compact : true

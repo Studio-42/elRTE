@@ -175,14 +175,14 @@
 	padding: 2px 0px 2px 7px; 
 	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
 }
-.elrte .elrte-toolbar-panel-first {
+.elrte .elrte-toolbar-panel:first-child {
 	padding-left:0;
 	background:transparent;
 }
 
-.elrte .elrte-ui,
-.elrte .elrte-ui-menu,
-.elrte .elrte-ui-menu-icon {
+.elrte .elrte-btn,
+.elrte .elrte-btn-menu,
+.elrte .elrte-btn-widget {
 	width:  20px;
 	height: 20px;
 	margin: 0 2px 0 0;
@@ -199,118 +199,111 @@
 /* panel document */
 
 /* panel edit */
-.elrte .elrte-ui-selectall { background-position:-60px 0; }
-.elrte .elrte-ui-removeformat { background-position:-80px 0; }
-.elrte .elrte-ui-pastetext { background-position:-160px 0; }
-.elrte .elrte-ui-pasteformattext { background-position:-180px 0; }
+.elrte .elrte-btn-selectall { background-position:-60px 0; }
+.elrte .elrte-btn-removeformat { background-position:-80px 0; }
+.elrte .elrte-btn-pastetext { background-position:-160px 0; }
+.elrte .elrte-btn-pasteformattext { background-position:-180px 0; }
 
 /* panel style */
-.elrte .elrte-ui-bold { background-position:-200px 0; }
-.elrte .elrte-ui-italic { background-position:-220px 0; }
-.elrte .elrte-ui-underline { background-position:-240px 0; }
-.elrte .elrte-ui-strike { background-position:-260px 0; }
-.elrte .elrte-ui-sup { background-position:-280px 0; }
-.elrte .elrte-ui-sub { background-position:-300px 0; }
+.elrte .elrte-btn-bold { background-position:-200px 0; }
+.elrte .elrte-btn-italic { background-position:-220px 0; }
+.elrte .elrte-btn-underline { background-position:-240px 0; }
+.elrte .elrte-btn-strike { background-position:-260px 0; }
+.elrte .elrte-btn-sup { background-position:-280px 0; }
+.elrte .elrte-btn-sub { background-position:-300px 0; }
 
 /* panel semantic */
-.elrte .elrte-ui-ins { background-position:-320px 0; }
-.elrte .elrte-ui-del { background-position:-340px 0; }
-.elrte .elrte-ui-abbr { background-position:-360px 0; }
-.elrte .elrte-ui-cite { background-position:-380px 0; }
+.elrte .elrte-btn-ins { background-position:-320px 0; }
+.elrte .elrte-btn-del { background-position:-340px 0; }
+.elrte .elrte-btn-abbr { background-position:-360px 0; }
+.elrte .elrte-btn-cite { background-position:-380px 0; }
 /*.elrte .elrte-ui-blockquote { background-position:-400px 0; }*/
 
 /* panel direction */
-.elrte .elrte-ui-dirltr { background-position:-420px 0; }
-.elrte .elrte-ui-dirrtl { background-position:-440px 0; }
+.elrte .elrte-btn-dirltr { background-position:-420px 0; }
+.elrte .elrte-btn-dirrtl { background-position:-440px 0; }
 
 /* panel indent */
-.elrte .elrte-ui-outdent { background-position:-460px 0; }
-.elrte .elrte-ui-indent { background-position:-480px 0; }
+.elrte .elrte-btn-outdent { background-position:-460px 0; }
+.elrte .elrte-btn-indent { background-position:-480px 0; }
 
 /* panel font */
-.elrte .elrte-ui-formatblock { background-position:-520px -20px; }
-.elrte .elrte-ui-fontsize { background-position:-540px -20px; }
-.elrte .elrte-ui-fontfamily { background-position:-560px -20px; }
-.elrte .elrte-ui-fontstyle { background-position:-580px -20px; }
+.elrte .elrte-btn-formatblock { background-position:-520px -20px; }
+.elrte .elrte-btn-fontsize { background-position:-540px -20px; }
+.elrte .elrte-btn-fontfamily { background-position:-560px -20px; }
+.elrte .elrte-btn-fontstyle { background-position:-580px -20px; }
 
 
 /* panel lists */
-.elrte .elrte-ui-ul { background-position:-500px 0; }
-.elrte .elrte-ui-ol { background-position:-520px 0; }
+.elrte .elrte-btn-ul { background-position:-500px 0; }
+.elrte .elrte-btn-ol { background-position:-520px 0; }
 
 
 /* panel alignment */
-.elrte .elrte-ui-alignleft { background-position:-540px 0; }
-.elrte .elrte-ui-aligncenter { background-position:-560px 0; }
-.elrte .elrte-ui-alignright { background-position:-580px 0; }
-.elrte .elrte-ui-alignjustify { background-position:-600px 0; }
+.elrte .elrte-btn-alignleft { background-position:-540px 0; }
+.elrte .elrte-btn-aligncenter { background-position:-560px 0; }
+.elrte .elrte-btn-alignright { background-position:-580px 0; }
+.elrte .elrte-btn-alignjustify { background-position:-600px 0; }
 
 
 /* panel history */
-.elrte .elrte-ui-undo { background-position:-620px 0; }
-.elrte .elrte-ui-redo { background-position:-640px 0; }
+.elrte .elrte-btn-undo { background-position:-620px 0; }
+.elrte .elrte-btn-redo { background-position:-640px 0; }
 
 /* panel links */
-.elrte .elrte-ui-anchor { background-position:0 -20px; }
-.elrte .elrte-ui-link { background-position:-20px -20px; }
-.elrte .elrte-ui-unlink { background-position:-40px -20px; }
+.elrte .elrte-btn-anchor { background-position:0 -20px; }
+.elrte .elrte-btn-link { background-position:-20px -20px; }
+.elrte .elrte-btn-unlink { background-position:-40px -20px; }
 
 /* panel misc */
-.elrte .elrte-ui-nbsp { background-position:-60px -20px; }
-.elrte .elrte-ui-stopfloat { background-position:-80px -20px; }
-.elrte .elrte-ui-hr { background-position:-100px -20px; }
-.elrte .elrte-ui-pagebreak { background-position:-600px -20px; }
-.elrte .elrte-ui-blockquote { background-position:-400px 0; }
-.elrte .elrte-ui-div { background-position:-440px -20px; }
+.elrte .elrte-btn-nbsp { background-position:-60px -20px; }
+.elrte .elrte-btn-stopfloat { background-position:-80px -20px; }
+.elrte .elrte-btn-hr { background-position:-100px -20px; }
+.elrte .elrte-btn-pagebreak { background-position:-600px -20px; }
+.elrte .elrte-btn-blockquote { background-position:-400px 0; }
+.elrte .elrte-btn-div { background-position:-440px -20px; }
+.elrte .elrte-btn-specialchars { background-position:-480px -20px; }
 
 /* panel control */
-.elrte .elrte-ui-docstructure { background-position:-620px -20px; }
-.elrte .elrte-ui-source { background-position:-640px -20px; }
-.elrte .elrte-ui-fullscreen { background-position:-660px -20px; }
+.elrte .elrte-btn-docstructure { background-position:-620px -20px; }
+.elrte .elrte-btn-source { background-position:-640px -20px; }
+.elrte .elrte-btn-fullscreen { background-position:-660px -20px; }
 
 /* WIDGETS */
 /* menu */
-/* menu with text */
-.elrte .elrte-ui-menu { 
-	width: 120px; 
-	background:#fff;
-}
-
-/* comapct menu with icon */
-.elrte .elrte-ui-menu-icon { 
-	width: 32px; 
+/* button with menu */
+.elrte .elrte-btn-menu { 
+/*	width: 120px; */
+	width:auto;
+	min-width:32px;
+	max-width:120px;
 	background-color:#fff;
 }
 
-/* hovered menu dont change bg color */
-.elrte .elrte-ui-hover.elrte-ui-menu,
-.elrte .elrte-ui-hover.elrte-ui-menu-icon  { 
-	background-color:#fff; 
-}
-
-/* menu wrapper */
-.elrte .elrte-ui-menu .elrte-ui-menu-wrp,
-.elrte .elrte-ui-menu-icon .elrte-ui-menu-wrp {
+/* button-menu and button-widget wrapper */
+.elrte .elrte-btn-menu-wrp {
 	width: 100%;
 	height:20px;
 	overflow:hidden;
+	
+}
+
+/* text on button-menu */
+.elrte .elrte-btn-menu-label {
+	width:90px;
+	font-size:12px;
+	line-height:20px;
+	padding: 0 5px;
+	overflow:hidden;
+	float:left;
+	background:#fff;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
-/* text on menu button */
-.elrte .elrte-ui-menu-label {
-	max-width:100;
-	font-size:12px;
-	line-height:20px;
-	padding-left: 5px;
-	overflow:hidden;
-	float:left;
-}
-
-/* arrow button on menu right side */
-.elrte .elrte-ui-menu-control {
+/* arrow on button-menu right side */
+.elrte .elrte-btn-menu-control {
 	float:right;
 	height:20px;
 	width:10px;
@@ -322,11 +315,20 @@
 	background:#eee url(../images/elrte-toolbar.png) -778px -22px no-repeat;
 }
 
-.elrte .elrte-ui-hover .elrte-ui-menu-control {
-	background-color:#f5f5f5;
+/* button-widget */
+.elrte .elrte-btn-widget { 
+	width: 32px; 
+	background-color:#fff;
 }
 
-.elrte .elrte-ui-menu-container {
+/* hovered button-menu and button-widget dont change bg color */
+.elrte .elrte-ui-hover.elrte-btn-menu,
+.elrte .elrte-ui-hover.elrte-btn-widget  { 
+	background-color:#fff; 
+}
+
+/* widget menu */
+.elrte .elrte-ui-widget-menu {
 	position:absolute;
 	top:20px;
 	min-width:120px;
@@ -337,42 +339,80 @@
 	z-index:10000;
 }
 
-.elrte .elrte-ui-menu-header {
-	background-color:#eee;
-	font-weight:bold;
-}
-
-.elrte .elrte-ui-menu-item,
-.elrte .elrte-ui-menu-header {
+.elrte .elrte-ui-widget-menu-item,
+.elrte .elrte-ui-widget-menu-header {
 	white-space: nowrap;
 	font-size:.86em;
 	padding:2px 32px 2px 9px;
 	border-top:1px solid #eee;
 }
 
-.elrte .elrte-ui-menu-container .elrte-ui-menu-item:first-child { 
+.elrte .elrte-ui-widget-menu-header {
+	background-color:#eee;
+	font-weight:bold;
+}
+
+.elrte .elrte-ui-widget-menu-item:first-child { 
 	border-top:0 solid; 
 }
 
-.elrte .elrte-ui-menu-item * {
+.elrte .elrte-ui-widget-menu-item.elrte-ui-hover {
+	border-color: #fff;
+	background-color:#c3dbef;
+}
+
+.elrte .elrte-ui-widget-menu-item * {
 	padding:0;
 	margin: 0;
 }
 
+/**/
+.elrte .elrte-ui-widget-grid {
+	position:absolute;
+	top:20px;
+	min-width:120px;
+	max-height:270px;
+	padding-bottom:1px;
+	border:1px solid #ccc;
+	background:#fff;
+	overflow:auto;
+	z-index:10000;
+}
 
+.elrte .elrte-ui-widget-grid-header {
+	white-space: nowrap;
+	font-size:.86em;
+	padding:2px 32px 2px 9px;
+	margin-bottom:1px;
+	border-top:1px solid #eee;
+	background-color:#eee;
+	font-weight:bold;
+}
 
+.elrte .elrte-ui-widget-grid-item {
+	width:16px;
+	height : 16px;
+	padding:2px;
+	border:1px solid #ccc;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	text-align:center;
 
-.elrte .elrte-ui-menu-item.elrte-ui-hover {
-	border-color: #fff;
+	font: 14px/18px verdana sans-serif;
+
+	margin: 0 0 1px 1px;
+	display: -moz-inline-stack;
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+}
+
+.elrte .elrte-ui-widget-grid-item.elrte-ui-hover {
 	background-color:#c3dbef;
 }
 
-.elrte .elrte-ui-menu-item.elrte-ui-active {
-	border-color: #fff;
-	background-color:#c3dbef;
-}
-
-
+/**/
 .elrte-pasteformattext {
 	width:99%;
 	height:320px;
@@ -390,8 +430,8 @@ textarea.elrte-pastetext {
 
 
 /* ui states */
-.elrte .elrte-ui-hover    { border-color:#999; background-color:#f5f5f5; }
-.elrte .elrte-ui-active   { background-color:#ccc; border-color:#fff; }
+.elrte .elrte-ui-hover    { background-color:#f5f5f5; border-color:#999; }
+.elrte .elrte-ui-active   { background-color:#c3dbef; border-color:#fff; }
 .elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
 /******************  statusbar  *********************/

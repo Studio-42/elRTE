@@ -1,9 +1,12 @@
 (function($) {
 	
+	
+	
+	
 	// close any menu on document click
-	$(document).bind('mousedown', function(e) {
-		$('.elrte-ui-menu-container').hide();
-	});
+	// $(document).bind('mousedown', function(e) {
+	// 	$('.elrte-ui-menu-container').hide();
+	// });
 
 	
 	/**
@@ -11,7 +14,7 @@
 	 * Create castomized drop-down menu
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	$.fn.elrtemenu = function(o, rte) {
+	$.fn.elrtemenu_ = function(o, rte) {
 		
 		var self = this,
 			aclass   = rte.command.uiActiveClass,

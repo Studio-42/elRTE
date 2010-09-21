@@ -57,6 +57,7 @@
 			if (typeof(c) === 'function') {
 				this._listeners.push(c);
 			}
+			return this;
 		}
 		
 		/**
@@ -132,16 +133,21 @@
 		 * @return void
 		 */
 		this._setState = function(s) {
-			var _s = this._state, l;
+			var _s = this._state, 
+				_v = this._val, l;
 			this._state = s;
 			
-			if (this._state != _s) {
+			this._updateValue();
+			
+			if (this._state != _s || this._val != _v) {
 				l = this._listeners.length;
 				while (l--) {
 					this._listeners[l](this);
 				}
 			}
 		}
+		
+		this._updateValue = function() { }
 		
 		/**
 		 * Editor events to bind

@@ -114,7 +114,8 @@
 			/* called before cut from document */
 			'cut'       : [],
 			/* called before paste in document */
-			'paste'     : []
+			'paste'     : [],
+			'hideUI' : []
 			};
 		
 		/**
@@ -191,6 +192,11 @@
 				});
 			}
 			delete this.init;
+			
+			$(document).mousedown(function() {
+				self.log('docclick')
+				self.trigger('hideUI')
+			})
 		}
 		
 		/**

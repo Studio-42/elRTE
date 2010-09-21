@@ -5,16 +5,13 @@
  **/
 elRTE.prototype.ui.button = function(cmd) {
 	// @TODO move hover into elrte.view?
-	var aclass = 'elrte-ui-active',
-		dclass = 'elrte-ui-disabled', 
-		button = $('<li class="elrte-ui elrte-ui-'+cmd.name+' '+dclass+'"/>')
-			.hover(function() {
-				!button.hasClass(dclass) && button.toggleClass('elrte-ui-hover');
-			})
+	var ac = 'elrte-ui-active',
+		dc = 'elrte-ui-disabled', 
+		btn = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+dc+'"/>')
 			.mousedown(function(e) {
 				e.preventDefault();
 				e.stopPropagation();
-				cmd.rte.focus();
+				cmd.rte.trigger('hideUI').focus();
 				if (cmd._state > 0) {
 					cmd.exec();
 				}
@@ -22,12 +19,12 @@ elRTE.prototype.ui.button = function(cmd) {
 	
 	cmd.bind(function(c) { 
 		switch (c.state()) {
-			case cmd.STATE_DISABLE : button.removeClass(aclass).addClass(dclass); break;
-			case cmd.STATE_ENABLE  : button.removeClass(aclass+' '+dclass);       break;
-			case cmd.STATE_ACTIVE  : button.removeClass(dclass).addClass(aclass); break;
+			case cmd.STATE_DISABLE : btn.removeClass(ac).addClass(dc); break;
+			case cmd.STATE_ENABLE  : btn.removeClass(ac+' '+dc);       break;
+			case cmd.STATE_ACTIVE  : btn.removeClass(dc).addClass(ac); break;
 		}
 	});
 	
-	return button;
+	return btn;
 }
 

@@ -251,37 +251,6 @@
 	elRTE.prototype.mixins.font = {
 		
 		/**
-		 * Create command menu and return command ui
-		 * @return jQuery
-		 **/
-		ui : function() {
-			var rte  = this.rte,
-				css = this._css,
-				c    = 'elrte-ui',
-				mc   = c+'-menu',
-				name = this.name,
-				cmp  = rte.commandConf(this.name, 'compact'),
-				lbl  = rte.i18n(this.title),
-				l    = cmp ? '' : '<span class="'+mc+'-label">'+lbl+'</span>',
-				conf = {
-					label    : lbl,
-					name     : name,
-					callback : $.proxy(this.exec, this),
-					opts     : {}
-				};
-			
-			$.each(this._opts, function(v, l) {
-				conf.opts[v] = { 
-					label : rte.i18n(l), 
-					style : v != 'default' ? css+': '+v : ''
-				};
-			});
-
-			this._ui = $('<li class="'+c+' '+mc+(cmp ? '-icon ' : ' ')+c+'-'+name+'" title="'+lbl+'"><div class="'+mc+'-wrp"><div class="'+mc+'-control"/>'+l+'</div></li>').elrtemenu(conf, rte);
-			return this._ui;
-		},
-		
-		/**
 		 * Set css property to selected text
 		 * @param  String  css property value
 		 * @return Boolean
@@ -337,7 +306,7 @@
 				}
 			}
 			sel.toBookmark(b);
-			setTimeout(function() { self._ui.val(v); }, 2);
+			// setTimeout(function() { self._ui.val(v); }, 2);
 			return true;
 		},
 		
@@ -347,13 +316,12 @@
 		 * 
 		 * @return Boolean
 		 **/
-		val : function() {
+		update : function() {
 			var dom = this.dom,
 				css = this._css,
-				n = dom.closestParent(this.sel.node(), function(n) { return dom.css(n, css) }, true);
+				n   = dom.closestParent(this.sel.node(), function(n) { return dom.css(n, css) }, true);
 
 			this._val = this._parseVal(dom.css(n, css));
-			this._ui.val([this._val]);
 		}
 		
 	}

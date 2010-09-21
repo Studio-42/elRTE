@@ -146,9 +146,7 @@
 				while (cl--) {
 					cmd = commands[cn[cl]]
 					if (cmd) {
-						bt = cmd.buttonType;
-						button = this.rte.ui[bt]||this.rte.ui.button;
-						// self.rte.log(button) 
+						button = this.rte.ui[cmd.button]||this.rte.ui.button;
 						panel.prepend(button(cmd))
 					}
 				}
@@ -158,7 +156,12 @@
 			}
 			
 			if (this.toolbar.children().length) {
-				this.toolbar.show()
+				this.toolbar.show();
+				this.toolbar.children().children().hover(function(e) {
+					var t = $(this);
+					t.toggleClass('elrte-ui-hover')
+					// self.rte.log(this)
+				})
 			}
 			
 		}
