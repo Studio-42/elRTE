@@ -7,7 +7,7 @@
 	 **/
 	elRTE.prototype.commands.outdent = function() {
 		this.title = 'Outdent';
-		this.step  = parseInt(this.rte.commandConf(this.name, 'step'))||20;
+		// this.step  = parseInt(this.rte.commandConf(this.name, 'step'))||20;
 		
 		this._test = $.proxy(function(n) {
 			var css;
@@ -110,6 +110,11 @@
 		this._getState = function() {
 			return this.dom.closestParent(this.sel.node(), this._test, true) ? this.STATE_ENABLE : this.STATE_DISABLE;
 		}
+		
+		this._onInit = function() {
+			this.step  = parseInt(this._conf.step)||20;
+		}
+		
 	}
 	
 })(jQuery);
