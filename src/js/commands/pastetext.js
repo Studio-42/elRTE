@@ -8,16 +8,6 @@
 	elRTE.prototype.commands.pastetext = function() {
 		this.title = 'Paste only text';
 		
-		this.bind = function() {
-			var self = this;
-
-			this.rte.bind('wysiwyg', function() {
-				self._update(self.STATE_ENABLE);
-			}).bind('source close', function(e) {
-				e.data.id == self.rte.active.id && self._update(self.STATE_DISABLE);
-			});
-		}
-		
 		this.dialog = function() {
 			var self = this,
 				rte  = this.rte,
@@ -33,6 +23,11 @@
 			this.rte.focus();
 			this.sel.deleteContents().insertHtml($.trim(txt).replace(/\r?\n/g, "\n<br>"));
 			return true;
+		}
+		
+		this.events = {
+			'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
+			'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
 		}
 
 	}

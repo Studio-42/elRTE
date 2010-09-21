@@ -107,7 +107,7 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['document', 'edi', 'history'],
+			'test' : ['document', 'edit', 'history'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'direction', 'control']
 
