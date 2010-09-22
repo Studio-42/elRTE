@@ -6,9 +6,9 @@
 	 **/
 	elRTE.prototype.commands.alignleft = function() {
 		this.title     = 'Align left';
-		this.val       = 'left';
-		this._exec     = $.proxy(elRTE.prototype.mixins.alignment.exec, this);
-		this._getState = $.proxy(elRTE.prototype.mixins.alignment.state, this);
+		this._val       = 'left';
+		this._exec     = $.proxy(this.rte.mixins.alignment.exec, this);
+		this._getState = $.proxy(this.rte.mixins.alignment.state, this);
 	}
 
 })(jQuery);

@@ -4,7 +4,6 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.fontsize = function() {
-	var rte = this.rte;
 	this.title  = 'Font size';
 	this.button = 'buttonMenu';
 	this._val   = '';
@@ -12,14 +11,14 @@ elRTE.prototype.commands.fontsize = function() {
 	this.css    = 'font-size';
 	this.tpl    = '<span style="font-size:{value}">{label}</span>';
 	this.opts   = {
-		'default'  : rte.i18n('Default'),
-		'xx-small' : rte.i18n('Small (8pt)'),
-		'x-small'  : rte.i18n('Small (10pt)'),
-		'small'    : rte.i18n('Small (12pt)'),
-		'medium'   : rte.i18n('Normal (14pt)'),
-		'large'    : rte.i18n('Large (18pt)'),
-		'x-large'  : rte.i18n('Large (24pt)'),
-		'xx-large' : rte.i18n('Large (36pt)')
+		'default'  : this.rte.i18n('Default'),
+		'xx-small' : this.rte.i18n('Small (8pt)'),
+		'x-small'  : this.rte.i18n('Small (10pt)'),
+		'small'    : this.rte.i18n('Small (12pt)'),
+		'medium'   : this.rte.i18n('Normal (14pt)'),
+		'large'    : this.rte.i18n('Large (18pt)'),
+		'x-large'  : this.rte.i18n('Large (24pt)'),
+		'xx-large' : this.rte.i18n('Large (36pt)')
 	};
 	
 	this.test      = $.proxy(elRTE.prototype.mixins.font.test,   this);

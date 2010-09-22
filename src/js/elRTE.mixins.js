@@ -189,9 +189,9 @@
 		 * @return Number
 		 **/
 		state : function() {
-			var self = this,
-				n = this.dom.closestParent(this.sel.node(), function(n) { return self.dom.is(n, 'blockText') && $(n).css('text-align'); }, true);
-			return $(n).css('text-align') == this.val ? this.STATE_ACTIVE : this.STATE_ENABLE;
+			var dom = this.dom,
+				n = dom.closestParent(this.sel.node(), function(n) { return dom.is(n, 'blockText') && $(n).css('text-align'); }, true);
+			return $(n).css('text-align') == this._val ? this.STATE_ACTIVE : this.STATE_ENABLE;
 		},
 		
 		/**
@@ -200,11 +200,11 @@
 		 * @return Boolean
 		 **/
 		exec : function() {
-			var self = this, 
-				sel  = self.sel,
-				dom  = self.dom,
+			var	sel  = this.sel,
+				dom  = this.dom,
+				b    = sel.bookmark(),
 				n    = sel.collapsed() ? [sel.node()] : sel.get(), 
-				v    = self.val,
+				v    = this._val,
 				f    = n[0], 
 				l    = n[n.length-1],
 				s, e, o;
@@ -224,14 +224,13 @@
 			});
 			o = { 
 				accept  : 'any', 
-				wrap    : function(n) { self.dom.wrap(n, { name : self.dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } }); }, 
+				wrap    : function(n) { dom.wrap(n, { name : dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } }); }, 
 				inner   : false, 
 				testCss : 'blockText', 
 				setCss  : function(n) { $(n).css('text-align', v); } 
 			};
 			dom.smartWrap(n, o);
-			this.sel.select(f, l);
-			setTimeout(function() { self._update(self.STATE_ACTIVE) }, 2);
+			sel.toBookmark(b);
 			return true;
 		}
 	}
