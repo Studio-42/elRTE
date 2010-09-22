@@ -7,7 +7,6 @@
 	 **/
 	elRTE.prototype.commands.outdent = function() {
 		this.title = 'Outdent';
-		// this.step  = parseInt(this.rte.commandConf(this.name, 'step'))||20;
 		
 		this._test = $.proxy(function(n) {
 			var css;
@@ -15,19 +14,17 @@
 		}, this)
 		
 		this._exec = function() {
-			var self = this, 
-				sel  = self.sel,
-				dom  = self.dom,
-				step = self.step,
+			var sel  = this.sel,
+				dom  = this.dom,
+				step = parseInt(this.conf.step)||20,
 				n    = sel.collapsed() ? [sel.node()] : sel.get(), 
 				b    = sel.bookmark(),
-				li1 = dom.closestParent(n[0], /^LI$/, true),
-				li2 = dom.closestParent(n[n.length-1], /^LI$/, true),
-				lst = li1 && li2 ? dom.commonAncestor(li1, li2) : false,
+				li1  = dom.closestParent(n[0], /^LI$/, true),
+				li2  = dom.closestParent(n[n.length-1], /^LI$/, true),
+				lst  = li1 && li2 ? dom.commonAncestor(li1, li2) : false,
 				_n, next, p, l;
 			
 			lst = lst ? dom.closestParent(lst, 'list', dom.is(lst, 'list')) : false;
-			
 			
 			function test(n) {
 				return parseInt((css = dom.css(n))['padding-left'])>0 || parseInt(css['margin-left'])>0;
@@ -39,7 +36,7 @@
 					n = $(n);
 
 				if (v>0) {
-					v = v < self.step ? 0 : v - self.step;
+					v = v < step ? 0 : v - step;
 					n.css(p, v > 0 ? v+'px' : '');
 				}
 			}
@@ -109,10 +106,6 @@
 		
 		this._getState = function() {
 			return this.dom.closestParent(this.sel.node(), this._test, true) ? this.STATE_ENABLE : this.STATE_DISABLE;
-		}
-		
-		this._onInit = function() {
-			this.step  = parseInt(this._conf.step)||20;
 		}
 		
 	}

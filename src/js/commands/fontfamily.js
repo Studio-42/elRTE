@@ -6,6 +6,7 @@
 elRTE.prototype.commands.fontfamily = function() {
 	this.title  = 'Font family';
 	this._val   = '';
+	this.conf   = { label : true };
 	this.css   = 'font-family';
 	this.button = 'buttonMenu';
 	this.tpl    = '<span style="font-family:{value}">{label}</span>';

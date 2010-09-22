@@ -7,6 +7,8 @@
 	elRTE.prototype.commands.docstructure = function() {
 		this.title    = 'Toggle display document structure';
 		this.cssClass = 'elrte-structure';
+		this.conf     = { initActive : true };
+
 
 		/**
 		 * Toggle document structure highlight
@@ -31,7 +33,7 @@
 		
 		this._onInit = function() {
 			// add css class to every new document
-			if (this._conf.initActive) {
+			if (this.conf.initActive) {
 				this.events.open = function(e) { $(this.rte.document(e.data.id).document.body).addClass(this.cssClass) };
 			}
 		}

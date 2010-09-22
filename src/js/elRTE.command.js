@@ -21,7 +21,7 @@
 		// currents command state
 		this._state = 0;
 		// command config
-		this._conf = {};
+		this.conf = {};
 		
 		/**
 		 * Initilize command
@@ -33,9 +33,9 @@
 				rte  = this.rte;
 				
 			this.title = rte.i18n(this.title);
-			this._conf = $.extend({}, this._conf, conf);
-			this.rte.log(this.name)
-			this.rte.log(this._conf)
+			this.conf = $.extend({}, this.conf, conf);
+			// this.rte.log(this.name)
+			// this.rte.log(this._conf)
 			this._listeners = [];
 			
 			this._onInit && this._onInit();

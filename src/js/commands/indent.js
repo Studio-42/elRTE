@@ -7,12 +7,13 @@
 	 **/
 	elRTE.prototype.commands.indent = function() {
 		this.title = 'Indent';
+		this.conf  = { step : 20 };
 		
 		this._exec = function() {
 			var self = this, 
 				sel  = self.sel,
 				dom  = self.dom,
-				step = self.step,
+				step = parseInt(self.conf.step)||20,
 				n    = sel.collapsed() ? [sel.node()] : sel.get(), 
 				b    = sel.bookmark(),
 				f    = n[0], 
@@ -72,10 +73,6 @@
 			}
 			sel.toBookmark(b);
 			return true;
-		}
-		
-		this._onInit = function() {
-			this.step  = parseInt(this._conf.step)||20;
 		}
 		
 		this.events = {
