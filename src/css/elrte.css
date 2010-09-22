@@ -372,7 +372,9 @@
 .elrte .elrte-ui-widget-grid {
 	position:absolute;
 	top:20px;
-	min-width:120px;
+/*	min-width:160px;*/
+/*	width:auto;*/
+	width:216px;
 /*	max-height:370px;*/
 	padding-bottom:1px;
 	border:1px solid #ccc;
@@ -383,6 +385,7 @@
 
 .elrte .elrte-ui-widget-grid-wrp {
 	padding:3px 1px 1px 2px;
+	background-color:#fafafa;
 }
 
 .elrte .elrte-ui-widget-grid-header {
@@ -396,8 +399,8 @@
 }
 
 .elrte .elrte-ui-widget-grid-item {
-	width:16px;
-	height : 16px;
+	width:14px;
+	height : 14px;
 	padding:2px;
 	border:1px solid #ccc;
 	border-radius: 3px;
@@ -405,8 +408,8 @@
 	-webkit-border-radius: 3px;
 	text-align:center;
 
-	font: 14px/18px verdana sans-serif;
-
+	font: 14px/16px verdana sans-serif;
+	background-color:#fff;
 	margin: 0 0 1px 1px;
 	display: -moz-inline-stack;
 	display: inline-block;
