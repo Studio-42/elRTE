@@ -5,12 +5,12 @@
  **/
 elRTE.prototype.commands.pastetext = function() {
 	this.title = 'Paste only text';
-	this.conf  = { width : 520 };
+	this.conf  = { width : 520, height : 330 };
 	
 	this.dialog = function() {
 		var self = this,
 			rte  = this.rte,
-			txt  = $('<textarea cols="60" rows="14" class="elrte-pastetext" />'),
+			txt  = $('<textarea cols="60" rows="14" class="elrte-pastetext" />').height(parseInt(this.conf.height)||330),
 			opts = { 
 				title   : rte.i18n(this.title), 
 				width   : parseInt(this.conf.width)||520, 
