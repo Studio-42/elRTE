@@ -126,7 +126,7 @@
 		/* commands configuration */
 		commandsConf : {
 			docstructure : {
-				initActive : true
+				// initActive : false
 			},
 			fontstyle : {
 				compact : true,
