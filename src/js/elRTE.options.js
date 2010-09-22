@@ -144,13 +144,13 @@
 				// disableEvents : true
 			},
 			formatblock : {
-				textOnButton : true
+				label : false
 			},
 			fontsize : {
-				textOnButton : true
+				
 			},
 			fontfamily : {
-				compact : true
+				
 			}
 			
 			
