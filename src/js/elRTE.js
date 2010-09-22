@@ -153,6 +153,7 @@
 						c = new c();
 						c.name = n;
 						self._commands[n] = c.init(o.commandsConf[n]||{});
+						// delete self._commands[n].init
 					}
 				});
 			});
@@ -194,9 +195,8 @@
 			delete this.init;
 			
 			$(document).mousedown(function() {
-				self.log('docclick')
-				self.trigger('hideUI')
-			})
+				self.trigger('hideUI');
+			});
 		}
 		
 		/**

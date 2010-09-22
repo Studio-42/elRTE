@@ -67,7 +67,7 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 		},
 		wn = $.fn['elrte'+cmd.widget] ? 'elrte'+cmd.widget : 'elrtemenu',
 
-		lbl = wn == 'elrtemenu' && cmd.conf.label ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',// cmp ? '' : $('<span class="'+mc+'-label">'+cmd.title+'</span>'),
+		lbl = wn == 'elrtemenu' && cmd.conf.label ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',
 		wrp = $('<div class="'+mc+'-wrp"><div class="'+mc+'-control"/></div>').append(lbl),
 		wdg = $('<div/>'), //.elrteWidgetMenu(o),
 		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"></li>')

@@ -1,5 +1,3 @@
-(function($) {
-	
 	/**
 	 * Collection of mixin methods for text elements.
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
@@ -12,10 +10,13 @@
 		 * @return void
 		 **/
 		init : function() {
-			this.useCss = (this.rte.options.styleWithCss && this.cssProp && this.cssVal) || !this.nodeName;
+			var p = this.cssProp,
+				v = this.cssVal;
+				
+			this.useCss = (this.rte.options.styleWithCss && p && v) || !this.nodeName;
 			if (this.useCss) {
-				this.node = { name : 'span', css : {}};
-				this.node.css[this.cssProp] = this.cssVal;
+				this.node = { name : 'span', css : {} };
+				this.node.css[p] = v;
 			} else {
 				this.node = this.nodeName;
 			}
@@ -57,6 +58,12 @@
 			}
 		},
 		
+		/**
+		 * Wrap nodes
+		 *
+		 * @param  Array  nodes for unwrap
+		 * @return void
+		 **/
 		wrap : function(n) {
 			this.dom.wrap(n, this.node);
 		},
@@ -366,4 +373,3 @@
 	}
 	
 	
-})(jQuery);

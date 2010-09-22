@@ -122,7 +122,7 @@
 		
 		/* --- commands options --- */
 		/* commands, which create text elements use span tag with css instead of tags */
-		styleWithCss : true,
+		styleWithCss : false,
 		/* commands configuration */
 		commandsConf : {
 			docstructure : {
