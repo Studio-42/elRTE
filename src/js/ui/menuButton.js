@@ -67,7 +67,7 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 		},
 		wn = $.fn['elrte'+cmd.widget] ? 'elrte'+cmd.widget : 'elrtemenu',
 
-		lbl = wn == 'elrtemenu' && cmd._conf.textOnButton ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',// cmp ? '' : $('<span class="'+mc+'-label">'+cmd.title+'</span>'),
+		lbl = wn == 'elrtemenu' && !cmd._conf.compact ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',// cmp ? '' : $('<span class="'+mc+'-label">'+cmd.title+'</span>'),
 		wrp = $('<div class="'+mc+'-wrp"><div class="'+mc+'-control"/></div>').append(lbl),
 		wdg = $('<div/>'), //.elrteWidgetMenu(o),
 		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"></li>')
@@ -88,7 +88,7 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 	if (cmd.widgetClass) {
 		o.cssClass = cmd.widgetClass; 
 	}
-	cmd.rte.log(o)
+	// cmd.rte.log(o)
 	setTimeout(function() {
 		// wdg.elrtemenu(o)
 		wdg[wn](o)

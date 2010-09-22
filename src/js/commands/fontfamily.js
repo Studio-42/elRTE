@@ -6,7 +6,7 @@
 elRTE.prototype.commands.fontfamily = function() {
 	this.title  = 'Font family';
 	this._val   = '';
-	this._css   = 'font-family';
+	this.css   = 'font-family';
 	this.button = 'buttonMenu';
 	this.tpl    = '<span style="font-family:{value}">{label}</span>';
 	this.opts   = {
@@ -54,8 +54,10 @@ elRTE.prototype.commands.fontfamily = function() {
 		{ regexp : /fantasy/i,                   name : 'fantasy' }
 	].reverse();
 	
-	this._exec     = $.proxy(elRTE.prototype.mixins.font.exec, this);
-	this._updateValue = $.proxy(elRTE.prototype.mixins.font.update, this);
+	this.test      = $.proxy(elRTE.prototype.mixins.font.test,   this);
+	this.unwrap    = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
+	this._exec     = $.proxy(elRTE.prototype.mixins.font.exec,   this);
+	this._updValue = $.proxy(elRTE.prototype.mixins.font.update, this);
 	
 	/**
 	 * Check given css font-family property for known fonts

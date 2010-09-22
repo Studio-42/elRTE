@@ -1,13 +1,13 @@
 /**
  * @class elRTE command.
- * Insert non breakable space into selection
+ * Insert html entity into selection
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.specialchars = function() {
 	this.title = 'Insert special character';
 	this.button = 'buttonMenu';
 	this.widgetClass = 'elrte-ui-widget-grid';
-	this.tpl    = '<span title="{label}">{value}</span>';
+	this.tpl = '<span title="{label}">{value}</span>';
 	this.opts = {
 		'&amp;' : 'Ampersand',
 		'&quot;' : 'Quotation mark',
@@ -34,6 +34,14 @@ elRTE.prototype.commands.specialchars = function() {
 		'&cedil;' : 'Cedilla',
 		'&szlig;' : 'Sharp-s / es-zid',
 		'&brvbar;' : 'Broken bar',
+		'&uml;' : 'Diaeresis',
+		'&iexcl;' : 'Inverted exclamation mark',
+		'&iquest;' : 'Inverted question mark',
+		'&circ;' : 'Circumflex accent',
+		'&tilde;' : 'Small tilde',
+		'&deg;' : 'Degree sign',
+		'&oslash;' : 'O slash',
+		
 		
 		'&copy;' : 'Copyright sign',
 		'&reg;' : 'Registered sign',
@@ -77,15 +85,39 @@ elRTE.prototype.commands.specialchars = function() {
 		'&micro;' : 'Micro sign',
 		'&ordf;' : 'Feminine ordinal indicator',
 		'&ordm;' : 'Masculine ordinal indicator',
+		'&dagger;' : 'Dagger',
+		'&Dagger;' : 'Double dagger',
+		'&larr;' : 'Leftwards arrow',
+		'&uarr;' : 'Upwards arrow',
+		'&darr;' : 'Downwards arrow',
+		'&rarr;' : 'Rightwards arrow',
+		'&harr;' : 'Left right arrow',
+		'&loz;' : 'Lozenge',
+		'&clubs;' : 'Black club suite',
+		'&hearts;' : 'Black heart suite',
+		'&diams;' : 'Black diamond suite',
 		
-		
-		
+		'&Alpha;' : 'Alpha',
+		'&Beta;' : 'Beta',
+		'&Gamma;' : 'Gamma',
+		'&Delta;' : 'Delta',
+		'&Epsilon;' : 'Epsilon',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
+		// '&;' : '',
 		
 		
 	}
 	
-	this._exec = function() {
-		// return this.sel.insertHtml('&nbsp;');
+	this._exec = function(v) {
+		return this.sel.insertHtml(v);
 	}
 	
 	this.events = {

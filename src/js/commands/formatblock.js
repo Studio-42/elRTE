@@ -6,10 +6,12 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.formatblock = function() {
-		this.title = 'Format';
-		this._regExp=/^(H[1-6]|P|PRE|ADDRESS|DIV)$/;
-		this._val  = '';
-		this._opts = {
+		this.title   = 'Format';
+		this.button  = 'buttonMenu';
+		this.tpl     = '<{value}>{label}</{value}>';
+		this._regExp = /^(H[1-6]|P|PRE|ADDRESS|DIV)$/;
+		this._val    = '';
+		this.opts    = {
 			'h1'      : this.rte.i18n('Heading')+' 1',
 			'h2'      : this.rte.i18n('Heading')+' 2',
 			'h3'      : this.rte.i18n('Heading')+' 3',
@@ -23,7 +25,6 @@
 		};
 		
 		this._exec = function(v) {
-			this.rte.log(v)
 			var dom = this.dom,
 				sel = this.sel,
 				b = sel.bookmark();
@@ -43,35 +44,11 @@
 			return true;
 		}
 		
-		this._createUI = function() {
-			var rte  = this.rte,
-				c    = 'elrte-ui',
-				mc   = c+'-menu',
-				name = this.name,
-				cmp  = rte.commandConf(this.name, 'compact'),
-				lbl  = rte.i18n(this.title),
-				l    = cmp ? '' : '<span class="'+mc+'-label">'+lbl+'</span>',
-				conf = {
-					label    : lbl,
-					name     : name,
-					callback : $.proxy(this.exec, this),
-					opts     : {}
-				};
-			
-			$.each(this._opts, function(t, l) {
-				conf.opts[t] = { 
-					label : l, 
-					tag   : t
-				};
-			});
-			
-			return this._ui = $('<li class="'+c+' '+mc+(cmp ? '-icon ' : ' ')+c+'-'+name+'" title="'+lbl+'"><div class="'+mc+'-wrp"><div class="'+mc+'-control"/>'+l+'</div></li>').elrtemenu(conf, rte);
-		}
 		
-		this._setVal = function() {
+		this._updValue = function() {
 			var n = this.dom.closestParent(this.sel.node(), /^(H[1-6]|P|PRE|ADDRESS|DIV)$/, true);
 			this._val = n ? n.nodeName.toLowerCase() : false;
-			this._ui.val([this._val]);
+
 		}
 		
 		this._getState = function() {

@@ -8,7 +8,7 @@ elRTE.prototype.commands.fontsize = function() {
 	this.title  = 'Font size';
 	this.button = 'buttonMenu';
 	this._val   = '';
-	this._css   = 'font-size';
+	this.css    = 'font-size';
 	this.tpl    = '<span style="font-size:{value}">{label}</span>';
 	this.opts   = {
 		'default'  : rte.i18n('Default'),
@@ -21,8 +21,10 @@ elRTE.prototype.commands.fontsize = function() {
 		'xx-large' : rte.i18n('Large (36pt)')
 	};
 	
-	this._exec = $.proxy(elRTE.prototype.mixins.font.exec, this);
-	this._updateValue = $.proxy(elRTE.prototype.mixins.font.update, this);
+	this.test      = $.proxy(elRTE.prototype.mixins.font.test,   this);
+	this.unwrap    = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
+	this._exec     = $.proxy(elRTE.prototype.mixins.font.exec,   this);
+	this._updValue = $.proxy(elRTE.prototype.mixins.font.update, this);
 	
 	/**
 	 * Translate font-size in px|pt|% into absolute value

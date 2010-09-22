@@ -33,7 +33,9 @@
 				rte  = this.rte;
 				
 			this.title = rte.i18n(this.title);
-			this._conf = conf;
+			this._conf = $.extend({}, this._conf, conf);
+			this.rte.log(this.name)
+			this.rte.log(this._conf)
 			this._listeners = [];
 			
 			this._onInit && this._onInit();
@@ -137,7 +139,7 @@
 				_v = this._val, l;
 			this._state = s;
 			
-			this._updateValue();
+			this._updValue();
 			
 			if (this._state != _s || this._val != _v) {
 				l = this._listeners.length;
@@ -147,7 +149,7 @@
 			}
 		}
 		
-		this._updateValue = function() { }
+		this._updValue = function() { }
 		
 		/**
 		 * Editor events to bind

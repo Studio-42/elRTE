@@ -6,9 +6,13 @@ $.fn.elrtemenu = function(o) {
 		ic   = o.cssClass+'-item',
 		s    = o.label ? '<div class="'+mc+'-header">'+o.label+'</div>' : '';
 	
+	s += '<div class="'+mc+'-wrp">';
+	
 	$.each(o.opts, function(v, l) {
-		s += '<div class="'+ic+'" name="'+v+'">'+o.tpl.replace(/\{value\}/, v).replace(/\{label\}/, l)+'</div>';
+		s += '<div class="'+ic+'" name="'+v+'">'+o.tpl.replace(/\{value\}/g, v).replace(/\{label\}/g, l)+'</div>';
 	});
+	
+	s += '</div>'
 	
 	this.items = this.addClass(mc)
 		.mousedown(function(e) {

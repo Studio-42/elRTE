@@ -249,6 +249,26 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.mixins.font = {
+		/**
+		 * Return true if node has required css property
+		 * @param  DOMElement  
+		 * @return Boolean
+		 **/
+		test : function(n) {
+			return this.dom.css(n, this.css);
+		},
+		
+		/**
+		 * Remove required css property 
+		 * @param  DOMElement  
+		 * @return void
+		 **/
+		unwrap : function(n) {
+			$(n).css(this.css, ''); 
+			if (this.dom.is(n, 'emptySpan')) {
+				this.dom.unwrap(n);
+			} 
+		},
 		
 		/**
 		 * Set css property to selected text
@@ -259,7 +279,7 @@
 			var self = this,
 				dom  = this.dom,
 				sel  = this.sel,
-				css  = this._css,
+				css  = this.css,
 				c    = sel.collapsed(),
 				node = { name : 'span', css : {} },
 				b, n, o;
@@ -284,12 +304,14 @@
 					// surround carret with node
 					sel.toBookmark(b).surroundContents(dom.create(node));
 					b = sel.bookmark();
-				} 
+				} else if ((n = dom.closestParent(sel.node(), this.test, true))) {
+					this.unwrap(n);
+				}
 			} else {
 				// unwrap all childs with font-size
 				o = {
-					accept : function(n) { return dom.css(n, css); },
-					unwrap : function(n) { $(n).css(css, ''); dom.is(n, 'emptySpan') && dom.unwrap(n); }
+					accept : this.test,
+					unwrap : this.unwrap
 				}
 				dom.smartUnwrap(sel.get(true), o);
 
@@ -306,7 +328,6 @@
 				}
 			}
 			sel.toBookmark(b);
-			// setTimeout(function() { self._ui.val(v); }, 2);
 			return true;
 		},
 		
@@ -318,10 +339,9 @@
 		 **/
 		update : function() {
 			var dom = this.dom,
-				css = this._css,
-				n   = dom.closestParent(this.sel.node(), function(n) { return dom.css(n, css) }, true);
+				n   = dom.closestParent(this.sel.node(), this.test, true);
 
-			this._val = this._parseVal(dom.css(n, css));
+			this._val = this._parseVal(dom.css(n, this.css));
 		}
 		
 	}
