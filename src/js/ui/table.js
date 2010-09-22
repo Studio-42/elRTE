@@ -33,7 +33,7 @@ elRTE.prototype.ui.table = function(attr) {
 		} else {
 			l = el.length;
 			while (l--) {
-				this.row.prepend(td(el[i]));
+				this.row.prepend(td(el[l]));
 			}
 		}
 		return this;

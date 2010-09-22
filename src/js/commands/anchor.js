@@ -1,4 +1,3 @@
-
 /**
  * @class elRTE command.
  * Create/edit anchor
