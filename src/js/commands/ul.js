@@ -7,8 +7,8 @@
 	 **/
 	elRTE.prototype.commands.ul = function() {
 		this.title     = 'Unordered list';
-		this._exec     = $.proxy(elRTE.prototype.mixins.list.exec, this);
-		this._getState = $.proxy(elRTE.prototype.mixins.list.state, this);
+		this._exec     = $.proxy(this.rte.mixins.list.exec, this);
+		this._getState = $.proxy(this.rte.mixins.list.state, this);
 	}
 	
 })(jQuery);
