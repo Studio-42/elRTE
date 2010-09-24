@@ -4,9 +4,8 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.ui.button = function(cmd) {
-	// @TODO move hover into elrte.view?
-	var ac = 'elrte-ui-active',
-		dc = 'elrte-ui-disabled', 
+	var ac  = 'elrte-ui-active',
+		dc  = 'elrte-ui-disabled', 
 		btn = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+dc+'"/>')
 			.mousedown(function(e) {
 				e.preventDefault();

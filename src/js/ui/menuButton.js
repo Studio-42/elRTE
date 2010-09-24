@@ -1,54 +1,3 @@
-elRTE.prototype.ui.buttonMenu_ = function(cmd) {
-	var ac = 'elrte-ui-active',
-		dc = 'elrte-ui-disabled', 
-		bc = 'elrte-btn',
-		mc = bc + '-menu',
-		wn = $.fn['elrte'+cmd.widget] ? 'elrte'+cmd.widget : 'elrtemenu',
-		lbl = '',
-		wdg = $('<div/>'),
-		wrp = $('<div class="'+mc+'-wrp"><div class="'+mc+'-control"/></div>')
-		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"/>')
-			.append(wrp)
-			.append(wdg.hide())
-			.mousedown(function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (cmd.state() > 0) {
-					if (wdg.is(':hidden')) {
-						wdg.val(cmd.value());
-						cmd.rte.trigger('hideUI');
-					} 
-					wdg.toggle(128);
-				}
-			}),
-		o = {
-			label    : cmd.title,
-			tpl      : cmd.tpl,
-			opts     : cmd.opts,
-			callback : function(v) { cmd.exec(v); }
-		};
-		
-	if (cmd._conf.widgetClass) {
-		o.cssClass = cmd._conf.widgetClass; 
-	}
-		
-	wdg[wn](o)
-		
-	cmd.bind(function(c) { 
-		// lbl && lbl.text(c.opts[c.value()]||c.title);
-		switch (c.state()) {
-			case cmd.STATE_DISABLE : btn.removeClass(ac).addClass(dc); break;
-			case cmd.STATE_ENABLE  : btn.removeClass(ac+' '+dc);       break;
-			case cmd.STATE_ACTIVE  : btn.removeClass(dc).addClass(ac); break;
-		}
-	})
-	.rte.bind('click hideUI', function() {
-		wdg.hide();
-	});
-		
-	return btn
-}
-
 /**
  * @class Create button with menu
  * 
@@ -69,7 +18,7 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 
 		lbl = wn == 'elrtemenu' && cmd.conf.label ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',
 		wrp = $('<div class="'+mc+'-wrp"><div class="'+mc+'-control"/></div>').append(lbl),
-		wdg = $('<div/>'), //.elrteWidgetMenu(o),
+		wdg = $('<div/>'), 
 		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"></li>')
 			.append(wrp)
 			.append(wdg.hide())
@@ -88,11 +37,8 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 	if (cmd.widgetClass) {
 		o.cssClass = cmd.widgetClass; 
 	}
-	// cmd.rte.log(o)
-	setTimeout(function() {
-		// wdg.elrtemenu(o)
-		wdg[wn](o)
-	}, 20)
+
+	setTimeout(function() { wdg[wn](o); }, 20);
 			
 	cmd.bind(function(c) { 
 		lbl && lbl.text(c.opts[c.value()]||c.title);

@@ -1,4 +1,6 @@
-/* reset */
+/******************************************************/
+/*                         RESET                      */
+/******************************************************/
 .elrte,
 .elrte div, 
 .elrte span,
@@ -18,33 +20,68 @@
 /*	background: transparent;*/
 }
 
-.elrte ul { list-style: none; background: transparent;}
+.elrte ul { list-style: none; background: transparent; }
 
-/******************  common stuffs  *********************/
+.elrte .clearfix { display: block; }
+
+.elrte .clearfix:after {
+  content: ".";
+  display: block;
+  font-size:0;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/******************************************************/
+/*                   COMMON STUFF                     */
+/******************************************************/
 
 /* cross-browser inline-block */
-.elrte-ib,
 .elrte .elrte-ib,
-.elrte .elrte-toolbar ul,
-.elrte .elrte-toolbar li {
+.elrte .elrte-toolbar-panel,
+.elrte .elrte-btn,
+.elrte .elrte-tab {
 	display: -moz-inline-stack;
 	display: inline-block;
 	zoom: 1;
 	*display: inline;
 }
 
-.elrte-rnd-3 {
+/* rounded elements */
+.elrte-rnd-3,
+.elrte-container,
+.elrte .elrte-toolbar,
+.elrte .elrte-btn,
+.elrte .elrte-btn-menu-label,
+.elrte .elrte-ui-widget-grid-item,
+.elrte .elrte-statusbar {
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
 }
+
 /* style to detect images url */
 .elrte .elrte-test-url { background-image:url(../images/pixel.gif);}
 
-/******************  editor  *********************/
+/* ui states */
+.elrte .elrte-ui-hover    { background-color:#f5f5f5; border-color:#999; }
+.elrte .elrte-ui-active   { background-color:#c3dbef; border-color:#fff; }
+.elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
+/* jqueryUI fixes */
+.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
+.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
+.ui-dialog .ui-dialog-content { padding:.5em; }
+.ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
+.ui-dialog .ui-dialog-content table { border:1px solid #111;}
+
+/******************************************************/
+/*                    CONTAINERS                      */
+/******************************************************/
+
+/* common editor container */
 .elrte {
-/*	position:absolute;*/
 	padding: 3px;
 	margin: 3px 0;
 	font:98% normal tahoma, Trebuchet ms, tahoma, sans-serif;
@@ -55,6 +92,7 @@
 	background-color: #fff;
 }
 
+/* fullscreen editor */
 .elrte-fullscreen {
 	position:absolute;
 	left:0;
@@ -63,17 +101,109 @@
 	margin:0;
 }
 
-/******************  workzone/documents  *********************/
-
-.elrte .elrte-workzone {
-	border: 1px solid #ccc;
-	height: 300px;
-	overflow: hidden;
-/*	background:#eee;*/
+/* editor content container */
+.elrte .elrte-container {
+/*	border:1px solid #ccc;*/
+/*	padding:3px;*/
+/*	background-color:#eee;*/
 }
 
-/* document container */
-.elrte .elrte-document { }
+/* sidebar container */
+.elrte .elrte-sidebar {
+	border :1px solid green;
+	width:120px;
+	height:300px;
+	float:left;
+	display:none;
+}
+
+/* tabs and workzone container */
+.elrte .elrte-main {
+/*	border :1px solid blue;*/
+}
+
+/******************************************************/
+/*                        TABS                        */
+/******************************************************/
+
+/* top tabs wrapper */
+.elrte .elrte-tabsbar-top-wrp {
+	overflow:hidden;
+	position:relative;
+}
+
+/* top tabsbar */
+.elrte .elrte-tabsbar-top {
+	padding:0 3px;
+	width:3000px;
+}
+
+/* tab */
+.elrte .elrte-tab {
+	max-width:200px;
+	margin: 0 2px 0 0;
+	font-size: 78%;
+	background-color:#f2f2f2;
+	cursor: default;
+	position:relative;
+	border: 1px solid #aaa;
+	border-bottom:0 solid;
+}
+
+/* top tabs rounded on top */
+.elrte .elrte-tabsbar-top .elrte-tab {
+	-moz-border-radius-topleft: 3px; 
+	-moz-border-radius-topright: 3px; 
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
+	border-top-left-radius: 3px; 
+	border-top-right-radius: 3px;
+}
+
+/* bottom tabs rounded on bottom */
+.elrte .elrte-tabsbar-bottom .elrte-tab {
+	-moz-border-radius-bottomleft: 3px; 
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
+	border-bottom-left-radius: 3px; 
+	border-bottom-right-radius: 3px;
+}
+
+/* text in tab */
+.elrte .elrte-tab-title {
+	margin:2px 22px 2px 7px;
+	overflow:hidden;
+	color:#555;
+	white-space:nowrap;
+}
+
+/* tab close button */
+.elrte .elrte-tab-close {
+	position:absolute;
+	top:4px;
+	right:4px;
+	width:11px;
+	height:11px;
+	background:url(../images/close.png) 0 0 no-repeat;
+}
+/* active tab */
+.elrte .elrte-tab-active { background-color:#fff;  }
+
+/******************************************************/
+/*                     WORKZONE                       */
+/******************************************************/
+
+/* workzone - contains documents */
+.elrte .elrte-workzone {
+	border:1px solid #aaa;
+	height:300px;
+}
+
+/* container for iframe and textarea */
+.elrte-document { }
 
 /* editor (iframe) */
 .elrte .elrte-editor {
@@ -91,95 +221,31 @@
 	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
 }
 
-/******************  tabs  *********************/
+/******************************************************/
+/*                      TOOLBAR                       */
+/******************************************************/
 
-.elrte .elrte-tabsbar-wrapper {
-	overflow:hidden;
-}
-.elrte .elrte-tabsbar {
-	width:3000px;
-}
-
-/* common tabs style */
-.elrte .elrte-doc-tab,
-.elrte .elrte-toggle-tab {
-	border: 1px solid #ccc;
-	margin: 0 3px 0 0;
-	max-width:200px;
-	font-size: 78%;
-	background-color:#f2f2f2;
-	cursor: default;
-	position:relative;
-	white-space:nowrap;
-}
-/* active tab */
-.elrte .elrte-tab-active { background-color:#fff; }
-
-/* documents tabs */
-.elrte .elrte-doc-tab {
-	padding: 2px 20px 2px 9px;
-	border-bottom:0 solid;
-	-moz-border-radius-topleft: 3px; 
-	-moz-border-radius-topright: 3px; 
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px; 
-	-webkit-background-clip: padding-box;
-	border-top-left-radius: 3px; 
-	border-top-right-radius: 3px;
-}
-
-.elrte .elrte-doc-tab-title {
-	overflow:hidden;
-	color:#555;
-}
-
-/* close button */
-.elrte .elrte-doc-tab-close {
-	position:absolute;
-	top:4px;
-	right:4px;
-	width:11px;
-	height:11px;
-	background:url(../images/close.png) 0 0 no-repeat;
-}
-
-/* editor/source toggle tabs */
-.elrte .elrte-toggle-tab { 
-	padding: 2px 19px;
-	font-weight: bold;
-	color:#555;
-	border-top: 0 solid;
-	-moz-border-radius-bottomleft: 3px; 
-	-moz-border-radius-bottomright: 3px; 
-	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px; 
-	-webkit-background-clip: padding-box;
-	border-bottom-left-radius: 3px; 
-	border-bottom-right-radius: 3px;
-}
-
-/******************  toolbar  *********************/
-
+/* toolbar */
 .elrte .elrte-toolbar {
 	padding: 2px;
 	margin-bottom: 3px;
 	border: 1px solid #ccc;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-webkit-background-clip: padding-box;
-	border-radius:3px;
 	background: #eee;
 }
 
+/* toolbar panel */
 .elrte .elrte-toolbar-panel { 
 	padding: 2px 0px 2px 7px; 
 	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
 }
+
+/* first panel */
 .elrte .elrte-toolbar-panel:first-child {
 	padding-left:0;
 	background:transparent;
 }
 
+/* buttons */
 .elrte .elrte-btn,
 .elrte .elrte-btn-menu,
 .elrte .elrte-btn-widget {
@@ -187,14 +253,14 @@
 	height: 20px;
 	margin: 0 2px 0 0;
 	border: 1px solid #ccc;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-webkit-background-clip: padding-box;
 	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
 	cursor:default;
 	position:relative;
 }
+
+/******************************************************/
+/*                      BUTTONS                       */
+/******************************************************/
 
 /* panel document */
 
@@ -269,26 +335,26 @@
 .elrte .elrte-btn-source { background-position:-640px -20px; }
 .elrte .elrte-btn-fullscreen { background-position:-660px -20px; }
 
-/* WIDGETS */
-/* menu */
+/******************************************************/
+/*                    MENU BUTTONS                    */
+/******************************************************/
+
 /* button with menu */
 .elrte .elrte-btn-menu { 
-/*	width: 120px; */
 	width:auto;
 	min-width:32px;
 	max-width:120px;
 	background-color:#fff;
 }
 
-/* button-menu and button-widget wrapper */
+/* menu button wrapper */
 .elrte .elrte-btn-menu-wrp {
 	width: 100%;
 	height:20px;
 	overflow:hidden;
-	
 }
 
-/* text on button-menu */
+/* text on menu button */
 .elrte .elrte-btn-menu-label {
 	width:90px;
 	font-size:12px;
@@ -297,12 +363,9 @@
 	overflow:hidden;
 	float:left;
 	background:#fff;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 }
 
-/* arrow on button-menu right side */
+/* arrow on menu button right side */
 .elrte .elrte-btn-menu-control {
 	float:right;
 	height:20px;
@@ -317,17 +380,25 @@
 
 .elrte .elrte-ui-hover .elrte-btn-menu-control { background-color:#f5f5f5; }
 
-/* button-widget */
-.elrte .elrte-btn-widget { 
-	width: 32px; 
-	background-color:#fff;
+/******************************************************/
+/*                      WIDGETS                       */
+/******************************************************/
+
+.elrte .elrte-statusbar {
+	height: 22px;
+	clear: both;
+	margin-top: 5px;
+	padding: 0 12px;
+	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
+	color:#555;
+	border: 1px solid #ccc;
+	background: #eee;
+
 }
 
-/* hovered button-menu and button-widget dont change bg color */
-.elrte .elrte-ui-hover.elrte-btn-menu,
-.elrte .elrte-ui-hover.elrte-btn-widget  { 
-	background-color:#fff; 
-}
+/******************************************************/
+/*                      WIDGETS                       */
+/******************************************************/
 
 /* widget menu */
 .elrte .elrte-ui-widget-menu {
@@ -368,14 +439,11 @@
 	margin: 0;
 }
 
-/**/
+/* widget grid - see specialchars command */
 .elrte .elrte-ui-widget-grid {
 	position:absolute;
 	top:20px;
-/*	min-width:160px;*/
-/*	width:auto;*/
 	width:216px;
-/*	max-height:370px;*/
 	padding-bottom:1px;
 	border:1px solid #ccc;
 	background:#fff;
@@ -403,9 +471,6 @@
 	height : 14px;
 	padding:2px;
 	border:1px solid #ccc;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	text-align:center;
 
 	font: 14px/16px verdana sans-serif;
@@ -421,6 +486,10 @@
 	background-color:#c3dbef;
 }
 
+
+/******************************************************/
+/*                      COMMANDS                      */
+/******************************************************/
 /**/
 .elrte-pasteformattext {
 	width:99%;
@@ -437,32 +506,9 @@ textarea.elrte-pastetext {
 }
 
 
-
-/* ui states */
-.elrte .elrte-ui-hover    { background-color:#f5f5f5; border-color:#999; }
-.elrte .elrte-ui-active   { background-color:#c3dbef; border-color:#fff; }
-.elrte .elrte-ui-disabled { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
-
-/******************  statusbar  *********************/
-
-.elrte .elrte-statusbar {
-	height: 22px;
-	clear: both;
-	margin-top: 5px;
-	padding: 0 12px;
-	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
-	color:#555;
-	border: 1px solid #ccc;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	border-radius:3px;
-	-webkit-background-clip: padding-box;
-	background: #eee;
-}
-
-/****************************************************/
-/***                   PLUGINS                    ***/
-/****************************************************/
+/******************************************************/
+/*                      PLUGINS                       */
+/******************************************************/
 
 /* path */
 .elrte .elrte-statusbar-path span { cursor:pointer; }
@@ -481,20 +527,4 @@ textarea.elrte-pastetext {
 .elrte .blue { color: blue;}
 .elrte .red { color: red;}
 
-
-
-/* jqueryUI fixes */
-.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
-.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
-.ui-dialog .ui-dialog-content { padding:.5em; }
-.ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
-
-.ui-dialog .ui-dialog-content table { border:1px solid #111;}
-
-/*.ui-tabs { padding: 0; zoom: 1; }
-.ui-tabs .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em 0; -moz-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0; border-style:none none solid; }
-.ui-tabs .ui-tabs-nav li a { float: left; text-decoration: none; padding: .2em 1em; }
-.ui-tabs .ui-tabs-panel { padding: 1em 1.2em; display: block; border-width: 0; background: none; }
-
-*/
 

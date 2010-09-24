@@ -4,16 +4,13 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.fontstyle = function() {
-	var self = this, 
-		o    = this.rte.commandConf('fontstyle', 'opts'), 
-		n, l, s;
-	
+	var enable = false
 	this.title     = 'Style';
-	this.buttonType = 'menuButton';
+	this.button    = 'buttonSidebar';
 	this._val      = [];
 	this._disabled = [];
-	this._opts     = [];
-
+	this.opts = {};
+	this._selectors = {}
 	// if (o) {
 	// 	this._opts = {};
 	// 	$.each(o, function(i, o) {
@@ -27,10 +24,33 @@ elRTE.prototype.commands.fontstyle = function() {
 	// 	
 	// }
 	
+	
 	this._onInit = function() {
-		this._opts = this._conf.opts||[];
-		this.buttonType = this._opts.compact ? 'expandButton' : 'menuButton'
-		this.rte.log(this._conf.opts)
+		var o = this.conf.opts||[], 
+			ndx = 0,
+			i, r, s, c, a, n ;
+			
+		for (i = 0; i < o.length; i++) {
+			r = o[i];
+			c = r['class'];
+			s = r.selector;
+			if (r.label && s && c) {
+				enable = true
+				n = 'style'+(ndx++);
+				if (s == '*') {
+					s = 'any';
+				}
+				this._selectors[n] = { selector : s, 'class' : c };
+				a = r.style ? 'style="'+r.style+'"' : 'class="'+c+'"';
+				this.opts[n] = '<span '+a+'>'+r.label+'</span>'
+				// this.opts.push('<span class="'+r['class']+'" style="'+r.style+'">'+r.label+'</span>')
+			}
+			// this.opts
+			
+			// this.opts[s+':'+c] = o[i].label
+		}
+
+		this.rte.log(this.opts)
 	}
 	
 	this._exec = function(v) {
@@ -95,11 +115,11 @@ elRTE.prototype.commands.fontstyle = function() {
 	}
 	
 	
-	this._setVal = function() {
+	this._updValue_ = function() {
 		var self= this,
 			dom = this.dom,
 			sel = this.sel,
-			opts = this._opts,
+			opts = this.opts,
 			accepted = {}, val = {}, n, ch;
 		
 		this._val = [];
@@ -152,11 +172,11 @@ elRTE.prototype.commands.fontstyle = function() {
 				self._disabled.push(i);
 			}
 		})
-		this._ui && this._ui.val(this._val, this._disabled);
+
 	}
 	
 	this._getState = function() {
-		return this._opts.length ? this.STATE_ENABLE : this.STATE_DISABLE;
+		return enable ? this.STATE_ENABLE : this.STATE_DISABLE;
 	}
 	
 }

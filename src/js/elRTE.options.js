@@ -75,7 +75,7 @@
 		fmOpen : function(cb) { },
 		
 		/* --- paste options --- */
-		plugins : ['source', 'path', 'wordcount', 'webkit', 'autosave'],
+		plugins : ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
 		
 		/* --- toolbar options --- */
 		
@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock' /*, 'fontstyle',  */] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'fontstyle'] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],

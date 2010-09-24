@@ -4,24 +4,37 @@
  * @TODO move class namesito variables
  */
 elRTE.prototype.view = function(rte) {
-	var self       = this;
+	var self       = this,
+		o = rte.options, 
+		bt = o.bottomTabs||true,
+		tc = 'elrte-tabsbar-wrp-'+(o.bottomTabs ? 'bottom' : 'top');
 	this.rte       = rte;
-	this.toolbar   = $('<div class="elrte-toolbar" />');
-	this.tabsbar   = $('<ul class="elrte-tabsbar" />');
-	this.workzone  = $('<div class="elrte-workzone" />');
+	this.toolbar   = $('<div class="elrte-toolbar"/>');
+	
+	
+	
+	
+	this.workzone  = $('<div class="elrte-workzone"/>')
+	this.tabsbar   = $('<ul class="elrte-tabsbar-top"/>');
+	this.sidebar   = $('<div class="elrte-sidebar"/>');
+	this.main      = $('<div class="elrte-main"/>').append($('<div class="elrte-tabsbar-top-wrp"/>').append(this.tabsbar)).append(this.workzone);
+	this.container = $('<div class="elrte-container"/>').append(this.sidebar).append(this.main)
 	this.statusbar = $('<div class="elrte-statusbar" />');
-	this.editor    = $('<div class="elrte '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
+	
+	this.editor    = $('<div class="elrte clearfix '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
 		.append(this.toolbar.hide())
-		.append($('<div class="elrte-tabsbar-wrapper"/>').append(this.tabsbar.hide()))
-		.append(this.workzone)
+		.append(this.container)
 		.append(this.statusbar.hide())
+		.append('<div class="clearfix"/>')
 		.insertBefore(rte.target);
+	
+
 		
 	if (rte.options.height>0) {
-		this.workzone.height(this.rte.options.height);
+		// this.workzone.height(this.rte.options.height);
 	}
 	if ($.fn.sortable) {
-		this.tabsbar.sortable({ delay : 10});
+		// this.tabsbar.sortable({ delay : 10});
 	}
 	
 	/**
@@ -33,7 +46,7 @@ elRTE.prototype.view = function(rte) {
 	this.add = function(d) {
 		var self = this,
 			h    = this.workzone.height(),
-			tab  = $('<li class="elrte-doc-tab elrte-ib" rel="#'+d.id+'" title="'+d.title+'"><div class="elrte-doc-tab-title">'+d.title+'</div></li>')
+			tab  = $('<li class="elrte-tab" rel="#'+d.id+'" title="'+d.title+'"><div class="elrte-tab-title">'+d.title+'</div></li>')
 				.appendTo(this.tabsbar)
 				.mousedown(function(e) {
 					e.preventDefault();
@@ -47,7 +60,7 @@ elRTE.prototype.view = function(rte) {
 			.appendTo(this.workzone);
 		
 		if (this.rte.options.allowCloseDocs) {
-			tab.append($('<span class="elrte-doc-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
+			tab.append($('<span class="elrte-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
 				var p = $(this).parent();
 				e.preventDefault();
 				e.stopPropagation();
