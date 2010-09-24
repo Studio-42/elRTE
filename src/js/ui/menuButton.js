@@ -17,7 +17,7 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 		wn = $.fn['elrte'+cmd.widget] ? 'elrte'+cmd.widget : 'elrtemenu',
 
 		lbl = wn == 'elrtemenu' && cmd.conf.label ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',
-		wrp = $('<div class="'+mc+'-wrp"><div class="'+mc+'-control"/></div>').append(lbl),
+		wrp = $('<div class="'+mc+'-inner"><div class="'+mc+'-control"/></div>').append(lbl),
 		wdg = $('<div/>'), 
 		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"></li>')
 			.append(wrp)
@@ -54,52 +54,4 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 	
 	return btn;
 }
-
-
-
-elRTE.prototype.ui.buttonMenu_ = function(cmd) {
-
-	var aclass = 'elrte-ui-active',
-		dclass = 'elrte-ui-disabled', 
-		
-		o = {
-			label    : cmd.title,
-			tpl      : cmd.tpl,
-			opts     : cmd.opts,
-			callback : function(v) { cmd.exec(v); }
-		},
-		label  = $('<span class="elrte-ui-menu-label">'+cmd.title+'</span>'),
-		widget = $('<div/>').elrteWidgetMenu(o),
-		button = $('<li class="elrte-ui elrte-ui-'+cmd.name+' elrte-ui-menu '+dclass+'"><div class="elrte-ui-menu-control"/></li>')
-			.append(label)
-			.append(widget.hide())
-			.hover(function() {
-				!button.hasClass(dclass) && button.toggleClass('elrte-ui-hover');
-			})
-			.mousedown(function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (widget.is(':hidden')) {
-					widget.val(cmd.value());
-					cmd.rte.trigger('hideUI', { cmd : cmd.name});
-				} 
-				widget.toggle(128);
-			})
-
-	cmd.bind(function(c) { 
-		label.text(c.opts[c.value()]||c.title);
-		switch (c.state()) {
-			case cmd.STATE_DISABLE : button.removeClass(aclass).addClass(dclass); break;
-			case cmd.STATE_ENABLE  : button.removeClass(aclass+' '+dclass);       break;
-			case cmd.STATE_ACTIVE  : button.removeClass(dclass).addClass(aclass); break;
-		}
-	})
-	.rte.bind('click hideUI', function() {
-		widget.hide();
-	})
-	
-	return button;
-}
-
-
 

@@ -5,52 +5,51 @@
  **/
 elRTE.prototype.commands.fontstyle = function() {
 	var enable = false
-	this.title     = 'Style';
-	this.button    = 'buttonSidebar';
+	this.title     = 'Styles';
+	this.conf   = { widget : 'styleslist' };
+
 	this._val      = [];
 	this._disabled = [];
 	this.opts = {};
 	this._selectors = {}
-	// if (o) {
-	// 	this._opts = {};
-	// 	$.each(o, function(i, o) {
-	// 		s = o.selector;
-	// 		n = 'style'+i;
-	// 		self._opts[n] = o;
-	// 		if (typeof(s) == 'string' && !self.dom.filters[s]) {
-	// 			self._opts[n].selector = (function(s) { return function(n) { return $(n).is(s); } })(s);
-	// 		}
-	// 	});
-	// 	
-	// }
+	this.opts = [];	
 	
-	
+	/**
+	 * Create options and selectors lists
+	 * 
+	 * @return void
+	 **/
 	this._onInit = function() {
 		var o = this.conf.opts||[], 
-			ndx = 0,
-			i, r, s, c, a, n ;
-			
-		for (i = 0; i < o.length; i++) {
-			r = o[i];
-			c = r['class'];
-			s = r.selector;
-			if (r.label && s && c) {
-				enable = true
-				n = 'style'+(ndx++);
-				if (s == '*') {
-					s = 'any';
-				}
-				this._selectors[n] = { selector : s, 'class' : c };
-				a = r.style ? 'style="'+r.style+'"' : 'class="'+c+'"';
-				this.opts[n] = '<span '+a+'>'+r.label+'</span>'
-				// this.opts.push('<span class="'+r['class']+'" style="'+r.style+'">'+r.label+'</span>')
-			}
-			// this.opts
-			
-			// this.opts[s+':'+c] = o[i].label
-		}
+			l = o.length,
+			i, r, e;
 
-		this.rte.log(this.opts)
+		
+		while (l--) {
+			r = o[l];
+			r.element = r.element.toLowerCase();
+			e = r.element;
+			
+			if (r.name && e) {
+				if (/^(ol|ul)$/.test(e)) {
+					r.type = 'list'
+				} else if (/^(img|hr|embed)$/.test(e)) {
+					r.type = 'obj';
+				} else if (/^(table|tr|th|td)$/.test(e)) {
+					r.type = 'table';
+				} else if (/^(address|blockquote|caption|dd|dir|div|dl|dt|fieldset|form|h[1-6]|li|menu|p|pre)$/.test(e)) {
+					r.type = 'block'
+				} else if (r['class'] || e != 'span') {
+					r.type = 'inline';
+				}
+				
+				if (r.type) {
+					this.opts.unshift(r)
+				}
+			}
+			
+		}
+		// this.rte.log(this.opts)
 	}
 	
 	this._exec = function(v) {
@@ -58,10 +57,14 @@ elRTE.prototype.commands.fontstyle = function() {
 			dom  = this.dom,
 			sel  = this.sel,
 			exp  = !sel.collapsed(),
-			b    =  sel.bookmark(),
+			// b    =  sel.bookmark(),
 			opts = this._opts,
-			o    = opts[v] && $.inArray(v, this._disabled) == -1 ? opts[v] : false,
+			// o    = opts[v] && $.inArray(v, this._disabled) == -1 ? opts[v] : false,
 			selector, cssClass, n, o;
+
+		this.rte.log(v)
+		this.rte.log(this.opts[v])
+		return false
 
 		if (!o) {
 			return false;
@@ -114,6 +117,25 @@ elRTE.prototype.commands.fontstyle = function() {
 		return true;
 	}
 	
+	this._updValue_ = function() {
+		var self= this,
+			dom = this.dom,
+			sel = this.sel,
+			selectors = this._selectors;
+
+		this._val = [];
+		this._disabled = [];
+		
+		this.rte.log(selectors)
+		
+		$.each(dom.parents(sel.node(), 'element', true), function(i, n) {
+			$.each(selectors, function() {
+				var s = this.selector,
+					c = this['class'];
+			})
+		})
+		
+	}
 	
 	this._updValue_ = function() {
 		var self= this,
@@ -176,7 +198,7 @@ elRTE.prototype.commands.fontstyle = function() {
 	}
 	
 	this._getState = function() {
-		return enable ? this.STATE_ENABLE : this.STATE_DISABLE;
+		return this.opts.length ? this.STATE_ENABLE : this.STATE_DISABLE;
 	}
 	
 }

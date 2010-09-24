@@ -197,6 +197,9 @@
 			$(document).mousedown(function() {
 				self.trigger('hideUI');
 			});
+			this.bind('mousedown', function() {
+				self.trigger('hideUI');
+			})
 		}
 		
 		/**

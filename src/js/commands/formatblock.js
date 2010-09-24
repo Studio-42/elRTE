@@ -5,8 +5,7 @@
  **/
 elRTE.prototype.commands.formatblock = function() {
 	this.title   = 'Format';
-	this.button  = 'buttonMenu';
-	this.conf    = { label : true };
+	this.conf   = { widget : 'menu', label : true };
 	this.tpl     = '<{value}>{label}</{value}>';
 	this._regExp = /^(H[1-6]|P|PRE|ADDRESS|DIV)$/;
 	this._val    = '';

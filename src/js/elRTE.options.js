@@ -107,12 +107,12 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['document', 'edit', 'history', 'style', 'semantic', 'lists'],
+			'test' : ['document'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
 
 		},
-		toolbar : 'default',
+		toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
@@ -129,14 +129,19 @@
 				// initActive : false
 			},
 			fontstyle : {
-				compact : true,
 				opts : [
-					{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
-					{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
-					{ label : 'Red', selector : 'blockText', 'class' : 'red', style : 'color:red' },
-					{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true},
-					{ label : 'List', selector : 'ul,ol', 'class' : 'list', style : ''}
+					{ name : 'Blue header 3',     element : 'h3',   'class' : 'blue', style : 'color:blue' },
+					{ name : 'Paragraph justify', element : 'p',    'class' : 'justify',  },
+					{ name : 'Marker',            element : 'span', 'class' : 'marker', style : 'background-color:yellow' },
+					{ name : 'Bold text',         element : 'strong', style : 'font-weight:bold' }
 				]
+				// opts : [
+				// 	{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
+				// 	{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
+				// 	{ label : 'Red', selector : 'blockText', 'class' : 'red', style : 'color:red' },
+				// 	{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true},
+				// 	{ label : 'List', selector : 'ul,ol', 'class' : 'list', style : ''}
+				// ]
 			},
 			link : {
 				// simple : true,
@@ -144,7 +149,7 @@
 				// disableEvents : true
 			},
 			formatblock : {
-				label : false
+				// label : false
 			},
 			fontsize : {
 				

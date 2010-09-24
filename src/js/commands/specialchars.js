@@ -4,11 +4,10 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.specialchars = function() {
-	this.title       = 'Insert special character';
-	this.button      = 'buttonMenu';
-	this.widgetClass = 'elrte-ui-widget-grid';
-	this.tpl         = '<span title="{label}">{value}</span>';
-	this.opts        = {
+	this.title = 'Insert special character';
+	this.conf  = { widget : 'menu', widgetClass : 'elrte-ui-widget-grid' };
+	this.tpl   = '<span title="{label}">{value}</span>';
+	this.opts  = {
 		// typoraphic
 		'&amp;'    : 'Ampersand',
 		'&quot;'   : 'Quotation mark',

@@ -16,7 +16,15 @@ elRTE.prototype.view = function(rte) {
 	
 	this.workzone  = $('<div class="elrte-workzone"/>')
 	this.tabsbar   = $('<ul class="elrte-tabsbar-top"/>');
-	this.sidebar   = $('<div class="elrte-sidebar"/>');
+	this.sbheader  = $('<div class="elrte-ui-header"/>');
+	this.sbinner   = $('<div class="elrte-sidebar-inner"/>');
+	this.sbclose   = $('<div class="elrte-sidebar-close"/>');
+	this.sidebar   = $('<div class="elrte-sidebar"/>').append(this.sbclose).append(this.sbheader).append(this.sbinner)
+		.mousedown(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			self.rte.focus()
+		});
 	this.main      = $('<div class="elrte-main"/>').append($('<div class="elrte-tabsbar-top-wrp"/>').append(this.tabsbar)).append(this.workzone);
 	this.container = $('<div class="elrte-container"/>').append(this.sidebar).append(this.main)
 	this.statusbar = $('<div class="elrte-statusbar" />');
@@ -31,11 +39,16 @@ elRTE.prototype.view = function(rte) {
 
 		
 	if (rte.options.height>0) {
-		// this.workzone.height(this.rte.options.height);
+		this.workzone.height(this.rte.options.height);
 	}
+	
 	if ($.fn.sortable) {
 		// this.tabsbar.sortable({ delay : 10});
 	}
+	
+	rte.bind('source', function() {
+		self.hideSidebar()
+	})
 	
 	/**
 	 * Add new document into editor
@@ -156,20 +169,50 @@ elRTE.prototype.view = function(rte) {
 			while (cl--) {
 				
 				if ((cmd = commands[cn[cl]])) {
-					btn = this.rte.ui[cmd.button]||this.rte.ui.button;
-					pnl.prepend(btn(cmd));
+					// btn = this.rte.ui[cmd.button]||this.rte.ui.button;
+					btn = new this.rte.ui.testButton(cmd)
+					pnl.prepend(btn.node);
 				}
 			}
 			pnl.children().length && this.toolbar.prepend(pnl);
 		}
 
 		if (this.toolbar.children().length) {
-			this.toolbar.show().children().children().hover(function(e) {
-				$(this).toggleClass('elrte-ui-hover');
-			});
+			this.toolbar.show()
+			// .children().children().hover(function(e) {
+			// 	$(this).toggleClass('elrte-ui-hover');
+			// });
 		}
 		
 	}
+
+	this.appendToSidebar = function(o) {
+		this.sbinner.append(o)
+	}
+
+	this.toggleSidebar = function(title, widget) {
+		if (widget.is(':hidden')) {
+			if (this.sidebar.is(':hidden')) {
+				this.container.addClass('elrte-show-sidebar');
+				// this.sidebar.css('height', this.main.height()+'px').show()
+				this.sidebar.outerHeight(this.main.height()).show();
+				// this.rte.log(this.sidebar.outerHeight()-this.sidebar.height())
+			}
+			this.sbheader.text(title);
+			widget.show()
+		} else {
+			this.hideSidebar()
+		}
+	}
+
+	this.hideSidebar = function() {
+		if (this.sidebar.is(':visible')) {
+			this.container.removeClass('elrte-show-sidebar')
+			this.sidebar.hide()
+			this.sbinner.children().hide();
+		}
+	}
+
 
 	/**
 	 * Sync iframes/textareas height with workzone height 

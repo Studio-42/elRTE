@@ -5,9 +5,8 @@
  **/
 elRTE.prototype.commands.fontsize = function() {
 	this.title  = 'Font size';
-	this.button = 'buttonMenu';
 	this._val   = '';
-	this.conf   = { label : true };
+	this.conf   = { widget : 'menu', label : true };
 	this.css    = 'font-size';
 	this.tpl    = '<span style="font-size:{value}">{label}</span>';
 	this.opts   = {
