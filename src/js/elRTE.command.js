@@ -19,7 +19,7 @@ elRTE.prototype.command = function(rte) {
 	this.STATE_ACTIVE  = 2;
 	// currents command state
 	this._state = 0;
-	
+	this.conf = { };
 	/**
 	 * Initilize command
 	 *
@@ -30,7 +30,8 @@ elRTE.prototype.command = function(rte) {
 			rte  = this.rte;
 			
 		this.title = rte.i18n(this.title);
-		this.conf = $.extend({}, this.conf, conf);
+		$.extend(this.conf, conf);
+		// this.conf = $.extend({}, this.conf, conf);
 		this._listeners = [];
 		
 		this._onInit && this._onInit();
@@ -135,8 +136,8 @@ elRTE.prototype.command = function(rte) {
 			_v = this._val, l;
 		
 		this._state = s;
-		
-		this._updValue();
+
+		this._state != this.STATE_DISABLE && this._updValue();
 		
 		if (this._state != _s || this._val != _v) {
 			l = this._listeners.length;

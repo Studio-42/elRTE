@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', 'fontstyle'] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'specialchars', 'source'/*, 'fontstyle'*/] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['unlink', 'stopfloat', 'nbsp', 'selectall', 'hr', 'anchor', 'link', 'outdent', 'indent', 'bold', 'docstructure', 'removeformat', 'fullscreen', 'pagebreak'],
+			test : ['save', 'bold', 'formatblock', 'specialchars', 'fontstyle', 'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
@@ -107,7 +107,7 @@
 		panelsNames : {},
 		/* toolbars presets */
 		toolbars : {
-			'test' : ['document'],
+			'test' : ['test'],
 			'empty' : [],
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
 
@@ -132,8 +132,10 @@
 				opts : [
 					{ name : 'Blue header 3',     element : 'h3',   'class' : 'blue', style : 'color:blue' },
 					{ name : 'Paragraph justify', element : 'p',    'class' : 'justify',  },
+					{ name : 'Paragraph red',     element : 'p',    'class' : 'red',  },
 					{ name : 'Marker',            element : 'span', 'class' : 'marker', style : 'background-color:yellow' },
-					{ name : 'Bold text',         element : 'strong', style : 'font-weight:bold' }
+					{ name : 'Bold text',         element : 'strong', style : 'font-weight:bold' },
+					{ name : 'Image on left',     element : 'img',    'class' : 'imgleft',  }
 				]
 				// opts : [
 				// 	{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },

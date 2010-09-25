@@ -93,4 +93,4 @@ body.elrte-structure .elrte-anchor {
 .red { color:red; }
 .marker { background-color:yellow;}
 .list { list-style: none;}
-
+.imgleft { float:left; margin:7px; }

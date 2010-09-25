@@ -69,10 +69,7 @@
 /* style to detect images url */
 .elrte .elrte-test-url { background-image:url(../images/pixel.gif);}
 
-/* ui states */
-.elrte .elrte-ui-hover    { background-color:#f5f5f5; border-color:#999;  }
-.elrte .elrte-ui-active   { background-color:#c3dbef; border-color:#fff; }
-.elrte .elrte-ui-disable { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
+
 
 .elrte .elrte-ui-header {
 	background-color:#eee;
@@ -131,7 +128,8 @@
 /* sidebar container */
 .elrte .elrte-sidebar {
 	border :1px solid #aaa;
-	background-color:#dde4eb;
+/*	background-color:#dde4eb;*/
+	background-color:#f5f5f5;
 	width:170px;
 	float:left;
 	display:none;
@@ -293,19 +291,20 @@
 
 /* buttons */
 .elrte .elrte-btn,
-.elrte .elrte-btn-menu,
-.elrte .elrte-btn-widget {
+.elrte .elrte-btn-menu {
 	width:  20px;
 	height: 20px;
 	margin: 0 2px 0 0;
 	border: 1px solid #ccc;
-	background-image:url(../images/elrte-toolbar.png);
-	background-position:0 0;
-	background-repeat: no-repeat;
-/*	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;*/
+/*	background-image:url(../images/elrte-toolbar.png);*/
+/*	background-position:0 0;*/
+/*	background-repeat: no-repeat;*/
+	background:url(../images/elrte-toolbar.png) 0 0 no-repeat;
 	cursor:default;
 	position:relative;
 }
+
+.elrte .elrte-btn.elrte-ui-active { background-color:#ccc; }
 
 /******************************************************/
 /*                      BUTTONS                       */
@@ -401,6 +400,7 @@
 	width: 100%;
 	height:21px; /*wtf?*/
 	overflow:hidden;
+	
 }
 
 /* text on menu button */
@@ -426,7 +426,7 @@
 	-webkit-border-top-right-radius: 3px;
 	background:#eee url(../images/elrte-toolbar.png) -778px -22px no-repeat;
 }
-
+.elrte .elrte-btn-menu.elrte-ui-hover { background-color:#fff;}
 .elrte .elrte-ui-hover .elrte-btn-menu-control { background-color:#f5f5f5; }
 
 /******************************************************/
@@ -537,6 +537,10 @@ textarea.elrte-pastetext {
 	outline:none;
 }
 
+
+.elrte .elrte-ui-hover    { background-color:#f5f5f5; border-color:#aaa;  }
+.elrte .elrte-ui-active   { background-color:#c3dbef; border-color:#fff; }
+.elrte .elrte-ui-disable { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
 /******************************************************/
 /*                      PLUGINS                       */

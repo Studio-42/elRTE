@@ -616,6 +616,18 @@ elRTE.prototype.dom = function(rte) {
 		return w;
 	}
 
+	this.replace = function(n, r) {
+		if (this.is(n, 'node')) {
+			if (!r.nodeType) {
+				r = this.create(r);
+			}
+			this.before(r, n);
+			this.append(r, this.unwrap(n));
+			return r;
+		}
+		
+	}
+
 	/**
 	 * Wrap group of siblings nodes based on rule
 	 *

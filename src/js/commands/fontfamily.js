@@ -6,9 +6,8 @@
 elRTE.prototype.commands.fontfamily = function() {
 	this.title  = 'Font family';
 	this._val   = '';
-	this.conf   = { widget : 'menu', label : true };
+	this.conf   = { label : true, ui : 'menu', tpl : '<span style="font-family:{value}">{label}</span>' };
 	this.css    = 'font-family';
-	this.tpl    = '<span style="font-family:{value}">{label}</span>';
 	this.opts   = {
 		'default'                                       : this.rte.i18n('Default'),
 		'andale mono,sans-serif'                        : 'Andale Mono',

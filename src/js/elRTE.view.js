@@ -46,9 +46,9 @@ elRTE.prototype.view = function(rte) {
 		// this.tabsbar.sortable({ delay : 10});
 	}
 	
-	rte.bind('source', function() {
-		self.hideSidebar()
-	})
+	// rte.bind('source', function() {
+	// 	self.hideSidebar()
+	// })
 	
 	/**
 	 * Add new document into editor
@@ -169,8 +169,8 @@ elRTE.prototype.view = function(rte) {
 			while (cl--) {
 				
 				if ((cmd = commands[cn[cl]])) {
-					// btn = this.rte.ui[cmd.button]||this.rte.ui.button;
-					btn = new this.rte.ui.testButton(cmd)
+					btn = this.rte.ui[cmd.conf.ui+'Button']||this.rte.ui.button;
+					btn = new btn(cmd)
 					pnl.prepend(btn.node);
 				}
 			}
