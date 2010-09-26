@@ -104,7 +104,6 @@ elRTE.prototype.commands.fontstyle = function() {
 
 		// clean node and parents
 		$.each(dom.parents(n, reg, true), function(i, n) {
-			
 			$.each(rules, function(i, rule) {
 				if (test(n, rule)) {
 					clean(n, rule);

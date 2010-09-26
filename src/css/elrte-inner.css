@@ -5,6 +5,8 @@ body {
 /*	background:red;*/
 }
 
+body img, body hr { cursor: default; }
+
 body.elrte-structure table, 
 body.elrte-structure caption,
 body.elrte-structure td, 
@@ -12,7 +14,7 @@ body.elrte-structure th,
 body.elrte-structure p, 
 body.elrte-structure div,
 body.elrte-structure blockquote
-{ border:1px dotted #99ccff; }
+{ outline:1px dotted #99ccff; }
 
 body.elrte-structure .elrte-anchor {
 	display:inline-block;

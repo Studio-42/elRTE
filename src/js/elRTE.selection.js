@@ -2,12 +2,12 @@
 	
 	elRTE.prototype.selection = function(rte) {
 
-		var self = this;
-		this.rte = rte;
-		this.dom = rte.dom;
+		var self   = this;
+		this.rte   = rte;
+		this.dom   = rte.dom;
 		this._node = null;
-		this.win  = window;
-		this.doc  = document;
+		this.win   = window;
+		this.doc   = document;
 		
 		rte.bind('wysiwyg', function() {
 			// on focus - work with active document
@@ -25,7 +25,7 @@
 			self._node = e.target.nodeName == 'IMG' || e.target.nodeName == 'HR' ? e.target : false;
 		})
 		.bind('keyup', function() {
-			self._node = false
+			self._node = false;
 		})
 		;
 		
@@ -204,7 +204,7 @@
 			} catch (e) {
 				return this.rte.debug('error.selection', 'insertNode(): '+e.message);
 			}
-			this.select(n).collapse()
+			this.select(n).collapse();
 			return n;
 		}
 		
@@ -216,7 +216,6 @@
 		 **/
 		this.insertHtml = function(h) {
 			var n = this.insertNode($(this.dom.create('span')).html(h||'')[0]), l;
-			
 			if (n) {
 				l = n.lastChild;
 				this.dom.unwrap(n);
