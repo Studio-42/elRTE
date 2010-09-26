@@ -94,3 +94,6 @@ body.elrte-structure .elrte-anchor {
 .marker { background-color:yellow;}
 .list { list-style: none;}
 .imgleft { float:left; margin:7px; }
+.mylist { list-style:square; }
+.mytable { width:50%; border:1px solid red; }
+.mytable td { background:#eee; }

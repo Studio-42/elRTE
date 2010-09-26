@@ -135,7 +135,9 @@
 					{ name : 'Paragraph red',     element : 'p',    'class' : 'red',  },
 					{ name : 'Marker',            element : 'span', 'class' : 'marker', style : 'background-color:yellow' },
 					{ name : 'Bold text',         element : 'strong', style : 'font-weight:bold' },
-					{ name : 'Image on left',     element : 'img',    'class' : 'imgleft',  }
+					{ name : 'Image on left',     element : 'img',    'class' : 'imgleft',  },
+					{ name : 'List',     element : 'ul',    'class' : 'mylist',  },
+					{ name : 'Table',     element : 'table',    'class' : 'mytable',  }
 				]
 				// opts : [
 				// 	{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },

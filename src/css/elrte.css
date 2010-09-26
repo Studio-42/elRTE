@@ -134,6 +134,7 @@
 	float:left;
 	display:none;
 	position:relative;
+	overflow:auto;
 }
 
 /* tabs and workzone container */

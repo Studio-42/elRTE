@@ -260,6 +260,10 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 				label : rte.i18n('Block'),
 				html : ''
 			},
+			list : {
+				label : rte.i18n('Lists'),
+				html : ''
+			},
 			table  : {
 				label : rte.i18n('Table'),
 				html : ''
@@ -273,7 +277,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 	this.init(cmd);
 	
 	this.menu = $('<div class="'+c+'"/>');
-	rte.view.appendToSidebar(this.menu);
+	rte.bind('hideSidebar', function() { self.$.removeClass(self.ac); }).view.appendToSidebar(this.menu);
 	
 	this.$.mousedown(function(e) {
 		e.preventDefault();
@@ -284,9 +288,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 			if (self.menu.is(':visible')) {
 				self.$.addClass(self.ac);
 				self._update();
-			} else {
-				self.$.removeClass(self.ac);
-			}
+			} 
 		}
 	});
 	
@@ -308,7 +310,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 			!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
 		});
 		self.menu.children('.'+gc).mousedown(function(e) {
-			$(this).nextUntil('.'+gc).toggle();
+			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
 		})
 	// }, 20)
 	
@@ -334,9 +336,14 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 	
 	this.update = function() {
 		elRTE.prototype.ui._button.update.call(this);
-		
+
 		if (this.menu.is(':visible')) {
-			this.state == this.cmd.STATE_DISABLE ? this.cmd.rte.view.hideSidebar() : this._update();
+			if (this.state == this.cmd.STATE_DISABLE) {
+				this.cmd.rte.view.hideSidebar()
+			} else {
+				this.$.addClass(this.ac);
+				this._update();
+			}
 		}
 	}
 	

@@ -5,25 +5,25 @@
  */
 elRTE.prototype.view = function(rte) {
 	var self       = this,
-		o = rte.options, 
-		bt = o.bottomTabs||true,
-		tc = 'elrte-tabsbar-wrp-'+(o.bottomTabs ? 'bottom' : 'top');
+		o = rte.options;
+		
 	this.rte       = rte;
 	this.toolbar   = $('<div class="elrte-toolbar"/>');
-	
-	
-	
-	
 	this.workzone  = $('<div class="elrte-workzone"/>')
 	this.tabsbar   = $('<ul class="elrte-tabsbar-top"/>');
 	this.sbheader  = $('<div class="elrte-ui-header"/>');
 	this.sbinner   = $('<div class="elrte-sidebar-inner"/>');
-	this.sbclose   = $('<div class="elrte-sidebar-close"/>');
+	this.sbclose   = $('<div class="elrte-sidebar-close"/>')
+		.mousedown(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			self.hideSidebar();
+		});
 	this.sidebar   = $('<div class="elrte-sidebar"/>').append(this.sbclose).append(this.sbheader).append(this.sbinner)
 		.mousedown(function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			self.rte.focus()
+			self.rte.focus();
 		});
 	this.main      = $('<div class="elrte-main"/>').append($('<div class="elrte-tabsbar-top-wrp"/>').append(this.tabsbar)).append(this.workzone);
 	this.container = $('<div class="elrte-container"/>').append(this.sidebar).append(this.main)
@@ -210,6 +210,7 @@ elRTE.prototype.view = function(rte) {
 			this.container.removeClass('elrte-show-sidebar')
 			this.sidebar.hide()
 			this.sbinner.children().hide();
+			this.rte.trigger('hideSidebar')
 		}
 	}
 

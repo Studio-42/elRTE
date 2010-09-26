@@ -13,13 +13,21 @@
 			// on focus - work with active document
 			self.win = self.rte.active.window;
 			self.doc = self.rte.active.document;
-		}, true).bind('source close', function(e) {
+		}, true)
+		.bind('source close', function(e) {
 			// on source mode or on close active document switch to global objects to avoid errors
 			if (e.type == 'source' || e.data.id == self.rte.active.id) {
 				self.win  = window;
 				self.doc  = document;
 			}
-		}, true);
+		}, true)
+		.bind('click', function(e) {
+			self._node = e.target.nodeName == 'IMG' || e.target.nodeName == 'HR' ? e.target : false;
+		})
+		.bind('keyup', function() {
+			self._node = false
+		})
+		;
 		
 		/**
 		 * Return selection object
@@ -293,6 +301,8 @@
 		 * @return DOMElement
 		 **/
 		this.node = function() {
+			return this._node || this.range().commonAncestorContainer;
+			this.rte.log(this._node)
 			var n = this.range().commonAncestorContainer;
 			return n;
 			return n.nodeType == 1 ? n : n.parentNode;

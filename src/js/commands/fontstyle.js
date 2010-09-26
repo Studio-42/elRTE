@@ -1,17 +1,15 @@
 /**
  * @class elRTE command.
- * Apply user defined css classes
+ * Apply user defined css classes to required nodes (or create nodes with css classes)
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.fontstyle = function() {
-	var enable = false
-	this.title     = 'Styles';
-	this.conf   = { ui : 'style' };
-
-	this._val      = [];
+	this.title    = 'Styles';
+	this.conf     = { ui : 'style' };
 	this.disabled = [];
-	this.opts = [];
-	this._types = {
+	this.opts     = [];
+	this._val     = [];
+	this._types   = {
 		list  : /^(ol|ul|dl|li|dd|dt)$/i,
 		obj   : /^(img|hr|embed)$/i,
 		table : /^(table|tr|th|td|caption)$/i,
@@ -89,15 +87,10 @@ elRTE.prototype.commands.fontstyle = function() {
 		function clean(n, r) {
 			var c = r['class'];
 			
-			if (c) {
-				$(n).removeClass(c);
-				// if (r.element == 'span' && dom.is(n, 'emptySpan')) {
-				// 	dom.unwrap(n);
-				// }
-			} else {
-				// dom.unwrap(n);
+			c && $(n).removeClass(c);
+			if (r.type == 'block' || r.type == 'inline') {
+				dom.unwrap(n);
 			}
-			dom.unwrap(n);
 		}
 		
 		while (l--) {
@@ -147,9 +140,11 @@ elRTE.prototype.commands.fontstyle = function() {
 		var self = this,
 			dom  = this.dom,
 			sel  = this.sel,
+			_n   = sel.node(),
 			c    = rule['class']||'',
 			node = c  ? { name : rule.element, attr : { 'class' : c } } : rule.element,
-			n, test = function(n) { return n.nodeName.toLowerCase() == rule.element; }, f, l, s, e, b;
+			test = function(n) { return n.nodeName.toLowerCase() == rule.element; }, 
+			n, f, l, s, e, b, tmp;
 			
 		if (rule.type == 'inline') {
 			if (sel.collapsed()) {
@@ -173,10 +168,9 @@ elRTE.prototype.commands.fontstyle = function() {
 					// replace closest parent block text node with required node
 					dom.replace(n, node);
 				} else {
+					// wrap sibling inline nodes
 					f = dom.topParent(b[0], 'inline', true)
-					this.rte.log(f);
 					n = dom.prevUntil(f, 'any', function(n) { return dom.is(n, 'block') || n.nodeName == 'BR' }).reverse();
-					n.push(f)
 					n = n.concat(dom.nextUntil(f, 'any', function(n) { return dom.is(n, 'block') || n.nodeName == 'BR' }))
 					this.rte.log(n);
 					dom.wrap(n, node)
@@ -194,22 +188,41 @@ elRTE.prototype.commands.fontstyle = function() {
 					if (e) {
 						l = dom.split(e, l, false);
 					}
-					c = dom.commonAncestor(f, l);
-					s = dom.topParent(f, 'any', true, c)||f;
-					e = dom.topParent(l, 'any', true, c)||l;
-					s = dom.split(s, f, true);
-					e = dom.split(e, l, false);
-					n = dom.wrap(dom.traverse(s, e), node);
-					sel.toBookmark(b);
+					
 				}
+				c = dom.commonAncestor(f, l);
+				s = dom.topParent(f, 'any', true, c)||f;
+				e = dom.topParent(l, 'any', true, c)||l;
+				s = dom.split(s, f, true);
+				e = dom.split(e, l, false);
+				n = dom.wrap(dom.traverse(s, e), node);
+				sel.toBookmark(b);
 			}
 			
-			
 		} else if (rule.type == 'obj') {
-			n = dom.closestParent(sel.node(), test, true);
-			
-			this.rte.log(n)
-		}
+			if (dom.is(_n, test)) {
+				$(_n).addClass(c)
+			}
+		} else if (rule.type == 'list' || rule.type == 'table') {
+			if ((n = dom.closestParent(_n, test, true))) {
+				$(n).addClass(c);
+			} else {
+				b = sel.bookmark();
+				f = dom.topParent(b[0], test)||b[0];
+				l = dom.topParent(b[1], test)||b[1];
+				n = dom.traverse(f, l)
+				tmp = dom.filter(n, test)
+				$.each(n, function(i, n) {
+					tmp = tmp.concat(dom.find(n, test));
+				});
+
+				$.each(tmp, function(i, n) {
+					$(n).addClass(c);
+				});
+				
+				sel.toBookmark(b);
+			}
+		} 
 		
 		return true
 	}
@@ -220,27 +233,16 @@ elRTE.prototype.commands.fontstyle = function() {
 			sel  = this.sel,
 			ndx  = parseInt(v), p, r, l = this._val.length;
 			
-
-		this.rte.log(v)
-
 		if ($.inArray(ndx, this._val) != -1) {
 			this.rte.log('do nothng')
 			return false;
 		} else if (v == 'clean') {
-			
 			return this._clean()
-			
 		} else if (this.opts[ndx]) {
-			
-			return this._create(this.opts[ndx])
-			
+			return this._create(this.opts[ndx]);
 		}
-
-		// sel.toBookmark(b);
 		return true;
 	}
-	
-	
 	
 	this._updValue = function() {
 		var self = this,
