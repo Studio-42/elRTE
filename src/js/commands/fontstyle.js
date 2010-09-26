@@ -72,10 +72,11 @@ elRTE.prototype.commands.fontstyle = function() {
 			rule, e, b, nodes;
 			
 		if (!l) {
+			
 			return false;
 		}
 		
-		b    = sel.bookmark();
+		b = sel.bookmark();
 		
 		function test(n, r) {
 			var c = r['class'];
@@ -100,9 +101,10 @@ elRTE.prototype.commands.fontstyle = function() {
 		}
 		
 		reg = new RegExp('^('+reg.join('|')+')$', 'i');
-		
+
 		// clean node and parents
 		$.each(dom.parents(n, reg, true), function(i, n) {
+			
 			$.each(rules, function(i, rule) {
 				if (test(n, rule)) {
 					clean(n, rule);
@@ -237,7 +239,8 @@ elRTE.prototype.commands.fontstyle = function() {
 			this.rte.log('do nothng')
 			return false;
 		} else if (v == 'clean') {
-			return this._clean()
+			
+			return this._clean();
 		} else if (this.opts[ndx]) {
 			return this._create(this.opts[ndx]);
 		}

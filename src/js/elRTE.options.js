@@ -96,7 +96,7 @@
 			test : ['save', 'bold', 'formatblock', 'specialchars',  'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
-			
+			table      : ['table'],
 			
 			
 			
@@ -109,7 +109,7 @@
 		toolbars : {
 			'test' : ['test'],
 			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
+			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'table', 'indents', 'lists', 'links', 'semantic', 'misc',  'control']
 
 		},
 		toolbar : 'default',

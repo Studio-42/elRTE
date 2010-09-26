@@ -13,6 +13,8 @@ elRTE.prototype.command = function(rte) {
 	this.dom = rte.dom;
 	/* editor selection object */
 	this.sel = rte.selection;
+	// 
+	this.utils = rte.utils;
 	// class "constants" - command states
 	this.STATE_DISABLE = 0;
 	this.STATE_ENABLE  = 1;

@@ -123,20 +123,18 @@ elRTE.prototype.dom = function(rte) {
 	 **/
 	this.is = function(n, f) {
 		if (n && n.nodeType) {
-			
-			if (!f || typeof(f) == 'string') {
+			if (!f || typeof(f) === 'string') {
 				f = this.filters[f] ? f : 'any';
 				return this.filters[f](n);
-			} else if (typeof(f) == 'function') {
-				return f(n);
 			} else if (f instanceof RegExp) {
 				return f.test(n.nodeName);
+			} else if (typeof(f) == 'function') {
+				return f(n);
 			} else if (f && f.nodeType) {
 				return n === f;
 			} 
-
 		} else {
-			this.rte.debug('error.dom', 'is() required node, '+typeof(n)+' given')
+			this.rte.debug('error.dom', 'dom.is() required node, '+typeof(n)+' given')
 		}
 		return false;
 	}

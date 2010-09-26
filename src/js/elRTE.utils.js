@@ -153,6 +153,14 @@
 		
 		this.isKeyService = function(c) { return $.inArray(c, this.serviceKeys) != -1; }
 		
+		this.strRepeat = function(s, m) {
+			var str = '';
+			while (m--) {
+				str += s;
+			}
+			return str;
+		}
+		
 		/**
 		 * Encode entities in string
 		 *

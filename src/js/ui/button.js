@@ -5,6 +5,7 @@
 elRTE.prototype.ui._button = new function() {
 	this.ac  = 'elrte-ui-active';
 	this.dc  = 'elrte-ui-disable';
+	this.hc  = 'elrte-ui-hover';
 	this.state = 0;
 	this.node;
 	this.$;
@@ -13,7 +14,7 @@ elRTE.prototype.ui._button = new function() {
 	this.init = function(cmd) {
 		var self = this;
 		this.cmd = cmd;
-		this.$ = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+this.dc+'"/>').hover(function() {
+		this.$ = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+this.dc+'" title="'+cmd.title+'"/>').hover(function() {
 			self.state && $(this).toggleClass('elrte-ui-hover')
 		})
 		this.node = this.$[0]
@@ -40,7 +41,7 @@ elRTE.prototype.ui._button = new function() {
  */
 elRTE.prototype.ui.button = function(cmd) {
 
-	this.init(cmd)
+	this.init(cmd);
 	
 	this.$.mousedown(function(e) {
 		e.preventDefault();
