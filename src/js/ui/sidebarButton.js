@@ -63,16 +63,19 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 			}
 		});
 		delete tmp;
-		self.items = self.menu.html(html).children('.'+ic).mousedown(function(e) {
-			var t = $(this);
-			!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
-		})
-		.hover(function() {
-			var t = $(this);
-			!t.hasClass(self.dc) && t.toggleClass(self.hc); 
-		});
+		self.items = self.menu.html(html).children('.'+ic)
+			.mousedown(function(e) {
+				var t = $(this);
+				rte.trigger('hideUI');
+				!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
+			})
+			.hover(function() {
+				var t = $(this);
+				!t.hasClass(self.dc) && t.toggleClass(self.hc); 
+			});
 		
 		self.menu.children('.'+gc).mousedown(function(e) {
+			rte.trigger('hideUI');
 			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
 		});
 	}, 20);

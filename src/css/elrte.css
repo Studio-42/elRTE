@@ -373,6 +373,7 @@
 .elrte .elrte-btn-fontsize { background-position:-540px -20px; }
 .elrte .elrte-btn-fontfamily { background-position:-560px -20px; }
 .elrte .elrte-btn-fontstyle { background-position:-580px -20px; }
+.elrte .elrte-btn-textcolor { background-position:-660px 0 }
 
 
 /* panel lists */
@@ -591,6 +592,57 @@
 .elrte .elrte-widget-table-status {
 	
 	border:0px solid;
+}
+
+.elrte .elrte-widget-palette {
+	overflow:none;
+	min-width:138px;
+}
+
+.elrte .elrte-widget-palette-small {
+	border:1px solid #ccc;
+	width:128px;
+	padding:2px;
+	margin:0 auto;
+}
+
+.elrte .elrte-widget-palette-color {
+	width:12px;
+	height:12px;
+	margin:2px;
+	
+}
+.elrte .elrte-widget-palette-switch {
+	margin: 2px;
+	background-color:#eee;
+	font-size:78%;
+	border:1px solid #ccc;
+	text-align:center;
+}
+
+.elrte .elrte-widget-palette-status {
+	margin:2px;
+	margin-bottom:10px;
+	border:1px solid #ccc;
+	background-color:#eee;
+}
+
+.elrte .elrte-widget-palette-status input {
+	padding:0;
+	outline:0 solid;
+	border:1px solid #ccc;
+	vertical-align:top;
+	width:80px;
+}
+
+.elrte .elrte-widget-palette-indicator,
+.elrte .elrte-widget-palette-reset {
+	border:1px solid #aaa;
+	background-color:transparent;
+}
+
+.elrte .elrte-widget-palette-reset {
+	float:right;
 }
 
 /******************************************************/
