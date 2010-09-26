@@ -1,61 +1,7 @@
 /** 
- * @class Buttons prototype
+ * @class Button, creates styles panel in sidebar
  * @author Dmitry (dio) Levashov, dio@std42.ru
  */
-elRTE.prototype.ui._button = new function() {
-	this.ac  = 'elrte-ui-active';
-	this.dc  = 'elrte-ui-disable';
-	this.state = 0;
-	this.node;
-	this.$;
-	this.cmd;
-	
-	this.init = function(cmd) {
-		var self = this;
-		this.cmd = cmd;
-		this.$ = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+this.dc+'"/>').hover(function() {
-			self.state && $(this).toggleClass('elrte-ui-hover')
-		})
-		this.node = this.$[0]
-		
-		this.cmd.bind(function() {
-			self.update()
-		});
-		
-	}
-	
-	this.update = function() {
-		this.state = this.cmd.state();
-		switch (this.state) {
-			case this.cmd.STATE_DISABLE : this.$.removeClass(this.ac).addClass(this.dc); break;
-			case this.cmd.STATE_ENABLE  : this.$.removeClass(this.ac+' '+this.dc);       break;
-			case this.cmd.STATE_ACTIVE  : this.$.removeClass(this.dc).addClass(this.ac); break;
-		}
-	}
-}
-
-/** 
- * @class Default toolbar button
- * @author Dmitry (dio) Levashov, dio@std42.ru
- */
-elRTE.prototype.ui.button = function(cmd) {
-
-	this.init(cmd)
-	
-	this.$.mousedown(function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		cmd.rte.trigger('hideUI').focus();
-		if (cmd._state > 0) {
-			cmd.exec();
-		}
-	});
-
-}
-
-elRTE.prototype.ui.button.prototype = elRTE.prototype.ui._button;
-
-
 elRTE.prototype.ui.styleButton = function(cmd) {
 	var self = this,
 		rte  = cmd.rte,
@@ -104,7 +50,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 		}
 	});
 	
-	// setTimeout(function() {
+	setTimeout(function() {
 		html += '<div class="'+ic+'" name="clean">Clean style</div>';
 		for (i = 0; i < cmd.opts.length; i++) {
 			v = cmd.opts[i];
@@ -123,8 +69,8 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 		});
 		self.menu.children('.'+gc).mousedown(function(e) {
 			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
-		})
-	// }, 20)
+		});
+	}, 20);
 	
 	this._update = function() {
 		var v = this.cmd.value(),
@@ -162,7 +108,4 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 }
 
 elRTE.prototype.ui.styleButton.prototype = elRTE.prototype.ui._button;
-
-
-
 

@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', 'specialchars', 'source'/*, 'fontstyle'*/] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'source', 'fontstyle'] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['save', 'bold', 'formatblock', 'specialchars', 'fontstyle', 'source'],
+			test : ['save', 'bold', 'formatblock', 'specialchars',  'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			
@@ -112,7 +112,7 @@
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'indents', 'lists', 'links', 'semantic', 'misc', 'control']
 
 		},
-		toolbar : 'test',
+		toolbar : 'default',
 		
 		/* --- plugins options --- */
 		pluginsConf : {

@@ -194,9 +194,8 @@ elRTE.prototype.view = function(rte) {
 		if (widget.is(':hidden')) {
 			if (this.sidebar.is(':hidden')) {
 				this.container.addClass('elrte-show-sidebar');
-				// this.sidebar.css('height', this.main.height()+'px').show()
+				this.workzone.css('width', 'auto')
 				this.sidebar.outerHeight(this.main.height()).show();
-				// this.rte.log(this.sidebar.outerHeight()-this.sidebar.height())
 			}
 			this.sbheader.text(title);
 			widget.show()
@@ -210,7 +209,8 @@ elRTE.prototype.view = function(rte) {
 			this.container.removeClass('elrte-show-sidebar')
 			this.sidebar.hide()
 			this.sbinner.children().hide();
-			this.rte.trigger('hideSidebar')
+			this.rte.trigger('hideSidebar');
+			this.workzone.css('width', 'auto')
 		}
 	}
 
@@ -222,6 +222,9 @@ elRTE.prototype.view = function(rte) {
 	 */
 	this.updateHeight = function() {
 		self.workzone.find('.elrte-editor,.elrte-source').height(self.workzone.height());
+		if (self.sidebar.is(':visible')) {
+			self.sidebar.outerHeight(self.main.height())
+		}
 	}
 	
 	/**

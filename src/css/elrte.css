@@ -52,13 +52,12 @@
 .elrte-rnd-3,
 .elrte-container,
 .elrte .elrte-toolbar,
-.elrte .elrte-sidebar,
 .elrte .elrte-btn,
 .elrte .elrte-btn-menu-inner,
 .elrte .elrte-btn-menu-label,
 .elrte .elrte-ui-widget-menu,
 .elrte .elrte-ui-widget-grid,
-.elrte .elrte-ui-widget-grid-item,
+.elrte .elrte-ui-widget-grid-item
 .elrte .elrte-statusbar {
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -135,6 +134,13 @@
 	display:none;
 	position:relative;
 	overflow:auto;
+	-moz-border-radius-topleft: 3px; 
+	-moz-border-radius-topright: 3px; 
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
+	border-top-left-radius: 3px; 
+	border-top-right-radius: 3px;
 }
 
 /* tabs and workzone container */
@@ -145,6 +151,8 @@
 .elrte .elrte-show-sidebar .elrte-main {
 	margin-left:175px;
 }
+
+
 
 /******************************************************/
 /*                      SIDEBAR                       */
@@ -308,6 +316,21 @@
 .elrte .elrte-btn.elrte-ui-active { background-color:#ccc; }
 
 /******************************************************/
+/*                     STATUSBAR                      */
+/******************************************************/
+.elrte .elrte-statusbar {
+	height: 22px;
+	clear: both;
+	margin-top: 5px;
+	padding: 0 12px;
+	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
+	color:#555;
+	border: 1px solid #ccc;
+	background: #eee;
+}
+
+
+/******************************************************/
 /*                      BUTTONS                       */
 /******************************************************/
 
@@ -468,7 +491,7 @@
 	margin: 0;
 }
 
-/* widget grid - see specialchars command */
+/* widget grid - menu with items placed on grid - see specialchars command */
 .elrte .elrte-ui-widget-grid {
 	position:absolute;
 	top:20px;

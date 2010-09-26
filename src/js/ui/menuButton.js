@@ -1,57 +1,107 @@
 /**
- * @class Create button with menu
+ * @class Button with menu
  * 
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
-elRTE.prototype.ui.buttonMenu = function(cmd) {
-	var ac = 'elrte-ui-active',
-		dc = 'elrte-ui-disabled', 
-		bc = 'elrte-btn',
-		mc = bc + '-menu',
+elRTE.prototype.ui.menuButton = function(cmd) {
+	var self = this,
 		o = {
 			label    : cmd.title,
-			tpl      : cmd.tpl,
+			tpl      : cmd.conf.tpl,
 			opts     : cmd.opts,
 			callback : function(v) { cmd.exec(v); }
-		},
-		wn = $.fn['elrte'+cmd.widget] ? 'elrte'+cmd.widget : 'elrtemenu',
+		};
+	if (cmd.conf.uiClass) {
+		o.cssClass = cmd.conf.uiClass;
+	}
+		
+	this.init(cmd);
+	this.label = cmd.conf.label ? $('<span class="elrte-btn-menu-label">'+cmd.title+'</span>') : '';
 
-		lbl = wn == 'elrtemenu' && cmd.conf.label ? $('<div class="'+mc+'-label">'+cmd.title+'</div>') : '',
-		wrp = $('<div class="'+mc+'-inner"><div class="'+mc+'-control"/></div>').append(lbl),
-		wdg = $('<div/>'), 
-		btn = $('<li class="'+bc+' '+bc+'-'+cmd.name+' '+mc+' '+dc+'"></li>')
-			.append(wrp)
-			.append(wdg.hide())
-			.mousedown(function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (cmd.state()) {
-					if (wdg.is(':hidden')) {
-						wdg.val(cmd.value());
-						cmd.rte.trigger('hideUI');
-					} 
-					wdg.toggle(128);
+	this.menu = $('<div/>');
+
+	this.$.addClass('elrte-btn-menu')
+		.append($('<div class="elrte-btn-menu-inner"><div class="elrte-btn-menu-control"/></div>')
+		.append(this.label))
+		.append(this.menu.hide())
+		.mousedown(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			if (self.state) {
+				if (self.menu.is(':hidden')) {
+					cmd.rte.trigger('hideUI')
+					self.menu.val(cmd.value());
 				}
-			});
-	
-	if (cmd.widgetClass) {
-		o.cssClass = cmd.widgetClass; 
+				self.menu.toggle(128);
+			}
+		});
+
+	cmd.rte.bind('hideUI', function() {
+		self.menu.hide();
+	});
+
+	setTimeout(function() {
+		self.menu.elrtemenu(o);
+	}, 20);
+
+	this.update = function() {
+		var v = this.cmd.value();
+		elRTE.prototype.ui._button.update.call(this);
+		if (this.label) {
+			this.label.text(this.cmd.opts[v] || this.cmd.title);
+		}
+		this.menu.val(v);
 	}
 
-	setTimeout(function() { wdg[wn](o); }, 20);
-			
-	cmd.bind(function(c) { 
-		lbl && lbl.text(c.opts[c.value()]||c.title);
-		switch (c.state()) {
-			case cmd.STATE_DISABLE : btn.removeClass(ac).addClass(dc); break;
-			case cmd.STATE_ENABLE  : btn.removeClass(ac+' '+dc);       break;
-			case cmd.STATE_ACTIVE  : btn.removeClass(dc).addClass(ac); break;
-		}
-	})
-	.rte.bind('click hideUI', function() {
-		wdg.hide();
-	});
-	
-	return btn;
 }
+
+elRTE.prototype.ui.menuButton.prototype = elRTE.prototype.ui._button;
+
+$.fn.elrtemenu = function(o) {
+	o = $.extend({}, $.fn.elrtemenu.defaults, o||{});
+	var self = this,
+		ac   = 'elrte-ui-active',
+		mc   = o.cssClass,
+		ic   = o.cssClass+'-item',
+		s    = o.label ? '<div class="elrte-ui-header">'+o.label+'</div>' : '';
+	
+	s += '<div class="'+mc+'-wrp">';
+	$.each(o.opts, function(v, l) {
+		s += '<div class="'+ic+'" name="'+v+'">'+o.tpl.replace(/\{value\}/g, v).replace(/\{label\}/g, l)+'</div>';
+	});
+	s += '</div>'
+	
+	this.items = this.addClass(mc)
+		.mousedown(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+		})
+		.append(s)
+		.find('.'+ic)
+		.hover(function() {
+			$(this).toggleClass('elrte-ui-hover');
+		})
+		.mousedown(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			self.hide();
+			o.callback($(this).attr('name'));
+		});
+	
+	this.val = function(v) {
+		this.items.removeClass(ac).filter('[name="'+v+'"]').addClass(ac);
+	}
+
+	return this;
+}
+
+
+$.fn.elrtemenu.defaults = {
+	label    : '',
+	cssClass : 'elrte-ui-widget-menu',
+	tpl      : '{label}',
+	opts     : {},
+	callback : function() { }
+}
+
 
