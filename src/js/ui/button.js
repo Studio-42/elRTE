@@ -20,7 +20,7 @@ elRTE.prototype.ui._button = new function() {
 		this.node = this.$[0]
 		
 		this.cmd.bind(function() {
-			self.update()
+			self.update();
 		});
 		
 	}

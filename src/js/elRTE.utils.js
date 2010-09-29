@@ -133,7 +133,7 @@
 		 * @param   Number  key code
 		 * @return  Boolean
 		 **/
-		this.isKeyChar = function(c) { return !(this.isKeyService(c) || this.isKeyArrow(c) || this.isKeyDel(c)) && c < 6200; }
+		this.isKeyChar = function(e) { return this.keyType(e) == this.rte.KEY_CHAR; }
 		
 		/**
 		 * Return true if code is delete/backspace code
@@ -141,7 +141,7 @@
 		 * @param   Number  key code
 		 * @return  Boolean
 		 **/
-		this.isKeyDel = function(c) { return c == 8 || c == 46; }
+		this.isKeyDel = function(e) { return this.keyType(e) == this.rte.KEY_DEL; }
 		
 		/**
 		 * Return true if code is arrows/home/end etc. code
@@ -149,9 +149,9 @@
 		 * @param   Number  key code
 		 * @return  Boolean
 		 **/
-		this.isKeyArrow = function(c) { return c >= 33 && c <= 40; }
+		this.isKeyArrow = function(e) { return this.keyType(e) == this.rte.KEY_ARROW; }
 		
-		this.isKeyService = function(c) { return $.inArray(c, this.serviceKeys) != -1; }
+		this.isKeyService = function(e) { return this.keyType(e) == this.rte.KEY_SERVICE; }
 		
 		this.strRepeat = function(s, m) {
 			var str = '';
@@ -348,6 +348,10 @@
 					return this.media[l];
 				}
 			}
+		}
+	
+		this.isColorHex = function(c) {
+			return /^\#([0-9a-f]){3,6}$/i.test(c)
 		}
 	
 		/**

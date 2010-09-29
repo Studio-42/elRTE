@@ -153,13 +153,13 @@
 				// disableEvents : true
 			},
 			formatblock : {
-				// label : false
+				label : false
 			},
 			fontsize : {
 				
 			},
 			fontfamily : {
-				
+				// label : false
 			}, 
 			// pasteformattext : { width : 800, height:400}
 			

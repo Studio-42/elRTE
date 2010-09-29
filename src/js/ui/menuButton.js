@@ -63,20 +63,18 @@ $.fn.elrtemenu = function(o) {
 		ac   = 'elrte-ui-active',
 		mc   = o.cssClass,
 		ic   = o.cssClass+'-item',
-		s    = o.label ? '<div class="elrte-ui-header">'+o.label+'</div>' : '';
+		s    = (o.label ? '<div class="elrte-ui-header">'+o.label+'</div>' : '')+'<div class="'+mc+'-wrp">';
 	
-	s += '<div class="'+mc+'-wrp">';
 	$.each(o.opts, function(v, l) {
 		s += '<div class="'+ic+'" name="'+v+'">'+o.tpl.replace(/\{value\}/g, v).replace(/\{label\}/g, l)+'</div>';
 	});
-	s += '</div>'
 	
 	this.items = this.addClass(mc)
 		.mousedown(function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 		})
-		.append(s)
+		.append(s+'</div>')
 		.find('.'+ic)
 		.hover(function() {
 			$(this).toggleClass('elrte-ui-hover');
