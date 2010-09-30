@@ -1,6 +1,8 @@
 $.fn.elrteWdgColor = function(o, rte) {
 	var self = this,
-		c = 'elrte-widget-palette', i, n;
+		c    = 'elrte-widget-palette', 
+		hc   = 'elrte-ui-hover',
+		i, n;
 	
 	o = $.extend({}, $.fn.elrteWdgColor.defaults, o||{});
 	
@@ -15,15 +17,14 @@ $.fn.elrteWdgColor = function(o, rte) {
 	this.palette = '<div class="'+c+'-small">';
 	this.dialog  = $('<div class="'+c+'-button">'+rte.i18n('More colors')+'</div>')
 		.mousedown(function(e) {
-			// e.preventDefault();
-			// e.stopPropagation();
-			// rte.trigger('hideUI')
-			rte.log('here '+self.value)
-			new rte.ui.dialogColor({ value : self.value, callback : function(v) { rte.log(v) } }, rte).open()
+			new rte.ui.dialogColor({ value : self.value, callback : function(v) { o.callback(v); } }, rte).open()
+		})
+		.hover(function() {
+			$(this).toggleClass(hc)
 		})
 	this.reset   = $('<div class="'+c+'-button">'+rte.i18n('Reset color')+'</div>')
 		.mousedown(function() { o.callback(''); })
-		.hover(function() { $(this.toggleClass('elrte-ui-active')) });
+		.hover(function() { $(this).toggleClass(hc); });
 	
 	for (i = 0; i < this.colors.length; i++) {
 		n = this.colors[i];

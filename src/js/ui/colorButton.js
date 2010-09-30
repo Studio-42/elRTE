@@ -73,10 +73,13 @@ elRTE.prototype.ui.colorButton = function(cmd) {
 		.mousedown(function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			if (self.menu.is(':hidden')) {
-				rte.trigger('hideUI')
+			if (self.state) {
+				if (self.menu.is(':hidden')) {
+					rte.trigger('hideUI')
+				}
+				self.menu.toggle(128);
 			}
-			self.menu.toggle(128)
+			
 		});
 	
 	rte.bind('hideUI', function() {
@@ -88,10 +91,6 @@ elRTE.prototype.ui.colorButton = function(cmd) {
 		this.val = cmd.value();
 		this.ind.css('background-color', this.val||this.color);
 		this.menu.val(this.val)
-		rte.log('button val '+this.val)
-		// this.menu.val(cmd.value());
-		// this.val(cmd.value())
-		
 	}
 	
 	return;
