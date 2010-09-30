@@ -70,6 +70,14 @@ elRTE.prototype.command = function(rte) {
 		return this._state;
 	}
 	
+	this.isEnable = function() {
+		return this._state != this.STATE_DISABLE;
+	}
+	
+	this.isActive = function() {
+		return this._state == this.STATE_ACTIVE;
+	}
+	
 	/**
 	 * Return current command value
 	 *
