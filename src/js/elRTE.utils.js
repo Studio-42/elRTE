@@ -69,13 +69,15 @@
 		this.rgbRegExp = /\s*rgb\s*?\(\s*?([0-9]+)\s*?,\s*?([0-9]+)\s*?,\s*?([0-9]+)\s*?\)\s*/i;
 		// regexp to detect color in border/background properties
 		this.colorsRegExp = /aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|rgb\s*\([^\)]+\)/i;
-		// web safe colors
+		
+		// named colors
 		this.colors = {
 			aqua    : '#00ffff',
 			black   : '#000000',
 			blue    : '#0000ff',
 			fuchsia : '#ff00ff',
 			gray    : '#808080',
+			grey    : '#808080',
 			green   : '#008000',
 			lime    : '#00ff00',
 			maroon  : '#800000',
@@ -86,7 +88,7 @@
 			red     : '#ff0000',
 			silver  : '#c0c0c0',
 			teal    : '#008080',
-			white   : '#fffffff',
+			white   : '#ffffff',
 			yellow  : '#ffff00'
 		}
 		
@@ -362,19 +364,23 @@
 		 **/
 		this.color2Hex = function(c) {
 			var m;
-			c = ''+c;
+			
+			c = ''+c.toLowerCase();
+			
 			function hex(s) {
 				s = parseInt(s).toString(16);
 				return s.length > 1 ? s : '0' + s; 
 			};
 			
+			if (this.isColorHex(c)) {
+				return c;
+			}
+			
 			if (this.colors[c]) {
 				return this.colors[c];
 			}
-			if ((m = c.match(this.rgbRegExp))) {
-				return '#'+hex(m[1])+hex(m[2])+hex(m[3]);
-			}
-			return c;
+			
+			return (m = c.match(this.rgbRegExp)) ? '#'+hex(m[1])+hex(m[2])+hex(m[3]) : '';
 		}
 	
 		this.fontsize2percents = function(s) {

@@ -17,7 +17,13 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 			o    = {
 				'class'  : '',
 				label    : this.cmd.title,
-				callback : function(c) { self.setColor(c); }
+				callback : function(c) { 
+					self.rte.focus(); 
+					if (c) {
+						self.setColor(c); 
+						self.cmd.exec(self.color);
+					}
+				}
 			}, c;
 		
 		// control toggle widget while button - exec cmd
@@ -56,6 +62,7 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 	 **/
 	this.setColor = function(c) {
 		this.ind.css('background', (this.color = c));
+		this.widget.val(this.color)
 	}
 	
 	/**

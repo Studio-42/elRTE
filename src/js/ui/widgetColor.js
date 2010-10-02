@@ -26,8 +26,14 @@ $.fn.elrteWidgetColor = function(o, rte) {
 			.mousedown(function() {
 				o.callback(ind.attr('val'));
 			}),
-		dialog  = $('<div class="'+c+'-button">'+rte.i18n('More colors')+'</div>'),
-		palette = '<div class="'+c+'-palette">'
+		dialog  = $('<div class="'+c+'-button">'+rte.i18n('More colors')+'</div>')
+			.mousedown(function(e) {
+				$('<div/>').elrtedialogcolor({ 
+					callback : function(c) { o.callback(c); }, 
+					color    : ind.attr('val') 
+				}, rte).open()
+			}),
+		palette = '<div class="'+c+'-palette">';
 		
 	for (i = 0; i < colors.length; i++) {
 		n = colors[i];

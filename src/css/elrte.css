@@ -1,6 +1,8 @@
 /******************************************************/
 /*                         RESET                      */
 /******************************************************/
+span { border-color:#333; }
+
 .elrte,
 .elrte div, 
 .elrte span,
@@ -31,7 +33,8 @@
 .ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
 .ui-dialog .ui-dialog-content { padding:.5em; }
 .ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
-.ui-dialog .ui-dialog-content table { border:1px solid #111;}
+.ui-dialog  table { border:0 solid;  }
+.ui-dialog  table td { padding:2px; vertical-align:top; }
 
 /******************************************************/
 /*                   COMMON STUFFS                    */
@@ -44,6 +47,7 @@
 .elrte-tab,
 .elrte .elrte-widget-grid .elrte-widget-menu-item,
 .elrte .elrte-widget-color-item
+
 	{
 	display: -moz-inline-stack;
 	display: inline-block;
@@ -61,7 +65,9 @@
 .elrte .elrte-widget-menu,
 .elrte .elrte-widget-grid .elrte-widget-menu-item,
 .elrte .elrte-widget-color-button,
-.elrte .elrte-widget-color-palette
+.elrte .elrte-widget-color-palette,
+.elrte-dialog-color-highlight,
+.elrte-dialog-color input
  {
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -564,7 +570,57 @@
 
 .elrte .elrte-widget-color-item[name $='ffffff'] { outline:1px solid #eee; }
 
+/******************************************************/
+/*                      DIALOGS                       */
+/******************************************************/
 
+.elrte-dialog-color {
+	
+}
+
+.elrte-dialog-color table td { padding:0; }
+
+.elrte-dialog-color table td:first-child {
+	border-right:1px solid #ccc;
+	padding-right:9px;
+}
+
+.elrte-dialog-color table td:last-child {
+	padding-left:9px;
+}
+
+.elrte-dialog-color-palette-wrp {
+	border:1px solid #aaa;
+	clear:both;
+}
+
+.elrte-dialog-color-palette {
+	width:90px;
+	padding:0;
+	margin:0;
+	float:left;
+}
+
+.elrte-dialog-color-item {
+	width:15px;
+	height:15px;
+	float:left;
+}
+
+.elrte-dialog-color-highlight {
+	width:70px;
+	height:39px;
+	margin-bottom:5px;
+	border:1px solid #aaa;
+}
+
+.elrte-dialog-color input {
+	width:70px;
+	padding:0;
+	outline:0 solid;
+	border:1px solid #aaa;
+	font-size:12px;
+}
 
 /******************************************************/
 /*                      PLUGINS                       */
