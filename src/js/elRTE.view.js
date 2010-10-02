@@ -169,9 +169,9 @@ elRTE.prototype.view = function(rte) {
 			while (cl--) {
 				
 				if ((cmd = commands[cn[cl]])) {
-					btn = this.rte.ui[cmd.conf.ui+'Button']||this.rte.ui.button;
+					btn = this.rte.ui['button'+cmd.conf.ui]||this.rte.ui.button;
 					btn = new btn(cmd)
-					pnl.prepend(btn.node);
+					pnl.prepend(btn.ui);
 				}
 			}
 			pnl.children().length && this.toolbar.prepend(pnl);

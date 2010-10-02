@@ -14,6 +14,7 @@
 	/**
 	 * @Class elRTE editor
 	 * @todo  add  history methods wrappers to api
+	 * @TODO  support for different css files for different documents
 	 * @param DOMElement  
 	 * @param Object  editor options
 	 */
@@ -60,13 +61,7 @@
 		this.KEY_SERVICE = 6;
 
 		this.lastKey = 0;
-		
-		/* "constants" - change source */
-		// this.CHANGE_NON  = 0;
-		// this.CHANGE_KBD = 1;
-		// this.CHANGE_DEL = 2;
-		// this.CHANGE_CMD = 3;
-		// this.CHANGE_POS = 4;
+		this.typing = false;
 		/* cached change on keydown to rise change event after keyup */
 		this.change = false;
 		/* max loaded doc number */
@@ -576,12 +571,14 @@
 				} else if (self.lastKey == self.KEY_ARROW) {
 					self.trigger('changePos', {event : e});
 				}
-				
+				self.typing = self.lastKey == self.KEY_CHAR || self.lastKey == self.KEY_DEL;
 				self.lastKey = 0;
 				self.change = false;
+				
 			})
 			.bind('mouseup', function(e) {
 				self.lastKey = 0;
+				self.typing = false;
 				// click on selection not collapse it at moment
 				setTimeout(function() { self.trigger('changePos', {event : e}); }, 1);
 			})

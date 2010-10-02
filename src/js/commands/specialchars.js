@@ -5,8 +5,7 @@
  **/
 elRTE.prototype.commands.specialchars = function() {
 	this.title = 'Insert special character';
-	this.conf  = { ui : 'menu', uiClass : 'elrte-ui-widget-grid', tpl : '<span title="{label}">{value}</span>' };
-	this.tpl   = '<span title="{label}">{value}</span>';
+	this.conf  = { ui : 'Menu', uiClass : 'elrte-widget-grid', tpl : '<span title="{label}">{value}</span>' };
 	this.opts  = {
 		// typoraphic
 		'&amp;'    : 'Ampersand',

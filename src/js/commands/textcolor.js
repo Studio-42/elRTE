@@ -1,91 +1,122 @@
 /**
  * @class elRTE command.
- * Insert non breakable space into selection
+ * 
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.textcolor = function() {
-	this.title = 'Text color';
-	this.conf = { ui : 'color' };
+	this.title   = 'Text color';
+	this.conf    = { ui : 'Color' };
 	this.cssProp = 'color';
-	this.cssVal = '';
-	this.node = { node : 'span', css :{}}
+	this.node    = { name : 'span', css :{ color : '' }}
 	
-	
-	this.test = function(n) {
-		return n.nodeType == 1 && this.dom.css(n, this.cssProp);
-	}
-	
-	this.test = $.proxy( function(n) { return n.nodeType == 1 && this.dom.css(n, this.cssProp); }, this)
-	
-	this._exec_ = function(v) {
-		this.rte.log(v)
-		// return this.sel.insertHtml('&nbsp;');
-		var dom = this.dom,
-			sel = this.sel,
-			self = this,
-			b, n;
-		if (v === '' && (n = this._find())) {
-			$(n).css('color', '');
-			if (dom.is(n, 'emptySpan')) {
-				b = sel.bookmark();
-				dom.unwrap(n);
-				sel.toBookmark(b);
-			}
-		} else if (v) {
-			this.cssProp = 'color';
-			this.cssVal = v;
-			this.node = { name : 'span', css : { 'color' : v } }
-			this.useCss = true;
-			this.rte.log('here')
+	/**
+	 * Set color for selected text
+	 *
+	 * @param  String  color value in hex/rgb
+	 * @return Boolean
+	 */
+	this.exec = function(color) {
+		var self = this,
+			dom  = this.dom,
+			sel  = this.sel,
+			col  = sel.collapsed(),
+			b    = sel.bookmark(), 
+			p    = b[1].parentNode, o;
 
-			if (sel.collapsed()) {
-				sel.surroundContents(dom.create(this.node))
-			} else {
-				var node = this.node;
-				o = { 
-					wrap : function(n) { dom.wrap(n, node) }, 
-					inner  : false,
-					testCss : 'textElement',
-					setCss  : function(n) { $(n).css(self.cssProp, self.cssVal).find('*').css(self.cssProp, ''); }
-				};
-				dom.smartWrap(sel.get(true), o);
-			}
+		color = this.utils.color2Hex(color.toLowerCase());
+		// color is the same as document default one
+		if (color == this._val) {
+			color = '';
 		}
+		this.node.css.color = color;
+
+		/**
+		 * Return true if node has required css property
+		 * @param DOMElement
+		 * @return Boolean
+		 */
+		function test(n) {
+			return n.nodeType == 1 && dom.css(n, self.cssProp);
+		}
+
+		/**
+		 * Check if node or parents has the same color as required
+		 * @param DOMElement
+		 * @return Boolean
+		 */
+		function allow(n) {
+			var n = dom.parents(n, test, true).shift();
+			return !(n && self.utils.color2Hex(dom.css(n, 'color')) == color);
+		}
+
+		// selection collapsed
+		if (col) {
+			// cursor at the end of colored node after user typing text - move cursor after this node
+			if (this.rte.typing && dom.is(p, test) && dom.is(b[1], 'last') && allow(p)) {
+				b = sel.selectNext(p, true).rmBookmark(b).bookmark();
+			} else if (!color) {
+				// there is no required color - remove color from all parents
+				$.each(dom.parents(b[0], test), function(i, n) {
+					if (dom.is($(n).css(self.cssProp, '')[0], 'emptySpan')) {
+						dom.unwrap(n);
+					}
+				});
+			}
+			// color is set and not equal parent color
+			if (color && allow(b[0])) {
+				sel.surroundContents(dom.create(this.node));
+			} 
+		} 
+
+		// unwrap nodes with color except nodes with required color
+		o = {
+			accept : function(n) {
+				var c;
+				return n.nodeType == 1 && (c = dom.css(n, 'color')) && self.utils.color2Hex(c) != color;
+			},
+			unwrap : function(n) { $(n).css(self.cssProp, ''); dom.is(n, 'emptySpan') && dom.unwrap(n);}
+		}
+		dom.smartUnwrap(sel.get(true), o);
+		b = sel.toBookmark(b).bookmark();
+		
+		if (color) {
+			// wrap nodes with color node
+			o = {
+				accept : function(n) { return dom.is(n, 'textOrBr') && allow(n); },
+				wrap   : function(n) { 
+					$.each(dom.find(dom.wrap(n, self.node), test), function(i, n) {
+						if (dom.is($(n).css(self.cssProp, '')[0], 'emptySpan')) {
+							dom.unwrap(n);
+						}
+					});
+				}
+			}
+			dom.smartWrap(sel.get(true), o);
+		}
+
+		sel.toBookmark(b);	
+		this.rte.trigger('change');
 		return true;
 	}
 	
-	this.exec = function() {
-		var dom = this.dom,
-			sel = this.sel,
-			col = sel.collapsed();
-			
-		if (this.isActive()) {
-			this.rte.log('active')
-		} else {
-			
-		}
-	}
-	
-	this._find = function() {
-		var dom = this.dom;
-		
-		return dom.closestParent(this.sel.node(), function(n) { return n.nodeType == 1 && dom.css(n, 'color') }, true);
-	}
-	
+	/**
+	 * Store active document default color
+	 *
+	 * @return void
+	 */
 	this._updValue = function() { 
-		
-		this._val = this.utils.color2Hex(this.dom.css(this._find(), 'color'))
+		this._val = this.utils.color2Hex($(this.rte.active.document.body).css('color'));
 	}
+	
 	
 	this._getState = function() {
-		var dom = this.dom,
-			self = this;
-		
-		return dom.is(this.sel.node(), 'text')
-			? (dom.testSelection(self.test) ? this.STATE_ACTIVE : this.STATE_ENABLE)
-			: this.STATE_DISABLE;
-		
-		return this.dom.is(this.sel.node(), 'text') ? this.STATE_ENABLE : this.STATE_DISABLE;
+		return this.STATE_ENABLE;
+	}
+
+	this.events = {
+		'wysiwyg'      : function() { this._val = '';  this.update(); },
+		// keyup : function() { this._lastTyping = this.rte.lastKey == this.rte.KEY_CHAR || this.rte.lastKey == this.rte.KEY_DEL },
+		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
 	}
 
 }

@@ -6,7 +6,7 @@
 elRTE.prototype.commands.fontsize = function() {
 	this.title  = 'Font size';
 	this._val   = '';
-	this.conf   = { label : true, ui : 'menu', tpl : '<span style="font-size:{value}">{label}</span>' };
+	this.conf   = { label : true, ui : 'Menu', tpl : '<span style="font-size:{value}">{label}</span>' };
 	this.css    = 'font-size';
 	this.tpl    = '<span style="font-size:{value}">{label}</span>';
 	this.opts   = {

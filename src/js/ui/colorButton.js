@@ -8,18 +8,18 @@ elRTE.prototype.ui.colorButton = function(cmd) {
 		rte = cmd.rte;
 	
 	
-	this.color = cmd.conf.color||'#000';
+	this.auto = '';
 	this.val = '';
 	
 	this.init(cmd);
 	
 	this.menu = $('<div/>').elrteWdgColor({
 		label : cmd.title,
-		callback : function(v) { cmd.exec(v) }
+		callback : function(v) { self.color = v; cmd._val = v; self.ind.css('background-color', v); }
 	}, rte);
 	
 
-	this.ind = $('<div class="elrte-color-indicator"/>')
+	this.ind = $('<div class="elrte-color-indicator"/>');
 	
 	this.$.addClass('elrte-btn-menu')
 		.html('<div class="elrte-btn-menu-inner"><div class="elrte-btn-menu-control"/></div>')
@@ -43,9 +43,10 @@ elRTE.prototype.ui.colorButton = function(cmd) {
 	
 	this.update = function() {
 		elRTE.prototype.ui._button.update.call(this);
-		this.val = cmd.value();
-		this.ind.css('background-color', this.val||this.color);
-		this.menu.val(this.val);
+		// rte.log('update')
+		// this.color = cmd.value();
+		// this.ind.css('background-color', cmd.value());
+		this.menu.val(cmd.value())
 	}
 	
 	return;

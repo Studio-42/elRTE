@@ -239,17 +239,6 @@ elRTE.prototype.dom = function(rte) {
 		var p;
 		until = until||this.body;
 		return this.is(n, 'node') && !this.is(n, until) && (p = n.parentNode) && !this.is(p, until) && this.is(p, f) ? p : false
-
-		// if (this.is(n, 'node')) {
-		// 	// if (!until || !u) {
-		// 	// 	until = this.body;
-		// 	// }
-		// 	
-		// 	if (!this.is(n, until||this.body) && (p = n.parentNode) && !this.is(p, until||this.body)) {
-		// 		return this.is(p, f) ? p : false;
-		// 	}
-		// }
-		// return false;
 	}
 	
 	/**
