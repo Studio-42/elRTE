@@ -1,169 +1,86 @@
-/** 
+/**
  * @class Buttons prototype
  * @author Dmitry (dio) Levashov, dio@std42.ru
- */
+ **/
 elRTE.prototype.ui._button = new function() {
-	this.ac  = 'elrte-ui-active';
-	this.dc  = 'elrte-ui-disable';
-	this.hc  = 'elrte-ui-hover';
+	var self = this;
+	this.c   = '';
+	this.ac  = 'elrte-active';
+	this.dc  = 'elrte-disable';
+	this.hc  = 'elrte-hover';
 	this.state = 0;
-	this.node;
-	this.$;
 	this.cmd;
 	
+	/**
+	 * Initilize new button - create ui, bind events etc.
+	 * @param Object  
+	 * @return void
+	 **/
 	this.init = function(cmd) {
-		var self = this;
-		this.cmd = cmd;
-		this.$ = $('<li class="elrte-btn elrte-btn-'+cmd.name+' '+this.dc+'" title="'+cmd.title+'"/>').hover(function() {
-			self.state && $(this).toggleClass('elrte-ui-hover')
-		})
-		this.node = this.$[0]
+		var self = this,
+			c = 'elrte-btn';
 		
-		this.cmd.bind(function() {
+		this.rte = cmd.rte;
+			
+		this.btn = $('<div class="'+c+' '+c+'-'+cmd.name+' '+this.c+'" title="'+cmd.title+'"/>');
+		this.ui = $('<li class="elrte-btn-wrp '+this.dc+'"/>')
+			.append(this.btn)
+			.hover(function() {
+				self.state>0 && $(this).toggleClass(self.hc);
+			}).mousedown(function(e) {
+				self.click(e);
+			});
+		
+		this.cmd = cmd.bind(function() {
 			self.update();
 		});
-		
+		this.onInit();
 	}
 	
+	/**
+	 * Called after init method
+	 * @return void
+	 **/
+	this.onInit = function() { }
+	
+	/**
+	 * Button mousedown event handler
+	 * @param  Event
+	 * @return void
+	 **/
+	this.click = function(e) {
+		e.preventDefault();
+		this.cmd.rte.focus();
+		if (this.cmd._state > 0) {
+			this.cmd.exec();
+		}
+	}
+	
+	/**
+	 * Update button state (command change event handler)
+	 * @return void
+	 **/
 	this.update = function() {
 		this.state = this.cmd.state();
 		switch (this.state) {
-			case this.cmd.STATE_DISABLE : this.$.removeClass(this.ac).addClass(this.dc); break;
-			case this.cmd.STATE_ENABLE  : this.$.removeClass(this.ac+' '+this.dc);       break;
-			case this.cmd.STATE_ACTIVE  : this.$.removeClass(this.dc).addClass(this.ac); break;
+			case this.cmd.STATE_DISABLE : this.ui.removeClass(this.ac).addClass(this.dc); break;
+			case this.cmd.STATE_ENABLE  : this.ui.removeClass(this.ac+' '+this.dc);       break;
+			case this.cmd.STATE_ACTIVE  : this.ui.removeClass(this.dc).addClass(this.ac); 
 		}
 	}
+
 }
 
-/** 
- * @class Default toolbar button
+
+/**
+ * @class Ordinary button
+ * @param  Object
  * @author Dmitry (dio) Levashov, dio@std42.ru
- */
+ **/
 elRTE.prototype.ui.button = function(cmd) {
-
 	this.init(cmd);
-	
-	this.$.mousedown(function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		cmd.rte.trigger('hideUI').focus();
-		if (cmd._state > 0) {
-			cmd.exec();
-		}
-	});
-
 }
 
 elRTE.prototype.ui.button.prototype = elRTE.prototype.ui._button;
-
-
-elRTE.prototype.ui.styleButton = function(cmd) {
-	var self = this,
-		rte  = cmd.rte,
-		c    = 'elrte-widget-sidebar',
-		gc   = 'elrte-widget-sidebar-group',
-		ic   = 'elrte-widget-sidebar-item',
-		html = '',
-		tmp  = {
-			inline : {
-				label : rte.i18n('Inline'),
-				html : ''
-			},
-			block  : {
-				label : rte.i18n('Block'),
-				html : ''
-			},
-			list : {
-				label : rte.i18n('Lists'),
-				html : ''
-			},
-			table  : {
-				label : rte.i18n('Table'),
-				html : ''
-			},
-			obj    : {
-				label : rte.i18n('Objects'),
-				html : ''
-			}
-		}, i;
-		
-	this.init(cmd);
-	
-	this.menu = $('<div class="'+c+'"/>');
-	rte.bind('hideSidebar', function() { self.$.removeClass(self.ac); }).view.appendToSidebar(this.menu);
-	
-	this.$.mousedown(function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (self.state) {
-			rte.trigger('hideUI')
-			rte.view.toggleSidebar('style', self.menu);
-			if (self.menu.is(':visible')) {
-				self.$.addClass(self.ac);
-				self._update();
-			} 
-		}
-	});
-	
-	// setTimeout(function() {
-		html += '<div class="'+ic+'" name="clean">Clean style</div>';
-		for (i = 0; i < cmd.opts.length; i++) {
-			v = cmd.opts[i];
-			tmp[v.type].html += '<div class="'+ic+'" name="'+i+'"><span'+(v.style ? ' style="'+v.style+'"' : (v['class'] ? ' class="'+v['class']+'"' : '') )+'>'+v.name+'</span></div>'
-		}
-		
-		$.each(tmp, function() {
-			if (this.html.length) {
-				html += '<div class="'+gc+'">'+this.label+'</div>'+this.html;
-			}
-		});
-		delete tmp;
-		self.items = self.menu.html(html).children('.'+ic).mousedown(function(e) {
-			var t = $(this);
-			!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
-		});
-		self.menu.children('.'+gc).mousedown(function(e) {
-			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
-		})
-	// }, 20)
-	
-	this._update = function() {
-		var v = this.cmd.value(),
-			d = this.cmd.disabled;
-
-		$.each(this.items.removeClass(this.ac+' '+this.dc), function(i, n) {
-			var t = $(this), 
-				name = parseInt(t.attr('name'));
-			
-			if ($.inArray(name, d) != -1) {
-				t.addClass(self.dc)
-			} else if ($.inArray(name, v) != -1) {
-				t.addClass(self.ac);
-			}
-		});
-		// disable clean if no active styles
-		if (!v.length) {
-			this.items.filter('[name="clean"]').addClass(this.dc);
-		}
-	}
-	
-	this.update = function() {
-		elRTE.prototype.ui._button.update.call(this);
-
-		if (this.menu.is(':visible')) {
-			if (this.state == this.cmd.STATE_DISABLE) {
-				this.cmd.rte.view.hideSidebar()
-			} else {
-				this.$.addClass(this.ac);
-				this._update();
-			}
-		}
-	}
-	
-}
-
-elRTE.prototype.ui.styleButton.prototype = elRTE.prototype.ui._button;
-
-
 
 

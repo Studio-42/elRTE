@@ -1,7 +1,4 @@
-/** 
- * @class Button, creates styles panel in sidebar
- * @author Dmitry (dio) Levashov, dio@std42.ru
- */
+
 elRTE.prototype.ui.styleButton = function(cmd) {
 	var self = this,
 		rte  = cmd.rte,
@@ -50,7 +47,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 		}
 	});
 	
-	setTimeout(function() {
+	// setTimeout(function() {
 		html += '<div class="'+ic+'" name="clean">Clean style</div>';
 		for (i = 0; i < cmd.opts.length; i++) {
 			v = cmd.opts[i];
@@ -63,22 +60,14 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 			}
 		});
 		delete tmp;
-		self.items = self.menu.html(html).children('.'+ic)
-			.mousedown(function(e) {
-				var t = $(this);
-				rte.trigger('hideUI');
-				!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
-			})
-			.hover(function() {
-				var t = $(this);
-				!t.hasClass(self.dc) && t.toggleClass(self.hc); 
-			});
-		
-		self.menu.children('.'+gc).mousedown(function(e) {
-			rte.trigger('hideUI');
-			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
+		self.items = self.menu.html(html).children('.'+ic).mousedown(function(e) {
+			var t = $(this);
+			!t.hasClass(self.dc) && cmd.exec($(this).attr('name'));
 		});
-	}, 20);
+		self.menu.children('.'+gc).mousedown(function(e) {
+			$(this).toggleClass('elrte-expanded').nextUntil('.'+gc).toggle();
+		})
+	// }, 20)
 	
 	this._update = function() {
 		var v = this.cmd.value(),
@@ -116,4 +105,7 @@ elRTE.prototype.ui.styleButton = function(cmd) {
 }
 
 elRTE.prototype.ui.styleButton.prototype = elRTE.prototype.ui._button;
+
+
+
 
