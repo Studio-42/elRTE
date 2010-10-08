@@ -294,6 +294,7 @@ span { border-color:#333; }
 .elrte .elrte-btn-fontfamily { background-position:-560px -20px; }
 .elrte .elrte-btn-fontstyle { background-position:-580px -20px; }
 .elrte .elrte-btn-textcolor { background-position:-660px 0 }
+.elrte .elrte-btn-textbg { background-position:-680px 0 }
 
 
 /* panel lists */

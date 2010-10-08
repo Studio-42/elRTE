@@ -10,8 +10,10 @@ $.fn.elrteWidgetColor = function(o, rte) {
 	
 	o = $.extend({}, $.fn.elrteWidgetColor.defaults, o||{});
 	
+	
 	var self   = this,
 		c      = 'elrte-widget-color',
+		color  = '',
 		colors = [
 			'#800000', '#8b4513', '#006400', '#2f4f4f', '#000080', '#4b0082', '#800080', '#000000', 
 			'#ff0000', '#daa520', '#6b8e23', '#708090', '#0000cd', '#483d8b', '#c71585', '#696969',
@@ -24,13 +26,13 @@ $.fn.elrteWidgetColor = function(o, rte) {
 		auto  = $('<div class="'+c+'-button">'+rte.i18n('Automatic')+'</div>')
 			.prepend(ind)
 			.mousedown(function() {
-				o.callback(ind.attr('val'));
+				o.callback(ind.attr('name'));
 			}),
 		dialog  = $('<div class="'+c+'-button">'+rte.i18n('More colors')+'</div>')
 			.mousedown(function(e) {
 				$('<div/>').elrtedialogcolor({ 
 					callback : function(c) { o.callback(c); }, 
-					color    : ind.attr('val') 
+					color    : color 
 				}, rte).open()
 			}),
 		palette = '<div class="'+c+'-palette">';
@@ -66,9 +68,12 @@ $.fn.elrteWidgetColor = function(o, rte) {
 	this.addClass('elrte-widget-menu '+c)
 		.html('<div class="elrte-widget-header">'+o.label+'</div>')
 		.append(inner.append(auto).append(palette).append(dialog));
+
+	
 		
-	this.val = function(c) {
-		ind.css('background-color', c).attr('val', c);
+	this.val = function(c, a) {
+		color = c;
+		ind.css('background-color', a).attr('name', a);
 	}
 		
 	return this;

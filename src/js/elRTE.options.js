@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['save', 'nbsp', 'bold', 'fontsize', 'specialchars', 'textcolor', 'source'],
+			test : ['save', 'nbsp', 'bold', 'fontsize', 'specialchars', 'textcolor', 'textbg', 'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],

@@ -7,6 +7,7 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 	this.c      = 'elrte-btn-menu';
 	this.widget = $('<div/>');
 	this.color  = '';
+	this.auto   = '';
 	
 	/**
 	 * Initilize widget and color indicator
@@ -35,7 +36,10 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 				e.preventDefault();
 				e.stopPropagation();
 				if (self.state) {
-					self.widget.is(':hidden') && self.cmd.rte.trigger('hideUI');
+					if (self.widget.is(':hidden')) {
+						self.cmd.rte.trigger('hideUI');
+						self.widget.val(self.color, self.auto);
+					}
 					self.widget.toggle(128);
 				}
 			});
@@ -46,13 +50,12 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 		// init widget and set automatic color
 		setTimeout(function() {
 			self.ui.append(self.widget.elrteWidgetColor(o, self.rte).hide());
-			self.setColor((c = self.cmd.value()));
-			self.widget.val(c);
 		}, 10);
 		
 		this.rte.bind('hideUI', function() {
 			self.widget.hide();
 		});
+		
 	}
 	
 	/**
@@ -62,7 +65,6 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 	 **/
 	this.setColor = function(c) {
 		this.ind.css('background', (this.color = c));
-		this.widget.val(this.color)
 	}
 	
 	/**
@@ -80,12 +82,15 @@ elRTE.prototype.ui.buttonColor = function(cmd) {
 	}
 	
 	/**
-	 * Update button state and set automatic color for widget
+	 * Update button state and save automatic color for widget
 	 * @return void
 	 **/
 	this.update = function() {
 		this.rte.ui._button.update.call(this);
-		this.state && this.widget.val(this.cmd.value());
+		if (!this.color) {
+			this.auto = this.cmd.value();
+			this.setColor(this.auto);
+		}
 	}
 	
 	this.init(cmd);

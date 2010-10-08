@@ -579,7 +579,7 @@
 			.bind('mouseup', function(e) {
 				self.lastKey = 0;
 				self.typing = false;
-				// click on selection not collapse it at moment
+				// click on selection not collapse it at a moment
 				setTimeout(function() { self.trigger('changePos', {event : e}); }, 1);
 			})
 			.bind('mousedown mouseup click dblclick', function(e) {

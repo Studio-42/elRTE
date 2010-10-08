@@ -3,12 +3,13 @@
  * 
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
-elRTE.prototype.commands.textcolor = function() {
-	this.title   = 'Text color';
+elRTE.prototype.commands.textbg = function() {
+	this.title   = 'Text background';
 	this.conf    = { ui : 'Color' };
-	this.cssProp = 'color';
-	this.node    = { name : 'span', css :{ color : '' }}
-	
+	this.cssProp = 'background-color';
+	this.node    = { name : 'span', css :{ 'background-color' : '' }}
+	this._val = '';
+
 	/**
 	 * Set color for selected text
 	 *
@@ -28,7 +29,7 @@ elRTE.prototype.commands.textcolor = function() {
 		if (color == this._val) {
 			color = '';
 		}
-		this.node.css.color = color;
+		this.node.css[this.cssProp] = color;
 
 		/**
 		 * Return true if node has required css property
@@ -46,7 +47,7 @@ elRTE.prototype.commands.textcolor = function() {
 		 */
 		function allow(n) {
 			var n = dom.parents(n, test, true).shift();
-			return !(n && self.utils.color2Hex(dom.css(n, 'color')) == color);
+			return !(n && self.utils.color2Hex(dom.css(n, self.cssProp)) == color);
 		}
 
 		// selection collapsed
@@ -72,7 +73,7 @@ elRTE.prototype.commands.textcolor = function() {
 		o = {
 			accept : function(n) {
 				var c;
-				return n.nodeType == 1 && (c = dom.css(n, 'color')) && self.utils.color2Hex(c) != color;
+				return n.nodeType == 1 && (c = dom.css(n, self.cssProp)) && self.utils.color2Hex(c) != color;
 			},
 			unwrap : function(n) { $(n).css(self.cssProp, ''); dom.is(n, 'emptySpan') && dom.unwrap(n);}
 		}
@@ -99,23 +100,24 @@ elRTE.prototype.commands.textcolor = function() {
 		return true;
 	}
 	
+
 	/**
 	 * Store active document default color
 	 *
 	 * @return void
 	 */
 	this._updValue = function() { 
-		this._val = this.utils.color2Hex($(this.rte.active.document.body).css('color'))||'#000';
+		this._val = this.utils.color2Hex($(this.rte.active.document.body).css('background-color'))||'#fff';
+		// this.rte.log(this._val)
 	}
-	
-	
+
 	this._getState = function() {
 		return this.STATE_ENABLE;
 	}
-
+	
 	this.events = {
-		'wysiwyg'      : function() { this._val = '';  this.update(); },
+		'wysiwyg'      : function() { this._val = '';  var self = this; setTimeout(function() { self.update();}, 100)   },
 		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
 	}
-
+	
 }
