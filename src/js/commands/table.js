@@ -5,7 +5,7 @@
  **/
 elRTE.prototype.commands.table = function() {
 	this.title = 'Create table';
-	this.conf  = { ui : 'table' };
+	this.conf  = { ui : 'Table' };
 	
 	
 	this.dialog = function() {

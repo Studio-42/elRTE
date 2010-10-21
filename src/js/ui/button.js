@@ -4,11 +4,17 @@
  **/
 elRTE.prototype.ui._button = new function() {
 	var self = this;
+	// additional button class
 	this.c   = '';
+	// active button class
 	this.ac  = 'elrte-active';
+	// disabled button class
 	this.dc  = 'elrte-disable';
+	// hover button class
 	this.hc  = 'elrte-hover';
+	// cached command state
 	this.state = 0;
+	// command to which this button binded
 	this.cmd;
 	
 	/**
@@ -38,7 +44,7 @@ elRTE.prototype.ui._button = new function() {
 	}
 	
 	/**
-	 * Called after init method
+	 * Called at the end of init method
 	 * @return void
 	 **/
 	this.onInit = function() { }
@@ -61,8 +67,8 @@ elRTE.prototype.ui._button = new function() {
 	 * @return void
 	 **/
 	this.update = function() {
-		this.state = this.cmd.state();
-		switch (this.state) {
+		// this.state = this.cmd.state();
+		switch ((this.state = this.cmd.state())) {
 			case this.cmd.STATE_DISABLE : this.ui.removeClass(this.ac).addClass(this.dc); break;
 			case this.cmd.STATE_ENABLE  : this.ui.removeClass(this.ac+' '+this.dc);       break;
 			case this.cmd.STATE_ACTIVE  : this.ui.removeClass(this.dc).addClass(this.ac); 
@@ -83,4 +89,11 @@ elRTE.prototype.ui.button = function(cmd) {
 
 elRTE.prototype.ui.button.prototype = elRTE.prototype.ui._button;
 
+elRTE.prototype.ui._buttonWidget = function() {
+	// this.init(cmd);
+	
+}
 
+elRTE.prototype.ui._buttonWidget.prototype = elRTE.prototype.ui._button;
+
+elRTE.prototype.ui._buttonWidget = new elRTE.prototype.ui._buttonWidget()

@@ -156,6 +156,10 @@ elRTE.prototype.view = function(rte) {
 		return n.length ? n.attr('rel').substr(1) : false;
 	}
 
+	this.setToolbar = function(t) {
+		this.editor.prepend(t);
+	}
+
 	this.buildUI = function(tb, commands) {
 		var pl = tb.length,
 			pc = 'elrte-toolbar-panel',

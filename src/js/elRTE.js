@@ -122,7 +122,7 @@
 			var self = this, 
 				o = this.options,
 				ids = [], 
-				c, ui, p, id;
+				c, ui, p, id, tb;
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
 			/* editor view/renderer */
@@ -153,7 +153,11 @@
 				});
 			});
 
-			this.view.buildUI(o.toolbars[o.toolbar], this._commands)
+			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars.default : false)) {
+				this.view.setToolbar(tb(this));
+			}
+			
+			// this.view.buildUI(o.toolbars[o.toolbar], this._commands)
 
 
 			/* load plugins */
@@ -966,7 +970,7 @@
 	 * elRTE commands classes
 	 *
 	 */
-	elRTE.prototype.ui = {};	
+	elRTE.prototype.ui = { toolbars : {} };	
 
 	/**
 	 * elRTE messages

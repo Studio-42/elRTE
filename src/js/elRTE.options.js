@@ -112,6 +112,7 @@
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'table', 'indents', 'lists', 'links', 'semantic', 'misc',  'control']
 
 		},
+		toolbarType : 'default',
 		toolbar : 'default',
 		
 		/* --- plugins options --- */
