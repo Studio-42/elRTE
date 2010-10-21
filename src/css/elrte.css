@@ -240,9 +240,11 @@ span { border-color:#333; }
 	float:left;
 	font-size:12px;
 	line-height:20px;
+	height:20px;
 	padding: 0 5px;
 	overflow:hidden;
 	background:#fff;
+
 }
 
 .elrte .elrte-btn-color-ind {
@@ -504,6 +506,12 @@ span { border-color:#333; }
 	border-color: #fff;
 	background-color:#c3dbef;
 }
+
+.elrte .elrte-widget-menu-item * {
+	padding:0;
+	margin:0;
+}
+
 
 /* grid menu */
 .elrte .elrte-widget-grid { }

@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', 'source', 'fontstyle', 'textcolor'] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'source', 'fontstyle', 'textcolor', 'textbg'] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -112,7 +112,7 @@
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'table', 'indents', 'lists', 'links', 'semantic', 'misc',  'control']
 
 		},
-		toolbar : 'test',
+		toolbar : 'default',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
@@ -153,7 +153,7 @@
 				// disableEvents : true
 			},
 			formatblock : {
-				label : false
+				// label : false
 			},
 			fontsize : {
 				

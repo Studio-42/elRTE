@@ -6,7 +6,7 @@
 elRTE.prototype.commands.fontfamily = function() {
 	this.title  = 'Font family';
 	this._val   = '';
-	this.conf   = { label : true, ui : 'menu', tpl : '<span style="font-family:{value}">{label}</span>' };
+	this.conf   = { label : true, ui : 'Menu', tpl : '<span style="font-family:{value}">{label}</span>' };
 	this.css    = 'font-family';
 	this.opts   = {
 		'default'                                       : this.rte.i18n('Default'),

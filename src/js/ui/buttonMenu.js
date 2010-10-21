@@ -51,7 +51,6 @@ elRTE.prototype.ui.buttonMenu = function(cmd) {
 		}
 		this.widget.val(v);
 		this.rte.ui._button.update.call(this);
-		
 	}
 	
 	/**
