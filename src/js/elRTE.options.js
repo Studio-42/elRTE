@@ -85,7 +85,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', 'source', 'fontstyle', 'textcolor', 'textbg'] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'fontstyle', 'textcolor', 'textbg'] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],

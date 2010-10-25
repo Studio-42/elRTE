@@ -11,7 +11,7 @@ elRTE.prototype.view = function(rte) {
 	this.toolbar   = $('<div class="elrte-toolbar"/>');
 	this.workzone  = $('<div class="elrte-workzone"/>')
 	this.tabsbar   = $('<ul class="elrte-tabsbar-top"/>');
-	this.sbheader  = $('<div class="elrte-ui-header"/>');
+	this.sbheader  = $('<div class="elrte-widget-header"/>');
 	this.sbinner   = $('<div class="elrte-sidebar-inner"/>');
 	this.sbclose   = $('<div class="elrte-sidebar-close"/>')
 		.mousedown(function(e) {
@@ -43,7 +43,7 @@ elRTE.prototype.view = function(rte) {
 	}
 	
 	if ($.fn.sortable) {
-		// this.tabsbar.sortable({ delay : 10});
+		this.tabsbar.sortable({ delay : 10});
 	}
 	
 	// rte.bind('source', function() {

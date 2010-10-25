@@ -5,7 +5,7 @@
  **/
 elRTE.prototype.commands.fontstyle = function() {
 	this.title    = 'Styles';
-	this.conf     = { ui : 'style' };
+	this.conf     = { ui : 'Style' };
 	this.disabled = [];
 	this.opts     = [];
 	this._val     = [];

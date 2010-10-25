@@ -616,6 +616,26 @@ span { border-color:#333; }
 	border:0px solid;
 }
 
+/* widget sidebar */
+.elrte .elrte-widget-sidebar {
+}
+.elrte .elrte-widget-sidebar-group,
+.elrte .elrte-widget-sidebar-item {
+	border-bottom:1px solid #ccc;
+	padding:3px;
+	font-size:.8em;
+	cursor:default;
+}
+
+.elrte .elrte-widget-sidebar-group {
+	font-weight:bold;
+	background-color:#ccc;
+}
+
+.elrte .elrte-widget-sidebar-item.elrte-active {
+	background-color:#c3dbef;
+}
+
 /******************************************************/
 /*                      DIALOGS                       */
 /******************************************************/

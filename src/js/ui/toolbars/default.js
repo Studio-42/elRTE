@@ -1,3 +1,7 @@
+/**
+ * @TODO - check duplicate buttons
+ */
+
 elRTE.prototype.ui.toolbars.default = function(rte) {
 	
 	var o  = rte.options,
