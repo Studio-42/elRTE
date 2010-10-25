@@ -579,19 +579,22 @@ span { border-color:#333; }
 
 .elrte .elrte-widget-color-item[name $='ffffff'] { outline:1px solid #eee; }
 
+
+
 .elrte  table.elrte-widget-table-create {
 	width:100%;
 	border-collapse:collapse;
+
 }
 
 .elrte  table.elrte-widget-table-create td {
 	min-width: 25px;
 	height: 25px;
-	border:1px solid #222;
+	border:1px solid #777;
 }
 
-.elrte  table.elrte-widget-table-create td.elrte-ui-active {
-	background-color:#eee;
+.elrte  table.elrte-widget-table-create td.elrte-ui-hover {
+	background-color:#c3dbef;
 }
 
 .elrte .elrte-widget-table-status,

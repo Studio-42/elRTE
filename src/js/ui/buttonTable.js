@@ -1,8 +1,8 @@
 elRTE.prototype.ui.buttonTable = function(cmd) {
 	
-	var rte = cmd.rte,
+	var rte  = cmd.rte,
 		self = this,
-		id = 'wt-'+(''+Math.random()).substr(2);;
+		id   = 'wt-'+(''+Math.random()).substr(2);;
 	
 	this.table  = $('<table title="'+rte.i18n('Click to create table')+'" class="elrte-widget-table-create" id="'+id+'"/>')
 		.mousemove(function(e) {
@@ -25,7 +25,7 @@ elRTE.prototype.ui.buttonTable = function(cmd) {
 
 			cmd.exec({ rows : parseInt(v[0]), cols : parseInt(v[1]) });
 
-		});;
+		});
 	this.status = $('<div class="elrte-widget-table-status"/>')
 	this.button = $('<div class="elrte-widget-table-button">'+rte.i18n('Open table dialog')+"</div>")
 		.hover(function() {
@@ -35,9 +35,10 @@ elRTE.prototype.ui.buttonTable = function(cmd) {
 			cmd.dialog();
 		});
 	this.widget = $('<div class="elrte-widget-menu"/>')
-		.append(this.table)
-		.append(this.status)
-		.append(this.button)
+		.append($('<div class="elrte-widget-menu-inner" style="padding:2px"/>').append(this.table).append(this.status).append(this.button))
+		
+		
+		
 	
 	$('#'+id+' td').live('mouseenter', function(e) {
 		var $t = $(this),
@@ -46,10 +47,10 @@ elRTE.prototype.ui.buttonTable = function(cmd) {
 
 		self.table.find('tr').each(function(i, r) {
 			if (i > rn) {
-				$(r).children('td').removeClass('elrte-ui-active');
+				$(r).children('td').removeClass('elrte-ui-hover');
 			} else {
 				$.each($(r).children(), function(i, c) {
-					$(c).toggleClass('elrte-ui-active', i <= cn);
+					$(c).toggleClass('elrte-ui-hover', i <= cn);
 				});
 			}
 		});
