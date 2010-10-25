@@ -272,8 +272,8 @@ span { border-color:#333; }
 .elrte .elrte-btn-italic { background-position:-220px 0; }
 .elrte .elrte-btn-underline { background-position:-240px 0; }
 .elrte .elrte-btn-strike { background-position:-260px 0; }
-.elrte .elrte-btn-sup { background-position:-280px 0; }
-.elrte .elrte-btn-sub { background-position:-300px 0; }
+.elrte .elrte-btn-sup { background-position:-300px 0; }
+.elrte .elrte-btn-sub { background-position:-280px 0; }
 
 /* panel semantic */
 .elrte .elrte-btn-ins { background-position:-320px 0; }
@@ -578,6 +578,40 @@ span { border-color:#333; }
 }
 
 .elrte .elrte-widget-color-item[name $='ffffff'] { outline:1px solid #eee; }
+
+.elrte  table.elrte-widget-table-create {
+	width:100%;
+	border-collapse:collapse;
+}
+
+.elrte  table.elrte-widget-table-create td {
+	min-width: 25px;
+	height: 25px;
+	border:1px solid #222;
+}
+
+.elrte  table.elrte-widget-table-create td.elrte-ui-active {
+	background-color:#eee;
+}
+
+.elrte .elrte-widget-table-status,
+.elrte .elrte-widget-table-button {
+	min-width:120px;
+/*	margin-top:3px;*/
+	font-size:.7em;
+	padding:2px;
+	border:1px solid #ccc;
+	text-align:center;
+}
+
+.elrte .elrte-widget-table-button {
+	background-color:#eee;
+}
+
+.elrte .elrte-widget-table-status {
+	
+	border:0px solid;
+}
 
 /******************************************************/
 /*                      DIALOGS                       */
