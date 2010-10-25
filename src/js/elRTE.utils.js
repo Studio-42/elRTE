@@ -365,7 +365,7 @@
 		this.color2Hex = function(c) {
 			var m;
 			
-			c = ''+c.toLowerCase();
+			c = (''+c).toLowerCase();
 			
 			function hex(s) {
 				s = parseInt(s).toString(16);

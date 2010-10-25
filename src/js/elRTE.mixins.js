@@ -54,7 +54,10 @@
 				d.unwrap(n);
 			} else if (p) {
 				$(n).css(p, '');
-				d.is(n, 'empty') && d.is(n, 'inline') && d.unwrap(n);
+				if ((d.is(n, 'empty') && d.is(n, 'inline')) || d.is(n, 'emptySpan')) {
+					d.unwrap(n);
+				}
+				// d.is(n, 'empty') && d.is(n, 'inline') && d.unwrap(n);
 			}
 		},
 		

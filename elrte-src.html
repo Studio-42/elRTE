@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en">
+<html >
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>elRTE from source</title>
@@ -150,11 +150,11 @@
 				documents : [
 					// $('#editor2')[0],
 					{
-						title : 'very loooooooooooooooooooooooooooooooooooooooong doc name',
-						content : '<b>asdf</b>', 
+						title : 'Автостопом по галактике',
+						content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
 						name : 'doc-2',
 						closable : true,
-						url : 'post2.php',
+						url : 'post.php',
 						type : 'post'
 					},
 					// { }
@@ -188,8 +188,8 @@
 				rte.exec('next')
 			})
 			$('#updsrc').click(function() {
-				rte.exec('val', 'elrte-editor-document-2', '<b>new content</b>')
-				rte.exec('updateSource', 'elrte-editor-document-2')
+				rte.exec('updateSource')
+				window.console.log(rte.exec('val', 'elrte-editor-document-1'))
 				window.console.log(rte.exec('val', 'elrte-editor-document-2'))
 			})
 			$('#save').click(function(e) {
@@ -257,83 +257,12 @@
 	-->
 	
 	<form method="post" action="post.php" >
-	<div id="editor" name="abr" title="Document">
-			<a href="ya.ru">возможно</a>, самый необходимый  предмет для межзвездного путешественника.
-
-		<table>
-			<tr><td>one</td><td>two</td></tr>
-		</table>
-		<span style="color:red;font-size:x-large;font-family:sans-serif"><a href="ya.ru">before</a></span>
-		<img src="src/images/media-quicktime.png" width="64" height="64" alt="Media Quicktime">
-		<br/>
-		<span style="font-size:8pt">size 8pt</span> <span style="font-size:10pt">size 10pt</span> <span style="font-size:12pt">size 12pt</span> <span style="font-size:14pt">size 14pt</span> <span style="font-size:18pt">size 18pt</span> <span style="font-size:24pt">size 24pt</span> <span style="font-size:36pt">size 36pt</span>
-		<br/>
-		<span style="font-size:11px">size 11px</span> <span style="font-size:13px">size 13px</span> <span style="font-size:16px">size 16px</span> <span style="font-size:19px">size 19px</span> <span style="font-size:24px">size 24px</span> <span style="font-size:32px">size 32px</span> <span style="font-size:48px">size 48px</span>
-		<br />
-		<span style="font-size:120%">size 120%</span>
-		<hr/>
-		<br/>&nbsp;<br/>
-		<div>
-			
-			<p style="font-family:'Andale  Mono',sans-serif">
-				Полотенце, возможно, самый необходимый  предмет для межзвездного путешественника.
-			</p>
-			<ul>
-				<li>list 1
-					<ul>
-						<li>list 1 1</li>
-						<li>list 1 2</li>
-						<li>list 1 3</li>
-					</ul>
-				</li>
-				<li>list 2</li>
-				<li>list 3</li>
-				<li>list 4</li>
-			</ul>
-			3333333333
-			<ul>
-				<li>list 1 1</li>
-				<li>list 1 2</li>
-			</ul>
-			<p>
-				Полотенце, возможно, самый необходимый  предмет для межзвездного путешественника.
-			</p>
-			<span style="color:#ccc">345
-				<p>
-					Полотенце, возможно, самый необходимый  предмет для межзвездного путешественника.
-				</p></span>
-			<p>
-				<em>Полотенце, возможно, самый необходимый  предмет для межзвездного путешественника.</em>
-			</p>
-		</div>
-		<span style="color:red">after</span>
-		
-		<div>		
-		<p style="font-weight:normal">
-			<s>&nbsp;
-				<!-- sss -->
-				  Полотенце, возможно, <em>самый необходимый  предмет !</em> для межзвездного</s> путешественника.
-			Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, 
-			прыгая по холодным лунам Джаглан-Беты; использовать его, <em>как подстилку,</em><span style="color:red">лежа на мраморном песке пляжей <span style="text-decoration:underline">Сантрагинуса V</span> и вдыхая пьянящий морской воздух; </span>
-			спать на нем под огненно-красными звездами на пустынной планете Какрафун; 
-			сделать из него парус, <span>чтобы спуститься на плоту</span> по ленивой реке Мотт; 
-			намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; 
-			обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля
-		</p>
-		
-		
-		</div>
-		adsfdasfdsfa <b>zxvzxcvzxc</b> 1234
-		<p>
-			<strong><em color="red">Полотенце,</em> <s>возможно,</s> самый необходимый  предмет ! для межзвездного путешественника.</strong>
-			<em>Оно <strong>имеет некоторую</strong> практическую ценность</em> - вы можете: завернуться в него, чтобы согреться, 
-			прыгая по холодным лунам Джаглан-Беты; <b>использовать</b> его, <em>как подстилку,</em><span style="color:red">лежа на мраморном песке пляжей <span style="text-decoration:underline">Сантрагинуса V</span> и вдыхая пьянящий морской воздух; </span>
-			спать на нем под огненно-красными звездами на пустынной планете Какрафун; 
-			сделать из него парус, <span style="font-weight:bold">чтобы <b>спуститься</b> на плоту</span> по ленивой реке Мотт; 
-			намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; 
-			обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля
-		</p>
-		
+	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
+		<h2>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><p>
+		<img src="http://localhost/git/elrte-master/images/marvin.jpg" style="float:right" height="150" width="93">
+		</p><div style="margin-left:10px;float:right;width:150px;padding:15px;background-color:#ffff99;color:#ff3300;text-align:center;font-size:xx-large"><span style="font-weight:bold">DON'T<br>PANIC</span></div><br><div style="text-align:justify">&nbsp;&nbsp;In many of the more relaxed civilizations on the Outer Eastern Rim of the Galaxy, the <span style="text-decoration:underline">Hitch-Hiker's Guide</span> has already supplanted the great Encyclopaedia Galactica as the standard repository of all knowledge and wisdom, for though it has many omissions and contains much that is apocryphal, or at least wildly inaccurate, it scores over the older, more pedestrian work in two important respects. First, it is slightly cheaper; and secondly it has the words <em>DON'T PANIC</em> inscribed in large friendly letters on its cover.</div><br><br><br><p>
+		<img src="http://localhost/git/elrte-master/images/hhgttg.jpg" style="float:left;margin-right:10px;margin-top:5px" height="208" width="200">
+		</p><p style="color:#003366">"And the wheel," <span style="color:#000000">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p><br><p style="color:#993333">"Ah," <span style="color:#000000">said the marketing girl, </span>"Well, we're having a little difficulty there."</p><br><p style="color:#003366">"Difficulty?" <span style="color:#000000">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p><br><p>The marketing girl soured him with a look.</p><br><p><span style="color:#993333">"Alright, Mr. Wiseguy,"</span> she said, <span style="color:#993333">"if you're so clever, you tell us what colour it should be."</span></p><br><br><br><hr style="border:5px ridge #cc6633;width:98%;height:30px;background-color:#ffff99">
 	</div>
 
 	<input type="submit" name="" value="go" id="">
