@@ -19,8 +19,9 @@
 				type = rte.form.attr('method')||'post',
 				name = rte.id+'_atrg',
 				u, t;
-			
+
 			if (i>0) {
+				
 				panel = $('<div class="elrte-statusbar-autosave">'+rte.i18n('saving')+'</div>').hide().prependTo(rte.view.statusbar.show())
 				intId = setInterval(function() {
 					panel.show();
@@ -39,7 +40,7 @@
 					t.remove();
 					setTimeout(function() { panel.hide() }, 2000);
 					
-				}, 60000*i);
+				}, 6000*i);
 			}
 		}).bind('save', function() {
 			clearInterval(intId);

@@ -783,7 +783,7 @@
 		 * @return String|Array
 		 */
 		this.pluginConf = function(n, o) {
-			var c = this.options['pluginConf'];
+			var c = this.options['pluginsConf'];
 			return o ? (c && c[n] ? c[n][o] : false) : (c ? c[n] : false);
 		}
 		

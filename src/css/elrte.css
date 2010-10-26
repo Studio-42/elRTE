@@ -152,6 +152,15 @@ span { border-color:#333; }
 	margin-left:175px;
 }
 
+/* fullscreen editor */
+.elrte-fullscreen {
+	position:absolute;
+	left:0;
+	top:0;
+	width:99%;
+	margin:0;
+}
+
 /******************************************************/
 /*                      TOOLBAR                       */
 /******************************************************/

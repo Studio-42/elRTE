@@ -118,7 +118,7 @@
 		/* --- plugins options --- */
 		pluginsConf : {
 			wordcount : { count : 'all'},
-			autosave  : { interval : 1 }
+			autosave  : { interval : 0 }
 		},
 		
 		/* --- commands options --- */

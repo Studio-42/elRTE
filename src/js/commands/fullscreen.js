@@ -46,6 +46,8 @@ elRTE.prototype.commands.fullscreen = function() {
 			a = $.browser.mozilla && this.rte.isWysiwyg() ? this.rte.active : false,
 			b;
 			
+		this.rte.log(p)
+			
 		function save() {
 			b = a ? s.bookmark() : false;
 		}
