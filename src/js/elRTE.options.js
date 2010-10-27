@@ -113,7 +113,7 @@
 
 		},
 		toolbarType : 'default',
-		toolbar : 'default',
+		toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
@@ -122,7 +122,7 @@
 		},
 		
 		/* --- commands options --- */
-		/* commands, which create text elements use span tag with css instead of tags */
+		/* commands, which create inline elements use span tag with css instead of tag */
 		styleWithCss : false,
 		/* commands configuration */
 		commandsConf : {
@@ -140,13 +140,6 @@
 					{ name : 'List',     element : 'ul',    'class' : 'mylist',  },
 					{ name : 'Table',     element : 'table',    'class' : 'mytable',  }
 				]
-				// opts : [
-				// 	{ label : 'Green header', selector : 'h1,p', 'class' : 'green', style : 'color:green' },
-				// 	{ label : 'Blue', selector : 'blockText', 'class' : 'blue', style : 'color:blue' },
-				// 	{ label : 'Red', selector : 'blockText', 'class' : 'red', style : 'color:red' },
-				// 	{ label : 'Marker', selector : 'inlineText', 'class' : 'marker', style : 'background-color:yellow', inline : true},
-				// 	{ label : 'List', selector : 'ul,ol', 'class' : 'list', style : ''}
-				// ]
 			},
 			link : {
 				// simple : true,

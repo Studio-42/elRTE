@@ -15,14 +15,18 @@ elRTE.prototype.ui.toolbars.default = function(rte) {
 	
 	while (l--) {
 		pn   = pl[l];
-		pui  = $('<ul class="'+pc+' '+pc+'-'+pn+'"/>');
+		pui  = $('<div class="'+pc+' '+pc+'-'+pn+'"/>');
 		cmds = o.panels[pn]||[];
 		cl   = cmds.length;
 		while (cl--) {
 			if ((cmd = rte._commands[cmds[cl]])) {
-				btn = rte.ui['button'+cmd.conf.ui]||rte.ui.button;
-				btn = new btn(cmd)
-				pui.prepend(btn.ui);
+				btn = cmd.conf.ui||'button'
+				// rte.log(btn)
+				btn = $.fn['elrte'+btn] ? 'elrte'+btn : 'elrtebutton'
+				pui.prepend($('<div/>')[btn](cmd))
+				// btn = rte.ui['button'+cmd.conf.ui]||rte.ui.button;
+				// btn = new btn(cmd)
+				// pui.prepend(btn.ui);
 			}
 		}
 		pui.children().length && ui.prepend(pui);
