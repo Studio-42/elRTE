@@ -1,0 +1,42 @@
+/* top tabs wrapper */
+.elrte-tabsbar-wrp {
+	overflow:hidden;
+	position:relative;
+}
+
+/* top tabsbar */
+.elrte .elrte-tabsbar {
+	padding:0 3px;
+	width:3000px;
+}
+
+/* tab */
+.elrte-tab {
+/*	max-width:200px;*/
+	width:400px;
+	margin: 0 2px 0 0;
+	font-size: 78%;
+	background-color:#f2f2f2;
+	cursor: default;
+	position:relative;
+	border: 1px solid #aaa;
+	border-bottom:0 solid;
+}
+
+/* text in tab */
+.elrte-tab-title {
+	margin:2px 22px 2px 7px;
+	overflow:hidden;
+	color:#555;
+	white-space:nowrap;
+}
+
+/* tab close button */
+.elrte-tab .elrte-close {
+	position:absolute;
+	top:4px;
+	right:4px;
+	width:11px;
+	height:11px;
+	background:url(../images/close.png) 0 0 no-repeat;
+}

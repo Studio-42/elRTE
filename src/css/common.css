@@ -1,0 +1,64 @@
+/* jqueryUI fixes */
+.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
+.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
+.ui-dialog .ui-dialog-content { padding:.5em; }
+.ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
+.ui-dialog  table { border:0 solid;  }
+.ui-dialog  table td { padding:2px; vertical-align:top; }
+
+/* ui states */
+.elrte-hover   {  }
+.elrte-active  {  }
+.elrte-disable { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
+
+/******************************************************/
+/*                   COMMON STUFFS                    */
+/******************************************************/
+
+/* style to detect images url */
+.elrte-test-url { background-image:url(../images/pixel.gif);}
+
+/* cross-browser inline-block */
+.elrte-ib {
+	display: -moz-inline-stack;
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+}
+
+/* rounded elements */
+.elrte-rnd {
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	-webkit-background-clip: padding-box;
+}
+
+/* top rounded elements */
+.elrte-rnd-top {
+	-moz-border-radius-topleft: 3px; 
+	-moz-border-radius-topright: 3px; 
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
+	border-top-left-radius: 3px; 
+	border-top-right-radius: 3px;
+}
+
+/* bottom rounded elements */
+.elrte-rnd-bottom {
+	-moz-border-radius-bottomleft: 3px; 
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px; 
+	-webkit-background-clip: padding-box;
+	border-bottom-left-radius: 3px; 
+	border-bottom-right-radius: 3px;
+}
+
+/* close icon */
+.elrte-close {
+	width:11px;
+	height:11px;
+	background:url(../images/close.png) 0 0 no-repeat;
+}

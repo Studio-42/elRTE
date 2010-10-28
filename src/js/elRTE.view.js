@@ -1,36 +1,53 @@
+$.fn.elrtetabsbar = function() {
+	return this.each(function() {
+		var t = $(this);
+		
+		t.addClass('elrte-tabsbar')
+		
+		t.resize(function() {
+			window.console.log('resize')
+		})
+		
+	});
+}
+
 
 /**
  * @Class. elRTE renderer
- * @TODO move class namesito variables
  */
 elRTE.prototype.view = function(rte) {
-	var self       = this,
-		o = rte.options;
+	var self = this,
+		o = rte.options,
+		c = rte.options.cssClass||'';
 		
 	this.rte       = rte;
 	this.toolbar   = $('<div class="elrte-toolbar"/>');
 	this.workzone  = $('<div class="elrte-workzone"/>')
-	this.tabsbar   = $('<ul class="elrte-tabsbar-top"/>');
-	this.sbheader  = $('<div class="elrte-widget-header"/>');
-	this.sbinner   = $('<div class="elrte-sidebar-inner"/>');
-	this.sbclose   = $('<div class="elrte-sidebar-close"/>')
-		.mousedown(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			self.hideSidebar();
-		});
-	this.sidebar   = $('<div class="elrte-sidebar"/>').append(this.sbclose).append(this.sbheader).append(this.sbinner)
-		.mousedown(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			self.rte.focus();
-		});
-	this.main      = $('<div class="elrte-main"/>').append($('<div class="elrte-tabsbar-top-wrp"/>').append(this.tabsbar)).append(this.workzone);
-	this.container = $('<div class="elrte-container"/>').append(this.sidebar).append(this.main)
+	this.tabsbar   = $('<div/>').elrtetabsbar(); //$('<ul class="elrte-tabsbar-top"/>');
+	// this.sbheader  = $('<div class="elrte-widget-header"/>');
+	// this.sbinner   = $('<div class="elrte-sidebar-inner"/>');
+	// this.sbclose   = $('<div class="elrte-sidebar-close"/>')
+	// 	.mousedown(function(e) {
+	// 		e.preventDefault();
+	// 		e.stopPropagation();
+	// 		self.hideSidebar();
+	// 	});
+	// this.sidebar   = $('<div class="elrte-sidebar"/>').append(this.sbclose).append(this.sbheader).append(this.sbinner)
+	// 	.mousedown(function(e) {
+	// 		e.preventDefault();
+	// 		e.stopPropagation();
+	// 		self.rte.focus();
+	// 	});
+	
+	this.main      = $('<div class="elrte-main"/>')
+		.append($('<div class="elrte-tabsbar-wrp"/>').append(this.tabsbar))
+		.append(this.workzone);
+	this.container = $('<div class="elrte-container"/>')
+		// .append(this.sidebar)
+		.append(this.main)
 	this.statusbar = $('<div class="elrte-statusbar" />');
 	
-	this.editor    = $('<div class="elrte clearfix '+(this.rte.options.cssClass||'')+'" id="'+this.rte.id+'" />')
-		.append(this.toolbar.hide())
+	this.editor    = $('<div class="elrte clearfix '+c+'" id="'+rte.id+'" />')
 		.append(this.container)
 		.append(this.statusbar.hide())
 		.append('<div class="clearfix"/>')
@@ -38,17 +55,17 @@ elRTE.prototype.view = function(rte) {
 	
 
 		
-	if (rte.options.height>0) {
-		this.workzone.height(this.rte.options.height);
+	if (o.height>0) {
+		this.workzone.height(o.height);
 	}
 	
 	if ($.fn.sortable) {
 		this.tabsbar.sortable({ delay : 10});
 	}
 	
-	// rte.bind('source', function() {
-	// 	self.hideSidebar()
-	// })
+	this.setToolbar = function(t) {
+		this.editor.prepend(this.toolbar = t);
+	}
 	
 	/**
 	 * Add new document into editor
@@ -59,8 +76,21 @@ elRTE.prototype.view = function(rte) {
 	this.add = function(d) {
 		var self = this,
 			h    = this.workzone.height(),
-			tab  = $('<li class="elrte-tab" rel="#'+d.id+'" title="'+d.title+'"><div class="elrte-tab-title">'+d.title+'</div></li>')
+			c = 'elrte-tab',
+			btn = this.rte.options.allowCloseDocs
+				? $('<div class="elrte-close" title="'+this.rte.i18n('Close')+'"/>')
+					.mousedown(function(e) {
+						var p = $(this).parent();
+						e.preventDefault();
+						e.stopPropagation();
+						if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
+							self.rte.close(p.attr('rel').substr(1));
+						}
+					})
+				: '',
+			tab  = $('<div class="elrte-ib elrte-rnd-top '+c+'" rel="#'+d.id+'" title="'+d.title+'"><div class="'+c+'-title">'+d.title+'</div></div>')
 				.appendTo(this.tabsbar)
+				.append(btn)
 				.mousedown(function(e) {
 					e.preventDefault();
 					self.rte.focus($(this).attr('rel').substr(1));
@@ -72,16 +102,6 @@ elRTE.prototype.view = function(rte) {
 			.hide()
 			.appendTo(this.workzone);
 		
-		if (this.rte.options.allowCloseDocs) {
-			tab.append($('<span class="elrte-tab-close" title="'+this.rte.i18n('Close')+'"/>').mousedown(function(e) {
-				var p = $(this).parent();
-				e.preventDefault();
-				e.stopPropagation();
-				if (confirm(self.rte.i18n('Close')+' "'+p.text()+'"?')) {
-					self.rte.close(p.attr('rel').substr(1));
-				}
-			}));
-		}
 		this.updateTabsbar();
 	}
 
@@ -113,7 +133,12 @@ elRTE.prototype.view = function(rte) {
 	 * @return void
 	 **/
 	this.updateTabsbar = function() {
-		self.tabsbar.toggle(self.workzone.children('.elrte-document').length > 1 || self.rte.options.alwaysShowTabs);
+		if (self.workzone.children('.elrte-document').length > 1 || self.rte.options.alwaysShowTabs) {
+			this.tabsbar.show();
+		} else {
+			this.tabsbar.hide();
+			// @TODO check tabs length and create tabs slider if required
+		}
 	}
 	
 	/**
@@ -156,39 +181,7 @@ elRTE.prototype.view = function(rte) {
 		return n.length ? n.attr('rel').substr(1) : false;
 	}
 
-	this.setToolbar = function(t) {
-		this.editor.prepend(t);
-	}
-
-	this.buildUI = function(tb, commands) {
-		var pl = tb.length,
-			pc = 'elrte-toolbar-panel',
-			pn, pnl, cn, cl, cmd, btn;
-		
-		while (pl--) {
-			pn  = tb[pl];
-			pnl = $('<ul class="'+pc+' '+pc+'-'+pn+'"/>');
-			cn  = this.rte.options.panels[pn]||[];
-			cl  = cn.length;
-			while (cl--) {
-				
-				if ((cmd = commands[cn[cl]])) {
-					btn = this.rte.ui['button'+cmd.conf.ui]||this.rte.ui.button;
-					btn = new btn(cmd)
-					pnl.prepend(btn.ui);
-				}
-			}
-			pnl.children().length && this.toolbar.prepend(pnl);
-		}
-
-		if (this.toolbar.children().length) {
-			this.toolbar.show()
-			// .children().children().hover(function(e) {
-			// 	$(this).toggleClass('elrte-ui-hover');
-			// });
-		}
-		
-	}
+	
 
 	this.appendToSidebar = function(o) {
 		this.sbinner.append(o)

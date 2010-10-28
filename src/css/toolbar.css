@@ -1,0 +1,18 @@
+/* toolbar */
+.elrte .elrte-toolbar {
+	margin-bottom: 3px;
+	border: 1px solid #ccc;
+	background: #eee;
+}
+
+/* toolbar panel */
+.elrte .elrte-toolbar-panel { 
+	padding: 2px 0px 2px 7px; 
+	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
+}
+
+/* first toolbar panel */
+.elrte .elrte-toolbar-panel:first-child {
+	padding-left:0;
+	background:transparent;
+}

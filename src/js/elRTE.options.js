@@ -93,7 +93,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['save', 'nbsp', 'bold', 'fontsize', 'specialchars', 'textcolor', 'textbg', 'source'],
+			test : ['save', 'save', 'nbsp', 'bold', 'fontsize_', 'specialchars_', 'textcolor', 'textbg', 'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
@@ -112,7 +112,8 @@
 			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'table', 'indents', 'lists', 'links', 'semantic', 'misc',  'control']
 
 		},
-		toolbarType : 'default',
+		toolbarType : 'normal',
+		
 		toolbar : 'test',
 		
 		/* --- plugins options --- */

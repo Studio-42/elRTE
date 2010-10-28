@@ -153,7 +153,7 @@
 				});
 			});
 
-			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars.default : false)) {
+			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars['normal'] : false)) {
 				this.view.setToolbar(tb(this));
 			}
 			
@@ -967,10 +967,21 @@
 	elRTE.prototype.mixins = {};
 	
 	/**
-	 * elRTE commands classes
+	 * elRTE ui
 	 *
 	 */
-	elRTE.prototype.ui = { toolbars : {} };	
+	elRTE.prototype.ui = {
+		toolbars : {
+			normal : function(rte) {
+				return $('<div/>').elrtetoolbar(rte);
+			}
+		}, 
+		buttons : {
+			normal : function(cmd) {
+				return $('<div/>').elrtebutton(cmd);
+			}
+		} 
+	};	
 
 	/**
 	 * elRTE messages

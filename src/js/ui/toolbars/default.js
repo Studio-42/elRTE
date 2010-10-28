@@ -1,37 +1,37 @@
 /**
- * @TODO - check duplicate buttons
+ * 
  */
 
-elRTE.prototype.ui.toolbars.default = function(rte) {
-	
-	var o  = rte.options,
-		tb = rte.options.toolbar,
-		ui = $('<div class="elrte-toolbar"/>'),
-		pl = o.toolbars[tb] || o.toolbars['default'],
-		l  = pl.length,
-		pc = 'elrte-toolbar-panel',
-		pn, pui, cmds, cl, cmd, btn; 
-	
-	
-	while (l--) {
-		pn   = pl[l];
-		pui  = $('<div class="'+pc+' '+pc+'-'+pn+'"/>');
-		cmds = o.panels[pn]||[];
-		cl   = cmds.length;
-		while (cl--) {
-			if ((cmd = rte._commands[cmds[cl]])) {
-				btn = cmd.conf.ui||'button'
-				// rte.log(btn)
-				btn = $.fn['elrte'+btn] ? 'elrte'+btn : 'elrtebutton'
-				pui.prepend($('<div/>')[btn](cmd))
-				// btn = rte.ui['button'+cmd.conf.ui]||rte.ui.button;
-				// btn = new btn(cmd)
-				// pui.prepend(btn.ui);
+$.fn.elrtetoolbar = function(rte) {
+	return this.each(function() {
+		var t  = $(this),
+			o  = rte.options,
+			pl = o.toolbars[o.toolbar] || o.toolbars['default'],
+			l  = pl.length,
+			c  = 'elrte-toolbar-panel',
+			tmp= {},
+			n, p, cl, btn;
+			
+		t.addClass('elrte-rnd elrte-toolbar');
+		
+		while (l--) {
+			n    = pl[l];
+			p    = $('<div class="elrte-ib elrte-rnd '+c+' '+c+'-'+n+'"/>');
+			cmds = o.panels[n] || [];
+			cl   = cmds.length;
+			
+			while (cl--) {
+				if ((cmd = rte._commands[cmds[cl]]) && !tmp[cmd.name]) {
+					btn = cmd.conf.ui || 'normal';
+					btn = rte.ui.buttons[btn] || rte.ui.buttons['normal'];
+					p.prepend(btn(cmd));
+					tmp[cmd.name] = true;
+				}
+				
 			}
+			p.children().length && t.prepend(p);
 		}
-		pui.children().length && ui.prepend(pui);
-	}
-	
-	return ui.children().length ? ui : '';
+		
+	});
 }
 
