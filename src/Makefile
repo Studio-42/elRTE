@@ -96,11 +96,12 @@ elrte: ${elrte_css} ${elrte_js}
 elrte-install: elrte ellib-install
 	${CP} ${elrte_css} ${SRC}/elrte/css/elrte-inner.css ${CSS}/
 	${CP} ${elrte_js}  ${JS}/
-	${CP} ${SRC}/elrte/js/i18n/elrte.??.js    ${I18N}/
-	${CP} ${SRC}/elrte/js/i18n/elrte.??_??.js ${I18N}/
-	${CP} ${SRC}/elrte/images/*.png           ${IMG}/
-	${CP} ${SRC}/elrte/images/*.gif           ${IMG}/
-	${CP} -R ${SRC}/elrte/images/smileys      ${IMG}/
+	${CP} ${SRC}/elrte/js/i18n/elrte.??.js        ${I18N}/
+	${CP} ${SRC}/elrte/js/i18n/elrte.??_??.js     ${I18N}/
+	${CP} ${SRC}/elrte/js/i18n/elrte.YOUR_LANG.js ${I18N}/
+	${CP} ${SRC}/elrte/images/*.png               ${IMG}/
+	${CP} ${SRC}/elrte/images/*.gif               ${IMG}/
+	${CP} -R ${SRC}/elrte/images/smileys          ${IMG}/
 
 ${elrte_css}:
 	${CAT} ${elrte_css_obj} > $@
@@ -111,7 +112,7 @@ ${elrte_js}:
 elrte-uninstall:
 	${RM} -f ${CSS}/${elrte_css} ${CSS}/elrte-inner.css \
 	         ${JS}/${elrte_js} ${JS}/${elrte_js_min} \
-			 ${I18N}/elrte.??.js ${I18N}/elrte.??_??.js \
+			 ${I18N}/elrte.??.js ${I18N}/elrte.??_??.js ${I18N}/elrte.YOUR_LANG.js \
 	         ${IMG}/*.png ${IMG}/*.gif
 	${RM} -rf ${IMG}/smileys
 
