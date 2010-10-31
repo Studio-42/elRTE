@@ -70,6 +70,7 @@
 				.attr('size', 8)
 				.click(function(e) {
 					e.stopPropagation();
+					$(this).focus();
 				})
 				.keydown(function(e) {
 					if (e.ctrlKey || e.metaKey) {
@@ -119,7 +120,7 @@
 					.mouseleave(function() {
 						$(this).slideUp();
 						self.val(self.val());
-					})
+					});
 				self.mouseleave(function(e) {
 					if (e.relatedTarget != self.palette.get(0)) {
 						self.palette.slideUp();
