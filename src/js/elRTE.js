@@ -40,9 +40,10 @@
 		this.options = $.extend(true, {}, this.options, o);
 		/* messages language */
 		this.lang = 'en';
-		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* messages */
 		this.messages = this.i18Messages[this.options.lang]||{};
+		
+		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* is macosX? */
 		this.macos = navigator.userAgent.indexOf('Mac') != -1;
 		/* loaded commands */
@@ -90,7 +91,7 @@
 			'exec'      : [],
 			/* called after some changes was made in document. */
 			'change'    : [],
-			/* called after carret change position */
+			/* called after change carret position */
 			'chagePos'  : [],
 			/* called before send form */
 			'save'      : [],
@@ -123,10 +124,24 @@
 				o = this.options,
 				ids = [], 
 				c, ui, p, id, tb;
+				
+			// create editor view
+			
+			this.tabsbar   = $('<div/>');
+			this.workzone  = $('<div class="elrte-workzone"/>');
+			this.statusbar = $('<div class="elrte-statusbar" />');
+			this.viewport  = $('<div class="elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
+				.append(this.tabsbar)
+				.append(this.workzone)
+				.append(this.statusbar)
+				.insertBefore(this.target);
+			
+			this.tabsbar.elrtetabsbar(this)	
+				
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
 			/* editor view/renderer */
-			this.view = new this.view(this);
+			// this.view = new this.view(this);
 			/* DOM manipulation */
 			this.dom = new this.dom(this);
 			/* selection and text range object */
@@ -154,9 +169,9 @@
 			});
 
 			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars['normal'] : false)) {
-				this.view.setToolbar(tb(this));
+				// this.view.setToolbar(tb(this));
 			}
-			
+
 			// this.view.buildUI(o.toolbars[o.toolbar], this._commands)
 
 
@@ -375,16 +390,23 @@
 		 * @return String
 		 **/
 		this.open = function(d) {
-			var self = this, o = this.options, html;
+			var self = this, 
+				o = this.options, 
+				h = this.workzone.height(),
+				html;
 			
 			function sync(d) {
 				t = d.wysiwyg() ? 'source' : 'wysiwyg';
 				d.set(self.filter.proccess(t, d.get()), t);
 			}
 			
+			function doc2(src) {
+				self.log(typeof(src))
+			}
+			
 			function doc(src) {
 				var ndx = ++self.ndx, title, $src, ta;
-				
+				self.log(src)
 				this.id     = self.id+'-document-'+ndx;
 				this.title  = self.i18n('Document')+' '+ndx;
 				this.editor = $('<iframe frameborder="0" class="elrte-editor"/>');
@@ -436,10 +458,16 @@
 				}
 			}
 			
+			doc2(d)
+			
 			d = new doc(d);
 			
 			/* render document */
-			this.view.add(d);
+			$('<div id="'+d.id+'" class="elrte-document"/>')
+				.append(d.editor.height(h))
+				.append(d.source.height(h).hide())
+				.hide()
+				.appendTo(this.workzone);
 			
 			/* add to editor documents */
 			d.window   = d.editor[0].contentWindow;
@@ -609,9 +637,10 @@
 			var d = this.document(id);
 
 			if (d) {
-				// switch to prev/next document before close active
-				d == this.active && this.count()>1 && this.focus(this.view.getPrev()||this.view.getNext());
-				this.trigger('close', {id : d.id}).view.remove(d.id);
+				// switch to next/first document before close active
+				d == this.active && this.next();
+				this.trigger('close', {id : d.id})//.view.remove(d.id);
+				this.workzone.children('#'+id).remove();
 
 				if (this.active.id == d.id) {
 					this.active = null;
@@ -622,8 +651,8 @@
 		}
 		
 		/**
-		 * Set document active (visible) if is not. 
-		 * Get focus to document editor/source
+		 * Set document active (visible) if it is not visible. 
+		 * Give focus to document editor/source
 		 *
 		 * @param  String  document id
 		 * @return elRTE
@@ -633,18 +662,21 @@
 				a = this.active;
 
 			if (d) {
-				if (d == a) { // document already active
+				if (d == a) { 
+					// document already active
+					// only give focus to it
 					d.focus();
-				} else { // switch to another document
-					// set active doc in wysiwyg mode if required
+				} else { 
+					// switch to another document
+					// set active doc in wysiwyg mode if required before hide it
 					a && !a.wysiwyg() && this.options.autoToggle && this.toggle();
 					// show doc
-					this.view.showDoc(d.id);
+					this.workzone.children('.elrte-document').hide().filter('#'+d.id).show();
 					// set doc active
 					this.active = d;
-					// get focus to doc
+					// give focus to doc
 					d.focus();
-					// rise events
+					// trigger event
 					this.trigger(d.wysiwyg() ? 'wysiwyg' : 'source');
 				}
 			}
@@ -891,14 +923,13 @@
 		}
 		
 		/**
-		 * Switches to next document after active one
+		 * Switch to next document after active one
 		 *
 		 * @TODO add cmd+arrows shortcut
 		 * @return elRTE
 		 */
 		this.next = function() {
-			this.count()>1 && this.focus(this.view.getNext()||this.view.getFirst());
-			return this;
+			return this.focus(this.tabsbar.getNext());
 		}
 		
 		/**
@@ -907,8 +938,7 @@
 		 * @return elRTE
 		 */
 		this.prev = function() {
-			this.count()>1 && this.focus(this.view.getPrev()||this.view.getLast());
-			return this;
+			return this.focus(this.tabsbar.getPrev());
 		}
 		
 		/**

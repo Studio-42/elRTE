@@ -1,19 +1,53 @@
 /* top tabs wrapper */
-.elrte-tabsbar-wrp {
+.elrte-tabsbar {
 	overflow:hidden;
-	position:relative;
+/*	border:1px solid red;*/
+/*	position:relative;*/
 }
 
 /* top tabsbar */
-.elrte .elrte-tabsbar {
-	padding:0 3px;
-	width:3000px;
+.elrte-tabsbar-tabs {
+	padding:0;
+/*	width:3000px;*/
+	overflow:hidden;
+	height:20px;
+/*	position:relative;*/
+/*	border:1px solid red;*/
+/*	border:1px solid blue;*/
+}
+
+
+
+.elrte-tabsbar-nav {
+	width:22px;
+	height:18px;
+	float:right;
+/*	outline:1px solid #ccc;*/
+/*	display:none;*/
+}
+
+.elrte-tabsbar-arrow {
+	width:9px;
+	height:16px;
+	border:1px solid #ccc;
+	background:transparent url(../images/elrte-toolbar.png) 0 0 no-repeat;
+}
+
+.elrte-tabsbar-arrow-back {
+	background-position:-700px -3px;
+}
+.elrte-tabsbar-arrow-fwd {
+	border-left:1px solid #ccc;
+	background-position:-709px -3px;
 }
 
 /* tab */
 .elrte-tab {
-/*	max-width:200px;*/
-	width:400px;
+	max-width:200px;
+	min-width:100px;
+	width:auto;
+/*	width:200px;*/
+	height:20px;
 	margin: 0 2px 0 0;
 	font-size: 78%;
 	background-color:#f2f2f2;
@@ -22,6 +56,8 @@
 	border: 1px solid #aaa;
 	border-bottom:0 solid;
 }
+
+.elrte-tab.elrte-active { background-color:#fff;  }
 
 /* text in tab */
 .elrte-tab-title {

@@ -13,6 +13,7 @@
 	border-radius:5px;
 	-webkit-background-clip: padding-box;
 	background-color: #fff;
+	clear:both;
 }
 
 /* fullscreen editor */

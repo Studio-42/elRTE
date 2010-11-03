@@ -6,7 +6,7 @@
 	 */
 	elRTE.prototype.filter = function(rte) {
 		var self = this,
-			n = $(rte.view.workzone).addClass('elrte-test-url')[0];
+			n = rte.workzone.addClass('elrte-test-url')[0];
 		// media replacement image base url
 		this.url = (typeof(n.currentStyle )!= "undefined" ? n.currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image')).replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
 		$(n).removeClass('elrte-test-url');

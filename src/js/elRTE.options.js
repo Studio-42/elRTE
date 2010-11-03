@@ -23,6 +23,7 @@
 		autoToggle : true,
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
 		alwaysShowTabs : true,
+		sortableTabs : true,
 		/* max undo/redo steps, 0 - for disable history */
 		historySize : 10,
 		/* send debug to log? variants: "all" - for all messages, ["source[.type]", ...] - for debug from only required objects/methods */
@@ -75,7 +76,7 @@
 		fmOpen : function(cb) { },
 		
 		/* --- paste options --- */
-		plugins : ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
+		plugins : [], // ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
 		
 		/* --- toolbar options --- */
 		
