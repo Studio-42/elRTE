@@ -169,6 +169,7 @@
 			});
 
 			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars['normal'] : false)) {
+				this.viewport.prepend(tb(this))
 				// this.view.setToolbar(tb(this));
 			}
 
