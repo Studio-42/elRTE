@@ -111,6 +111,10 @@ $.fn.elrtetabsbar = function(rte) {
 
 			});
 	
+		if (o.sortableTabs && $.fn.sortable) {
+			$this.sortable({ delay : 10 });
+		}
+	
 		rte.bind('open', function(e) {
 			var d = rte.document(e.data.id),
 				t = d.title,
@@ -138,7 +142,8 @@ $.fn.elrtetabsbar = function(rte) {
 				}
 				$this.change();
 			}
-		}).bind('wysiwyg source', function(e) {
+		})
+		.bind('wysiwyg source', function(e) {
 			// update active tab on change active document
 			var t = $this.children().removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac),
 				btn;
@@ -150,7 +155,8 @@ $.fn.elrtetabsbar = function(rte) {
 					btn.mousedown();
 				}
 			}
-		}).bind('close', function(e) {
+		})
+		.bind('close', function(e) {
 			// remove tab for closing document
 			$this.children().filter('[rel="'+e.data.id+'"]').remove();
 			$this.change();
