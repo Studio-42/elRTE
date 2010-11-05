@@ -20,36 +20,41 @@
 	 */
 	elRTE = function(t, o) {
 		
-		this.time('load')
+		this.time('load');
 		/* version */
 		this.version = '1.1 dev';
 		/* build date */
 		this.build = '20100906';
-		
-		if (t && t.jquery) {
-			t = t[0];
-		}
-		
-		if (!t || !t.parentNode) {
-			return alert("Unable create elRTE editor!\n First argument should be DOMElement");
-		}
-		
-		
-		/* DOM element on witch elRTE created */
-		this.target = t;
-		/* hide target */
-		t = $(t).hide();
-		/* editor DOM element id. Used as base part for inner elements ids */
-		this.id = 'elrte-'+($(t).attr('id')||$(t).attr('name')||Math.random().toString().substr(2));
-		// form 
-		this.form = t.parents('form');
 		/* editor config */
 		this.options = $.extend(true, {}, this.options, o);
 		/* messages language */
 		this.lang = 'en';
 		/* messages */
 		this.messages = this.i18Messages[this.options.lang]||{};
+		/* check is target is node in dom */
+		if (t && t.jquery) {
+			t = t[0];
+		}
 		
+		if (!t || !t.parentNode) {
+			return alert("Unable create elRTE editor!\n Required element does not exists on this page.");
+		}
+		
+		/* editor instance id. viewport id and base part for inner elements ids */
+		this.id = 'elrte-'+(t.id||t.name||Math.random().toString().substr(2));
+		/* create editor view */
+		this.viewport  = $('<div class="elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
+			.append((this.tabsbar   = $('<div/>')))
+			.append((this.workzone  = $('<div class="elrte-workzone"/>')))
+			.append((this.statusbar = $('<div class="elrte-statusbar" />')))
+			.insertBefore(t);
+		/* form */
+		this.form = this.viewport.parents('form');
+		/* add target node as document if enabled */
+		this.options.loadTarget && this.options.documents.unshift(t);
+		/* remove target node */
+		t = $(t).remove();
+		/* is xhtml doctype used for editable iframe? */
 		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* is macosX? */
 		this.macos = navigator.userAgent.indexOf('Mac') != -1;
@@ -132,18 +137,8 @@
 				ids = [], 
 				c, ui, p, id, tb;
 				
-			// create editor view
-			
-			this.tabsbar   = $('<div/>');
-			this.workzone  = $('<div class="elrte-workzone"/>');
-			this.statusbar = $('<div class="elrte-statusbar" />');
-			this.viewport  = $('<div class="elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
-				.append(this.tabsbar)
-				.append(this.workzone)
-				.append(this.statusbar)
-				.insertBefore(this.target);
-			
-			this.tabsbar.elrtetabsbar(this)	
+			/* init tabsbar */
+			this.tabsbar.elrtetabsbar(this);
 				
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
@@ -192,7 +187,7 @@
 			});
 			
 			/* add target node as document if enabled */
-			this.options.loadTarget && this.options.documents.unshift(this.target);
+			// this.options.loadTarget && this.options.documents.unshift(this.target);
 			
 			/* load documents */
 			// $.each(this.options.documents, function(i, d) {

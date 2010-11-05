@@ -34,10 +34,11 @@
 		loadTarget : true,
 		/* additional nodes or js objects to load in editor as documents */
 		documents : [],
+		/* hide document source node after document loaded */
 		hideDocSource : true,
-		focusOpenedDoc : true,
-		/* Loading documents rule. If true - new document load in background, if false- set active after load */
-		loadDocsInBg : true,
+		/* Loading documents rule. If true - opened document set active */
+		focusOpenedDoc : false,
+		
 		/* number of documents to set active after editor load */
 		active  : false,
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
