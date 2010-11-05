@@ -39,8 +39,6 @@
 		/* Loading documents rule. If true - opened document set active */
 		focusOpenedDoc : false,
 		
-		/* number of documents to set active after editor load */
-		active  : false,
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
 		allowCloseDocs : true,
 		// allow reopen opened document (allow|ask|deny|true|false)

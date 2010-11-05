@@ -137,8 +137,7 @@
 				ids = [], 
 				c, ui, p, id, tb;
 				
-			/* init tabsbar */
-			this.tabsbar.elrtetabsbar(this);
+			
 				
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
@@ -189,13 +188,15 @@
 			/* add target node as document if enabled */
 			// this.options.loadTarget && this.options.documents.unshift(this.target);
 			
-			/* load documents */
+			
 			// $.each(this.options.documents, function(i, d) {
 			// 	if (id = self.open(d)) {
 			// 	// 	ids.push(id);
 			// 	}
 			// });
-			
+			/* init tabsbar */
+			this.tabsbar.elrtetabsbar(this);
+			/* load documents */
 			this.open(this.options.documents)
 			
 			/* focus required/first document */
