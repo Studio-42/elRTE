@@ -135,14 +135,10 @@
 			var self = this, 
 				o = this.options,
 				ids = [], 
-				c, ui, p, id, tb;
-				
-			
+				c, ui, p, id, tb, cnt;
 				
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
-			/* editor view/renderer */
-			// this.view = new this.view(this);
 			/* DOM manipulation */
 			this.dom = new this.dom(this);
 			/* selection and text range object */
@@ -171,11 +167,7 @@
 
 			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars['normal'] : false)) {
 				this.viewport.prepend(tb(this))
-				// this.view.setToolbar(tb(this));
 			}
-
-			// this.view.buildUI(o.toolbars[o.toolbar], this._commands)
-
 
 			/* load plugins */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
@@ -185,36 +177,21 @@
 				}
 			});
 			
-			/* add target node as document if enabled */
-			// this.options.loadTarget && this.options.documents.unshift(this.target);
-			
-			
-			// $.each(this.options.documents, function(i, d) {
-			// 	if (id = self.open(d)) {
-			// 	// 	ids.push(id);
-			// 	}
-			// });
 			/* init tabsbar */
 			this.tabsbar.elrtetabsbar(this);
 			/* load documents */
-			this.open(this.options.documents)
-			
-			/* focus required/first document */
-			// ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
-			var count = this.count();
-			if (count) {
-				var d = this.documentByIndex(o.focusOpenedDoc ? count : 1);
-				this.focus(d.id)
-				// this.log(d)
+			this.open(this.options.documents);
+			/* focus first/last document */
+			if ((cnt = this.count()) > 0) {
+				this.focus(this.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
 			}
-
-
 
 			/* bind to parent form save events */
 			this.form.bind('submit', $.proxy(this.save, this));
 
 			/* complete editor load */
 			this.trigger('load');
+			/* disable load event */
 			delete(this.listeners.load);
 
 			/* fix ff bug with carret position in textarea */
@@ -223,14 +200,16 @@
 					self.active.source[0].setSelectionRange(0,0);
 				});
 			}
-			delete this.init;
+			
 			
 			$(document).mousedown(function() {
 				self.trigger('hideUI');
 			});
 			this.bind('mousedown', function() {
 				self.trigger('hideUI');
-			})
+			});
+			
+			delete this.init;
 		}
 		
 		/**
@@ -452,7 +431,6 @@
 			this.document = null;
 			this.window   = null;
 			this.view     = null;
-			this._css     = [];
 
 			if (src.nodeType == 1 || $.isPlainObject(src)) {
 				// document source is node or plain object
@@ -491,7 +469,8 @@
 					return rte.debug('error', 'Reopen document not allowed '+this.id)
 				} else if (o.reopenDoc == 'ask') {
 					if (confirm(rte.i18n('This document alreay opened. Do you want to reload it?'))) {
-						// remove document view from DOM
+						// close document before reopen
+						rte.focus(this.id).close(this.id);
 					} else {
 						return;
 					}
@@ -858,7 +837,7 @@
 			if (d) {
 				// switch to next/first document before close active
 				d == this.active && this.next();
-				this.trigger('close', {id : d.id})//.view.remove(d.id);
+				this.trigger('close', {id : d.id});
 				this.workzone.children('#'+id).remove();
 
 				if (this.active.id == d.id) {
@@ -890,7 +869,6 @@
 					// set active doc in wysiwyg mode if required before hide it
 					a && !a.wysiwyg() && this.options.autoToggle && this.toggle();
 					// show doc
-					this.log('here')
 					this.workzone.children('.elrte-document').hide().filter('#'+d.id).show();
 					// set doc active
 					this.active = d;

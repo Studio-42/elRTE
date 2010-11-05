@@ -42,7 +42,7 @@
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
 		allowCloseDocs : true,
 		// allow reopen opened document (allow|ask|deny|true|false)
-		reopenDoc : false,
+		reopenDoc : 'ask',
 		/* --- options for every editor document --- */
 		/* iframe doctype */
 		doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',
