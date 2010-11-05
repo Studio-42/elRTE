@@ -14,20 +14,27 @@
 	/**
 	 * @Class elRTE editor
 	 * @todo  add  history methods wrappers to api
-	 * @TODO  support for different css files for different documents
+	 * 
 	 * @param DOMElement  
 	 * @param Object  editor options
 	 */
 	elRTE = function(t, o) {
-		if (!t || !t.nodeName) {
-			return alert('elRTE init failed! First argument should be DOMElement');
-		}
 		
 		this.time('load')
 		/* version */
 		this.version = '1.1 dev';
 		/* build date */
 		this.build = '20100906';
+		
+		if (t && t.jquery) {
+			t = t[0];
+		}
+		
+		if (!t || !t.parentNode) {
+			return alert("Unable create elRTE editor!\n First argument should be DOMElement");
+		}
+		
+		
 		/* DOM element on witch elRTE created */
 		this.target = t;
 		/* hide target */
@@ -183,16 +190,29 @@
 					self._plugins[n] = new p(self);
 				}
 			});
+			
 			/* add target node as document if enabled */
 			this.options.loadTarget && this.options.documents.unshift(this.target);
+			
 			/* load documents */
-			$.each(this.options.documents, function(i, d) {
-				if (id = self.open(d)) {
-					ids.push(id);
-				}
-			});
+			// $.each(this.options.documents, function(i, d) {
+			// 	if (id = self.open(d)) {
+			// 	// 	ids.push(id);
+			// 	}
+			// });
+			
+			this.open(this.options.documents)
+			
 			/* focus required/first document */
-			ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
+			// ids.length && this.focus(ids[this.options.active]||ids[this.options.loadDocsInBg ? 0 : ids.length-1]);
+			var count = this.count();
+			if (count) {
+				var d = this.documentByIndex(o.focusOpenedDoc ? count : 1);
+				this.focus(d.id)
+				// this.log(d)
+			}
+
+
 
 			/* bind to parent form save events */
 			this.form.bind('submit', $.proxy(this.save, this));
@@ -232,13 +252,47 @@
 		
 		/**
 		 * Return document by id
-		 * If document not found return active document (may be undefined if no documents loaded!)
+		 * If document not found return active document (or undefined if no documents loaded!)
 		 *
-		 * @param  String|Number  document id/index (or undefined for active document)
+		 * @param  String  document id (or undefined for active document)
 		 * @return Object
 		 **/
 		this.document = function(id) {
 			return this.documents[id]||this.active;
+		}
+		
+		/**
+		 * Return document by name
+		 *
+		 * @param  String  document name
+		 * @return Object
+		 **/
+		this.documentByName = function(n) {
+			var d;
+			$.each(this.documents, function() {
+				if (this.name == n) {
+					d = this;
+					return false;
+				}
+			});
+			return d;
+		}
+		
+		/**
+		 * Return document by index
+		 *
+		 * @param  Number  document index
+		 * @return Object
+		 **/
+		this.documentByIndex = function(n) {
+			var d;
+			$.each(this.documents, function() {
+				if (this.ndx == n) {
+					d = this;
+					return false;
+				}
+			});
+			return d;
 		}
 		
 		/**
@@ -302,7 +356,7 @@
 		this.one = function(e, c) {
 			var self = this,
 				h = $.proxy(c, function(e) {
-					setTimeout(function() {self.unbind(e.type, h);}, 3)
+					setTimeout(function() {self.unbind(e.type, h);}, 3);
 					return c.apply(this, arguments);
 				});
 			return this.bind(e, h);
@@ -378,6 +432,159 @@
 		}
 		
 		/**
+		 * Document constructor
+		 * As document source accept DOM Element or plain object or string, 
+		 * all other type will be treated as empty document
+		 *
+		 * @param  DOMElement|Object|String document source
+		 * @param  elRTE editor instance
+		 * @return void
+		 */
+		function doc(src, rte) {
+			var o = rte.options,
+				h = rte.workzone.height(),
+				css = [],
+				id, name, title, content, html, $src;
+
+			this.rte      = rte;
+			this.id       = '';
+			this.ndx      = ++rte.ndx;
+			this.title    = '';
+			this.name     = '';
+			this.source   = $('<textarea class="elrte-source"/>');
+			this.editor   = $('<iframe frameborder="0" class="elrte-editor"/>');
+			this.document = null;
+			this.window   = null;
+			this.view     = null;
+			this._css     = [];
+
+			if (src.nodeType == 1 || $.isPlainObject(src)) {
+				// document source is node or plain object
+				id    = src.id;
+				title = src.title;
+				name  = src.name;
+				if (src.nodeType == 1) {
+					// content is node value or inner html
+					$src    = $(src);
+					content = $src.val() || $src.html();
+					// css files list store as node attribute separated by space
+					css  = ($src.attr('cssfiles')||'').split(/\n+/);
+					if ($src.parents('form')[0] === rte.form[0]) {
+						// if node belongs to the same form as editor -
+						// remove name attribute to prevent duplicate form data on submit
+						$src.removeAttr('name');
+					}
+				} else {
+					content = src.content || '';
+					// css files list should be an array
+					css = $.isArray(src.cssfiles) ? src.cssfiles : [];
+				}
+			} else {
+				// source is string or something else
+				content = typeof(src) == 'string' ? src : '';
+			}
+
+			this.id    = id || rte.id+'-'+this.ndx;
+			this.name  = name || this.id;
+			this.title = title || rte.i18n('Document')+' '+this.ndx;
+			this.source.attr('name', this.name).val(content);
+			
+			// check if document already loaded
+			if (rte.documents[this.id]) {
+				if (o.reopenDoc === false || o.reopenDoc == 'deny') {
+					return rte.debug('error', 'Reopen document not allowed '+this.id)
+				} else if (o.reopenDoc == 'ask') {
+					if (confirm(rte.i18n('This document alreay opened. Do you want to reload it?'))) {
+						// remove document view from DOM
+					} else {
+						return;
+					}
+				}
+			}
+
+			// load document into editor
+			rte.documents[this.id] = this;
+			
+			// create document view and attach to editor
+			this.view = $('<div id="'+this.id+'" class="elrte-document"/>')
+				.append(this.editor.height(h))
+				.append(this.source.height(h).hide())
+				.hide()
+				.appendTo(rte.workzone);
+
+			this.window   = this.editor[0].contentWindow;
+			this.document = this.window.document;
+			this.body     = this.document.body;
+			
+			// create iframe html
+			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
+			$.each(o.cssfiles.concat(css), function(i, url) {
+				if ((url = $.trim(url))) {
+					html += '<link rel="stylesheet" type="text/css" href="'+url+'"/>';
+				}
+			});
+			this.document.open();
+			this.document.write(o.doctype+html+'</head><body>'+this.source.val()+' </body></html>');
+			this.document.close();
+			
+			// make iframe editable
+			if ($.browser.msie) {
+				this.document.body.contentEditable = true;
+			} else {
+				try { this.document.designMode = "on"; } 
+				catch(e) { }
+			}
+			
+			rte.trigger('open', { id : this.id });
+			
+			if ($src && o.hideDocSource) {
+				$src.hide()
+			}
+			
+		}
+		
+		doc.prototype.wysiwyg = function() {
+			return this.editor.css('display') != 'none';
+		}
+		
+		doc.prototype.focus = function() {
+			this.wysiwyg() ? this.window.focus() : this.source[0].focus();
+		}
+		
+		doc.prototype.toggle = function() {
+			if (this.view.is(':visible') && this.rte.options.allowSource) {
+				this.editor.add(this.source).toggle();
+			}
+			return this;
+			// o.allowSource && this.editor.parent().is(':visible')
+		}
+		
+		this.open = function(d) {
+			var self = this,
+				docs = [];
+
+			if (d.jquery || $.isArray(d)) {
+				$.each(d, function() {
+					if (this.jquery) {
+						this.each(function() {
+							docs.push(new doc(this, self));
+						});
+					} else {
+						docs.push(new doc(this, self));
+					}
+				})
+			} else {
+				docs.push(new doc(d, this));
+			}
+			
+			$.each(docs, function() {
+				// this.toggle().toggle()
+				// self.log(this.id+' '+this.isWysiwyg()+' '+this.view.is(':visible'))
+			})
+			
+		}
+		
+		/**
 		 * Open document in editor and return document id in editor.
 		 * Document may be dom element or js object:
 		 * {
@@ -390,7 +597,7 @@
 		 * @param  DOMElement|Object  document to load in editor
 		 * @return String
 		 **/
-		this.open = function(d) {
+		this.open_ = function(d) {
 			var self = this, 
 				o = this.options, 
 				h = this.workzone.height(),
@@ -402,12 +609,27 @@
 			}
 			
 			function doc2(src) {
+				
+				var type = typeof(src),
+					id, name, title, content;
 				self.log(typeof(src))
+				self.log(src)
+				
+				if (type == 'object') {
+					if (src.jquery) {
+						self.log('jquery')
+					} else if (src.nodeType) {
+						self.log('node')
+					}
+				} else if (type == 'string') {
+					
+				}
+				
 			}
 			
 			function doc(src) {
 				var ndx = ++self.ndx, title, $src, ta;
-				self.log(src)
+				// self.log(src)
 				this.id     = self.id+'-document-'+ndx;
 				this.title  = self.i18n('Document')+' '+ndx;
 				this.editor = $('<iframe frameborder="0" class="elrte-editor"/>');
@@ -460,7 +682,7 @@
 			}
 			
 			doc2(d)
-			
+			return
 			d = new doc(d);
 			
 			/* render document */
@@ -672,6 +894,7 @@
 					// set active doc in wysiwyg mode if required before hide it
 					a && !a.wysiwyg() && this.options.autoToggle && this.toggle();
 					// show doc
+					this.log('here')
 					this.workzone.children('.elrte-document').hide().filter('#'+d.id).show();
 					// set doc active
 					this.active = d;
@@ -974,6 +1197,20 @@
 
 	}
 
+	elRTE.prototype._doc = function(src) {
+		this.rte      = self;
+		this.id       = '';
+		this.title    = '';
+		this.source   = null;
+		this.editor   = null;
+		this.document = null;
+		this.window   = null;
+		
+	}
+
+	elRTE.prototype._doc.prototype.test = function() {
+		this.rte.log('test 2')
+	}
 
 	elRTE.prototype.time = function(l) {
 		window.console && window.console.time && window.console.time(l);

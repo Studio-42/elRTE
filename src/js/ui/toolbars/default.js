@@ -10,7 +10,7 @@ $.fn.elrtetoolbar = function(rte) {
 			l  = pl.length,
 			c  = 'elrte-toolbar-panel',
 			tmp= {},
-			n, p, cl, btn;
+			n, p, cl, btn, cmd, cmds;
 			
 		t.addClass('elrte-rnd elrte-toolbar');
 		

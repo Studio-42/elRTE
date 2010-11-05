@@ -14,7 +14,7 @@
 		/* display toolbar? */
 		showToolbar : true,
 		/* make editor resizable (required jquery.ui.resizable) */
-		resizable : true,
+		resizable : false,
 		
 		/* --- editor options --- */
 		/* allow user view and edit source? required plugin or command */
@@ -25,7 +25,7 @@
 		alwaysShowTabs : true,
 		sortableTabs : true,
 		/* max undo/redo steps, 0 - for disable history */
-		historySize : 10,
+		historySize : 0,
 		/* send debug to log? variants: "all" - for all messages, ["source[.type]", ...] - for debug from only required objects/methods */
 		debug    : false,
 		
@@ -34,13 +34,16 @@
 		loadTarget : true,
 		/* additional nodes or js objects to load in editor as documents */
 		documents : [],
-		/* Loading documents rule. If true - new docuent load in background, if false- set active after load */
+		hideDocSource : true,
+		focusOpenedDoc : true,
+		/* Loading documents rule. If true - new document load in background, if false- set active after load */
 		loadDocsInBg : true,
 		/* number of documents to set active after editor load */
 		active  : false,
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
 		allowCloseDocs : true,
-		
+		// allow reopen opened document (allow|ask|deny|true|false)
+		reopenDoc : false,
 		/* --- options for every editor document --- */
 		/* iframe doctype */
 		doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',
@@ -115,7 +118,7 @@
 		},
 		toolbarType : 'normal',
 		
-		toolbar : 'test',
+		toolbar : 'empty',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
