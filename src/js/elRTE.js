@@ -411,6 +411,7 @@
 		}
 		
 		/**
+		 * @class doc
 		 * Document constructor
 		 * As document source accept DOM Element or plain object or string, 
 		 * all other type will be treated as empty document
@@ -715,6 +716,12 @@
 			return this;
 		}
 		
+		/**
+		 * Open document[s]
+		 *
+		 * @param Array|Object|DOMElement|jQuery|String  document[s] source
+		 * @return elRTE
+		 */
 		this.open = function(d) {
 			var self = this;
 
@@ -731,7 +738,7 @@
 			} else {
 				new doc(d, this);
 			}
-
+			return this;
 		}
 		
 		/**
@@ -1056,8 +1063,8 @@
 		 * @return elRTE
 		 */
 		this.show = function() {
-			if (this.view.editor.is(':hidden')) {
-				this.view.editor.show();
+			if (this.viewport.is(':visible')) {
+				this.viewport.show();
 				this.trigger('show');
 			}
 			return this;
@@ -1069,8 +1076,8 @@
 		 * @return elRTE
 		 */
 		this.hide = function() {
-			if (this.view.editor.is(':visible')) {
-				this.view.editor.hide();
+			if (this.viewport.is(':visible')) {
+				this.viewport.hide();
 				this.trigger('hide');
 			}
 			return this;
