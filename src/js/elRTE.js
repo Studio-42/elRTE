@@ -77,7 +77,7 @@
 		this.typing = false;
 		/* cached change on keydown to rise change event after keyup */
 		this.change = false;
-		/* max loaded doc number */
+		/* last opened document number */
 		this.ndx = 0;
 		/* opened documents */
 		this.documents = { };
@@ -216,72 +216,11 @@
 			delete this.init;
 		}
 		
-		/**
-		 * Return number of loaded documents
-		 *
-		 * @return Number
-		 **/
-		this.count = function() {
-			var i = 0;
-			$.each(this.documents, function() {
-				i++;
-			});
-			return i;
-		}
 		
-		/**
-		 * Return document by id
-		 * If document not found return active document (or undefined if no documents loaded!)
-		 *
-		 * @param  String  document id (or undefined for active document)
-		 * @return Object
-		 **/
-		this.document = function(id) {
-			return this.documents[id]||this.active;
-		}
 		
-		/**
-		 * Return document by name
-		 *
-		 * @param  String  document name
-		 * @return Object
-		 **/
-		this.documentByName = function(n) {
-			var d;
-			$.each(this.documents, function() {
-				if (this.name == n) {
-					d = this;
-					return false;
-				}
-			});
-			return d;
-		}
-		
-		/**
-		 * Return document by index
-		 *
-		 * @param  Number  document index
-		 * @return Object
-		 **/
-		this.documentByIndex = function(n) {
-			var d;
-			$.each(this.documents, function() {
-				if (this.ndx == n) {
-					d = this;
-					return false;
-				}
-			});
-			return d;
-		}
-		
-		/**
-		 * Return true if active document is in wysiwyg mode
-		 *
-		 * @return Boolean
-		 **/
-		this.isWysiwyg = function() {
-			return this.active && this.active.wysiwyg();
-		}
+		/*******************************************************/
+		/*                         Events                      */
+		/*******************************************************/
 		
 		/**
 		 * Bind callback to event(s)
@@ -409,6 +348,10 @@
 			}
 			return this;
 		}
+		
+		/*******************************************************/
+		/*                 Documents manipuations              */
+		/*******************************************************/
 		
 		/**
 		 * @class doc
@@ -800,8 +743,7 @@
 		}
 		
 		/**
-		 * Switch between editor and source in active document 
-		 * if source access enabled
+		 * Switch active document between editor and source mode if source access enabled
 		 *
 		 * @return elRTE
 		 */
@@ -809,6 +751,74 @@
 			this.active && this.active.toggle();
 			return this;
 		}
+		
+		/**
+		 * Return true if active document is in wysiwyg mode
+		 *
+		 * @return Boolean
+		 **/
+		this.isWysiwyg = function() {
+			return this.active && this.active.wysiwyg();
+		}
+		
+		/**
+		 * Return number of loaded documents
+		 *
+		 * @return Number
+		 **/
+		this.count = function() {
+			var i = 0;
+			$.each(this.documents, function() {
+				i++;
+			});
+			return i;
+		}
+		
+		/**
+		 * Return document by id
+		 * If document not found return active document (or undefined if no documents loaded!)
+		 *
+		 * @param  String  document id (or undefined for active document)
+		 * @return Object
+		 **/
+		this.document = function(id) {
+			return this.documents[id]||this.active;
+		}
+		
+		/**
+		 * Return document by name
+		 *
+		 * @param  String  document name
+		 * @return Object
+		 **/
+		this.documentByName = function(n) {
+			var d;
+			$.each(this.documents, function() {
+				if (this.name == n) {
+					d = this;
+					return false;
+				}
+			});
+			return d;
+		}
+		
+		/**
+		 * Return document by index
+		 *
+		 * @param  Number  document index
+		 * @return Object
+		 **/
+		this.documentByIndex = function(n) {
+			var d;
+			$.each(this.documents, function() {
+				if (this.ndx == n) {
+					d = this;
+					return false;
+				}
+			});
+			return d;
+		}
+		
 		
 		/**
 		 * Get/set editor content.
@@ -1010,33 +1020,11 @@
 		
 		
 		
-		/* SERVICE METHODS */
-		/**
-		 * send message to console log
-		 *
-		 * @param String  message
-		 */
-		this.log = function(m) {
-			// window.console && window.console.log && window.console.log.apply(null, arguments);
-			window.console && window.console.log && window.console.log(m);
-		}
 		
-		/**
-		 * send message to console log if debug is enabled in config
-		 *
-		 * @param String  message group name
-		 * @param String  message
-		 */
-		this.debug = function(n, m) {
-			if (this.options.debug == 'all') {
-				this.log(n+': '+m);
-			} else if (this.options.debug.length) {
-				var _n = n.split('.');
-				if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
-					this.log(n+': '+m);
-				}
-			}
-		}
+		
+		/*******************************************************/
+		/*                   View manipulations                */
+		/*******************************************************/
 		
 		/**
 		 * Switch to next document after active one
@@ -1081,6 +1069,50 @@
 				this.trigger('hide');
 			}
 			return this;
+		}
+		
+		/**
+		 * Close all documents and remove editor from DOM
+		 *
+		 * @return void
+		 */
+		this.destroy = function() {
+			var self = this;
+			
+			$.each(this.documents, function() {
+				self.close(this.id);
+			});
+			
+			this.viewport.detach();
+		}
+		
+		/*******************************************************/
+		/*                        Debug                        */
+		/*******************************************************/
+		/**
+		 * send message to console log
+		 *
+		 * @param String  message
+		 */
+		this.log = function(m) {
+			window.console && window.console.log && window.console.log(m);
+		}
+		
+		/**
+		 * send message to console log if debug is enabled in config
+		 *
+		 * @param String  message group name
+		 * @param String  message
+		 */
+		this.debug = function(n, m) {
+			if (this.options.debug == 'all') {
+				this.log(n+': '+m);
+			} else if (this.options.debug.length) {
+				var _n = n.split('.');
+				if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
+					this.log(n+': '+m);
+				}
+			}
 		}
 		
 		
