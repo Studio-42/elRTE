@@ -209,6 +209,10 @@
 				self.trigger('hideUI');
 			});
 			
+			// this.viewport.data('elrte', this)
+			
+			// this.log(this.viewport.data('elrte'))
+			
 			delete this.init;
 		}
 		
@@ -510,10 +514,15 @@
 				catch(e) { }
 			}
 			
+			// trigger event for this document
 			rte.trigger('open', { id : this.id });
-			
+			// hide doc source if required
 			if ($src && o.hideDocSource) {
-				$src.hide()
+				$src.hide();
+			}
+			// after editor loaded, focus opened document if requied
+			if (!rte.init && o.focusOpenedDoc) {
+				rte.focus(this.id);
 			}
 			
 		}
@@ -531,32 +540,26 @@
 				this.editor.add(this.source).toggle();
 			}
 			return this;
-			// o.allowSource && this.editor.parent().is(':visible')
+
 		}
 		
 		this.open = function(d) {
-			var self = this,
-				docs = [];
+			var self = this;
 
 			if (d.jquery || $.isArray(d)) {
 				$.each(d, function() {
 					if (this.jquery) {
 						this.each(function() {
-							docs.push(new doc(this, self));
+							new doc(this, self);
 						});
 					} else {
-						docs.push(new doc(this, self));
+						new doc(this, self);
 					}
 				})
 			} else {
-				docs.push(new doc(d, this));
+				new doc(d, this);
 			}
-			
-			$.each(docs, function() {
-				// this.toggle().toggle()
-				// self.log(this.id+' '+this.isWysiwyg()+' '+this.view.is(':visible'))
-			})
-			
+
 		}
 		
 		/**
@@ -1231,12 +1234,74 @@
 	 */
 	elRTE.prototype.i18Messages = {}
 
+	$.expr[':'].elrte = function(e) {
+		var inst = $(e).data('elrte-editor');
+		
+		return !!(inst && inst.id)
+		window.console.log($(e).next().data('elrte-editor'))
+		return !!$(e).next().data('elrte-editor')
+		return false
+	}
+
+	
+	/**
+	 * jQuery plugin
+	 * Find elRTE editor instances in elements set and create it if not found.
+	 * WARNING!
+	 * - Return set of elements with elRTE instances. If there is no one was found returns original set.
+	 * - While create instance elRTE removes original node, so be carefull if you need this node after create elRTE instance on it
+	 * - elRTE instance can be created only on node attached to page DOM
+	 *
+	 * @param Object  elRTE options
+	 */
+	$.fn.elrte = function(o) {
+		// editors instances id
+		var ids = [];
+		
+		this.test = function() {
+			var e = this.filter(':elrte').eq(0)
+			return e.length ? e.attr('id') : null
+		}
+		
+		this.each(function() {
+			var $this = $(this),
+				inst, p;
+			
+			if ($this.is(':elrte')) {
+				// element is already editor
+				inst = $this.data('elrte-editor')
+			} else if ((p = $this.parents(':elrte')).length) {
+				// elRTE can be take away target node id for its document, so we need to test node parent
+				inst = p.data('elrte-editor');
+			} else {
+				// create new instance
+				inst = new elRTE(this, o);
+				if (inst.id) {
+					// store instance in editor container
+					inst.viewport.data('elrte-editor', inst);
+				}
+			}
+
+			if (inst && inst.id) {
+				ids.push(inst.id);
+			}
+			
+		});
+
+		this.test = function() {
+			var e = this.filter(':elrte').eq(0)
+			return e.length ? e.attr('id') : null
+		}
+
+		return ids.length ? $('#'+ids.join(',#')) : this;
+	}
+
 	/**
 	 * jquery plugin
 	 *
 	 * @param Object|String  elrte options or command
 	 */
-	$.fn.elrte = function(o) {
+	$.fn.elrte_ = function(o) {
 		
 		this.each(function() {
 			if (!this.elrte) {

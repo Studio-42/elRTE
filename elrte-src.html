@@ -184,8 +184,8 @@
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
 					// $('#editor22'),
-					$('#editor3')[0],
-					$('#editor3'),
+					// $('#editor3')[0],
+					// $('#editor3'),
 					// {
 					// 	title : 'Автостопом по галактике',
 					// 	content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
@@ -211,9 +211,12 @@
 				
 			}
 
-			// var rte = jQuery('#editor').elrte(opts);
-			
-			rte = new elRTE($('#editor'), opts)
+			var rte = $('#editor,#editor3').elrte(opts);
+			// window.console.log(rte)
+			// rte = jQuery('#editor,#editor3').elrte(opts);
+			// window.console.log(rte.test())
+			// window.console.log(jQuery('#editor'))
+			// rte = new elRTE($('#editor'), opts)
 			
 			// rte2 = new elRTE($('#editor2'), opts)
 			
