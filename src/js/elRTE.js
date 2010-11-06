@@ -1234,15 +1234,19 @@
 	 */
 	elRTE.prototype.i18Messages = {}
 
+
+	/**
+	 * Extend jQuery expressions.
+	 * Find elements in set which has elRTE editor instance
+	 *
+	 * @examples
+	 * Return only nodes with elRTE instances
+	 *  $("selector:elrte")
+	 */
 	$.expr[':'].elrte = function(e) {
 		var inst = $(e).data('elrte-editor');
-		
-		return !!(inst && inst.id)
-		window.console.log($(e).next().data('elrte-editor'))
-		return !!$(e).next().data('elrte-editor')
-		return false
+		return !!(inst && inst.id);
 	}
-
 	
 	/**
 	 * jQuery plugin
@@ -1252,32 +1256,38 @@
 	 * - While create instance elRTE removes original node, so be carefull if you need this node after create elRTE instance on it
 	 * - elRTE instance can be created only on node attached to page DOM
 	 *
+	 * @examples
+	 * Create elrte editor[s]
+	 *   $(selector).elrte(opts);
+	 * Get elrte nodes set
+	 *   var editors = $(selector).elrte();
+	 * Exec command on first editor in set
+	 *   var result = $(selector).elrte().exec(commandName, commandValue);
+	 * Get editor instance from first element in set
+	 *   var elrteInstance = $(selector).elrte().getEditor();
+	 *
 	 * @param Object  elRTE options
 	 */
 	$.fn.elrte = function(o) {
-		// editors instances id
-		var ids = [];
 		
-		this.test = function() {
-			var e = this.filter(':elrte').eq(0)
-			return e.length ? e.attr('id') : null
-		}
+		var ids = [], // editors instances id
+			ret;      // result elements set if at least one editor exists/created
 		
 		this.each(function() {
 			var $this = $(this),
 				inst, p;
 			
 			if ($this.is(':elrte')) {
-				// element is already editor
+				// element already has editor
 				inst = $this.data('elrte-editor')
 			} else if ((p = $this.parents(':elrte')).length) {
-				// elRTE can be take away target node id for its document, so we need to test node parent
+				// elRTE take away target node id for its document, so we need to test node parent
 				inst = p.data('elrte-editor');
 			} else {
 				// create new instance
 				inst = new elRTE(this, o);
 				if (inst.id) {
-					// store instance in editor container
+					// store instance in editor container data
 					inst.viewport.data('elrte-editor', inst);
 				}
 			}
@@ -1285,43 +1295,35 @@
 			if (inst && inst.id) {
 				ids.push(inst.id);
 			}
+		});
+
+
+		if (ids.length) {
+			// elrte editors exists - create set
+			ret = $('#'+ids.join(',#'));
 			
-		});
+			// extend result set with methods
+			return $.extend(ret, {
+				/**
+				 * Return first elrte instance from set
+				 * @return elRTE
+				 */
+				getEditor : $.proxy(function() { 
+					return this.filter(':elrte').eq(0).data('elrte-editor'); }, 
+				ret),
+				/**
+				 * Call exec method on first elrte instance from set
+				 * @return misc
+				 */
+				exec : $.proxy(function() {
+					var inst = this.getEditor();
+					if (inst) {
+						return inst.exec.apply(inst, Array.prototype.slice.call(arguments));
+					}
+				}, ret)
+			});
+		} 
 
-		this.test = function() {
-			var e = this.filter(':elrte').eq(0)
-			return e.length ? e.attr('id') : null
-		}
-
-		return ids.length ? $('#'+ids.join(',#')) : this;
-	}
-
-	/**
-	 * jquery plugin
-	 *
-	 * @param Object|String  elrte options or command
-	 */
-	$.fn.elrte_ = function(o) {
-		
-		this.each(function() {
-			if (!this.elrte) {
-				this.elrte = new elRTE(this, typeof(o) == 'object' ? o : {});
-			}
-		});
-		
-		/**
-		 * Exec command and return result ONLY for first editor
-		 */
-		this.exec = function() {
-			var e = this[0];
-			return e && e.elrte ? e.elrte.exec.apply(e.elrte, Array.prototype.slice.call(arguments)) :false;
-		}
-		
-		if (this.length && typeof(o) == 'string') {
-			return this[0].elrte ? this[0].elrte.exec.apply(this[0].elrte, Array.prototype.slice.call(arguments)) : false;
-		}
 		return this;
 	}
-	
-	
 })(jQuery);
