@@ -390,7 +390,7 @@
 				e = $.Event(''+e);
 			}
 			l = this.listeners[e.type]||[];
-			
+			// this.log(e.type)
 			if (l.length) {
 				e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
 				this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(l.length ? 'trigger' : 'no listeners'));
@@ -482,6 +482,8 @@
 			}
 
 			// load document into editor
+			
+			// add to documents array
 			rte.documents[this.id] = this;
 			
 			// create document view and attach to editor
@@ -490,10 +492,9 @@
 				.append(this.source.height(h).hide())
 				.hide()
 				.appendTo(rte.workzone);
-
+			// after iframe attached to DOM - get its window/document
 			this.window   = this.editor[0].contentWindow;
 			this.document = this.window.document;
-			this.body     = this.document.body;
 			
 			// create iframe html
 			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
@@ -502,9 +503,11 @@
 					html += '<link rel="stylesheet" type="text/css" href="'+url+'"/>';
 				}
 			});
+			// write document body
 			this.document.open();
-			this.document.write(o.doctype+html+'</head><body>'+this.source.val()+' </body></html>');
+			this.document.write(o.doctype+html+'</head><body>'+rte.filter.wysiwyg(this.source.val())+' </body></html>');
 			this.document.close();
+			this.body = this.document.body;
 			
 			// make iframe editable
 			if ($.browser.msie) {
@@ -514,33 +517,202 @@
 				catch(e) { }
 			}
 			
+			// bind events to document
+			
+			// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
+			// on mac opera think meta is a ctrl key
+			// i hope only a few nerds use opera on mac :)
+			// TODO test on linux/win
+			if ($.browser.opera && !this.macos) {
+				$(this.document).bind('keydown', function(e) {
+					if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
+						e.stopPropagation();
+						e.preventDefault();
+						if (e.keyCode == 86 && !o.allowPaste) {
+							return;
+						}
+						rte.trigger(e.keyCode == 88 ? 'cut' : 'paste');
+					}
+				});
+			}
+			
+			$(this.document)
+				.keydown(function(e) {
+					var p, c = e.keyCode;
+				
+					rte.change  = false;
+					rte.lastKey = rte.utils.keyType(e);
+				
+					// exec shortcut callback
+					$.each(rte.shortcuts, function(n, s){
+						p = s.pattern;
+						if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
+							e.stopPropagation();
+							e.preventDefault();
+							s.cmd && rte.trigger('exec', { cmd : s.cmd });
+							s.callback(e) && rte.trigger('change', { cmd : s.cmd });
+							return false;
+						}
+					});
+
+					if (!e.isPropagationStopped()) {
+						if (c == 9){
+							// on tab pressed insert spaces
+							// @todo - collapse before insertHtml?
+							e.preventDefault();
+							rte.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
+						} 
+					
+						if (rte.lastKey == rte.KEY_ENTER 
+						||  rte.lastKey == rte.KEY_TAB 
+						||  rte.lastKey == rte.KEY_DEL 
+						|| (rte.lastKey == rte.KEY_CHAR && !rte.selection.collapsed())) {
+							rte.trigger('exec');
+							rte.change = true;
+						} 
+						rte.trigger(e);
+					}
+				})
+				.keyup(function(e) {
+					rte.trigger(e);
+				
+					if (rte.change) {
+						rte.trigger('change', {event : e});
+					} else if (rte.lastKey == rte.KEY_ARROW) {
+						rte.trigger('changePos', {event : e});
+					}
+					rte.typing = rte.lastKey == rte.KEY_CHAR || rte.lastKey == rte.KEY_DEL;
+					rte.lastKey = 0;
+					rte.change = false;
+				})
+				.mouseup(function(e) {
+					rte.lastKey = 0;
+					rte.typing = false;
+					// click on selection not collapse it at a moment
+					setTimeout(function() { rte.trigger('changePos', {event : e}); }, 1);
+				})
+				.bind('mousedown mouseup click dblclick', function(e) {
+					rte.trigger(e);
+				})
+				.bind('dragstart dragend drop', function(e) {
+					// disable drag&drop
+					if (!o.allowDragAndDrop) {
+						e.preventDefault();
+						e.stopPropagation();
+					} else if (e.type == 'drop') {
+						rte.trigger('change');
+					}
+				})
+				.bind('cut', function(e) {
+					rte.trigger('cut')
+					setTimeout(function() { rte.trigger('change'); }, 5);
+				})
+				.bind('paste', function(e) {
+					// paste handler
+					if (!rte.options.allowPaste) {
+						// paste denied 
+						e.stopPropagation();
+						e.preventDefault();
+					} else {
+						// create sandbox for paste, clean it content and unwrap
+						var dom = rte.dom,
+							sel = rte.selection,
+							filter = rte.filter,
+							a   = rte.active,
+							n = dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
+							r = dom.createTextNode(' _ ')
+							;
+
+						rte.trigger('paste');
+						n.appendChild(r);
+						n = sel.deleteContents().insertNode(n);
+						sel.select(n.firstChild);
+						setTimeout(function() {
+							if (n.parentNode && !r.parentNode) {
+								// clean sandbox content
+								$(n).html(filter.proccess('paste', $(n).html()));
+								r = n.lastChild;
+								dom.unwrap(n);
+								if (r) {
+									sel.select(r).collapse(false);
+								}
+							} else {
+								// smth wrong - clean all doc
+								n.parentNode && n.parentNode.removeChild(n);
+								a.val(filter.wysiwyg(a.val()));
+								sel.select(a.document.body).collapse(true);
+							}
+							rte.trigger('change');
+						}, 15);
+					}
+				});
+			
 			// trigger event for this document
 			rte.trigger('open', { id : this.id });
-			// hide doc source if required
+			
+			// hide doc source node if required
 			if ($src && o.hideDocSource) {
 				$src.hide();
 			}
-			// after editor loaded, focus opened document if requied
+			
+			// after editor was loaded, focus opened document if requied
 			if (!rte.init && o.focusOpenedDoc) {
 				rte.focus(this.id);
 			}
-			
 		}
 		
+		/**
+		 *
+		 */
 		doc.prototype.wysiwyg = function() {
 			return this.editor.css('display') != 'none';
 		}
 		
+		/**
+		 *
+		 */
 		doc.prototype.focus = function() {
 			this.wysiwyg() ? this.window.focus() : this.source[0].focus();
 		}
 		
+		/**
+		 *
+		 */
 		doc.prototype.toggle = function() {
 			if (this.view.is(':visible') && this.rte.options.allowSource) {
+				this.sync();
 				this.editor.add(this.source).toggle();
 			}
 			return this;
+		}
 
+		/**
+		 *
+		 */
+		doc.prototype.sync = function() {
+			this.wysiwyg()
+				? this.source.val(this.rte.filter.source($(this.body).html()))
+				: $(this.body).html(this.rte.filter.wysiwyg(this.source.val()));
+			return this;
+		}
+		
+		/**
+		 *
+		 */
+		doc.prototype.val = function(v) {
+			var w = this.wysiwyg();
+			
+			if (v === void(0)) {
+				return w 
+					? this.rte.filter.source($(this.body).html()) 
+					: this.rte.filter.source2source(this.source.val());
+			} 
+			
+			
+			w ? $(this.body).html(this.rte.filter.wysiwyg(v)) : this.source.val(this.rte.filter.source(v));
+			this.focus();
+			w && this.rte.trigger('change');
+			return this;
 		}
 		
 		this.open = function(d) {
@@ -563,272 +735,6 @@
 		}
 		
 		/**
-		 * Open document in editor and return document id in editor.
-		 * Document may be dom element or js object:
-		 * {
-		 *   title    : document title to display in tab, not required
-		 *   name     : name for textarea, not required,if not set - id used,
-		 *   content  : document text, required,
-		 *   save     : object (not implemented yet)
-		 * }
-		 *
-		 * @param  DOMElement|Object  document to load in editor
-		 * @return String
-		 **/
-		this.open_ = function(d) {
-			var self = this, 
-				o = this.options, 
-				h = this.workzone.height(),
-				html;
-			
-			function sync(d) {
-				t = d.wysiwyg() ? 'source' : 'wysiwyg';
-				d.set(self.filter.proccess(t, d.get()), t);
-			}
-			
-			function doc2(src) {
-				
-				var type = typeof(src),
-					id, name, title, content;
-				self.log(typeof(src))
-				self.log(src)
-				
-				if (type == 'object') {
-					if (src.jquery) {
-						self.log('jquery')
-					} else if (src.nodeType) {
-						self.log('node')
-					}
-				} else if (type == 'string') {
-					
-				}
-				
-			}
-			
-			function doc(src) {
-				var ndx = ++self.ndx, title, $src, ta;
-				// self.log(src)
-				this.id     = self.id+'-document-'+ndx;
-				this.title  = self.i18n('Document')+' '+ndx;
-				this.editor = $('<iframe frameborder="0" class="elrte-editor"/>');
-				this.type   = 'post';
-
-				if (src.nodeType == 1) {
-					$src        = $(src);
-					title       = $src.attr('title');
-					this.name   = $src.attr('name')||$src.attr('id')||id;
-					this.url    = $src.attr('rel')||'';
-					this.source = src.nodeName == 'TEXTAREA' ? $src : $('<textarea name="'+this.name+'"/>').val($src.html());
-				} else {
-					src         = $.extend({name : '', content : '', title : '', url : '', type : ''}, src);
-					title       = src.title;
-					this.name   = src.name||this.id;
-					this.url    = src.url;
-					this.type   = src.type;
-					this.source = $('<textarea name="'+this.name+'"/>').val(' '+src.content);
-				}
-				this.source.addClass('elrte-source');
-				if (title) {
-					this.title = title;
-				}
-
-				this.wysiwyg = function() {
-					return /* this.editor.is(':visible') ||*/ this.editor.css('display') != 'none';
-				}
-
-				this.get = function(t) {
-					return (t ? t == 'wysiwyg' : this.wysiwyg()) ? $(this.document.body).html() : this.source.val();
-				}
-				
-				this.set = function(c, t) {
-					(t ? t == 'wysiwyg' : this.wysiwyg()) ? $(this.document.body).html(c) :  this.source.val(c);
-				}
-				
-				this.focus = function() {
-					this.wysiwyg() ? this.window.focus() : this.source[0].focus();
-				}
-				
-				this.toggle = function() {
-					if (o.allowSource && this.editor.parent().is(':visible')) {
-						sync(this);
-						this.editor.add(this.source).toggle();
-						this.focus();
-						self.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
-					} 
-					return this;
-				}
-			}
-			
-			doc2(d)
-			return
-			d = new doc(d);
-			
-			/* render document */
-			$('<div id="'+d.id+'" class="elrte-document"/>')
-				.append(d.editor.height(h))
-				.append(d.source.height(h).hide())
-				.hide()
-				.appendTo(this.workzone);
-			
-			/* add to editor documents */
-			d.window   = d.editor[0].contentWindow;
-			d.document = d.editor[0].contentWindow.document;
-			this.documents[d.id] = d;
-			
-			/* create body in iframe */
-			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
-			$.each(o.cssfiles, function() {
-				html += '<link rel="stylesheet" type="text/css" href="'+this+'"/>';
-			});
-			d.document.open();
-			d.document.write(o.doctype+html+'</head><body>'+this.filter.wysiwyg(d.get('source'))+' </body></html>');
-			d.document.close();
-			
-			/* make iframe editable */
-			if ($.browser.msie) {
-				d.document.body.contentEditable = true;
-			} else {
-				try { d.document.designMode = "on"; } 
-				catch(e) { }
-			}
-			
-			/* bind events to document */
-
-			// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
-			// on mac opera think meta is a ctrl key
-			// i hope only a few nerds use opera on mac :)
-			// TODO test on linux/win
-			if ($.browser.opera && !this.macos) {
-				$(d.document).bind('keydown', function(e) {
-					if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
-						e.stopPropagation();
-						e.preventDefault();
-						if (e.keyCode == 86 && !o.allowPaste) {
-							return;
-						}
-						self.trigger(e.keyCode == 88 ? 'cut' : 'paste');
-					}
-				});
-			}
-			
-			$(d.document).bind('paste', function(e) {
-				// paste handler
-				if (!self.options.allowPaste) {
-					// paste denied 
-					e.stopPropagation();
-					e.preventDefault();
-				} else {
-					// create sandbox for paste, clean it content and unwrap
-					var n = self.dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
-						r = self.dom.createTextNode(' _ ');
-
-					self.trigger('paste');
-					n.appendChild(r);
-					n = self.selection.deleteContents().insertNode(n);
-					self.selection.select(n.firstChild);
-					setTimeout(function() {
-						if (n.parentNode && !r.parentNode) {
-							// clean sandbox content
-							$(n).html(self.filter.proccess('paste', $(n).html()));
-							r = n.lastChild;
-							self.dom.unwrap(n);
-							if (r) {
-								self.selection.select(r);
-								self.selection.collapse(false);
-							}
-						} else {
-							// smth wrong - clean all doc
-							n.parentNode && n.parentNode.removeChild(n);
-							self.active.set(self.filter.wysiwyg2wysiwyg(self.active.get('wysiwyg')), 'wysiwyg');
-							self.selection.select(self.active.document.body);
-							self.selection.collapse(true);
-						}
-						self.trigger('change');
-					}, 15);
-				}
-			})
-			.bind('dragstart dragend drop', function(e) {
-				// disable drag&drop
-				e.preventDefault();
-				e.stopPropagation();
-			})
-			.bind('cut', function(e) {
-				self.trigger('cut')
-				setTimeout(function() { self.trigger('change'); }, 5);
-			})
-			.bind('keydown', function(e) {
-				var p, c = e.keyCode;
-
-				self.change  = false;
-				self.lastKey = self.utils.keyType(e);
-				
-				// exec shortcut callback
-				$.each(self.shortcuts, function(n, s){
-					p = s.pattern;
-					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
-						e.stopPropagation();
-						e.preventDefault();
-						s.cmd && self.trigger('exec', { cmd : s.cmd });
-						s.callback(e) && self.trigger('change', { cmd : s.cmd });
-						return false;
-					}
-				});
-
-				if (!e.isPropagationStopped()) {
-					if (c == 9){
-						// on tab pressed insert spaces
-						// @todo - collapse before insertHtml?
-						e.preventDefault();
-						self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
-					} 
-					
-					// self.lastKey = self.utils.keyType(e);
-					
-					if (self.lastKey == self.KEY_ENTER 
-					||  self.lastKey == self.KEY_TAB 
-					||  self.lastKey == self.KEY_DEL 
-					|| (self.lastKey == self.KEY_CHAR && !self.selection.collapsed())) {
-						self.trigger('exec');
-						self.change = true;
-					} 
-					
-					self.trigger(e);
-
-				}
-			})
-			.bind('keyup', function(e) {
-				self.trigger(e);
-				
-				if (self.change) {
-					self.trigger('change', {event : e});
-				} else if (self.lastKey == self.KEY_ARROW) {
-					self.trigger('changePos', {event : e});
-				}
-				self.typing = self.lastKey == self.KEY_CHAR || self.lastKey == self.KEY_DEL;
-				self.lastKey = 0;
-				self.change = false;
-				
-			})
-			.bind('mouseup', function(e) {
-				self.lastKey = 0;
-				self.typing = false;
-				// click on selection not collapse it at a moment
-				setTimeout(function() { self.trigger('changePos', {event : e}); }, 1);
-			})
-			.bind('mousedown mouseup click dblclick', function(e) {
-				self.trigger(e);
-			});
-
-			this.trigger('open', { id : d.id });
-			
-			if (!this.init && this.count() == 1) {
-				this.focus(d.id);
-			}
-			
-			return d.id;
-		}
-		
-		/**
 		 * Close document
 		 *
 		 * @param String  document id
@@ -838,11 +744,13 @@
 			var d = this.document(id);
 
 			if (d) {
-				// switch to next/first document before close active
+				// switch to next/first document before close active one
 				d == this.active && this.next();
+				// rize event for closing document
 				this.trigger('close', {id : d.id});
-				this.workzone.children('#'+id).remove();
-
+				// remove document view
+				d.view.remove();
+				// if close active document - unset link to it
 				if (this.active.id == d.id) {
 					this.active = null;
 				}
@@ -886,7 +794,7 @@
 		
 		/**
 		 * Switch between editor and source in active document 
-		 * if source access eneabled
+		 * if source access enabled
 		 *
 		 * @return elRTE
 		 */
@@ -1134,7 +1042,7 @@
 		}
 		
 		/**
-		 * Switches to previous document before active one
+		 * Switch to previous document before active one
 		 *
 		 * @return elRTE
 		 */

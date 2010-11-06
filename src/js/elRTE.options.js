@@ -43,6 +43,8 @@
 		allowCloseDocs : true,
 		// allow reopen opened document (allow|ask|deny|true|false)
 		reopenDoc : false,
+		
+		allowDragAndDrop : true,
 		/* --- options for every editor document --- */
 		/* iframe doctype */
 		doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',

@@ -179,7 +179,7 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				// height   : 300,
-				debug : ['error', 'histor', 'even'],
+				debug : ['error', 'histor', 'event'],
 				// toolbar  : 'default',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
@@ -211,7 +211,13 @@
 				
 			}
 
-			var rte = $('#editor,#editor3').elrte(opts);
+			var rte = $('#editor,#editor33').elrte(opts);
+			
+			var inst = rte.getEditor();
+			// window.console.log(inst)
+			// window.console.log(inst.active.val())
+			// inst.active.sync()
+			// window.console.log(inst.active.val('<b>text</b>'))
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')
@@ -306,6 +312,7 @@
 	<form method="post" action="post.php" >
 	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
 		<h2>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><p>
+		<font color="red">font</font>
 		<img src="http://localhost/git/elrte-master/images/marvin.jpg" style="float:right" height="150" width="93">
 		</p><div style="margin-left:10px;float:right;width:150px;padding:15px;background-color:#ffff99;color:#ff3300;text-align:center;font-size:xx-large"><span style="font-weight:bold">DON'T<br>PANIC</span></div><br><div style="text-align:justify">&nbsp;&nbsp;In many of the more relaxed civilizations on the Outer Eastern Rim of the Galaxy, the <span style="text-decoration:underline">Hitch-Hiker's Guide</span> has already supplanted the great Encyclopaedia Galactica as the standard repository of all knowledge and wisdom, for though it has many omissions and contains much that is apocryphal, or at least wildly inaccurate, it scores over the older, more pedestrian work in two important respects. First, it is slightly cheaper; and secondly it has the words <em>DON'T PANIC</em> inscribed in large friendly letters on its cover.</div><br><br><br><p>
 		<img src="http://localhost/git/elrte-master/images/hhgttg.jpg" style="float:left;margin-right:10px;margin-top:5px" height="208" width="200">
