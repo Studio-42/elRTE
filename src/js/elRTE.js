@@ -215,7 +215,7 @@
 			// this.viewport.data('elrte', this)
 			
 			// this.log(this.viewport.data('elrte'))
-			
+			// this.log(this)
 			delete this.init;
 		}
 		
