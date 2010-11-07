@@ -48,12 +48,13 @@
 			.append((this.workzone  = $('<div class="elrte-workzone"/>')))
 			.append((this.statusbar = $('<div class="elrte-statusbar" />')))
 			.insertBefore(t);
-		/* form */
-		this.form = this.viewport.parents('form');
+		
 		/* add target node as document if enabled */
 		this.options.loadTarget && this.options.documents.unshift(t);
 		/* remove target node */
-		t = $(t).remove();
+		$(t).remove();
+		/* form */
+		this.form = this.viewport.parents('form');
 		/* is xhtml doctype used for editable iframe? */
 		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* is macosX? */
@@ -74,7 +75,7 @@
 		this.KEY_SERVICE = 6;
 
 		this.lastKey = 0;
-		this.typing = false;
+		this.typing  = false;
 		/* cached change on keydown to rise change event after keyup */
 		this.change = false;
 		/* last opened document number */
