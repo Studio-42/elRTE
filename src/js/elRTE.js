@@ -42,19 +42,8 @@
 		
 		/* editor instance id. viewport id and base part for inner elements ids */
 		this.id = 'elrte-'+(t.id||t.name||Math.random().toString().substr(2));
-		/* create editor view */
-		this.viewport  = $('<div class="elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
-			.append((this.tabsbar   = $('<div/>')))
-			.append((this.workzone  = $('<div class="elrte-workzone"/>')))
-			.append((this.statusbar = $('<div class="elrte-statusbar" />')))
-			.insertBefore(t);
-		
-		/* add target node as document if enabled */
-		this.options.loadTarget && this.options.documents.unshift(t);
-		/* remove target node */
-		$(t).remove();
 		/* form */
-		this.form = this.viewport.parents('form');
+		this.form = $(t).parents('form');
 		/* is xhtml doctype used for editable iframe? */
 		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* is macosX? */
@@ -138,6 +127,19 @@
 				ids = [], 
 				c, ui, p, id, tb, cnt;
 				
+			
+			/* create editor view */
+			this.viewport  = $('<div class="elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
+				.append((this.tabsbar   = $('<div/>').elrtetabsbar(this)))
+				.append((this.workzone  = $('<div class="elrte-workzone"/>')))
+				.append((this.statusbar = $('<div class="elrte-statusbar" />')))
+				.insertBefore(t);
+
+			/* add target node as document if enabled */
+			this.options.loadTarget && this.options.documents.unshift(t);
+			/* remove target node */
+			$(t).remove();
+				
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
 			/* DOM manipulation */
@@ -179,7 +181,7 @@
 			});
 			
 			/* init tabsbar */
-			this.tabsbar.elrtetabsbar(this);
+			// this.tabsbar.elrtetabsbar(this);
 			/* load documents */
 			this.open(this.options.documents);
 			/* focus first/last document */
@@ -625,8 +627,8 @@
 		 */
 		doc.prototype.toggle = function() {
 			if (this.view.is(':visible') && this.rte.options.allowSource) {
-				this.sync();
-				this.editor.add(this.source).toggle();
+				this.sync().editor.add(this.source).toggle();
+				this.rte.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
 			}
 			return this;
 		}

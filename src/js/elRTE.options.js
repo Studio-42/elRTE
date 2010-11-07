@@ -98,7 +98,7 @@
 			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['save', 'save', 'nbsp', 'bold', 'fontsize_', 'specialchars_', 'textcolor', 'textbg', 'source'],
+			test : ['save', 'nbsp', 'source'],
 			
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
@@ -119,7 +119,7 @@
 		},
 		toolbarType : 'normal',
 		
-		toolbar : 'empty',
+		toolbar : 'test',
 		
 		/* --- plugins options --- */
 		pluginsConf : {
