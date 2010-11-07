@@ -26,7 +26,7 @@ $.fn.elrtetoolbar = function(rte) {
 			while (cl--) {
 				if ((cmd = rte._commands[cmds[cl]]) && !tmp[cmd.name]) {
 					if ((btn = rte.ui.buttons[cmd.conf.ui || 'normal'])) {
-						rte.log(cmd.title)
+						rte.log(btn)
 						p.prepend(btn(cmd));
 					}
 					tmp[cmd.name] = true;

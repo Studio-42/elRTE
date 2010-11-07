@@ -49,9 +49,9 @@
 	-moz-border-radius-topright: 3px; 
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px; 
-	-webkit-background-clip: padding-box;
 	border-top-left-radius: 3px; 
 	border-top-right-radius: 3px;
+	-webkit-background-clip: padding-box;
 }
 
 /* bottom rounded elements */
@@ -60,10 +60,33 @@
 	-moz-border-radius-bottomright: 3px; 
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px; 
-	-webkit-background-clip: padding-box;
 	border-bottom-left-radius: 3px; 
 	border-bottom-right-radius: 3px;
+	-webkit-background-clip: padding-box;
 }
+
+/* left rounded elements */
+.elrte-rnd-left {
+	-moz-border-radius-topleft: 3px; 
+	-moz-border-radius-bottomleft: 3px; 
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px; 
+	border-top-left-radius: 3px; 
+	border-bottom-left-radius: 3px;
+	-webkit-background-clip: padding-box;
+}
+
+/* right rounded elements */
+.elrte-rnd-left {
+	-moz-border-radius-topright: 3px; 
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-top-right-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px; 
+	border-top-right-radius: 3px; 
+	border-bottom-right-radius: 3px;
+	-webkit-background-clip: padding-box;
+}
+
 
 /* close icon */
 .elrte-close {

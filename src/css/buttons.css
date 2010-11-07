@@ -1,8 +1,9 @@
 /* elRTE tollbar buttons styles */
 
 /* default button */
-.elrte .elrte-btn {
+.elrte-btn {
 	margin: 0 2px 0 0;
+	padding: 0;
 	border: 1px solid #ccc;
 	cursor:default;
 	position:relative;
@@ -10,24 +11,24 @@
 }
 
 /* button's inner container */
-.elrte .elrte-btn-inner {
+.elrte-btn-inner {
 	width:20px;
 	height:20px;
 	overflow:hidden;
 }
 
 /* button states */
-.elrte .elrte-btn.elrte-hover {
+.elrte-btn.elrte-hover {
 	background-color:#f5f5f5;
 	border-color:#aaa;
 }
 
-.elrte .elrte-btn.elrte-active {
+.elrte-btn.elrte-active {
 	background-color:#ccc;
 	border-color:#fff;
 }
 
-.elrte .elrte-btn.elrte-active.elrte-hover {
+.elrte-btn.elrte-active.elrte-hover {
 	border-color:#aaa;
 }
 
@@ -109,3 +110,48 @@
 .elrte .elrte-btn-docstructure { background-position:-620px -20px; }
 .elrte .elrte-btn-source { background-position:-640px -20px; }
 .elrte .elrte-btn-fullscreen { background-position:-660px -20px; }
+
+
+
+/* menu button */
+.elrte-btn-menu {
+	background-color:#fff;
+}
+
+.elrte-btn-menu .elrte-btn-inner {
+	width:auto;
+	min-width:32px;
+	max-width:120px;
+		
+}
+
+.elrte-btn-menu.elrte-hover {
+	background-color:#fff;
+}
+
+/* arrow on menu button right side */
+.elrte-btn-menu-control {
+	float:right;
+	height:20px;
+	width:10px;
+	border-left:1px solid #ccc;
+	background:#eee url(../images/elrte-toolbar.png) -778px -22px no-repeat;
+}
+
+.elrte-hover .elrte-btn-menu-control {
+	background-color:#ddd;
+}
+
+/* text on menu button */
+.elrte-btn-menu-label {
+	width:90px;
+	float:left;
+	font-size:12px;
+	line-height:20px;
+	height:20px;
+	padding: 0 5px;
+	overflow:hidden;
+	background:#fff;
+}
+
+
