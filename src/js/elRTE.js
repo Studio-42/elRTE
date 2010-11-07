@@ -168,8 +168,11 @@
 				});
 			});
 
-			if ((tb = o.toolbarType ? this.ui.toolbars[o.toolbarType] || this.ui.toolbars['normal'] : false)) {
-				this.viewport.prepend(tb(this))
+
+			if ((tb = this.ui.toolbars[o.toolbarType ? o.toolbarType : null])) {
+				o.toolbarPosition == 'bottom' 
+					? tb(this).insertBefore(this.statusbar)
+					: this.viewport.prepend(tb(this));
 			}
 
 			/* load plugins */
@@ -1174,6 +1177,9 @@
 		buttons : {
 			normal : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);
+			},
+			menu : function(cmd) {
+				return $('<div/>').elrtemenubutton(cmd);
 			}
 		} 
 	};	
