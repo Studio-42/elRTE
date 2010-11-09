@@ -22,11 +22,11 @@ $.fn.elrtetoolbar = function(rte) {
 			// commands for panel
 			cmds = o.panels[n] || [];
 			cl   = cmds.length;
-			rte.log(cmds)
+			// rte.log(cmds)
 			while (cl--) {
 				if ((cmd = rte._commands[cmds[cl]]) && !tmp[cmd.name]) {
 					if ((btn = rte.ui.buttons[cmd.conf.ui || 'normal'])) {
-						rte.log(btn)
+						// rte.log(btn)
 						p.prepend(btn(cmd));
 					}
 					tmp[cmd.name] = true;

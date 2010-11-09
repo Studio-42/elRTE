@@ -4,16 +4,8 @@
 
 /* common editor container */
 .elrte {
-	padding: 3px;
-	margin: 3px;
 	font: 98% normal tahoma, Trebuchet ms, tahoma, sans-serif;
-	border: 1px solid #aaa;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	border-radius:5px;
-	-webkit-background-clip: padding-box;
-	background-color: #fff;
-	clear:both;
+	padding:3px;
 }
 
 /* fullscreen editor */
@@ -26,14 +18,29 @@
 }
 
 /* editor content container */
-.elrte .elrte-container { }
+.elrte-container { 
+	border:1px solid #111;
+}
+
+.elrte-sidebar {
+	width:100px;
+	height:300px;
+/*	border:1px solid red;*/
+/*	display:none;*/
+}
+
+.elrte-sidebar-left { float:left; }
+.elrte-sidebar-rigth { float:right; }
 
 /* tabs and workzone container */
-.elrte .elrte-main { }
+.elrte-main {  }
+
+.elrte-show-sidebar-left .elrte-main { margin-left:105px; }
+.elrte-show-sidebar-right .elrte-main { margin-right:105px; }
 
 /* workzone - contains documents */
-.elrte .elrte-workzone {
-	border:1px solid #aaa;
+.elrte-workzone {
+/*	border:1px solid #aaa;*/
 	height:300px;
 }
 

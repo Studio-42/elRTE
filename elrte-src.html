@@ -7,15 +7,9 @@
 	<!--[if lte IE 9]><script src="js/firebug.js" type="text/javascript" charset="utf-8"></script><![endif]-->
 	<!-- jQuery and plugins -->
 	<script src="js/jquery-1.4.3.min.js" type="text/javascript" charset="utf-8"></script>
-	
-	<!--<script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>-->
-	<script src="js/jquery-ui-1.8.5.custom.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="css/ui-themes/default/jquery-ui-1.8.6.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
-
-	<!-- <link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
-
-	<!-- <link rel="stylesheet" href="js/ui-themes/ui-lightness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
-	<link rel="stylesheet" href="js/ui-themes/smoothness/jquery-ui-1.8.4.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 
 
@@ -24,6 +18,9 @@
 	<link rel="stylesheet" href="src/css/layout.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="src/css/tabsbar.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="src/css/toolbar.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="src/js/ui/sidebar.js" type="text/javascript" charset="utf-8"></script>
+	
+	
 	<link rel="stylesheet" href="src/css/buttons.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="src/css/widgets.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	
@@ -233,25 +230,7 @@
 	</script>
 	
 	<style type="text/css" media="screen">
-/*		body { padding:20px;}*/
-/*		textarea {
-			border:2px solid blue;
-			font-size:24px;
-			background:red;
-		}
-		body div {
-			border:2px solid blue;
-		}
-		.active {
-			background:red;
-			padding:10px;
-		}
-		li { padding:20px; border:2px solid green;}
-		.fullscreen {
-			width:30px;
-			background-position: 0 0;
-		}
-*/		.button {
+		.button {
 			display: -moz-inline-stack;
 			display: inline-block;
 			zoom: 1;
@@ -263,6 +242,44 @@
 			border-radius:5px;
 			background-color: #fff;
 			cursor:default;
+		}
+		
+		.btn {
+			width:20px;
+			height:20px;
+			margin: 0 2px 0 0;
+			padding: 0;
+/*			border: 1px solid #ccc;*/
+			cursor:default;
+			position:relative;
+			background:transparent url(./src/images/elrte-toolbar.png) -200px 0 no-repeat;
+		}
+		.btn-specialchars { background-position:-480px -20px; }
+		
+		.btn-menu {
+			width:auto;
+			min-width:32px;
+			max-width:120px;
+		}
+		.btn-control {
+			float:right;
+			height:20px;
+			width:10px;
+			border-left:1px solid #ccc;
+			background:#eee url(./src/images/elrte-toolbar.png) -778px -22px no-repeat;
+		}
+		.btn-menu-label {
+			width:90px;
+			float:left;
+			font-size:12px;
+			line-height:20px;
+			height:20px;
+			padding: 0 5px;
+			overflow:hidden;
+			background:#fff;
+		}
+		.elrte {
+			margin:3px 0;
 		}
 	</style>
 	
@@ -277,19 +294,57 @@
 	<div id="updsrc" class="button">Update source</div>
 	<div id="save" class="button">Save</div>
 	
-	<!--
-	<div class="elrte">
-		<div class="elrte-toolbar">tollbar</div>
-		<div style="width:100px;height:160px;float:left;border:1px solid blue"></div>
-		<div style="border:2px solid #111;margin-left:100px">
-			
-			<div style="height:20px;border:1px solid #ccc">tabsbar</div>
-			<div style="height:120px;border:1px solid #ccc"><iframe style="height:120px;border:1px solid #111;width:100%"></iframe></div>
-			<div style="height:20px;border:1px solid #ccc">tabsbar</div>
+	<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all" style="padding:2px;display:none">
+		<div class=" ui-widget-header ui-corner-all" style="padding:3px;margin-bottom:3px">
+			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
+				<div class="btn">
+					
+				</div>
+			</div>
+			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
+				<div class="btn btn-specialchars btn-menu">
+					<div class="btn-control">
+						
+					</div>
+					<div class="btn-menu-label">
+						size
+					</div>
+				</div>
+			</div>
+			<!-- <br/> -->
+			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
+				<div class="btn">
+					
+				</div>
+			</div>
 		</div>
+		
+		<div  class="ui-helper-clearfix" style="border:0px solid #222;padding:3px">
+			<div style="width:100px;height:300px;border:1px solid #111;float:left;display:none">
+				sidebar
+			</div>
+			<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="height:300px;margin-left:0">
+				<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" style="height:20px;display:none">
+					<li style="width:20px; height:18px;border:1px solid #111;float:right">btns</li>
+					<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">Tab 1</li>
+					<li class="ui-state-default ui-corner-top">Tab 2</li>
+				</ul>
+				<div class="elrte-workzone">
+				<iframe style="width:100%;height:250px;border:0px solid #111" frameborder="0"></iframe>	
+				</div>
+				
+			</div>
+		</div>
+		
+		
+		<!-- <div class="ui-helper-clearfix">
+			
+		</div> -->
+		<div class=" ui-widget-content ui-state-default ui-corner-all" style="margin-top:3px">
+			statusbar
+		</div>
+		
 	</div>
-	-->
-	
 	<form method="post" action="post.php" >
 	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
 		<h2>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><p>

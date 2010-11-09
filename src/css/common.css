@@ -1,11 +1,12 @@
 /* jqueryUI fixes */
+/*
 .ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
 .ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
 .ui-dialog .ui-dialog-content { padding:.5em; }
 .ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
 .ui-dialog  table { border:0 solid;  }
 .ui-dialog  table td { padding:2px; vertical-align:top; }
-
+*/
 /* ui states */
 .elrte-hover   {  }
 .elrte-active  {  }
@@ -14,16 +15,6 @@
 /******************************************************/
 /*                   COMMON STUFFS                    */
 /******************************************************/
-.elrte .clearfix { display: block; }
-
-.elrte .clearfix:after {
-  content: ".";
-  display: block;
-  font-size:0;
-  height: 0;
-  clear: both;
-  visibility: hidden;
-}
 /* style to detect images url */
 .elrte-test-url { background-image:url(../images/pixel.gif);}
 
