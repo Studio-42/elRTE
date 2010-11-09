@@ -4,7 +4,8 @@
 
 /* common editor container */
 .elrte {
-	font: 98% normal tahoma, Trebuchet ms, tahoma, sans-serif;
+/*	font: .9em normal trebuchet ms, tahoma, sans-serif;*/
+	font-family: trebuchet ms, tahoma, sans-serif;
 	padding:3px;
 }
 
@@ -19,7 +20,7 @@
 
 /* editor content container */
 .elrte-container { 
-	border:1px solid #111;
+/*	border:1px solid #111;*/
 }
 
 .elrte-sidebar {
@@ -33,7 +34,7 @@
 .elrte-sidebar-rigth { float:right; }
 
 /* tabs and workzone container */
-.elrte-main {  }
+.elrte-main { border:1px solid red; }
 
 .elrte-show-sidebar-left .elrte-main { margin-left:105px; }
 .elrte-show-sidebar-right .elrte-main { margin-right:105px; }

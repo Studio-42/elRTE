@@ -4,6 +4,54 @@
  *
  */
 $.fn.elrtetabsbar = function(rte) {
+	
+	return this.each(function() {
+		var $this = $(this).addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all'),
+			nav = $('<li class="elrte-tabs-nav "/>'),
+			back = $('<div class="ui-widget ui-state-default ui-corner-left elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-w"/></div>'),
+			// back = $('<div class="ui-state-default ui-corner-all" style="float:left"><span class="ui-icon ui-icon-triangle-1-w"  style="margin:5px 0"/></div>'),
+			fwd = $('<div class="ui-widget ui-state-default ui-corner-right elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-e"/></div>'),
+			btns = back.add(fwd).hover(function() { $(this).toggleClass('ui-state-hover') })
+		;
+		
+		
+		// btns.append(back)
+		nav.append(btns)
+		
+		$this.append(nav)
+		
+		rte.bind('open', function(e) {
+			var d = rte.document(e.data.id),
+				t, tab;
+				
+			if (d.id) {
+				t = d.title;
+				// tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"><span class="ui-corner-right">'+d.title+'</span></li>'),
+				tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"><a href="#">'+d.title+'</a></li>'),
+				close = $('<div class="ui-icon ui-icon-circle-close" title="Close"/>')
+				// close = $('<div style="position:absolute;top:1px;right:1px;width:16px;height:16px;background:red;z-index:10000">c</div>');
+				;
+				
+				tab.hover(function() {
+					$(this).toggleClass('ui-state-hover')
+				})
+				$this.append(tab.prepend(close))
+				tab.mousedown(function(e) {
+					rte.log(this);
+					e.preventDefault();
+					e.stopPropagation()
+				})
+			}
+		})
+		.bind('wysiwyg source', function(e) {
+			$this.children('.elrte-tab').removeClass('ui-tabs-selected ui-state-active').filter('[rel="'+e.data.id+'"]').addClass('ui-tabs-selected ui-state-active')
+		})
+		
+	})
+}
+
+
+$.fn.elrtetabsbar_ = function(rte) {
 
 	this.getNext = function() {
 		var ch;

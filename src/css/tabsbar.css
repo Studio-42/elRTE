@@ -1,72 +1,74 @@
-/* elRTE documents tabsbar styles */
-
-/* top tabs wrapper */
 .elrte-tabsbar {
 	overflow:hidden;
+/*	height:20px;*/
+	
 }
 
-/* top tabsbar */
-.elrte-tabsbar-tabspanel {
-	padding:0;
-	overflow:hidden;
-	height:20px;
-}
+.elrte .ui-tabs .ui-tabs-nav {
+	padding-top:.1em;
+/*	display:none;*/
+/*	padding: 0.1em 0.2em 0;*/
+} 
 
-/* back/fwd buttons container */
-.elrte-tabsbar-nav {
-	width:22px;
-	height:18px;
-	float:right;
-}
-/* button */
-.elrte-tabsbar-btn {
-	width:9px;
-	height:16px;
-	border:1px solid #ccc;
-	background:transparent url(../images/elrte-toolbar.png) 0 0 no-repeat;
-}
-/* back button */
-.elrte-tabsbar-btn-back {
-	background-position:-700px -3px;
-}
-/* forward button */
-.elrte-tabsbar-btn-fwd {
-	border-left:1px solid #ccc;
-	background-position:-709px -3px;
-}
-
-/* tab */
-.elrte-tab {
-	max-width:200px;
-	min-width:100px;
-	width:auto;
-/*	width:200px;*/
-	height:20px;
-	margin: 0 2px 0 0;
-	font-size: 78%;
-	background-color:#f2f2f2;
-	cursor: default;
+.ui-tabs .ui-tabs-nav li.elrte-tab {
+	line-height:.9em;
+	font-size:.75em;
+	margin-right:.1em;
+/*	min-width:90px;*/
+/*	max-width:130px;*/
 	position:relative;
-	border: 1px solid #aaa;
-	border-bottom:0 solid;
+/*	overflow:hidden;*/
+	cursor:default;
 }
-/* active tab */
-.elrte-tab.elrte-active { background-color:#fff;  }
 
-/* text in tab */
-.elrte-tab-title {
-	margin:2px 22px 2px 7px;
+.ui-tabs .ui-tabs-nav li.elrte-tab span {
+	min-width:90px;
+	max-width:130px;
 	overflow:hidden;
-	color:#555;
-	white-space:nowrap;
+	float:left;
+	margin-right:1.5em;
+	padding:.4em 0 .4em .8em;
 }
 
+.ui-tabs .ui-tabs-nav li.elrte-tab a {
+/*	border:1px solid red;*/
+	min-width:90px;
+	max-width:130px;
+	overflow:hidden;
+	padding:.4em .8em;
+}
+.elrte .ui-tabs .ui-tabs-nav li a { cursor:default;}
+/*.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }*/
+/*.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: default; }*/
+/*.ui-tabs .ui-tabs-nav li.elrte-tab a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: default; }*/
+
+.ui-tabs .ui-tabs-nav li.elrte-tabs-nav {
+/*	width:45px;*/
+/*	height:20px;*/
+	border:1px solid red;
+	float:right;
+	display:none;
+}
+
+.elrte-tabs-btn {
+	float:left;
+	padding:3px 0;
+}
+
+
+.elrte-tab .ui-icon {
+	float:right;
+	margin: .2em .1em 0 .1em;
+	margin-top:4px;
+}
 /* tab close button */
-.elrte-tab .elrte-close {
+.elrte-tab .ui-icon- {
 	position:absolute;
-	top:4px;
-	right:4px;
-	width:11px;
-	height:11px;
-	background:url(../images/close.png) 0 0 no-repeat;
+	top:.3em;
+	right:.1em;
+	width:16px;
+	height:16px;
+/*	background:url(../images/close.png) 0 0 no-repeat;*/
+/*	border:1px solid #111;*/
+	z-index:10000;
 }
