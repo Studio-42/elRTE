@@ -719,7 +719,7 @@
 				d.view.remove();
 				// if close active document - unset link to it
 				if (this.active.id == d.id) {
-					this.active = null;
+					this.active = void(0); //null;
 				}
 				delete this.documents[d.id];
 			}

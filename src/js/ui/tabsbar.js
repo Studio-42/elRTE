@@ -1,9 +1,86 @@
 /**
  * jQuery plugin
+ * Return total width for all elements in set
+ * @usage
+ * var w = $('selector').sumWidth() - return sum of .width()
+ * var w = $('selector').sumWidth({ type : 'inner' }) - return sum of .innerWidth()
+ * var w = $('selector').sumWidth({ type : 'outer' }) - return sum of .outerWidth()
+ * var w = $('selector').sumWidth({ type : 'outer', margins : true }) - return sum of .outerWidth(true) - include margins
+ * @param  Object  plugin options
+ * @return Number
+ */
+$.fn.sumWidth = function(o) {
+	var w=0, c;
+	
+	o = $.extend({ type : '', margins : false }, o||{});
+	
+	if (o.type == 'outer') {
+		o.margins = !!o.margins;
+		c = 'outerWidth';
+	} else {
+		o.margins = void(0);
+		c = o.type == 'inner' ? 'innerWidth' : 'width';
+	}
+
+	this.each(function() {
+		w += $(this)[c](o.margins);
+	});
+
+	return parseInt(w);
+}
+
+/**
+ * jQuery plugin
  * elRTE tabsbar
  *
  */
 $.fn.elrtetabsbar = function(rte) {
+	var o = rte.options,
+		ac = 'ui-tabs-selected ui-state-active',
+		hc = 'ui-state-hover',
+		ic = 'ui-icon ui-icon-',
+		wo = { type : 'outer', margins : true }
+		;
+	
+	/**
+	 * Return id of document next to active one or first document
+	 * Return void, if no documents or only one document
+	 *
+	 * @return Number
+	 */
+	this.getNext = function() {
+		var d, c, a;
+		
+		if ((d = rte.document())) {
+			c = this.children('.elrte-tab');
+			a = c.filter(':has(a[href="#'+d.id+'"])');
+			
+			if (c.length > 1) {
+				return (a.length && a.next('.elrte-tab').length ? a.next('.elrte-tab') : c.eq(0)).children('a').attr('href').substr(1)
+				
+			}
+		}
+	}
+	
+	/**
+	 * Return id of document previous to active one or last document
+	 * Return void, if no documents or only one document
+	 *
+	 * @return Number
+	 */
+	this.getPrev = function() {
+		var d, c, a;
+		
+		if ((d = rte.document())) {
+			c = this.children('.elrte-tab');
+			a = c.filter(':has(a[href="#'+d.id+'"])');
+			
+			if (c.length > 1) {
+				return (a.length && a.prev('.elrte-tab').length ? a.prev('.elrte-tab') : c.filter(':last')).children('a').attr('href').substr(1)
+				
+			}
+		}
+	}
 	
 	return this.each(function() {
 		var $this = $(this).addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all'),
@@ -11,42 +88,106 @@ $.fn.elrtetabsbar = function(rte) {
 			back = $('<div class="ui-widget ui-state-default ui-corner-left elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-w"/></div>'),
 			// back = $('<div class="ui-state-default ui-corner-all" style="float:left"><span class="ui-icon ui-icon-triangle-1-w"  style="margin:5px 0"/></div>'),
 			fwd = $('<div class="ui-widget ui-state-default ui-corner-right elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-e"/></div>'),
-			btns = back.add(fwd).hover(function() { $(this).toggleClass('ui-state-hover') })
+			btns = back.add(fwd).hover(function() { $(this).toggleClass('ui-state-hover') }),
+			tabs = $this.children('.elrte-tab')
 		;
-		
-		
+
+		rte.log(tabs)
 		// btns.append(back)
 		nav.append(btns)
 		
 		$this.append(nav)
 		
+		if ($.fn.sortable) {
+
+			$this.sortable({ 
+				delay  : 10, 
+				items  : '>li.elrte-tab', 
+				helper : 'clone'
+			});
+		}
+		
+		function find(id) {
+			return tabs.filter(':has(a[href="#'+id+'"])');
+		}
+		
+		$this.change(function() {
+			var w = Math.ceil($this.width()), l, t;
+			
+			tabs = $this.children('.elrte-tab');
+			
+			l = tabs.length;
+			
+			if (l == 0 || (l == 1 && !o.alwaysShowTabs)) {
+				$this.hide();
+			} else if (l > 1) {
+				$this.show();
+
+				if (w < tabs.sumWidth(wo)) {
+					
+					while ((t = tabs.filter(':visible')).length > 1 && w < t.sumWidth(wo)) {
+						t.filter(':last').hide();
+					}
+					
+				} else if (tabs.filter(':hidden').length) {
+					rte.log('show tabs')
+				}
+				
+			}
+			
+			
+			// rte.log(tabs)
+		})
+		
 		rte.bind('open', function(e) {
 			var d = rte.document(e.data.id),
 				t, tab;
 				
-			if (d.id) {
+			if (d.id && !find(d.id).length) {
 				t = d.title;
-				// tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"><span class="ui-corner-right">'+d.title+'</span></li>'),
-				tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"><a href="#">'+d.title+'</a></li>'),
-				close = $('<div class="ui-icon ui-icon-circle-close" title="Close"/>')
-				// close = $('<div style="position:absolute;top:1px;right:1px;width:16px;height:16px;background:red;z-index:10000">c</div>');
-				;
+				tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"/>')
+					.hover(function() {
+						$(this).toggleClass(hc);
+					})
+					.append(
+						$('<a href="#'+d.id+'" title="'+t+'">'+t+'</a>')
+							.click(function(e) {
+								e.preventDefault();
+								rte.focus($(this).attr('href').substr(1));
+							})
+						
+					)
+					.appendTo($this);
 				
-				tab.hover(function() {
-					$(this).toggleClass('ui-state-hover')
-				})
-				$this.append(tab.prepend(close))
-				tab.mousedown(function(e) {
-					rte.log(this);
-					e.preventDefault();
-					e.stopPropagation()
-				})
+				
+				if (o.allowCloseDocs) {
+					 $('<div class="'+ic+'circle-close" title="'+rte.i18n('Close')+'"/>')
+						.mousedown(function(e) {
+							e.stopPropagation();
+							e.preventDefault()
+							if (confirm(rte.i18n('Close document')+' "'+t+'"?')) {
+								rte.close(d.id);
+							}
+						})
+						.prependTo(tab);
+				}
+				$this.change()
+				// $this.append(tab)
+
 			}
 		})
 		.bind('wysiwyg source', function(e) {
-			$this.children('.elrte-tab').removeClass('ui-tabs-selected ui-state-active').filter('[rel="'+e.data.id+'"]').addClass('ui-tabs-selected ui-state-active')
+			tabs.removeClass(ac);
+			find(e.data.id).addClass(ac);
+		})
+		.bind('close', function(e) {
+			find(e.data.id).remove();
+			$this.change()
 		})
 		
+		$(window).resize(function(e) {
+			// rte.log('inner width: '+Math.ceil($this.width())+' tabs width: '+$this.children('.elrte-tab:visible').sumWidth())
+		})
 	})
 }
 

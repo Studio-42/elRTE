@@ -26,12 +26,13 @@
 	max-width:130px;
 	overflow:hidden;
 	float:left;
-	margin-right:1.5em;
+/*	margin-right:.5em;*/
 	padding:.4em 0 .4em .8em;
+/*		border:1px solid red;*/
 }
 
 .ui-tabs .ui-tabs-nav li.elrte-tab a {
-/*	border:1px solid red;*/
+
 	min-width:90px;
 	max-width:130px;
 	overflow:hidden;
