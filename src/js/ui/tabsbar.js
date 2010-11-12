@@ -265,11 +265,11 @@ $.fn.elrtetabsbar = function(rte) {
 			// remove tab
 			tabs.filter('[rel="'+e.data.id+'"]').remove();
 			update();
-		});
-		
-		$(window).resize(function(e) {
+		})
+		.bind('resize', function() {
 			update();
 		})
+		;
 	}
 	
 	return this.each(function() {

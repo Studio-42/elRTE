@@ -81,6 +81,8 @@
 			'show'      : [],
 			/* called before? editor will be set hidden */
 			'hide'      : [],
+			/* called on editor resize */
+			'resize'    : [],
 			/* called after new document added to editor */
 			'open'      : [], 
 			/* called after document switch to source mode */
@@ -226,6 +228,9 @@
 				self.trigger('hideUI');
 			});
 			
+			$(window).resize(function() {
+				self.trigger('resize')
+			})
 			// this.viewport.data('elrte', this)
 			
 			// this.log(this.viewport.data('elrte'))
@@ -374,7 +379,7 @@
 		 * @class doc
 		 * Document constructor
 		 * As document source accept DOM Element or plain object or string, 
-		 * all other type will be treated as empty document
+		 * any other type will be treated as empty document
 		 *
 		 * @param  DOMElement|Object|String document source
 		 * @param  elRTE editor instance
