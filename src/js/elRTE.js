@@ -127,7 +127,7 @@
 				ids = [], 
 				c, ui, p, id, tb, cnt;
 				
-			this.tabsbar   = $('<ul/>').elrtetabsbar(this)
+			this.tabsbar   = $('<ul/>').elrtetabsbar(this)//.elrtetabsbar()
 			
 			this.container = $('<div class="ui-helper-clearfix elrte-container"/>')
 			this.sidebar   = $('<div/>').elrtesidebar(this)

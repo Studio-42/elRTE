@@ -35,352 +35,249 @@ $.fn.sumWidth = function(o) {
  *
  */
 $.fn.elrtetabsbar = function(rte) {
-	var o = rte.options,
+	var 
+		tbc = 'elrte-tabsbar',
+		tc = 'elrte-tab',
+		bc = 'ui-widget ui-state-default elrte-tabs-btn',
 		ac = 'ui-tabs-selected ui-state-active',
+		dc = 'ui-state-disabled',
 		hc = 'ui-state-hover',
 		ic = 'ui-icon ui-icon-',
-		wo = { type : 'outer', margins : true }
-		;
+		cc = 'ui-corner-',
+		ts = '.'+tc,
+		vs = ':visible',
+		hs = ':hidden',
+		fs = ':first',
+		ls = ':last',
+		vfs = vs+fs,
+		vls = vs+ls,
+		wo   = { type : 'outer', margins : true };
 	
 	/**
-	 * Return id of document next to active one or first document
-	 * Return void, if no documents or only one document
+	 * Return id of document next to active one or first document id
+	 * Return void, if no documents
 	 *
 	 * @return Number
 	 */
 	this.getNext = function() {
-		var d, c, a;
+		var d, t, n;
 		
 		if ((d = rte.document())) {
-			c = this.children('.elrte-tab');
-			a = c.filter(':has(a[href="#'+d.id+'"])');
-			
-			if (c.length > 1) {
-				return (a.length && a.next('.elrte-tab').length ? a.next('.elrte-tab') : c.eq(0)).children('a').attr('href').substr(1)
-				
-			}
+			t = this.children('[rel="'+d.id+'"]');
+			return ((n = t.next(ts)).length ? n : this.children(ts+fs)).attr('rel');
 		}
 	}
 	
 	/**
-	 * Return id of document previous to active one or last document
-	 * Return void, if no documents or only one document
+	 * Return id of document previous to active one or last document id
+	 * Return void, if no documents
 	 *
 	 * @return Number
 	 */
 	this.getPrev = function() {
-		var d, c, a;
+		var d, t, n;
 		
 		if ((d = rte.document())) {
-			c = this.children('.elrte-tab');
-			a = c.filter(':has(a[href="#'+d.id+'"])');
-			
-			if (c.length > 1) {
-				return (a.length && a.prev('.elrte-tab').length ? a.prev('.elrte-tab') : c.filter(':last')).children('a').attr('href').substr(1)
-				
-			}
+			t = this.children('[rel="'+d.id+'"]');
+			return ((n = t.prev(ts)).length ? n : this.children(ts+ls)).attr('rel');
 		}
 	}
 	
-	return this.each(function() {
-		var $this = $(this).addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all'),
-			nav = $('<li class="elrte-tabs-nav "/>'),
-			back = $('<div class="ui-widget ui-state-default ui-corner-left elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-w"/></div>'),
-			// back = $('<div class="ui-state-default ui-corner-all" style="float:left"><span class="ui-icon ui-icon-triangle-1-w"  style="margin:5px 0"/></div>'),
-			fwd = $('<div class="ui-widget ui-state-default ui-corner-right elrte-tabs-btn"><span class="ui-icon ui-icon-triangle-1-e"/></div>'),
-			btns = back.add(fwd).hover(function() { $(this).toggleClass('ui-state-hover') }),
-			tabs = $this.children('.elrte-tab')
-		;
-
-		rte.log(tabs)
-		// btns.append(back)
-		nav.append(btns)
-		
-		$this.append(nav)
-		
-		if ($.fn.sortable) {
-
-			$this.sortable({ 
-				delay  : 10, 
-				items  : '>li.elrte-tab', 
-				helper : 'clone'
-			});
-		}
-		
-		function find(id) {
-			return tabs.filter(':has(a[href="#'+id+'"])');
-		}
-		
-		$this.change(function() {
-			var w = Math.ceil($this.width()), l, t;
-			
-			tabs = $this.children('.elrte-tab');
-			
-			l = tabs.length;
-			
-			if (l == 0 || (l == 1 && !o.alwaysShowTabs)) {
-				$this.hide();
-			} else if (l > 1) {
-				$this.show();
-
-				if (w < tabs.sumWidth(wo)) {
-					
-					while ((t = tabs.filter(':visible')).length > 1 && w < t.sumWidth(wo)) {
-						t.filter(':last').hide();
-					}
-					
-				} else if (tabs.filter(':hidden').length) {
-					rte.log('show tabs')
-				}
-				
-			}
-			
-			
-			// rte.log(tabs)
-		})
-		
-		rte.bind('open', function(e) {
-			var d = rte.document(e.data.id),
-				t, tab;
-				
-			if (d.id && !find(d.id).length) {
-				t = d.title;
-				tab = $('<li class="ui-state-default ui-corner-top elrte-tab" rel="'+d.id+'"/>')
-					.hover(function() {
-						$(this).toggleClass(hc);
-					})
-					.append(
-						$('<a href="#'+d.id+'" title="'+t+'">'+t+'</a>')
-							.click(function(e) {
-								e.preventDefault();
-								rte.focus($(this).attr('href').substr(1));
-							})
+	
+	function init(n) {
+		var o     = rte.options,
+			bw    = 0,
+			back  = $('<div class="'+bc+' '+cc+'left"><span  class="'+ic+'triangle-1-w"/></div>'),
+			fwd   = $('<div class="'+bc+' '+cc+'right"><span class="'+ic+'triangle-1-e"/></div>'),
+			btns  = back.add(fwd)
+				.hide()
+				.hover(function() {
+					var t = $(this);
+					t.hasClass(dc) ? t.removeClass(hc) : t.toggleClass(hc);
+				})
+				.mousedown(function(e) {
+					var b = this === back[0],
+						tab = b ? tabs.filter(vfs).prev(ts+hs) : tabs.filter(vls).next(ts+hs);
 						
-					)
-					.appendTo($this);
-				
-				
-				if (o.allowCloseDocs) {
-					 $('<div class="'+ic+'circle-close" title="'+rte.i18n('Close')+'"/>')
-						.mousedown(function(e) {
-							e.stopPropagation();
-							e.preventDefault()
-							if (confirm(rte.i18n('Close document')+' "'+t+'"?')) {
-								rte.close(d.id);
-							}
-						})
-						.prependTo(tab);
-				}
-				$this.change()
-				// $this.append(tab)
-
-			}
-		})
-		.bind('wysiwyg source', function(e) {
-			tabs.removeClass(ac);
-			find(e.data.id).addClass(ac);
-		})
-		.bind('close', function(e) {
-			find(e.data.id).remove();
-			$this.change()
-		})
-		
-		$(window).resize(function(e) {
-			// rte.log('inner width: '+Math.ceil($this.width())+' tabs width: '+$this.children('.elrte-tab:visible').sumWidth())
-		})
-	})
-}
-
-
-$.fn.elrtetabsbar_ = function(rte) {
-
-	this.getNext = function() {
-		var ch;
-		
-		if (rte.count()>1) {
-			ch = this.children('.elrte-tabsbar-tabspanel').children();
-			return ch.filter('[rel="'+rte.active.id+'"]').next().attr('rel') || ch.eq(0).attr('rel');
-		}
-	}
-	
-	this.getPrev = function() {
-		var ch;
-		
-		if (rte.count()>1) {
-			ch = this.children('.elrte-tabsbar-tabspanel').children();
-			return ch.filter('[rel="'+rte.active.id+'"]').prev().attr('rel') || ch.filter(':last').attr('rel');
-		}
-	}
-
-	return this.each(function() {
-		var $this = $(this),
-	 		o     = rte.options,
-			ic    = 'elrte-ib',
-			tc    = 'elrte-tabsbar',
-			bc    = tc+'-btn',
-			ac    = 'elrte-active', 
-			dc    = 'elrte-disable',
-			delta = 10,
-			panel = $('<div class="elrte-tabsbar-tabspanel"/>'),
-			back  = $('<div class="'+ic+' '+bc+' '+bc+'-back"/>'),
-			fwd   = $('<div class="'+ic+' '+bc+' '+bc+'-fwd"/>'),
-			btns  = back.add(fwd).mousedown(function(e) {
-				var w    = panel.innerWidth()-delta,
-					ch   = panel.children(),
-					b    = $(this).hasClass(bc+'-back'),
-					hsel = ':visible' + (b ? ':first' : ':last'),
-					hm   = b ? 'prev' : 'next',
-					vsel = b ? ':visible:last' : ':visible:first',
-					hid  = ch.filter(hsel)[hm](),
-					hidw, vsb;
-
-				e.preventDefault();
-				e.stopPropagation();
-
-				if (!$(this).hasClass(dc) && hid.length) {
-					// show next hidden tab
-					hid.show();
-					// hide tabs on other side until showed tab set visible
-					while ((vsb = ch.filter(vsel)).length && width() > w) {
-						vsb.hide();
-					}
-					// if there is enough width - show next hidden tab if exists
-					while ((hid = ch.filter(hsel)[hm]()).length && width() + hid.outerWidth() < w) {
-						hid.show();
-					}
-					
-					updateButtons();
-				}
-			}),
-			nav   = $('<div class="elrte-rnd '+tc+'-nav"/>').append(btns), w
+					!$(this).hasClass(dc) && tab.length && showTab(tab.attr('rel'));
+				}),
+			$this = $(n).addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header '+cc+'all '+tbc)
+				.append($('<li class="elrte-tabs-nav"/>').append(btns)),
+			tabs  = $this.children()
 			;
 		
-		$this.addClass(tc)
-			.append(nav)
-			.append(panel)
-			.change(function() {
-				var ch = panel.children(), 
-					l = ch.length, w, t;
-
-				if (l == 0 || (l == 1 && !rte.options.alwaysShowTabs)) {
-					// hide tabsbar when no tabs or only one tab and editor option alwaysShowTabs == false
-					$this.hide();
-				} else {
-					// show tabsbar
-					$this.show();
-					w = panel.innerWidth() - delta;
-					if (width() > w) {
-						// tabs summary width greater then tabsbar width
-						// hide tabs at the end
-						while (ch.filter(':visible').length >1 && (t = ch.filter(':visible:last')) && width() > w) {
-							t.hide();
-						}
-					} else if (ch.filter(':hidden').length) {
-						// tabs summary width less then tabsbar width
-						// show hidden tabs at the tabsbar's begin
-						while ((t = ch.filter(':visible:first').prev(':hidden')).length && width() + t.outerWidth() < w) {
-							t.show();
-						}
-						// show hidden tabs at the tabsbar's end
-						while ((t = ch.filter(':visible:last').next(':hidden')).length && width() + t.outerWidth() < w) {
-							t.show();
-						}
-					}
-
-					updateButtons();
-				}
-				
-			})
-		
-		rte.bind('open', function(e) {
-			var d = rte.document(e.data.id),
-				t = d.title,
-				c = 'elrte-tab',
-				tab;
-				
-			if (d.id) {
-				// create tab for new document
-				tab = $('<div class="'+ic+' elrte-rnd-top '+c+'" rel="'+d.id+'" title="'+t+'"><div class="'+c+'-title">'+t+'</div></div>')
-					.appendTo(panel)
-					.mousedown(function(e) {
-						e.preventDefault();
-						rte.focus($(this).attr('rel'));
-					});
-				if (o.allowCloseDocs) {
-					// add close button on tab
-					$('<div class="elrte-close" title="'+rte.i18n('Close')+'"/>')
-						.prependTo(tab)
-						.mousedown(function(e) {
-							var p = $(this).parent();
-							e.stopPropagation();
-							e.preventDefault();
-							confirm(rte.i18n('Close')+' "'+p.text()+'"?') && rte.close(p.attr('rel'));
-						});
-				}
-				$this.change();
-			}
-		})
-		.bind('wysiwyg source', function(e) {
-			// update active tab on change active document
-			var t = panel.children().removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac),
-				btn;
-				
-			if (t.is(':hidden')) {
-				// if active tab is hidden "click" on back/fwd button until it will be visible
-				btn = t.nextAll(':visible').length ? back : fwd;
-				while (t.is(':hidden')) {
-					btn.mousedown();
-				}
-			}
-		})
-		.bind('close', function(e) {
-			// remove tab for closing document
-			panel.children().filter('[rel="'+e.data.id+'"]').remove();
-			$this.change();
-		});
-		
 		/**
-		 * Return visible tabs width
+		 * Return visible tabs total width
 		 *
 		 * @return Number
 		 */
 		function width() {
-			var w = 0;
-			panel.children(':visible').each(function() {
-				w += $(this).outerWidth();
-			});
-			return w;
+			return tabs.filter(vs).sumWidth(wo);
+		}
+		
+		/* Return tabsbar width available for tabs
+		 *
+		 * @return Number
+		 */
+		function barWidth() {
+			return Math.floor($this.width() - bw);
 		}
 		
 		/**
-		 * Show/hide buttons and update its state
+		 * Make required tab visible
+		 *
+		 * @param  String  document id
+		 * @return void
+		 */
+		function showTab(id) {
+			var tab = tabs.filter('[rel="'+id+'"]'), 
+				w   = barWidth(), 
+				t, next, prev;
+			
+			if (tab.length && tab.is(hs)) {
+				prev = tab.prevAll(ts);
+				next = tab.nextAll(ts);
+				t    = prev.filter(vs).length ? prev : next;
+				// hide all tabs
+				tabs.hide();
+				tab.show();
+				// show prev/next tabs as possible
+				t.each(function() {
+					var $t = $(this)
+					if (width() + $t.outerWidth() > w) {
+						return false;
+					}
+					$t.show();
+				});
+				// probably we have enough width to show another one hidden tab
+				update();
+			}
+		}
+			
+		/**
+		 * Update tabs visibility
 		 *
 		 * @return void
 		 */
-		function updateButtons() {
-			var ch = panel.children(),
-				fh = ch.eq(0).is(':hidden'),
-				lh = ch.filter(':last').is(':hidden');
+		function update() {
+			var w, l, t;
 			
-			if (fh || lh) {
-				btns.show();
-				back.toggleClass(dc, !fh);
-				fwd.toggleClass(dc,  !lh);
-			} else {
+			// cache tabs set
+			tabs = $this.children(ts);
+			l = tabs.length;
+
+			if (!bw) {
+				// calculate buttons width if not previous done
+				bw = btns.sumWidth(wo);
+			}
+			
+			if (l == 0 || (l == 1 && !o.alwaysShowTabs)) {
+				// if no tabs or only one tab - hide tabsbar
+				$this.hide();
+			} else if (l > 1) {
+				// calculate width available for visible tabs
+				w = barWidth();
+
+				if (width() > w) {
+					// there is not enough width for all tabs - hide some
+					$.each(tabs.filter(vs).get().slice(1).reverse(), function(i) {
+						if (width() < w) {
+							return false;
+						}
+						$(this).hide();
+					});
+				} else if (tabs.filter(hs).length) {
+					// if no visible tabs - show first
+					if (!tabs.filter(vs).length) {
+						// rte.log('show first')
+						tabs.eq(0).show();
+					}
+					// show tabs while there is enough width
+					$.each(tabs.filter(vls).nextAll(ts+hs).get().concat(tabs.filter(vfs).prevAll(ts+hs).get()), function() {
+						if (width() + $(this).outerWidth(true) > w) {
+							return false;
+						}
+						$(this).show();
+					});
+				}
+				updateBtns();
+			} 
+		}
+			
+		/**
+		 * Update buttons visibility and state
+		 *
+		 * @return void
+		 */
+		function updateBtns() {
+			var hl = tabs.eq(0).is(hs),
+				hr = tabs.filter(ls).is(hs);
+				
+			btns.addClass(dc);
+			if (!hl && !hr) {
 				btns.hide();
+			} else {
+				btns.show();
+				hl && back.removeClass(dc);
+				hr && fwd.removeClass(dc);
 			}
 		}
-		
-		// resize event handler
-		setInterval(function() {
-			var _w = $this.width();
-			if (_w != w) {
-				$this.change();
+				
+		rte.bind('open', function(e) {
+			var d = rte.document(e.data.id), title, tab;
+			
+			// create tab if document exists and has not tab yet
+			if (d.id && !tabs.filter('[rel="'+d.id+'"]').length) {
+				title = d.title;
+				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'">'+title+'</span></li>')
+					.hide()
+					.hover(function() {
+						$(this).toggleClass(hc);
+					})
+					.mousedown(function(e) {
+						rte.focus($(this).attr('rel'));
+					});
+					
+				if (o.allowCloseDocs) {
+					tab.prepend(
+						$('<div class="'+ic+'circle-close" title="'+rte.i18n('Close')+'"/>')
+							.mousedown(function(e) {
+								e.stopPropagation();
+	 							e.preventDefault();
+	 							if (confirm(rte.i18n('Close document')+' "'+title+'"?')) {
+	 								rte.close(d.id);
+	 							}
+							})
+					);
+				}
+				
+				$this.append(tab)//.change();
+				update()
 			}
-			w = _w;
-		}, 250);
+		})
+		.bind('wysiwyg source', function(e) {
+			// set tab active and visible
+			if (tabs.removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac).is(hs)) {
+				 showTab(e.data.id);
+			}
+		})
+		.bind('close', function(e) {
+			// remove tab
+			tabs.filter('[rel="'+e.data.id+'"]').remove();
+			update();
+		});
 		
+		$(window).resize(function(e) {
+			update();
+		})
+	}
+	
+	return this.each(function() {
+		if (!$(this).hasClass(tbc)) {
+			init(this);
+		}
 	});
 	
+
 }
 

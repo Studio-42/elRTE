@@ -1,75 +1,48 @@
+/* editor tabs panel */
 .elrte-tabsbar {
+}
+
+/* tab */
+/*.ui-tabs .ui-tabs-nav li.elrte-tab*/
+.elrte-tabsbar li.elrte-tab {
+	line-height:.9em;
+	font-size:.75em;
+	margin-right:.1em;
+	cursor:default;
+}
+/* text conteiner in tab */
+.elrte-tabsbar li.elrte-tab span {
+	float:left;
+	padding:.4em 0 .4em .8em;
+	margin-right:16px;
+	min-width:95px;
+	max-width:130px;
 	overflow:hidden;
-/*	height:20px;*/
-	
+	text-align:center;
+}
+/* close document icon */
+.elrte-tab .ui-icon {
+	position:absolute;
+	top:.3em;
+	right:0;
 }
 
 .elrte .ui-tabs .ui-tabs-nav {
 	padding-top:.1em;
-/*	display:none;*/
-/*	padding: 0.1em 0.2em 0;*/
 } 
 
-.ui-tabs .ui-tabs-nav li.elrte-tab {
-	line-height:.9em;
-	font-size:.75em;
-	margin-right:.1em;
-/*	min-width:90px;*/
-/*	max-width:130px;*/
-	position:relative;
-/*	overflow:hidden;*/
-	cursor:default;
-}
-
-.ui-tabs .ui-tabs-nav li.elrte-tab span {
-	min-width:90px;
-	max-width:130px;
-	overflow:hidden;
-	float:left;
-/*	margin-right:.5em;*/
-	padding:.4em 0 .4em .8em;
-/*		border:1px solid red;*/
-}
-
-.ui-tabs .ui-tabs-nav li.elrte-tab a {
-
-	min-width:90px;
-	max-width:130px;
-	overflow:hidden;
-	padding:.4em .8em;
-}
-.elrte .ui-tabs .ui-tabs-nav li a { cursor:default;}
-/*.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }*/
-/*.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: default; }*/
-/*.ui-tabs .ui-tabs-nav li.elrte-tab a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: default; }*/
 
 .ui-tabs .ui-tabs-nav li.elrte-tabs-nav {
-/*	width:45px;*/
-/*	height:20px;*/
-	border:1px solid red;
-	float:right;
-	display:none;
+	float:none;
+	position:absolute;
+	top:.4em;
+	right:.2em;
+	z-index:1000;
 }
 
 .elrte-tabs-btn {
 	float:left;
-	padding:3px 0;
+	padding:2px 0;
 }
 
 
-.elrte-tab .ui-icon {
-	float:right;
-	margin: .2em .1em 0 .1em;
-	margin-top:4px;
-}
-/* tab close button */
-.elrte-tab .ui-icon- {
-	position:absolute;
-	top:.3em;
-	right:.1em;
-	width:16px;
-	height:16px;
-/*	background:url(../images/close.png) 0 0 no-repeat;*/
-/*	border:1px solid #111;*/
-	z-index:10000;
-}
