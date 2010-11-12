@@ -106,6 +106,11 @@ $.fn.elrtetabsbar = function(rte) {
 			tabs  = $this.children()
 			;
 		
+		if (o.sortableTabs && $.fn.sortable) {
+			// make tabs sortable
+			$this.sortable({ delay : 3, items : '>'+ts, helper : 'clone', axis : 'x' });
+		}
+		
 		/**
 		 * Return visible tabs total width
 		 *
@@ -234,7 +239,7 @@ $.fn.elrtetabsbar = function(rte) {
 					.hover(function() {
 						$(this).toggleClass(hc);
 					})
-					.mousedown(function(e) {
+					.click(function(e) {
 						rte.focus($(this).attr('rel'));
 					});
 					
