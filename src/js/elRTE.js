@@ -420,7 +420,7 @@
 				}
 			} else {
 				// source is string or something else
-				content = typeof(src) == 'string' ? src : '';
+				content = src instanceof String ? src : '';
 			}
 
 			this.id    = id || rte.id+'-'+this.ndx;
@@ -696,6 +696,7 @@
 					}
 				})
 			} else {
+				
 				new doc(d, this);
 			}
 			return this;
