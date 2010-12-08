@@ -44,7 +44,7 @@ elRTE.prototype.options   = {
 	/* on paste event this attributes will removed from pasted html */
 	pasteDenyAttr : ['id', 'name', 'class', 'style', 'language', 'onclick', 'ondblclick', 'onhover', 'onkeup', 'onkeydown', 'onkeypress'],
 	/* If false - all text nodes will be wrapped by paragraph tag */
-	allowTextNodes : false,
+	allowTextNodes : true,
 	/* allow browser specific styles like -moz|-webkit|-o */
 	allowBrowsersSpecStyles : false,
 	/* allow paste content into editor */
