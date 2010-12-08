@@ -390,6 +390,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 					this.link = $('a[href="'+fakeURL+'"]', this.rte.doc);
 					this.link.each(function() {
 						var $this = $(this);
+
 						// удаляем ссылки вокруг пустых элементов
 						if (!$.trim($this.html()) && !$.trim($this.text())) {
 							$this.replaceWith($this.text()); //  сохраняем пробелы :)

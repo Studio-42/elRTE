@@ -149,8 +149,11 @@ elRTE = function(target, opts) {
 	
 	if (this.options.height>0) {
 		this.workzone.height(this.options.height);
-		
 	}
+	if (this.options.width>0) {
+		this.editor.width(this.options.width);
+	}
+	
 	this.updateHeight();
 	this.resizable(true);
 	this.window.focus();
@@ -191,9 +194,14 @@ elRTE = function(target, opts) {
 	this.$doc.bind('mouseup', function() {
 		self.ui.update();
 	})
-	.bind('dragstart', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
+	.bind('dragend', function(e) {
+		
+		setTimeout(function() {
+			self.window.focus();
+			var bm = self.selection.getBookmark();
+			self.selection.moveToBookmark(bm)
+			self.ui.update();
+		}, 0);
 	})
 	.bind('keyup', function(e) {
 		if ((e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {

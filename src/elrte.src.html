@@ -102,11 +102,14 @@
 			$('form').submit(function(e) {
 				window.console && window.console.log && window.console.log('submit')
 			})
+			
+			// elRTE.prototype.filter.prototype.chains = {	}
 
 			var opts = {
 				cssClass : 'el-rte',
 				lang     : 'ru',
 				height   : 350,
+				width : 500,
 				toolbar  : 'maxi',
 				cssfiles : ['elrte/css/elrte-inner.css'],
 				fmOpen : function(callback) {
@@ -141,10 +144,18 @@
 <!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed></object> -->
 	<!-- <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps/ms?ie=UTF8&amp;hl=en&amp;msa=0&amp;msid=109895569633316339579.0004564e2ac5710eda622&amp;ll=7.815809,98.33674&amp;spn=0.000361,0.004838&amp;output=embed"></iframe><br /><small>View <a href="http://maps.google.com/maps/ms?ie=UTF8&amp;hl=en&amp;msa=0&amp;msid=109895569633316339579.0004564e2ac5710eda622&amp;ll=7.815809,98.33674&amp;spn=0.000361,0.004838&amp;source=embed" style="color:#0000FF;text-align:left">World Ocean Trip</a> in a larger map</small> -->
 	<form method="post" action="post.php?debug=yes">
-	<!-- <textarea id="editor">asd</textarea> -->
+	<!-- <textarea id="editor">
+		<table>
+			<tr>
+				<td>Полотенце</td>
+				<td>Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника.</td>
+			</tr>
+		</table>
+		Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника.
+	</textarea> -->
 	<!-- <textarea id="editor3"></textarea> -->
 	<div id="editor">
-			empty text
+			<font color="red">empty text</font>
 			<div>div'ed text</div><p>p test</p>
 
 			<table width="100%" style="border:1px solid #111">
@@ -153,9 +164,9 @@
 					<td style="background:#eee url(../images/marvin.jpg);padding:5px">2</td>
 				</tr>
 			</table>
-	<iframe src="http://player.vimeo.com/video/15025289?color=ffffff" width="400" height="225" frameborder="0"></iframe>
+	<!-- <iframe src="http://player.vimeo.com/video/15025289?color=ffffff" width="400" height="225" frameborder="0"></iframe> -->
 		<!-- my comment -->
-		<object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385" wmode="transparent"></embed></object>
+		<!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385" wmode="transparent"></embed></object> -->
 		<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
 				DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
 
