@@ -91,7 +91,8 @@
 			$.each(this._chains[chain]||[], function() {
 				html = this.call(self, html);
 			});
-			return html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n")+'  ';
+			html = html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n")+'  ';
+			return $.trim(html) ? html : '&nbsp;';
 		}
 		
 		/**
@@ -637,7 +638,8 @@
 				var t = $(this);
 				
 				if (!t.attr('style')) {
-					t.children().length ? self.rte.dom.unwrap(this) : t.remove();
+					$.trim(t.html()).length ? self.rte.dom.unwrap(this) : t.remove();
+					// t.children().length ? self.rte.dom.unwrap(this) : t.remove();
 				}
 			}).end().find('span span:only-child').each(function() {
 				var t   = $(this), 
