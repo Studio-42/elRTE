@@ -3,14 +3,22 @@ body.el-rte-rtl, body.el-rte-rtl * {
 	direction:rtl;
 } 
 
-body.el-rte-structure table, 
-body.el-rte-structure caption,
-body.el-rte-structure td, 
-body.el-rte-structure th, 
 body.el-rte-structure p, 
-body.el-rte-structure div,
 body.el-rte-structure blockquote
 { outline:1px dotted #99ccff; }
+
+body.el-rte-structure div
+{ outline:1px dotted #ffccdd; }
+
+body.el-rte-structure table
+{ outline:1px dotted #ffffbb; }
+body.el-rte-structure caption,
+body.el-rte-structure td, 
+body.el-rte-structure th 
+{ outline:1px dotted #ccc; }
+
+body.el-rte-structure span
+{ outline:1px dotted #ccc; }
 
 body.el-rte-structure a[name] {
 	display:inline-block;
