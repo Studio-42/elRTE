@@ -24,7 +24,7 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 		
 		this.anchor = this.rte.dom.selfOrParentAnchor(this.rte.selection.getEnd()) || rte.dom.create('a');
 		!this.rte.selection.collapsed() && this.rte.selection.collapse(false);
-		this.input.val($(this.anchor).addClass('el-rte-anchor').attr('name'));
+		this.input.val($(this.anchor).addClass('elrte-anchor').attr('name'));
 		this.rte.selection.saveIERange();
 		var d = new elDialogForm(opts);
 		d.append([this.rte.i18n('Bookmark name'), this.input], null, true).open();
@@ -48,7 +48,7 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 		if (n) {
 			this.rte.history.add();
 			if (!this.anchor.parentNode) {
-				this.rte.selection.insertHtml('<a name="'+n+'" title="'+this.rte.i18n('Bookmark')+': '+n+'" class="el-rte-anchor"></a>');
+				this.rte.selection.insertHtml('<a name="'+n+'" title="'+this.rte.i18n('Bookmark')+': '+n+'" class="elrte-anchor"></a>');
 			} else {
 				this.anchor.name = n;
 				this.anchor.title = this.rte.i18n('Bookmark')+': '+n;

@@ -190,22 +190,32 @@ elRTE = function(target, opts) {
 		}
 	});
 	
+	
+	$(this.doc.body).bind('dragend', function(e) {
+		setTimeout(function() {
+			try {
+				self.window.focus();
+				var bm = self.selection.getBookmark();
+				self.selection.moveToBookmark(bm);
+				self.ui.update();
+			} catch(e) { }
+			
+			
+		}, 200);
+		
+	});
+	
+	this.typing = false;
+	this.lastKey = null;
+	
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
+		self.typing = false;
+		self.lastKey = null;
 		self.ui.update();
-	})
-	.bind('dragend', function(e) {
-		
-		setTimeout(function() {
-			self.window.focus();
-			var bm = self.selection.getBookmark();
-			self.selection.moveToBookmark(bm)
-			self.ui.update();
-		}, 0);
 	})
 	.bind('keyup', function(e) {
 		if ((e.keyCode >= 8 && e.keyCode <= 13) || (e.keyCode>=32 && e.keyCode<= 40) || e.keyCode == 46 || (e.keyCode >=96 && e.keyCode <= 111)) {
-			// self.log('keyup '+e.keyCode)
 			self.ui.update();
 		}
 	})
@@ -223,12 +233,7 @@ elRTE = function(target, opts) {
 				return false;
 			}
 		}
-	})
-	
-	this.typing = false;
-	this.lastKey = null;
-	
-	this.$doc.bind('keydown', function(e) {
+		
 		if ((e.keyCode>=48 && e.keyCode <=57) || e.keyCode==61 || e.keyCode == 109 || (e.keyCode>=65 && e.keyCode<=90) || e.keyCode==188 ||e.keyCode==190 || e.keyCode==191 || (e.keyCode>=219 && e.keyCode<=222)) {
 			if (!self.typing) {
 				self.history.add(true);
@@ -242,11 +247,6 @@ elRTE = function(target, opts) {
 			self.lastKey = e.keyCode;
 			self.typing = false;
 		}
-
-	})
-	.bind('mouseup', function() {
-		self.typing = false;
-		self.lastKey = null;
 	})
 	.bind('paste', function(e) {
 		if (!self.options.allowPaste) {

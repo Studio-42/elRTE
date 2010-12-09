@@ -423,9 +423,8 @@
 		 **/
 		deniedTags : function(html) {
 			var d = this.denyTags; 
-			var self = this;
-			// this.rte.log(this.tagRegExp)
-			return d ? html.replace(this.tagRegExp, function(t, c, n) { self.rte.log(t); return d[n.toLowerCase()] ? '' : t }) : html;
+
+			return d ? html.replace(this.tagRegExp, function(t, c, n) { return d[n.toLowerCase()] ? '' : t }) : html;
 		},
 		
 		/**
@@ -441,10 +440,14 @@
 				da   = this.denyAttr,
 				n;
 			
+			
 			return html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
 				.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
 				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br>')
+				.replace(/(<\/p>)(?:\s*<br\s*\/?>\s*|\s*&nbsp;\s*)+\s*(<p[^>]*>)/gi, function(t, b, e) {
+					return b+"\n"+e;
+				})
 				.replace(this.tagRegExp, function(t, c, n, a) {
 					n = n.toLowerCase();
 					
@@ -660,9 +663,11 @@
 					id && p.attr('id', id);
 					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
 				}
+			})
+			.end().find('a[name]').each(function() {
+				$(this).addClass('elrte-anchor');
 			});
 
-			
 
 			if (!this.rte.options.allowTextNodes) {
 				// wrap inline nodes with p
