@@ -250,8 +250,15 @@ function elDialogForm(o) {
 	**/
 	this.open = function() {
 		this.ul && this.form.tabs(this.opts.tabs);
-		this.form.find(':text').keyup(function(e) {
+		// this.form.find(':text').keyup(function(e) {
+		// 	if (e.keyCode == 13) {
+		// 		self.form.submit();
+		// 	}
+		// });
+		
+		this.form.find(':text').keydown(function(e) {
 			if (e.keyCode == 13) {
+				e.preventDefault()
 				self.form.submit();
 			}
 		});

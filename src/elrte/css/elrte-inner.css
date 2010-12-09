@@ -15,7 +15,7 @@ body.el-rte-structure caption,
 body.el-rte-structure td, 
 body.el-rte-structure th { border:1px dotted #ccc; }
 
-body.el-rte-structure span { background-color:#eef;}
+/*body.el-rte-structure span { background-color:#eef;}*/
 
 body.el-rte-structure a.elrte-anchor {
 	display:inline-block;

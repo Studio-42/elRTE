@@ -13,6 +13,8 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	var self = this;
 	this.img = false;
 	
+	this.bm;
+	
 	function init() {
 		self.labels = {
 			id        : 'ID',
@@ -99,7 +101,9 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			sel, i, v, opts, l, r, link, href, s;
 		
 		!this.src && init();
-		this.rte.selection.saveIERange();
+		// this.rte.selection.saveIERange();
+
+		this.bm = this.rte.selection.getBookmark();
 
 		function isLink(n) { return n.nodeName == 'A' && n.href; }
 		
@@ -371,7 +375,8 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	this.set = function() {
 		var href, fakeURL;
 		this.updateOnclick();
-		this.rte.selection.restoreIERange();
+		this.rte.selection.moveToBookmark(this.bm);
+		// this.rte.selection.restoreIERange();
 		this.rte.history.add();
 		href = this.rte.utils.absoluteURL(this.src.main.href.val());
 		if (!href) {
