@@ -470,10 +470,13 @@ elRTE.prototype.dom = function(rte) {
 	 * @return void
 	 **/
 	this.unwrap = function(n) {
-		while (n.firstChild) {
-			n.parentNode.insertBefore(n.firstChild, n);
+		if (n && n.parentNode) {
+			while (n.firstChild) {
+				n.parentNode.insertBefore(n.firstChild, n);
+			}
+			n.parentNode.removeChild(n);
+			
 		}
-		n.parentNode.removeChild(n);
 	}
 	
 	/**
