@@ -2,6 +2,8 @@
 /*  контейнер */
 .el-rte { 
 	font-family: Trebuchet MS, Verdana, Geneva,sans-serif;
+	overflow:hidden;
+
 /*	border:1px solid #aaa;*/
 }
 .el-rte.el-fullscreen {
@@ -130,7 +132,7 @@
 
 
 /* рабочая зона (обертка над iframe) */
-.el-rte .workzone { border:1px solid #eee; border-top:none; height:400px;}
+.el-rte .workzone { border:1px solid #eee; border-top:none; height:400px; overflow:hidden; }
 .el-rte.small .workzone { min-height:250px; }
 
 /* source code */
