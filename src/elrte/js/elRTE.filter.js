@@ -17,7 +17,8 @@
 		// boolean attributes
 		this.boolAttrs = rte.utils.makeObject('checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected'.split(','));
 		// tag regexp
-		this.tagRegExp = /<(\/?)([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
+		this.tagRegExp = /<(\/?)([\w:]+)((?:\s+[a-z\-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
+		// this.tagRegExp = /<(\/?)([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;		
 		// opened tag regexp
 		this.openTagRegExp = /<([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*\/?>/g;
 		// attributes regexp
@@ -411,6 +412,7 @@
 		 **/
 		allowedTags : function(html) {
 			var a = this.allowTags;
+			
 			return a ? html.replace(this.tagRegExp, function(t, c, n) { return a[n.toLowerCase()] ? t : ''; }) : html;
 		},
 		/**
@@ -421,7 +423,9 @@
 		 **/
 		deniedTags : function(html) {
 			var d = this.denyTags; 
-			return d ? html.replace(this.tagRegExp, function(t, c, n) { return d[n.toLowerCase()] ? '' : t }) : html;
+			var self = this;
+			// this.rte.log(this.tagRegExp)
+			return d ? html.replace(this.tagRegExp, function(t, c, n) { self.rte.log(t); return d[n.toLowerCase()] ? '' : t }) : html;
 		},
 		
 		/**
