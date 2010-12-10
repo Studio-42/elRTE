@@ -37,7 +37,9 @@
 		this.embRegExp = /<(embed)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
 		// param tag regexp
 		this.paramRegExp = /<(param)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*>/gi;
-		this.vimeoRegExp = /<(iframe)\s+([^>]*src\s*=\s*"http:\/\/[^"]+vimeo\.com\/\w+[^>]*)>([\s\S]*?)<\/iframe>/gi;
+		// iframe tag regexp
+		this.iframeRegExp = /<iframe([^>]*)>([\s\S]*?)<\/iframe>/gi;
+
 		// yandex maps regexp
 		this.yMapsRegExp = /<div\s+([^>]*id\s*=\s*('|")?YMapsID[^>]*)>/gi;
 		// google maps regexp
@@ -658,6 +660,16 @@
 					a.height == '1' && delete a.height;
 					return i ? img({ embed : a }, i.type) : t;
 				})
+				.replace(this.iframeRegExp, function(t, a) {
+					var a = self.parseAttrs(a);
+					self.rte.log(a);
+					var w = a.style.width || (parseInt(a.width) > 1 ? parseInt(a.width)+'px' : '100px');
+					var h = a.style.height || (parseInt(a.height) > 1 ? parseInt(a.height)+'px' : '100px');
+					var id = 'iframe'+Math.random().toString().substring(2);
+					self.scripts[id] = t;
+					var img = '<img id="'+id+'" src="'+self.url+'pixel.gif" class="elrte-protected elrte-iframe" style="width:'+w+'; height:'+h+'">';
+					return img;
+				})
 				.replace(this.vimeoRegExp, function(t, n, a) {
 					a = self.parseAttrs(a);
 					delete a.frameborder;
@@ -770,9 +782,15 @@
 				.replace(this.serviceClassRegExp, function(t, n, a, e) {
 
 					var a = self.parseAttrs(a), j, o = '';
-					if (a['class']['elrtebm']) {
+					// alert(t)
+					if (a['class']['elrte-iframe']) {
+						return self.scripts[a.id] || '';
+					} else if (a['class']['elrtebm']) {
 						return '';
 					} else if (a['class']['elrte-media']) {
+						// alert(a.rel)
+						// return ''
+						// j = a.rel ? JSON.parse(self.rte.utils.decode(a.rel)) : {};
 						j = self.scripts[a.rel]||{};
 						j.params && $.each(j.params, function(i, p) {
 							o += '<param '+self.serializeAttrs(p)+">\n";
