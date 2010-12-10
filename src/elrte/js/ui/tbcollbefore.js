@@ -13,6 +13,7 @@ elRTE.prototype.ui.prototype.buttons.tbcolbefore = function(rte, name) {
 	var self = this;
 	
 	this.command = function() {
+		var self = this;
 		var cells = this.rte.dom.tableColumn(this.rte.selection.getNode(), false, true);
 		if (cells.length) {
 			this.rte.history.add();
@@ -22,7 +23,7 @@ elRTE.prototype.ui.prototype.buttons.tbcolbefore = function(rte, name) {
 				if (cp >1) {
 					$this.attr('colspan', cp+1);
 				} else {
-					var c = $this.clone().html('&nbsp;').removeAttr('colspan').removeAttr('width').removeAttr('id');
+					var c = $(self.rte.dom.create(this.nodeName)).html('&nbsp;');
 					if (self.name == 'tbcolbefore') {
 						c.insertBefore(this);
 					} else {

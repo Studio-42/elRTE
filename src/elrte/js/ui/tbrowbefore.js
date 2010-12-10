@@ -12,6 +12,7 @@ elRTE.prototype.ui.prototype.buttons.tbrowbefore = function(rte, name) {
 		var c  = this.rte.dom.selfOrParent(n, /^(TD|TH)$/);
 		var r  = this.rte.dom.selfOrParent(c, /^TR$/);
 		var mx = this.rte.dom.tableMatrix(this.rte.dom.selfOrParent(c, /^TABLE$/));
+
 		if (c && r && mx) {
 			this.rte.history.add();
 			var before = this.name == 'tbrowbefore';
@@ -46,7 +47,7 @@ elRTE.prototype.ui.prototype.buttons.tbrowbefore = function(rte, name) {
 					cell && mdf.push($(cell));
 				}
 			}
-			var row = $('<tr />');
+			var row = $(this.rte.dom.create('tr'));
 			for (var i=0; i<cnt; i++) {
 				row.append('<td>&nbsp;</td>');
 			}
