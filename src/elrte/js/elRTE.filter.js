@@ -782,19 +782,15 @@
 				.replace(this.serviceClassRegExp, function(t, n, a, e) {
 
 					var a = self.parseAttrs(a), j, o = '';
-<<<<<<< HEAD
 					// alert(t)
 					if (a['class']['elrte-iframe']) {
 						return self.scripts[a.id] || '';
+					} else if (a['class']['elrtebm']) {
+						return '';
 					} else if (a['class']['elrte-media']) {
 						// alert(a.rel)
 						// return ''
 						// j = a.rel ? JSON.parse(self.rte.utils.decode(a.rel)) : {};
-=======
-					if (a['class']['elrtebm']) {
-						return '';
-					} else if (a['class']['elrte-media']) {
->>>>>>> ef24a5bf3c88a37fb3e4753da362a52516d4cd1f
 						j = self.scripts[a.rel]||{};
 						j.params && $.each(j.params, function(i, p) {
 							o += '<param '+self.serializeAttrs(p)+">\n";
