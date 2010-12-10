@@ -2,7 +2,7 @@
 .el-select {
 	height:17px;
 	width : 110px;
-	border:1px solid #ccc;
+	border:5px solid #ccc;
 	cursor: default;
 	position:relative;
 }

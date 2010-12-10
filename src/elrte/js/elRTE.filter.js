@@ -443,7 +443,7 @@
 				n;
 			
 			
-			return html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
+			html = html.replace(/<!DOCTYPE([\s\S]*)>/gi, '')
 				.replace(/<p [^>]*class="?MsoHeading"?[^>]*>(.*?)<\/p>/gi, "<p><strong>$1</strong></p>")
 				.replace(/<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s&nbsp;]*)<\/span>/gi, "$1")
 				.replace(/(<p[^>]*>\s*<\/p>|<p[^>]*\/>)/gi, '<br>')
@@ -473,6 +473,39 @@
 					a = self.serializeAttrs(a);
 					return '<'+n+(a?' ':'')+a+'>';
 				});
+				
+			
+			n = $('<div>'+html+'</div>');
+			
+			// remove empty spans and merge nested spans
+			n.find('span:not([id]):not([class])').each(function() {
+				var t = $(this);
+				
+				if (!t.attr('style')) {
+					$.trim(t.html()).length ? self.rte.dom.unwrap(this) : t.remove();
+					// t.children().length ? self.rte.dom.unwrap(this) : t.remove();
+				}
+			}).end().find('span span:only-child').each(function() {
+				var t   = $(this), 
+					p   = t.parent().eq(0), 
+					tid = t.attr('id'), 
+					pid = p.attr('id'), id, s, c;
+
+				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+					c = $.trim(p.attr('class')+' '+t.attr('class'))
+					c && p.attr('class', c);
+					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+					s && p.attr('style', s);
+					id = tid||pid;
+					id && p.attr('id', id);
+					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+				}
+			})
+			.end().find('a[name]').each(function() {
+				$(this).addClass('elrte-protected elrte-anchor');
+			});
+			
+			return n.html()	
 		},
 		
 		/**
@@ -652,33 +685,34 @@
 
 
 			n = $('<div>'+html+'</div>');
+			
 			// remove empty spans and merge nested spans
-			n.find('span:not([id]):not([class])').each(function() {
-				var t = $(this);
-				
-				if (!t.attr('style')) {
-					$.trim(t.html()).length ? self.rte.dom.unwrap(this) : t.remove();
-					// t.children().length ? self.rte.dom.unwrap(this) : t.remove();
-				}
-			}).end().find('span span:only-child').each(function() {
-				var t   = $(this), 
-					p   = t.parent().eq(0), 
-					tid = t.attr('id'), 
-					pid = p.attr('id'), id, s, c;
-
-				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
-					c = $.trim(p.attr('class')+' '+t.attr('class'))
-					c && p.attr('class', c);
-					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
-					s && p.attr('style', s);
-					id = tid||pid;
-					id && p.attr('id', id);
-					this.firstChild ? $(this.firstChild).unwrap() : t.remove();
-				}
-			})
-			.end().find('a[name]').each(function() {
-				$(this).addClass('elrte-anchor');
-			});
+			// n.find('span:not([id]):not([class])').each(function() {
+			// 	var t = $(this);
+			// 	
+			// 	if (!t.attr('style')) {
+			// 		$.trim(t.html()).length ? self.rte.dom.unwrap(this) : t.remove();
+			// 		// t.children().length ? self.rte.dom.unwrap(this) : t.remove();
+			// 	}
+			// }).end().find('span span:only-child').each(function() {
+			// 	var t   = $(this), 
+			// 		p   = t.parent().eq(0), 
+			// 		tid = t.attr('id'), 
+			// 		pid = p.attr('id'), id, s, c;
+			// 
+			// 	if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+			// 		c = $.trim(p.attr('class')+' '+t.attr('class'))
+			// 		c && p.attr('class', c);
+			// 		s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
+			// 		s && p.attr('style', s);
+			// 		id = tid||pid;
+			// 		id && p.attr('id', id);
+			// 		this.firstChild ? $(this.firstChild).unwrap() : t.remove();
+			// 	}
+			// })
+			// .end().find('a[name]').each(function() {
+			// 	$(this).addClass('elrte-anchor');
+			// });
 
 
 			if (!this.rte.options.allowTextNodes) {
@@ -746,7 +780,9 @@
 				})
 				.replace(/\<\!-- ELRTE_COMMENT([\s\S]*?) --\>/gi, "$1")
 				.replace(this.serviceClassRegExp, function(t, n, a, e) {
+
 					var a = self.parseAttrs(a), j, o = '';
+<<<<<<< HEAD
 					// alert(t)
 					if (a['class']['elrte-iframe']) {
 						return self.scripts[a.id] || '';
@@ -754,9 +790,12 @@
 						// alert(a.rel)
 						// return ''
 						// j = a.rel ? JSON.parse(self.rte.utils.decode(a.rel)) : {};
+=======
+					if (a['class']['elrtebm']) {
+						return '';
+					} else if (a['class']['elrte-media']) {
+>>>>>>> ef24a5bf3c88a37fb3e4753da362a52516d4cd1f
 						j = self.scripts[a.rel]||{};
-						// alert(j)
-						// j = a.rel ? $.parseJSON(self.rte.utils.decode(a.rel)) : {};
 						j.params && $.each(j.params, function(i, p) {
 							o += '<param '+self.serializeAttrs(p)+">\n";
 						});
@@ -774,7 +813,10 @@
 						return '<!-- pagebreak -->';
 					}
 					$.each(a['class'], function(n) {
-						/^elrte-\w+/i.test(n) && delete(a['class'][n]); 
+						if (/^elrte-\w+/i.test(n)) {
+							delete(a['class'][n]);
+						}
+						// /^elrte\w+/i.test(n) && delete(a['class'][n]); 
 					});
 					return '<'+n+' '+self.serializeAttrs(a)+'>'+(e||'');
 

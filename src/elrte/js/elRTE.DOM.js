@@ -41,7 +41,7 @@ elRTE.prototype.dom = function(rte) {
 	this.createBookmark = function() {
 		var b = this.rte.doc.createElement('span');
 		b.id = 'elrte-bm-'+Math.random().toString().substr(2);
-		$(b).addClass('elrtebm');
+		$(b).addClass('elrtebm elrte-protected');
 		return b;
 	}
 
@@ -470,10 +470,13 @@ elRTE.prototype.dom = function(rte) {
 	 * @return void
 	 **/
 	this.unwrap = function(n) {
-		while (n.firstChild) {
-			n.parentNode.insertBefore(n.firstChild, n);
+		if (n && n.parentNode) {
+			while (n.firstChild) {
+				n.parentNode.insertBefore(n.firstChild, n);
+			}
+			n.parentNode.removeChild(n);
+			
 		}
-		n.parentNode.removeChild(n);
 	}
 	
 	/**
