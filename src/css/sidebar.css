@@ -1,0 +1,17 @@
+
+
+.elrte-sidebar {
+	width:100px;
+	height:300px;
+	position:absolute;
+	z-index:1000;
+/*	border:1px solid red;*/
+/*	display:none;*/
+}
+
+.elrte-sidebar-left { 
+	left:0;
+}
+.elrte-sidebar-right { 
+	right:0;
+}

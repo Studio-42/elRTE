@@ -215,7 +215,7 @@ $.fn.elrtetabsbar = function(rte) {
 					
 				if (o.allowCloseDocs) {
 					tab.prepend(
-						$('<div class="'+ic+'circle-close" title="'+rte.i18n('Close')+'"/>')
+						$('<div class="'+ic+'close" title="'+rte.i18n('Close')+'"/>')
 							.mousedown(function(e) {
 								e.stopPropagation();
 	 							e.preventDefault();
@@ -242,7 +242,6 @@ $.fn.elrtetabsbar = function(rte) {
 			update();
 		})
 		.bind('resize', function() {
-			rte.log('resize')
 			update();
 		})
 		;

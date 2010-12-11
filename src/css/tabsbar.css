@@ -1,8 +1,6 @@
 /* editor tabs panel - same node as ui-tabs-nav */
 .elrte .elrte-tabsbar {
 	padding-top:.1em;
-	height:26px;
-/*	border:1px solid #111;*/
 }
 
 /* tab */
@@ -29,7 +27,7 @@
 .elrte-tab .ui-icon {
 	position:absolute;
 	top:4px;
-	left:.1em;
+	left:1px;
 }
 
 /* back/fwd buttons container */
@@ -38,7 +36,6 @@
 	position:absolute;
 	top:.4em;
 	right:.2em;
-/*	z-index:1000;*/
 }
 
 /* back/fwd button */

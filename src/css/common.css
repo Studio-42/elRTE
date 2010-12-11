@@ -1,16 +1,7 @@
-/* jqueryUI fixes */
-/*
-.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: .82em; }
-.ui-dialog .ui-dialog-titlebar {  padding:.3em .3em .3em .5em;    }
-.ui-dialog .ui-dialog-content { padding:.5em; }
-.ui-dialog .ui-dialog-buttonpane { padding:.1em 1em; }
-.ui-dialog  table { border:0 solid;  }
-.ui-dialog  table td { padding:2px; vertical-align:top; }
-*/
-/* ui states */
-.elrte-hover   {  }
-.elrte-active  {  }
-.elrte-disable { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
+/******************************************************/
+/*                   COMMON STUFFS                    */
+/******************************************************/
+
 
 /* ellipsis text (in tabs) */
 .elrte-ellipsis {
@@ -19,9 +10,7 @@
     -o-text-overflow:ellipsis;
 }
 
-/******************************************************/
-/*                   COMMON STUFFS                    */
-/******************************************************/
+
 /* style to detect images url */
 .elrte-test-url { background-image:url(../images/pixel.gif);}
 
@@ -33,62 +22,57 @@
 	*display: inline;
 }
 
-/* rounded elements */
-.elrte-rnd {
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	border-radius:3px;
-	-webkit-background-clip: padding-box;
+/******************************************************/
+/*                  EDITOR LAYOUT                     */
+/******************************************************/
+
+/* common editor container */
+.elrte {
+	font-family: trebuchet ms, tahoma, sans-serif;
+	padding:3px;
 }
 
-/* top rounded elements */
-.elrte-rnd-top {
-	-moz-border-radius-topleft: 3px; 
-	-moz-border-radius-topright: 3px; 
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px; 
-	border-top-left-radius: 3px; 
-	border-top-right-radius: 3px;
-	-webkit-background-clip: padding-box;
+/* fullscreen editor */
+.elrte-fullscreen {
+	position:absolute;
+	left:0;
+	top:0;
+	width:99%;
+	margin:0;
 }
 
-/* bottom rounded elements */
-.elrte-rnd-bottom {
-	-moz-border-radius-bottomleft: 3px; 
-	-moz-border-radius-bottomright: 3px; 
-	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px; 
-	border-bottom-left-radius: 3px; 
-	border-bottom-right-radius: 3px;
-	-webkit-background-clip: padding-box;
+/* editor content container */
+.elrte-container { 
+	position:relative;
 }
 
-/* left rounded elements */
-.elrte-rnd-left {
-	-moz-border-radius-topleft: 3px; 
-	-moz-border-radius-bottomleft: 3px; 
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-bottom-left-radius: 3px; 
-	border-top-left-radius: 3px; 
-	border-bottom-left-radius: 3px;
-	-webkit-background-clip: padding-box;
+/* tabs and workzone container */
+.elrte-main { }
+/* when open sidebar add margin to main */
+.elrte-main-sidebar-left  { margin-left:105px; }
+.elrte-main-sidebar-right { margin-right:105px; }
+
+/* workzone - contains documents */
+.elrte-workzone {
+	height:300px;
 }
 
-/* right rounded elements */
-.elrte-rnd-left {
-	-moz-border-radius-topright: 3px; 
-	-moz-border-radius-bottomright: 3px; 
-	-webkit-border-top-right-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px; 
-	border-top-right-radius: 3px; 
-	border-bottom-right-radius: 3px;
-	-webkit-background-clip: padding-box;
+/* container for iframe and textarea */
+.elrte-document { }
+
+/* editor (iframe) */
+.elrte .elrte-editor {
+	width: 100%;
+	background-color:#fff;
+	height: 300px;
 }
 
-
-/* close icon */
-.elrte-close {
-	width:11px;
-	height:11px;
-	background:url(../images/close.png) 0 0 no-repeat;
+/* document source (textarea) */
+.elrte .elrte-source {
+	width: 100%;
+	height:100%;
+	background-color:#000;
+	color:#fff;
+	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
 }
+

@@ -144,7 +144,7 @@
 				.append(this.statusbar)
 				.insertBefore(t);
 
-			// this.sidebar.show()
+			this.sidebar.show()
 
 			/* add target node as document if enabled */
 			this.options.loadTarget && this.options.documents.unshift(t);
