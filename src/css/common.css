@@ -12,6 +12,13 @@
 .elrte-active  {  }
 .elrte-disable { opacity:alpha(0.3); opacity: 0.3; filter:Alpha(Opacity=30); }
 
+/* ellipsis text (in tabs) */
+.elrte-ellipsis {
+/*	-moz-binding:url("ellipsisxul.xml");*/
+    text-overflow:ellipsis;
+    -o-text-overflow:ellipsis;
+}
+
 /******************************************************/
 /*                   COMMON STUFFS                    */
 /******************************************************/

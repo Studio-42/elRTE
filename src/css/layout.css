@@ -34,7 +34,7 @@
 .elrte-sidebar-rigth { float:right; }
 
 /* tabs and workzone container */
-.elrte-main { border:1px solid red; }
+.elrte-main {}
 
 .elrte-show-sidebar-left .elrte-main { margin-left:105px; }
 .elrte-show-sidebar-right .elrte-main { margin-right:105px; }

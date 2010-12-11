@@ -46,6 +46,7 @@
 	<script src="src/js/plugins/autosave.js"  type="text/javascript" charset="utf-8"></script>
 
 	<!-- ui -->
+	<script src="src/js/ui/misc.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/ui/tabsbar.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/ui/toolbar.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/ui/buttons/button.js" type="text/javascript" charset="utf-8"></script>
@@ -157,7 +158,7 @@
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				lang     : 'ru',
 				// height   : 300,
-				debug : ['error', 'histor', 'event_'],
+				debug : ['error', 'histor', 'event.open'],
 				// toolbar  : 'default',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
@@ -172,7 +173,7 @@
 						cssfiles : ['dummy.css']
 						// type : 'post'
 					},
-					"Im a string",
+					// "Im a string",
 					{
 						title : 'doc'
 					},
@@ -192,7 +193,7 @@
 			var rte = $('#editor,#editor33').elrte(opts);
 			
 			var inst = rte.getEditor();
-			inst.trigger('open')
+			// inst.trigger('open')
 			// window.console.log(inst)
 			// window.console.log(inst.active.val())
 			// inst.active.sync()

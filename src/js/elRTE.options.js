@@ -37,7 +37,7 @@
 		/* hide document source node after document loaded */
 		hideDocSource : true,
 		/* Loading documents rule. If true - opened document set active */
-		focusOpenedDoc : true,
+		focusOpenedDoc : false,
 		
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
 		allowCloseDocs : true,

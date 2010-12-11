@@ -6,8 +6,7 @@
 /* tab */
 /*.ui-tabs .ui-tabs-nav li.elrte-tab*/
 .elrte-tabsbar li.elrte-tab {
-	line-height:.9em;
-	font-size:.75em;
+	padding:0 17px;
 	margin-right:.1em;
 	cursor:default;
 }
@@ -15,19 +14,20 @@
 /* text container in tab */
 .elrte-tabsbar li.elrte-tab span {
 	float:left;
-	padding:.4em 0 .4em .8em;
-	margin-right:16px;
 	min-width:95px;
 	max-width:130px;
 	overflow:hidden;
+	white-space:nowrap;
+	font-size:.78em;
+	padding:3px 0;
 	text-align:center;
 }
 
 /* close document icon */
 .elrte-tab .ui-icon {
 	position:absolute;
-	top:.3em;
-	right:0;
+	top:4px;
+	left:.1em;
 }
 
 /* back/fwd buttons container */
@@ -36,8 +36,9 @@
 	position:absolute;
 	top:.4em;
 	right:.2em;
-	z-index:1000;
+/*	z-index:1000;*/
 }
+
 /* back/fwd button */
 .elrte-tabs-btn {
 	float:left;

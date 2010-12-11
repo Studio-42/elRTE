@@ -1,57 +1,26 @@
 /**
  * jQuery plugin
- * Return total width for all elements in set
- * @usage
- * var w = $('selector').sumWidth() - return sum of .width()
- * var w = $('selector').sumWidth({ type : 'inner' }) - return sum of .innerWidth()
- * var w = $('selector').sumWidth({ type : 'outer' }) - return sum of .outerWidth()
- * var w = $('selector').sumWidth({ type : 'outer', margins : true }) - return sum of .outerWidth(true) - include margins
- * @param  Object  plugin options
- * @return Number
- */
-$.fn.sumWidth = function(o) {
-	var w=0, c;
-	
-	o = $.extend({ type : '', margins : false }, o||{});
-	
-	if (o.type == 'outer') {
-		o.margins = !!o.margins;
-		c = 'outerWidth';
-	} else {
-		o.margins = void(0);
-		c = o.type == 'inner' ? 'innerWidth' : 'width';
-	}
-
-	this.each(function() {
-		w += $(this)[c](o.margins);
-	});
-
-	return parseInt(w);
-}
-
-/**
- * jQuery plugin
  * elRTE tabsbar
  *
  */
 $.fn.elrtetabsbar = function(rte) {
 	var 
-		tbc = 'elrte-tabsbar',
-		tc = 'elrte-tab',
-		bc = 'ui-widget ui-state-default elrte-tabs-btn',
-		ac = 'ui-tabs-selected ui-state-active',
-		dc = 'ui-state-disabled',
-		hc = 'ui-state-hover',
-		ic = 'ui-icon ui-icon-',
-		cc = 'ui-corner-',
-		ts = '.'+tc,
-		vs = ':visible',
-		hs = ':hidden',
-		fs = ':first',
-		ls = ':last',
+		tbc = 'elrte-tabsbar', // tabsbar class
+		tc  = 'elrte-tab', // tab class
+		bc  = 'ui-widget ui-state-default elrte-tabs-btn', // buttons class
+		ac  = 'ui-tabs-selected ui-state-active', // active class
+		dc  = 'ui-state-disabled', // disable class
+		hc  = 'ui-state-hover',    // hover class
+		ic  = 'ui-icon ui-icon-',  // icons (close) class
+		cc  = 'ui-corner-',        // rounded corners class
+		ts  = '.'+tc,              // tab selector
+		vs  = ':visible',
+		hs  = ':hidden',
+		fs  = ':first',
+		ls  = ':last',
 		vfs = vs+fs,
 		vls = vs+ls,
-		wo   = { type : 'outer', margins : true };
+		wo  = { type : 'outer', margins : true };  // default options to call $.fn.sumWidth()
 	
 	/**
 	 * Return id of document next to active one or first document id
@@ -230,11 +199,11 @@ $.fn.elrtetabsbar = function(rte) {
 				
 		rte.bind('open', function(e) {
 			var d = rte.document(e.data.id), title, tab;
-			
+
 			// create tab if document exists and has not tab yet
-			if (d.id && !tabs.filter('[rel="'+d.id+'"]').length) {
+			if (d && d.id && !tabs.filter('[rel="'+d.id+'"]').length) {
 				title = d.title;
-				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'">'+title+'</span></li>')
+				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'" class="elrte-ellipsis">'+title+'</span></li>')
 					.hide()
 					.hover(function() {
 						$(this).toggleClass(hc);
@@ -256,8 +225,8 @@ $.fn.elrtetabsbar = function(rte) {
 					);
 				}
 				
-				$this.append(tab)//.change();
-				update()
+				$this.append(tab);
+				update();
 			}
 		})
 		.bind('wysiwyg source', function(e) {
@@ -282,7 +251,6 @@ $.fn.elrtetabsbar = function(rte) {
 			init(this);
 		}
 	});
-	
 
 }
 
