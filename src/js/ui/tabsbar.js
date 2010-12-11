@@ -11,7 +11,7 @@ $.fn.elrtetabsbar = function(rte) {
 		ac  = 'ui-tabs-selected ui-state-active', // active class
 		dc  = 'ui-state-disabled', // disable class
 		hc  = 'ui-state-hover',    // hover class
-		ic  = 'ui-icon ui-icon-',  // icons (close) class
+		ic  = 'ui-icon ui-icon-',  // icons class
 		cc  = 'ui-corner-',        // rounded corners class
 		ts  = '.'+tc,              // tab selector
 		vs  = ':visible',
@@ -149,6 +149,7 @@ $.fn.elrtetabsbar = function(rte) {
 				// if no tabs or only one tab - hide tabsbar
 				$this.hide();
 			} else if (l > 1) {
+				$this.show();
 				// calculate width available for visible tabs
 				w = barWidth();
 
@@ -241,6 +242,7 @@ $.fn.elrtetabsbar = function(rte) {
 			update();
 		})
 		.bind('resize', function() {
+			rte.log('resize')
 			update();
 		})
 		;

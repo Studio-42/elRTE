@@ -129,19 +129,16 @@
 				ids = [], 
 				c, ui, p, id, tb, cnt;
 				
-			this.tabsbar   = $('<ul/>').elrtetabsbar(this)//.elrtetabsbar()
-			
-			this.container = $('<div class="ui-helper-clearfix elrte-container"/>')
-			this.sidebar   = $('<div/>').elrtesidebar(this)
-			this.workzone  = $('<div class="elrte-workzone"/>')
-			this.statusbar = $('<div class="elrte-statusbar" />')
-			this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>')
-				.append(this.tabsbar).append(this.workzone)
+			this.tabsbar   = $('<ul/>').elrtetabsbar(this);
+			this.container = $('<div class="ui-helper-clearfix elrte-container"/>');
+			this.sidebar   = $('<div/>').elrtesidebar(this);
+			this.workzone  = $('<div class="elrte-workzone"/>');
+			this.statusbar = $('<div class="elrte-statusbar" />');
+			this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
 			
 			
 			/* create editor view */
 			this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
-				.append(this.sidebar)
 				.append(this.container.append(this.sidebar).append(this.main))
 				.append(this.statusbar)
 				.insertBefore(t);
