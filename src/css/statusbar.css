@@ -1,0 +1,27 @@
+/* statusbar */
+.elrte-statusbar {
+	margin-top: 5px;
+	color:#555;
+}
+
+/* statusbar inner container */
+.elrte-statusbar-inner {
+	font:.72em 'monaco', 'andale mono', 'lucida console', monospace;
+	padding:.3em;
+}
+
+.elrte-statusbar-inner-left {
+	float:left;
+	padding-left:.5em;
+}
+
+.elrte-statusbar-inner-right {
+	float:right;
+	text-align:right;
+	padding-right:.5em;
+}
+
+.elrte-statusbar-inner-center {
+	text-align:center;
+}
+

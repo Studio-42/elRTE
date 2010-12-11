@@ -64,14 +64,3 @@
 	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 
 }
 
-/* statusbar */
-.elrte .elrte-statusbar {
-	height: 22px;
-	clear: both;
-	margin-top: 5px;
-	padding: 0 12px;
-	font:76%/20px 'monaco', 'andale mono', 'lucida console', monospace;
-	color:#555;
-	border: 1px solid #ccc;
-	background: #eee;
-}
