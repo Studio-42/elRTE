@@ -2,14 +2,24 @@
 body.el-rte-rtl, body.el-rte-rtl * { direction:rtl; } 
 
 body.el-rte-structure h2           { border:1px dotted #999; }
-body.el-rte-structure p            { border:1px dotted #99ccff; }
-body.el-rte-structure div          { border:1px dotted #aaa; }
 body.el-rte-structure blockquote   { border:1px dotted #ccc; }
+body.el-rte-structure span         { background-color:#f5f5f5	; }
 body.el-rte-structure table        { border:1px dotted #aaa; }
 body.el-rte-structure caption,
 body.el-rte-structure td, 
 body.el-rte-structure th           { border:1px dotted #ccc; }
-body.el-rte-structure span         { background-color:#f5f5f5	; }
+
+body.el-rte-structure p            {
+	background-image:url(../images/outline-p.png);
+	background-repeat:no-repeat;
+	background-position:right top;
+	border:1px dotted #99ccff; }
+body.el-rte-structure div          {
+	background-image:url(../images/outline-div.png);
+	background-repeat:no-repeat;
+	background-position:right top;
+	border:1px dotted #aaa;
+}
 
 body.el-rte-structure a.elrte-anchor {
 	display:inline-block;

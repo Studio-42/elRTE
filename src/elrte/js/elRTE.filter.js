@@ -662,7 +662,6 @@
 				})
 				.replace(this.iframeRegExp, function(t, a) {
 					var a = self.parseAttrs(a);
-					self.rte.log(a);
 					var w = a.style.width || (parseInt(a.width) > 1 ? parseInt(a.width)+'px' : '100px');
 					var h = a.style.height || (parseInt(a.height) > 1 ? parseInt(a.height)+'px' : '100px');
 					var id = 'iframe'+Math.random().toString().substring(2);
@@ -783,7 +782,14 @@
 
 					var a = self.parseAttrs(a), j, o = '';
 					// alert(t)
-					if (a['class']['elrte-iframe']) {
+					if (a['class']['elrte-google-maps']) {
+						var t = '';
+						if (self.scripts[a.id]) {
+							t = self.scripts[a.id];
+							delete self.scripts[a.id]
+						}
+						return t;
+					} else if (a['class']['elrte-iframe']) {
 						return self.scripts[a.id] || '';
 					} else if (a['class']['elrtebm']) {
 						return '';
@@ -798,13 +804,6 @@
 						j.embed && (o+='<embed '+self.serializeAttrs(j.embed)+">");
 						j.obj && (o = '<object '+self.serializeAttrs(j.obj)+">\n"+o+"\n</object>\n");
 						return o||t;
-					} else if (a['class']['elrte-google-maps']) {
-						var t = '';
-						if (self.scripts[a.id]) {
-							t = self.scripts[a.id];
-							delete self.scripts[a.id]
-						}
-						return t;
 					} else if (a['class']['elrte-pagebreak']) {
 						return '<!-- pagebreak -->';
 					}
