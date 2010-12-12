@@ -135,7 +135,7 @@
 .el-rte.small .workzone { min-height:250px; }
 
 /* source code */
-.el-rte textarea  { width:100%;  height:100%;  border:none; zoom:1; outline:none;}
+.el-rte textarea  { width:100%; height:100%; border:none; zoom:1; padding:0; outline:none; }
 .el-rte.small textarea  { min-height:250px;}
 /* редактор */
 .el-rte iframe    { 
