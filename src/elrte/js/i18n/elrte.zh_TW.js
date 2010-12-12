@@ -165,7 +165,7 @@ elRTE.prototype.i18Messages.zh_TW = {
 	'Groups'           : '儲存格群組',
 	'Cells'            : '儲存格',
 	'Caption'          : '表格標題',
-	'Inner borders'    : '框線'
+	'Inner borders'    : '框線',
 	// table cell
 	'Table cell type'  : '表格儲存格型態',
 	'Data'             : '資料',
