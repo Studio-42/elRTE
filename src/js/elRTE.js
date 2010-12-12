@@ -30,7 +30,7 @@
 		/* messages language */
 		this.lang = 'en';
 		/* messages */
-		this.messages = this.i18Messages[this.options.lang]||{};
+		this.messages = {};
 		/* check is target is node in dom */
 		if (t && t.jquery) {
 			t = t[0];
@@ -127,8 +127,10 @@
 			var self = this, 
 				o = this.options,
 				ids = [], 
-				c, ui, p, id, tb, cnt;
+				lang = o.lang != 'auto' ? o.lang : navigator.language, 
+				i, c, ui, p, id, tb, cnt;
 				
+			/* create editor view */
 			this.tabsbar   = $('<ul/>').elrtetabsbar(this);
 			this.container = $('<div class="ui-helper-clearfix elrte-container"/>');
 			this.sidebar   = $('<div/>').elrtesidebar(this);
@@ -138,7 +140,7 @@
 			
 			this.statusbar.append('asd', 'center')
 
-			/* create editor view */
+			
 			this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
 				.append(this.container.append(this.sidebar).append(this.main))
 				.append(this.statusbar)
@@ -148,7 +150,20 @@
 				typeof(o.width) == 'number' ? this.viewport.width(o.width) : this.viewport.css('width', o.width);
 			}
 
-			// this.sidebar.show()
+			if (o.height > 0) {
+				this.workzone.height(o.height);
+			}
+			
+			// set ui language
+			if (lang) {
+				if ((i = lang.indexOf('-')) > 1) {
+					lang = lang.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
+				}
+				if (this.i18Messages[lang]) {
+					this.lang = lang;
+					this.messages = this.i18Messages[lang];
+				}
+			}
 
 			/* add target node as document if enabled */
 			this.options.loadTarget && this.options.documents.unshift(t);

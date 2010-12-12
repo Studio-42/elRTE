@@ -9,7 +9,7 @@
 		 * 
 		 * @type String
 		 * @example
-		 * options.commands.cssClass = 'myclass'
+		 * options.cssClass = 'myclass'
 		 */
 		cssClass : '',
 
@@ -29,13 +29,34 @@
 		 */
 		width : 'auto',
 		
-		/* interface language */
-		lang : 'en',
-		/* current toolbar name */
+		/**
+		 * Ui language
+		 * 
+		 * @type String
+		 * @default "auto"
+		 * @example
+		 * options.lang = 'ru'
+		 */
+		lang : 'auto',
+		
+		/**
+		 * Editor toolbar. For now only "default" available - simple toolbar with buttons
+		 * Set to '' to disable toolbar
+		 *
+		 * @type String
+		 * @default "default"
+		 */
 		toolbar : 'default',
-
-		/* display toolbar? */
-		showToolbar : true,
+		
+		/**
+		 * Toolbar position. top|bottom
+		 * 
+		 * @type String
+		 * @default "top"
+		 */
+		toolbarPosition : 'top',
+		
+	
 		/* make editor resizable (required jquery.ui.resizable) */
 		resizable : false,
 		
@@ -142,7 +163,7 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['test']
+			'test' : ['test', 'control']
 		},
 		/**
 		 * Commands preset to load in editor. Contains one of presets name.
@@ -155,10 +176,7 @@
 
 
 		/* --- toolbar options --- */
-		// toolbar ui type, set to '' to disable toolbar
-		toolbar : 'default',
-		// toolbar position
-		toolbarPosition : 'top',
+		
 		
 		/* --- plugins options --- */
 		pluginsConf : {
