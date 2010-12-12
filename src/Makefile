@@ -13,9 +13,13 @@ I18N= ${DST}/js/i18n
 IMG=  ${DST}/images
 
 # YUI Compressor
-COMPRESSOR= java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
-			--charset utf8 \
+COMPRESSOR=	1
+COMPRESSOR_JS=	java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+			--charset utf8 --type js --line-break 500 \
 			-o ${elrte_js_min} ${elrte_js}
+COMPRESSOR_CSS=	java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+			--charset utf8 --type css --line-break 1 \
+			-o ${elrte_css_min} ${elrte_css}
 
 # Closure Compiler
 # ADVANCED_OPTIMIZATIONS maybe someday
@@ -59,8 +63,9 @@ ellib_img_obj_dst=	${IMG}/loading.gif
 
 
 # elRTE
-elrte_css=        	elrte.full.css
-elrte_css_obj=    	${SRC}/about.txt \
+elrte_css=			elrte.full.css
+elrte_css_min=		elrte.min.css
+elrte_css_obj=		${SRC}/about.txt \
 			${SRC}/ellib/css/elcommon.css \
 			${SRC}/ellib/css/elcolorpicker.css \
 			${SRC}/ellib/css/eldialogform.css \
@@ -68,9 +73,9 @@ elrte_css_obj=    	${SRC}/about.txt \
 			${SRC}/ellib/css/elselect.css \
 			${SRC}/elrte/css/elrte.css
 
-elrte_js=         	elrte.full.js
-elrte_js_min=     	elrte.min.js
-elrte_js_obj=   	${SRC}/about.txt \
+elrte_js=			elrte.full.js
+elrte_js_min=		elrte.min.js
+elrte_js_obj=		\
 			${SRC}/ellib/js/eli18n.js \
 			${SRC}/ellib/js/eldialogform.js \
 			${SRC}/ellib/js/jquery.elcolorpicker.js \
@@ -110,22 +115,24 @@ ${elrte_js}:
 	${CAT} ${elrte_js_obj} > $@
 
 elrte-uninstall:
-	${RM} -f ${CSS}/${elrte_css} ${CSS}/elrte-inner.css \
-	         ${JS}/${elrte_js} ${JS}/${elrte_js_min} \
-			 ${I18N}/elrte.??.js ${I18N}/elrte.??_??.js ${I18N}/elrte.YOUR_LANG.js \
-	         ${IMG}/*.png ${IMG}/*.gif
+	${RM} -f ${CSS}/${elrte_css} ${CSS}/${elrte_css_min} ${CSS}/elrte-inner.css \
+	${JS}/${elrte_js} ${JS}/${elrte_js_min} \
+	${I18N}/elrte.??.js ${I18N}/elrte.??_??.js ${I18N}/elrte.YOUR_LANG.js \
+	${IMG}/*.png ${IMG}/*.gif
 	${RM} -rf ${IMG}/smileys
 
 clean-elrte:
-	${RM} -f ${elrte_css} ${elrte_js} ${elrte_js_min} 
+	${RM} -f ${elrte_css} ${elrte_css_min} ${elrte_js} ${elrte_js_min} 
 
 
 # compressor
 elrte-compress:
-	${COMPRESSOR}
+	${COMPRESSOR_JS}
+	${COMPRESSOR_CSS}
 
 elrte-compress-install:
 	${CP} ${SRC}/${elrte_js_min} ${JS}/
+	${CP} ${SRC}/${elrte_css_min} ${CSS}/
 
 
 ifdef COMPRESSOR
