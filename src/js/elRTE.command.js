@@ -21,7 +21,7 @@ elRTE.prototype.command = function(rte) {
 	this.STATE_ACTIVE  = 2;
 	// currents command state
 	this._state = 0;
-	this.conf = { };
+	this.conf = { ui : 'normal' };
 	/**
 	 * Initilize command
 	 *
@@ -32,7 +32,7 @@ elRTE.prototype.command = function(rte) {
 			rte  = this.rte;
 			
 		this.title = rte.i18n(this.title);
-		$.extend(this.conf, conf);
+		this.conf = $.extend({}, this.conf, conf);
 		// this.conf = $.extend({}, this.conf, conf);
 		this._listeners = [];
 		

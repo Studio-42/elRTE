@@ -1,44 +1,44 @@
 /**
  * jQuery plugin - elRTE toolbar
- * Create buttons for all loaded editor commands, group them in panels and add panels on toolbar
+ * Create buttons for all loaded editor commands, group them in panels and append to toolbar
  *
  * @param  elRTE  editor instance 
  */
 $.fn.elrtetoolbar = function(rte) {
+	
 	return this.each(function() {
-		var $this = $(this).addClass('elrte-rnd elrte-toolbar'),
+		var $this = $(this).addClass('ui-widget ui-state-default ui-corner-all ui-helper-clearfix elrte-toolbar'),
 			o     = rte.options,
-			pl    = o.toolbars[o.toolbar] || o.toolbars['default'], // active toolbar's panels
-			l     = pl.length,
-			c     = 'elrte-toolbar-panel',
-			tmp   = {},
-			n, p, cl, btn, cmd, cmds;
-		
-		while (l--) {
-			// panel name
-			n    = pl[l];
-			// panel
-			p    = $('<div class="elrte-ib elrte-rnd '+c+' '+c+'-'+n+'"/>');
-			// commands for panel
-			cmds = o.panels[n] || [];
-			cl   = cmds.length;
-			// rte.log(cmds)
+			g     = o.presets[o.preset]||[], // commands groups names
+			gl    = g.length,
+			pc    = 'elrte-toolbar-panel',
+			ex    = {},
+			p, pa, gn, cmdn, cl, cmd, btn;
+			
+		while (gl--) {
+			// cmd group name
+			gn = g[gl];
+			// commands names from group
+			cmdn = o.commands[gn] || [];
+			cl = cmdn.length;
+			// toolbar panel contains commands from group
+			p = $('<div class="elrte-ib '+pc+' '+pc+'-'+gn+'"/>');
+			pa = false
 			while (cl--) {
-				if ((cmd = rte._commands[cmds[cl]]) && !tmp[cmd.name]) {
-					if ((btn = rte.ui.buttons[cmd.conf.ui || 'normal'])) {
-						// rte.log(btn)
-						p.prepend(btn(cmd));
-					}
-					tmp[cmd.name] = true;
+				if ((cmd = rte._commands[cmdn[cl]]) && !ex[cmd.name] && (btn = rte.ui.buttons[cmd.conf.ui])) {
+					p.prepend(btn(cmd));
+					ex[cmd.name] = true;
+					pa = true;
 				}
-				
 			}
-			p.children().length && $this.prepend(p);
+			pa && $this.prepend(p);
 		}
-		if (!$this.children('.'+c)) {
-			$this.hide();
-		}
-		
+		!$this.children().length && $this.hide();
 	});
 }
+
+elRTE.prototype.ui.toolbars['default'] = function(rte) {
+	return $('<div/>').elrtetoolbar(rte);
+}
+
 

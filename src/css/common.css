@@ -44,6 +44,7 @@
 /* editor content container */
 .elrte-container { 
 	position:relative;
+	margin:3px 0;
 }
 
 /* tabs and workzone container */

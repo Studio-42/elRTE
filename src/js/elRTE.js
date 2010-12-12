@@ -144,7 +144,7 @@
 				.append(this.statusbar)
 				.insertBefore(t);
 
-			this.sidebar.show()
+			// this.sidebar.show()
 
 			/* add target node as document if enabled */
 			this.options.loadTarget && this.options.documents.unshift(t);
@@ -165,25 +165,20 @@
 			// init commands prototype
 			this.command = new this.command(this);
 			/* load commands */
-			$.each(o.toolbars[o.toolbar]||[], function(i, p) {
-
-				$.each(o.panels[p]||[], function(i, n) {
-					
-					if (typeof((c = self.commands[n])) == 'function' && !self._commands[n]) {
+			$.each(o.presets[o.preset]||[], function(i, g) {
+				
+				$.each(o.commands[g]||[], function(i, n) {
+					if ((c = self.commands[n]) && typeof(c) == 'function' && !self._commands[n]) {
 						c.prototype = self.command;
 						c = new c();
 						c.name = n;
 						self._commands[n] = c.init(o.commandsConf[n]||{});
-						// delete self._commands[n].init
 					}
 				});
 			});
 
-
-			if ((tb = this.ui.toolbars[o.toolbarType ? o.toolbarType : null])) {
-				o.toolbarPosition == 'bottom' 
-					? tb(this).insertBefore(this.statusbar)
-					: this.viewport.prepend(tb(this));
+			if ((tb = this.ui.toolbars[o.toolbar])) {
+				tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container);
 			}
 
 			/* load plugins */
@@ -1142,20 +1137,6 @@
 
 	}
 
-	elRTE.prototype._doc = function(src) {
-		this.rte      = self;
-		this.id       = '';
-		this.title    = '';
-		this.source   = null;
-		this.editor   = null;
-		this.document = null;
-		this.window   = null;
-		
-	}
-
-	elRTE.prototype._doc.prototype.test = function() {
-		this.rte.log('test 2')
-	}
 
 	elRTE.prototype.time = function(l) {
 		window.console && window.console.time && window.console.time(l);

@@ -1,16 +1,39 @@
 (function($) {
 	
 	elRTE.prototype.options = {
-		/* --- editor view --- */
 		
-		/* additional css class for editor */
+		/* ==================  UI OPTIONS ================= */
+		
+		/**
+		 * Additional css class for editor
+		 * 
+		 * @type String
+		 * @example
+		 * options.commands.cssClass = 'myclass'
+		 */
 		cssClass : '',
-		/* editor workzone(!) height */
+
+		/**
+		 * Editor workzone(!) height. If set - overwrite css property.
+		 * 
+		 * @type Number
+		 * @default 0  - use css height value
+		 */
 		height : 0,
+		
+		/**
+		 * Editor width. If set - overwrite css property.
+		 * 
+		 * @type Number
+		 * @default 0  - use css height value
+		 */
+		width : 0,
+		
 		/* interface language */
 		lang : 'en',
 		/* current toolbar name */
 		toolbar : 'default',
+
 		/* display toolbar? */
 		showToolbar : true,
 		/* make editor resizable (required jquery.ui.resizable) */
@@ -83,10 +106,17 @@
 		/* --- paste options --- */
 		plugins : [], // ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
 		
-		/* --- toolbar options --- */
-		
-		/* panels configuration */
-		panels : {
+
+		/* ==================  COMMANDS OPTIONS ================= */
+
+		/**
+		 * Commands groups. Required by editor toolbar to groups commands buttons into panels
+		 * 
+		 * @type Object
+		 * @example
+		 * options.commands.mygroup = ['cmd1Name', 'cmd2Name', ...]
+		 */
+		commands : {
 			document   : ['save'],
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
@@ -96,32 +126,38 @@
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
 			links      : ['anchor', 'link', 'unlink'],
-			
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test : ['save', 'nbsp', 'bold', 'fontsize', 'source'],
-			
+			test       : ['save', 'nbsp', 'bold', 'fontsize'],
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
-			
-			
-			
-			
-			control    : ['docstructure', 'source', 'fullscreen']
+			control    : ['docstructure', 'source'/* , 'fullscreen'*/]
 		},
-		// ?
-		panelsNames : {},
-		/* toolbars presets */
-		toolbars : {
-			'test' : ['test'],
-			'empty' : [],
-			'default' : ['document', 'edit', 'history', 'style', 'font', 'alignment', 'table', 'indents', 'lists', 'links', 'semantic', 'misc',  'control']
+		
+		/**
+		 * Commands presets. Contains commands groups names (from options.commands).
+		 * 
+		 * @type Object
+		 * @example
+		 * options.commands.mypreset = ['edit', 'mygroup', ...]
+		 */
+		presets : {
+			'test' : ['test']
+		},
+		/**
+		 * Commands preset to load in editor. Contains one of presets name.
+		 * 
+		 * @type String
+		 * @example
+		 * options.commands.preset = 'mypreset'
+		 */
+		preset : 'test',
 
-		},
-		toolbarType : 'normal',
-		
-		toolbar : 'test',
-		
+
+		/* --- toolbar options --- */
+		// toolbar ui type, set to '' to disable toolbar
+		toolbar : 'default',
+		// toolbar position
 		toolbarPosition : 'top',
 		
 		/* --- plugins options --- */
@@ -164,6 +200,7 @@
 			fontfamily : {
 				// label : false
 			}, 
+			// save : { ui : false }
 			// pasteformattext : { width : 800, height:400}
 			
 			
