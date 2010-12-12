@@ -4,7 +4,7 @@
  * @version 2010-10-18
  */
 (function($) {
-elRTE.prototype.i18Messages.ptbr = {
+elRTE.prototype.i18Messages.pt_BR = {
 	'Editor' : 'Editor',
 	'Source' : 'Código Fonte',
 	// Panel Name

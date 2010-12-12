@@ -4,7 +4,7 @@
  * @version 2010-11-01
  */
 (function($) {
-elRTE.prototype.i18Messages.zh = {
+elRTE.prototype.i18Messages.zh_CN = {
 	'Editor' : '编辑器',
 	'Source' : '源代码',
 	// Panel Name

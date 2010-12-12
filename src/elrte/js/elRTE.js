@@ -20,16 +20,16 @@ elRTE = function(target, opts) {
 	if (!target || !target.nodeName) {
 		return alert('elRTE: argument "target" is not DOM Element');
 	}
-	var self     = this, html;
-	this.version = '1.1';
-	this.build   = '2010-09-20';
-	this.options = $.extend(true, {}, this.options, opts);
-	this.browser = $.browser;
-	this.target  = $(target);
+	var self       = this, html;
+	this.version   = '1.2';
+	this.build     = '2010-12-12';
+	this.options   = $.extend(true, {}, this.options, opts);
+	this.browser   = $.browser;
+	this.target    = $(target);
 	
-	this.lang      = (''+this.options.lang).toLowerCase();
+	this.lang      = (''+this.options.lang);
 	this._i18n     = new eli18n({textdomain : 'rte', messages : { rte : this.i18Messages[this.lang] || {}} });
-	this.rtl = !!(/^(ar|fa|he)$/.test(this.lang) && this.i18Messages[this.lang]);
+	this.rtl       = !!(/^(ar|fa|he)$/.test(this.lang) && this.i18Messages[this.lang]);
 	
 	if (this.rtl) {
 		this.options.cssClass += ' el-rte-rtl';
@@ -43,13 +43,13 @@ elRTE = function(target, opts) {
 	this.tabsbar   = $('<div class="tabsbar"/>');
 	this.editor    = $('<div class="'+this.options.cssClass+'" />').append(this.toolbar).append(this.workzone).append(this.statusbar).append(this.tabsbar);
 	
-	this.doc     = null;
-	this.$doc    = null;
-	this.window  = null;
+	this.doc       = null;
+	this.$doc      = null;
+	this.window    = null;
 	
-	this.utils  = new this.utils(this);
-	this.dom    = new this.dom(this);
-	this.filter = new this.filter(this)
+	this.utils     = new this.utils(this);
+	this.dom       = new this.dom(this);
+	this.filter    = new this.filter(this)
 	
 	/**
 	 * Sync iframes/textareas height with workzone height 
