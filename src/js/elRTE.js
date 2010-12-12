@@ -144,6 +144,10 @@
 				.append(this.statusbar)
 				.insertBefore(t);
 
+			if (o.width) {
+				typeof(o.width) == 'number' ? this.viewport.width(o.width) : this.viewport.css('width', o.width);
+			}
+
 			// this.sidebar.show()
 
 			/* add target node as document if enabled */

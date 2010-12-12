@@ -24,10 +24,10 @@
 		/**
 		 * Editor width. If set - overwrite css property.
 		 * 
-		 * @type Number
-		 * @default 0  - use css height value
+		 * @type Number|String
+		 * @default "auto"
 		 */
-		width : 0,
+		width : 'auto',
 		
 		/* interface language */
 		lang : 'en',
