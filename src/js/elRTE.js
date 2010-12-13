@@ -9,8 +9,6 @@
 		};
 	}
 		
-	
-	
 	/**
 	 * @Class elRTE editor
 	 * @todo  add  history methods wrappers to api
@@ -18,9 +16,16 @@
 	 * @param DOMElement  
 	 * @param Object  editor options
 	 */
-	elRTE = function(t, o) {
+	elRTE = function(node, o) {
+		
+		if (!node || node.nodeType != 1) {
+			return alert("Unable create elRTE editor!\n DOM element required, but "+typeof(node)+" given.");
+		}
+		
 		var self = this,
+			$node = $(node).hide(),
 			o    = $.extend(true, {}, this.options, o),
+			// store resizable state to avoid double bindings event 
 			resizable = false;
 		
 		this.time('load');
@@ -41,56 +46,100 @@
 		this.options = o;
 		
 		/**
+		 * Editor instance id
+		 * Used for viewport id and as base part for documents ids
+		 * @type String
+		 */
+		this.id = 'elrte-'+(node.id || node.name)+'-'+Math.round(Math.random()*1000000);
+		
+		/**
 		 * Editor minimum width
 		 * @type Number
 		 */
 		this.minWidth  = parseInt(o.minWidth)  || 300;
+		
 		/**
 		 * Editor minimum height
 		 * @type Number
 		 */
 		this.minHeight = parseInt(o.minHeight) || 250;
+		
 		/**
 		 * Editor width in css format
 		 * @type String
 		 */
 		this.width = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto';
+		
 		/**
 		 * Editor height in css format
 		 * @type String
 		 */
 		this.height = (parseInt(o.height) || 400)+'px';
+		
 		/**
 		 * Editor ui and messages language
+		 * If set to "auto", editor try to detect browser language.
+		 * If messages with required language does no exists - set to "en"
 		 * @type String
+		 * @default "auto"
 		 */
-		this.lang = 'en';
-		/* messages */
-		this.messages = {};
-		/* check is target is node in dom */
-		if (t && t.jquery) {
-			t = t[0];
-		}
+		this.lang = (function() {
+			var l = o.lang == 'auto' ? window.navigator.userLanguage || window.navigator.language : o.lang, 
+				i = l.indexOf('-');
+			
+			if (i > 1) {
+				l = l.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
+			}
+			return self.i18Messages[l] ? l : 'en';
+		})();
 		
-		if (!t || !t.parentNode) {
-			return alert("Unable create elRTE editor!\n Required element does not exists on this page.");
-		}
+		/**
+		 * Editor localized messages
+		 * 
+		 * @type Object
+		 */
+		this.messages = this.i18Messages[this.lang] || {};
 		
-		/* editor instance id. viewport id and base part for inner elements ids */
-		this.id = 'elrte-'+(t.id||t.name||Math.random().toString().substr(2));
-		/* form */
-		this.form = $(t).parents('form');
-		/* is xhtml doctype used for editable iframe? */
-		this.xhtml = /xhtml/i.test(this.options.doctype);
-		/* is macosX? */
+		/**
+		 * Is browser on Mac OS?
+		 * 
+		 * @type Boolean
+		 */
 		this.macos = navigator.userAgent.indexOf('Mac') != -1;
-		/* store resizable state to avoid double bindings event */
-		this._resizable = false;
-		/* loaded commands */
+		
+		/**
+		 * Editor parent form
+		 * 
+		 * @type jQuery
+		 */
+		this.form = $node.parents('form');
+		
+		/**
+		 * Is xhtml doctype used for editable iframe?
+		 * 
+		 * @type Boolean
+		 */
+		this.xhtml = /xhtml/i.test(o.doctype);
+		
+		/**
+		 * Loaded commands
+		 * 
+		 * @type Object
+		 */
 		this._commands = {};
-		/* loaded plugins */
+		
+		/**
+		 * Loaded plugins
+		 * 
+		 * @type Object
+		 */
 		this._plugins = {};
-		/* shortcuts */
+		
+		/**
+		 * Active shortcuts
+		 * 
+		 * @type Object
+		 */
 		this.shortcuts = {};
 
 		this.KEY_UNKNOWN = 0;
@@ -158,6 +207,24 @@
 			'hideUI' : []
 			};
 		
+		
+		this.tabsbar   = $('<ul/>');
+		this.sidebar   = $('<div/>');
+		this.workzone  = $('<div class="elrte-workzone"/>');
+		this.statusbar = $('<div/>');
+		this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
+		this.container = $('<div class="ui-helper-clearfix elrte-container"/>').append(this.sidebar).append(this.main);
+		this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
+			.append(this.container)
+			.append(this.statusbar)
+			.css({
+				'min-width'  : this.minWidth+'px', 
+				'min-height' : this.minHeight+'px',
+				'width'      : this.width, 
+				'height'     : this.height
+			})
+			.insertAfter(node);
+			
 		/**
 		 * Initilize editor
 		 *
@@ -165,43 +232,13 @@
 		 **/	
 		this.init = function() {
 			var self = this, 
-				o    = this.options,
 				ids  = [], 
-				lang = o.lang != 'auto' ? o.lang : navigator.language, 
 				i, c, ui, p, id, tb, cnt;
 				
-			/* =============  set ui language ============= */
-			if (lang) {
-				if ((i = lang.indexOf('-')) > 1) {
-					lang = lang.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
-				}
-				if (this.i18Messages[lang]) {
-					this.messages = this.i18Messages[(this.lang = lang)];
-				}
-			}
-				
-			/* =============  create editor view ============= */
-			this.toolbar   = $('<div/>');
-			this.tabsbar   = $('<ul/>').elrtetabsbar(this);
-			this.container = $('<div class="ui-helper-clearfix elrte-container"/>');
-			this.sidebar   = $('<div/>').elrtesidebar(this);
-			this.workzone  = $('<div class="elrte-workzone"/>')//.height(h);
-			this.statusbar = $('<div/>').elrtestatusbar();
-			this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
-			
-			// this.statusbar.append('asd', 'center')
-			
-			this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
-				.append(this.container.append(this.sidebar).append(this.main))
-				.append(this.statusbar)
-				.insertBefore(t).
-				css({
-					'min-width'  : this.minWidth+'px', 
-					'min-height' : this.minHeight+'px',
-					'width'      : this.width, //typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto',
-					'height'     : this.height
-				})
-				// .height(parseInt(o.height) || 400);
+			/* =============  init editor ui ============= */
+			this.tabsbar.elrtetabsbar(this);
+			this.sidebar.elrtesidebar(this);
+			this.statusbar.elrtestatusbar();
 			
 			/* =============  init objects ============= */	
 			/* object with various utilits */	
@@ -216,7 +253,7 @@
 			this.history = new this.history(this);
 			
 			
-			/* =============  load plugins ============= */
+			/* =============  load commands ============= */
 			// init commands prototype
 			this.command = new this.command(this);
 			/* load commands */
@@ -233,9 +270,9 @@
 			});
 
 			// create toolbar if enabled
-			if ((tb = this.ui.toolbars[o.toolbar])) {
-				this.toolbar = tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container);
-			}
+			this.toolbar = typeof(tb = this.ui.toolbars[o.toolbar]) == 'function'
+				? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
+				: $('<div/>');
 
 			/* =============  load plugins ============= */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
@@ -247,9 +284,8 @@
 			
 			/* =============  open documents ============= */
 			// add target node as document if enabled 
-			this.options.loadTarget && this.options.documents.unshift(t);
-			// remove target node 
-			$(t).remove();
+			this.options.loadTarget && this.options.documents.unshift(node);
+			
 			/* load documents */
 			this.open(this.options.documents);
 			/* focus first/last document */
@@ -1218,7 +1254,7 @@
 		}
 		
 		/**
-		 * EReturn true if editor is resizable
+		 * Return true if editor is resizable
 		 *
 		 * @return Boolean
 		 */
@@ -1307,18 +1343,7 @@
 	elRTE.prototype.i18Messages = {}
 
 
-	/**
-	 * Extend jQuery expressions.
-	 * Find elements in set which has elRTE editor instance
-	 *
-	 * @examples
-	 * Return only nodes with elRTE instances
-	 *  $("selector:elrte")
-	 */
-	$.expr[':'].elrte = function(e) {
-		var inst = $(e).data('elrte-editor');
-		return !!(inst && inst.id);
-	}
+	
 	
 	/**
 	 * jQuery plugin

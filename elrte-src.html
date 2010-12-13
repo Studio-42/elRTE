@@ -29,6 +29,7 @@
 	
 	
 	<!-- elRTE -->
+	<script src="src/js/jquery.elrte.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.options.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.DOM.js" type="text/javascript" charset="utf-8"></script>
@@ -199,7 +200,7 @@
 
 			var rte = $('#editor,#editor33').elrte(opts);
 			
-			var inst = rte.getEditor();
+			// var inst = rte.getEditor();
 			
 			
 			$('#fullscreen').click(function(e) {
@@ -238,7 +239,7 @@
 			})
 			
 			setTimeout(function() {
-				$('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
+				// $('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
 			}, 50);
 		})
 	</script>
