@@ -21,6 +21,8 @@
 	zoom: 1;
 	*display: inline;
 }
+/* resizable helper */
+.ui-resizable-helper { border: 2px dotted #555; }
 
 /******************************************************/
 /*                  EDITOR LAYOUT                     */
@@ -30,6 +32,7 @@
 .elrte {
 	font-family: trebuchet ms, tahoma, sans-serif;
 	padding:3px;
+/*	min-width:200px;*/
 }
 
 /* fullscreen editor */
@@ -45,10 +48,11 @@
 .elrte-container { 
 	position:relative;
 	margin:3px 0;
+/*	border:1px solid #111;*/
 }
 
 /* tabs and workzone container */
-.elrte-main { }
+.elrte-main { padding:3px; }
 /* when open sidebar add margin to main */
 .elrte-main-sidebar-left  { margin-left:105px; }
 .elrte-main-sidebar-right { margin-right:105px; }
@@ -56,6 +60,7 @@
 /* workzone - contains documents */
 .elrte-workzone {
 	height:300px;
+/*	border:1px solid red;*/
 }
 
 /* container for iframe and textarea */
@@ -72,6 +77,7 @@
 .elrte .elrte-source {
 	width: 100%;
 	height:100%;
+/*	height:300px;*/
 	background-color:#000;
 	color:#fff;
 	font: .82em/1.2em 'monaco', 'andale mono', 'lucida console', monospace; 

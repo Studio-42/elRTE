@@ -5,6 +5,16 @@
 		/* ==================  UI OPTIONS ================= */
 		
 		/**
+		 * Ui language
+		 * 
+		 * @type String
+		 * @default "auto"
+		 * @example
+		 * options.lang = 'ru'
+		 */
+		lang : 'auto',
+		
+		/**
 		 * Additional css class for editor
 		 * 
 		 * @type String
@@ -14,15 +24,15 @@
 		cssClass : '',
 
 		/**
-		 * Editor workzone(!) height. If set - overwrite css property.
+		 * Editor minimum width in pixels. 
 		 * 
 		 * @type Number
-		 * @default 0  - use css height value
+		 * @default 300
 		 */
-		height : 0,
+		minWidth : 300,
 		
 		/**
-		 * Editor width. If set - overwrite css property.
+		 * Editor width in any css format or number of pixels.
 		 * 
 		 * @type Number|String
 		 * @default "auto"
@@ -30,14 +40,20 @@
 		width : 'auto',
 		
 		/**
-		 * Ui language
+		 * Editor minimum height in pixels. 
 		 * 
-		 * @type String
-		 * @default "auto"
-		 * @example
-		 * options.lang = 'ru'
+		 * @type Number
+		 * @default 250
 		 */
-		lang : 'auto',
+		minHeight: 250,
+		
+		/**
+		 * Editor height in pixels. 
+		 * 
+		 * @type Number
+		 * @default 400
+		 */
+		height : 400,
 		
 		/**
 		 * Editor toolbar. For now only "default" available - simple toolbar with buttons
@@ -56,9 +72,25 @@
 		 */
 		toolbarPosition : 'top',
 		
-	
-		/* make editor resizable (required jquery.ui.resizable) */
-		resizable : false,
+		/**
+		 * Enable editor resizable abillity
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
+		resizable : true,
+		
+		/**
+		 * Resizable helper class name.
+		 * If set editor view updates on resizestop event,
+		 * otherwise - on resize event
+		 * 
+		 * @type String
+		 * @default ""
+		 * @example
+		 * options.resizeHelper = 'ui-resizable-helper'
+		 */
+		resizeHelper : '',
 		
 		/* --- editor options --- */
 		/* allow user view and edit source? required plugin or command */

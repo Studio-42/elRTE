@@ -19,15 +19,50 @@
 	 * @param Object  editor options
 	 */
 	elRTE = function(t, o) {
+		var self = this,
+			o    = $.extend(true, {}, this.options, o);
 		
 		this.time('load');
-		/* version */
+		/**
+		 * elRTE version number.
+		 * @type String
+		 */
 		this.version = '1.1 dev';
-		/* build date */
+		/**
+		 * elRTE build date.
+		 * @type String
+		 */
 		this.build = '20100906';
-		/* editor config */
-		this.options = $.extend(true, {}, this.options, o);
-		/* messages language */
+		/**
+		 * Editor options
+		 * @type Object
+		 */
+		this.options = o;
+		
+		/**
+		 * Editor minimum width
+		 * @type Number
+		 */
+		this.minWidth  = parseInt(o.minWidth)  || 300;
+		/**
+		 * Editor minimum height
+		 * @type Number
+		 */
+		this.minHeight = parseInt(o.minHeight) || 250;
+		/**
+		 * Editor width in css format
+		 * @type String
+		 */
+		this.width = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto';
+		/**
+		 * Editor height in css format
+		 * @type String
+		 */
+		this.height = (parseInt(o.height) || 400)+'px';
+		/**
+		 * Editor ui and messages language
+		 * @type String
+		 */
 		this.lang = 'en';
 		/* messages */
 		this.messages = {};
@@ -48,6 +83,8 @@
 		this.xhtml = /xhtml/i.test(this.options.doctype);
 		/* is macosX? */
 		this.macos = navigator.userAgent.indexOf('Mac') != -1;
+		/* store resizable state to avoid double bindings event */
+		this._resizable = false;
 		/* loaded commands */
 		this._commands = {};
 		/* loaded plugins */
@@ -115,6 +152,8 @@
 			'cut'       : [],
 			/* called before paste in document */
 			'paste'     : [],
+			// called on window/editor resize
+			'resize'    : [],
 			'hideUI' : []
 			};
 		
@@ -125,51 +164,45 @@
 		 **/	
 		this.init = function() {
 			var self = this, 
-				o = this.options,
-				ids = [], 
+				o    = this.options,
+				ids  = [], 
 				lang = o.lang != 'auto' ? o.lang : navigator.language, 
 				i, c, ui, p, id, tb, cnt;
 				
-			/* create editor view */
-			this.tabsbar   = $('<ul/>').elrtetabsbar(this);
-			this.container = $('<div class="ui-helper-clearfix elrte-container"/>');
-			this.sidebar   = $('<div/>').elrtesidebar(this);
-			this.workzone  = $('<div class="elrte-workzone"/>');
-			this.statusbar = $('<div/>').elrtestatusbar();
-			this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
-			
-			this.statusbar.append('asd', 'center')
-
-			
-			this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
-				.append(this.container.append(this.sidebar).append(this.main))
-				.append(this.statusbar)
-				.insertBefore(t);
-
-			if (o.width) {
-				typeof(o.width) == 'number' ? this.viewport.width(o.width) : this.viewport.css('width', o.width);
-			}
-
-			if (o.height > 0) {
-				this.workzone.height(o.height);
-			}
-			
-			// set ui language
+			/* =============  set ui language ============= */
 			if (lang) {
 				if ((i = lang.indexOf('-')) > 1) {
 					lang = lang.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
 				}
 				if (this.i18Messages[lang]) {
-					this.lang = lang;
-					this.messages = this.i18Messages[lang];
+					this.messages = this.i18Messages[(this.lang = lang)];
 				}
 			}
-
-			/* add target node as document if enabled */
-			this.options.loadTarget && this.options.documents.unshift(t);
-			/* remove target node */
-			$(t).remove();
 				
+			/* =============  create editor view ============= */
+			this.toolbar   = $('<div/>');
+			this.tabsbar   = $('<ul/>').elrtetabsbar(this);
+			this.container = $('<div class="ui-helper-clearfix elrte-container"/>');
+			this.sidebar   = $('<div/>').elrtesidebar(this);
+			this.workzone  = $('<div class="elrte-workzone"/>')//.height(h);
+			this.statusbar = $('<div/>').elrtestatusbar();
+			this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
+			
+			// this.statusbar.append('asd', 'center')
+			
+			this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(this.options.cssClass||'')+'" id="'+this.id+'" />')
+				.append(this.container.append(this.sidebar).append(this.main))
+				.append(this.statusbar)
+				.insertBefore(t).
+				css({
+					'min-width'  : this.minWidth+'px', 
+					'min-height' : this.minHeight+'px',
+					'width'      : this.width, //typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto',
+					'height'     : this.height
+				})
+				// .height(parseInt(o.height) || 400);
+			
+			/* =============  init objects ============= */	
 			/* object with various utilits */	
 			this.utils = new this.utils(this)
 			/* DOM manipulation */
@@ -181,6 +214,8 @@
 			/* history object */
 			this.history = new this.history(this);
 			
+			
+			/* =============  load plugins ============= */
 			// init commands prototype
 			this.command = new this.command(this);
 			/* load commands */
@@ -197,10 +232,11 @@
 			});
 
 			if ((tb = this.ui.toolbars[o.toolbar])) {
-				tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container);
+				this.toolbar = tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container);
+				// this.log(this.toolbar.outerHeight())
 			}
 
-			/* load plugins */
+			/* =============  load plugins ============= */
 			$.browser.webkit && this.options.plugins.unshift('webkit');
 			$.each(this.options.plugins, function(i, n) {
 				if (typeof((p = self.plugins[n])) == 'function' && !self._plugins[n]) {
@@ -208,8 +244,11 @@
 				}
 			});
 			
-			/* init tabsbar */
-			// this.tabsbar.elrtetabsbar(this);
+			/* =============  open documents ============= */
+			// add target node as document if enabled 
+			this.options.loadTarget && this.options.documents.unshift(t);
+			// remove target node 
+			$(t).remove();
 			/* load documents */
 			this.open(this.options.documents);
 			/* focus first/last document */
@@ -217,36 +256,42 @@
 				this.focus(this.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
 			}
 
-			/* bind to parent form save events */
+			/* =============  bind events ============= */
+			// bind to parent form submit events 
 			this.form.bind('submit', $.proxy(this.save, this));
-
-			/* complete editor load */
-			this.trigger('load');
-			/* disable load event */
-			delete(this.listeners.load);
-
-			/* fix ff bug with carret position in textarea */
+			
+			// bind to window.resize to update tabs view
+			$(window).resize(function() {
+				self.trigger('resize');
+			});
+			
+			// fix ff bug with carret position in textarea
 			if ($.browser.mozilla) {
 				this.bind('source', function(e) {
 					self.active.source[0].setSelectionRange(0,0);
 				});
 			}
 			
+			// $(document).mousedown(function() {
+			// 	self.trigger('hideUI');
+			// });
+			// this.bind('mousedown', function() {
+			// 	self.trigger('hideUI');
+			// });
 			
-			$(document).mousedown(function() {
-				self.trigger('hideUI');
-			});
-			this.bind('mousedown', function() {
-				self.trigger('hideUI');
-			});
+			/* =============  complete loading ============= */
 			
-			$(window).resize(function() {
-				self.trigger('resize')
-			})
-			// this.viewport.data('elrte', this)
+			// notify subscribers about editor loaded
+			this.trigger('load');
+			// delete event "load" subscribers
+			delete(this.listeners.load);
+			this.updateHeight()
+			// set editor resizable if enabled
+			setTimeout(function() {
+				self.resizable(true);
+			}, 10);
 			
-			// this.log(this.viewport.data('elrte'))
-			// this.log(this)
+			// delete method to unable editor loaded detection
 			delete this.init;
 		}
 		
@@ -1119,6 +1164,56 @@
 			});
 			
 			this.viewport.detach();
+		}
+		
+		/**
+		 * Update workzone and iframes/textareas height.
+		 * resize/resizestop handler
+		 *
+		 * @return void
+		 */
+		this.updateHeight = function() {
+			var h = 'height',
+				o = 'outerHeight',
+				v = self.viewport[h]() - (self.container[o](true) - self.main[h]());
+				
+			// trigger to update tabsbar
+			self.trigger('resize');
+			
+			v -= ((self.toolbar.is(':visible') ? self.toolbar[o](true) : 0) 
+				+ (self.tabsbar.is(':visible') ? self.tabsbar[o](true) : 0)
+				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
+				
+			self.workzone[h](v).find('.elrte-editor,.elrte-source')[h](v);
+		}
+		
+		/**
+		 * Enable/disable editor resizable
+		 *
+		 * @param  Boolean  switch on/off resizable
+		 * @return void
+		 */
+		this.resizable = function(enbl) {
+			var o = this.options,
+				e = o.resizeHelper ? 'resizestop' : 'resize';
+				
+			if (o.resizable && $.fn.resizable) {
+				if (enbl && !this._resizable) {
+					this.viewport
+						.resizable({
+							handles   : 'se', 
+							helper    : o.resizeHelper,
+							minWidth  : this.minWidth, 
+							minHeight : this.minHeight 
+						})
+						.bind(e, this.updateHeight);
+					this._resizable = true;
+					
+				} else if (!enbl && this._resizable) {
+					this.viewport.resizable('destroy').unbind(e);
+					this._resizable = false;
+				}
+			}
 		}
 		
 		/*******************************************************/
