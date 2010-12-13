@@ -200,12 +200,7 @@
 			var rte = $('#editor,#editor33').elrte(opts);
 			
 			var inst = rte.getEditor();
-			// inst.log(inst.ui)
-			// inst.trigger('open')
-			// window.console.log(inst)
-			// window.console.log(inst.active.val())
-			// inst.active.sync()
-			// window.console.log(inst.active.val('<b>text</b>'))
+			
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')
@@ -235,7 +230,16 @@
 			})
 			$('#save').click(function(e) {
 				rte.exec('save')
+			});
+			
+			$('#resizable').click(function(e) {
+				inst.resizable(!inst.isResizable());
+				$(this).text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable');
 			})
+			
+			setTimeout(function() {
+				$('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
+			}, 50);
 		})
 	</script>
 	
@@ -304,7 +308,7 @@
 	<div id="next" class="button">Next&raquo;</div>
 	<div id="updsrc" class="button">Update source</div>
 	<div id="save" class="button">Save</div>
-	
+	<div id="resizable" class="button"></div>
 
 	
 	<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all" style="padding:2px;display:none">

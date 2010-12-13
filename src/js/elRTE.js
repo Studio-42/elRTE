@@ -20,7 +20,8 @@
 	 */
 	elRTE = function(t, o) {
 		var self = this,
-			o    = $.extend(true, {}, this.options, o);
+			o    = $.extend(true, {}, this.options, o),
+			resizable = false;
 		
 		this.time('load');
 		/**
@@ -231,9 +232,9 @@
 				});
 			});
 
+			// create toolbar if enabled
 			if ((tb = this.ui.toolbars[o.toolbar])) {
 				this.toolbar = tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container);
-				// this.log(this.toolbar.outerHeight())
 			}
 
 			/* =============  load plugins ============= */
@@ -289,7 +290,7 @@
 			// set editor resizable if enabled
 			setTimeout(function() {
 				self.resizable(true);
-			}, 10);
+			}, 5);
 			
 			// delete method to unable editor loaded detection
 			delete this.init;
@@ -1179,7 +1180,7 @@
 				
 			// trigger to update tabsbar
 			self.trigger('resize');
-			
+
 			v -= ((self.toolbar.is(':visible') ? self.toolbar[o](true) : 0) 
 				+ (self.tabsbar.is(':visible') ? self.tabsbar[o](true) : 0)
 				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
@@ -1198,7 +1199,7 @@
 				e = o.resizeHelper ? 'resizestop' : 'resize';
 				
 			if (o.resizable && $.fn.resizable) {
-				if (enbl && !this._resizable) {
+				if (enbl && !resizable) {
 					this.viewport
 						.resizable({
 							handles   : 'se', 
@@ -1207,13 +1208,22 @@
 							minHeight : this.minHeight 
 						})
 						.bind(e, this.updateHeight);
-					this._resizable = true;
+					resizable = true;
 					
-				} else if (!enbl && this._resizable) {
+				} else if (!enbl && resizable) {
 					this.viewport.resizable('destroy').unbind(e);
-					this._resizable = false;
+					resizable = false;
 				}
 			}
+		}
+		
+		/**
+		 * EReturn true if editor is resizable
+		 *
+		 * @return Boolean
+		 */
+		this.isResizable = function() {
+			return resizable;
 		}
 		
 		/*******************************************************/
@@ -1245,12 +1255,12 @@
 			}
 		}
 		
+
 		
 		this.init();
 		this.timeEnd('load');
 
 	}
-
 
 	elRTE.prototype.time = function(l) {
 		window.console && window.console.time && window.console.time(l);
@@ -1279,11 +1289,7 @@
 	 *
 	 */
 	elRTE.prototype.ui = {
-		toolbars : {
-			normal : function(rte) {
-				return $('<div/>').elrtetoolbar(rte);
-			}
-		}, 
+		toolbars : { }, 
 		buttons : {
 			normal : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);

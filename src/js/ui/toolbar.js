@@ -20,9 +20,9 @@ $.fn.elrtetoolbar = function(rte) {
 			gn = g[gl];
 			// commands names from group
 			cmdn = o.commands[gn] || [];
-			cl = cmdn.length;
+			cl   = cmdn.length;
 			// toolbar panel contains commands from group
-			p = $('<div class="elrte-ib '+pc+' '+pc+'-'+gn+'"/>');
+			p  = $('<div class="elrte-ib '+pc+' '+pc+'-'+gn+'"/>');
 			pa = false
 			while (cl--) {
 				if ((cmd = rte._commands[cmdn[cl]]) && !ex[cmd.name] && (btn = rte.ui.buttons[cmd.conf.ui])) {
@@ -37,6 +37,7 @@ $.fn.elrtetoolbar = function(rte) {
 	});
 }
 
+// register toolbar in editor ui object
 elRTE.prototype.ui.toolbars['default'] = function(rte) {
 	return $('<div/>').elrtetoolbar(rte);
 }
