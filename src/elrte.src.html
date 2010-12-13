@@ -39,10 +39,27 @@
 	<script src="elrte/js/elRTE.filter.js" type="text/javascript" charset="utf-8"></script>
 
 	<!-- elRTE languages -->
-	<script src="elrte/js/i18n/elrte.zh_TW.js" type="text/javascript" charset="utf-8"></script>
-	<script src="elrte/js/i18n/elrte.zh_CN.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.ar.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.cs.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.de.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.en.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.es.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.fa.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.fr.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.hu.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.it.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.jp.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.ko.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.lv.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.nl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.pl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.pt_BR.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.ru.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.th.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.tr.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.ua.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.zh_CN.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.zh_TW.js" type="text/javascript" charset="utf-8"></script>
 
 	<!-- elRTE buttons -->
 	<script src="elrte/js/ui/anchor.js" type="text/javascript" charset="utf-8"></script>
@@ -92,13 +109,7 @@
 
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
-
-			// window.console.log(JSON)
-
-			$('form').submit(function(e) {
-				window.console && window.console.log && window.console.log('submit')
-			})
-			
+			// Disable filtering chains
 			// elRTE.prototype.filter.prototype.chains = {	}
 
 			var opts = {
@@ -107,52 +118,59 @@
 				height   : 350,
 				// width : 500,
 				toolbar  : 'maxi',
-				cssfiles : ['elrte/css/elrte-inner.css'],
+				cssfiles : ['elrte/css/elrte-inner.css', 'elrte/css/inner-example.css'],
+				// elfinder
 				fmOpen   : function(callback) {
 					$('<div id="myelfinder"></div>').elfinder({
 						url : '../../elfinder/connectors/php/connector.php',
-						lang : 'ru',
-						dialog : { width : 900, modal : true, title : 'Files' }, // открываем в диалоговом окне
-						closeOnEditorCallback : true, // закрываем после выбора файла
-						editorCallback : callback // передаем callback файловому менеджеру
+						lang : 'en',
+						dialog : { width : 900, modal : true, title : 'Files' }, // open in dialog
+						closeOnEditorCallback : true, // close elFinder after file select
+						editorCallback : callback // pass callback to editor
 					});
 				},
+				// example of user replacement
+				// restricts edit of blocks like <!-- BEGIN MY_BLOCK -->anything<!-- END MY_BLOCK -->
 				replace : [ function(html) {
 					var self = this;
-					return html.replace(/(&lt;%:([^%&gt;]+)%&gt;)/gi, function(t, a) {
-						self.rte.log(a);
-						var id = 'mytag'+Math.random().toString().substring(2);
-						self.scripts[id] = t;
-						return '<div id="'+id+'" class="elrte-protected elrte-mytag" style="background: pink; width: 100px; height: 20px; display: inline-block">mytag</div>';
+					return html.replace(/(<!--\s*BEGIN\s*([^>]+)\s*-->([\s\S]*?)<!--\s*END\s*(\2)\s*-->)/gi, function(t, a, b, c, d) {
+
+						if (b == d) {
+							self.rte.log([b, d]);
+							var id = 'MYTAG'+Math.random().toString().substring(2);
+							self.scripts[id] = t;
+							return '<img id="'+id+'" src="'+self.url+'pixel.gif" class="elrte-protected elrte-MYTAG">';
+						}
+						return html;
 					});
 				}],
 				restore : [ function(html) {
 					var self = this;
-					return html.replace(/<div([^>]*)>mytag<\/div>/, function(t, a) {
+					return html.replace(this.serviceClassRegExp, function(t, n, a) {
 						a = self.parseAttrs(a);
-						if (a['class']['elrte-mytag']) {
-							return self.scripts[a.id] || '';
+						if (a.class['elrte-MYTAG']) {
+							return self.scripts[a.id] + "\n" || '';
 						}
+						//return t;
 					});
 				}]
 			};
 
-			var rte = jQuery('#editor').elrte(opts);
-			// jQuery('#editor2').elrte(opts);
+			// create elRTE
+			var rte = $('#editor').elrte(opts);
 
-			// open dialog on click
-			$('#dialog').click(function() {
-				var dialog = $('<div></div>').dialog({
+			// elRTE in dialog example
+			$('#dialog').click(function() { // open dialog on click
+				var dialog = $('<div/>').dialog({
 					title : 'Editor in dialog',
 					width : 600
 				});
-
 				// create element for elRTE
-				var editorInDialog = $('<div>Content for editor in dialog</div>');
+				var rteInDialog = $('<div>Content for editor in dialog</div>');
 				// put element inside dialog
-				dialog.append(editorInDialog);
+				dialog.append(rteInDialog);
 				// run elRTE on element
-				editorInDialog.elrte(opts);
+				rteInDialog.elrte(opts);
 			});
 
 		});
@@ -162,10 +180,9 @@
 		body { padding: 0 20px; }
 		.button { display:inline-block; border:1px solid #ccc; background:#eee; padding:5px; margin:10px; }
 	</style>
-	
+
 </head>
 <body>
-	<div id="dialog" class="button">dialog</div>
 	<!-- <object style="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" height="300" width="500"><param name="quality" value="high"><param name="movie" value="http://localhost/git/elrte-stable/files/flash/500.swf"><embed pluginspage="http://www.macromedia.com/go/getflashplayer" quality="high" src="http://localhost/git/elrte-stable/files/flash/500.swf" type="application/x-shockwave-flash"></object> -->
 
 
@@ -184,64 +201,34 @@
 	</textarea> -->
 	<!-- <textarea id="editor3"></textarea> -->
 	<div id="editor">
-<strong>
-<strong><span style="font-weight: normal; "><strong>
-<strong>Описание переменных</strong>
-</strong></span></strong>
-<%:eTime%></strong> - ПРОСТАЯ ПЕРЕМЕННАЯ описаная через our или qw//;
-<strong><%:OUT.name%></strong> -  ПЕРЕМЕННАЯ ИЗ ХЕША OUT. Используется для вывода данных конкретной процедуры
-<strong><%:CONF.name%></strong> - ПЕРЕМЕННАЯ ИЗ ХЕША CONF{name}
-<strong><%:FORM.name%></strong> - ПЕРЕМЕННАЯ ИЗ ХЕША FORM{name}
-<strong><%:URL.name%></strong> -  ПЕРЕМЕННАЯ ИЗ ХЕША URL{name}
-<strong><%:ENV.name%></strong> -  ПЕРЕМЕННАЯ ИЗ ХЕША ENV{name}
-<strong><%:USER.name%></strong> - ПЕРЕМЕННАЯ ИЗ ХЕША USER{name} - здесь храняться все данные о текущем пользователе
-<br>
-<strong>
-<strong>Описание условия</strong>
-</strong>
-<%IF <%:OUT.HTML%> ne '' %> 
- БЛОК
-<ELSE>
- БЛОК
-</IF%>
+<!-- BEGIN DO_NOT_EDIT -->
+	hello eldorado	<!-- BEGIN DO_NOT_INNER -->inner<!-- END DO_NOT_INNER -->
+<!-- END DO_NOT_EDIT -->
 
+<!-- BEGIN DO_NOT_WOW -->
+here is my fancy code
+<!-- END DO_NOT_WOW -->
 
-
-
-<br>
-Примечание :  <%IF <%:OUT.HTML%> ne '' %> после обязательно должна быть <strong>НОВАЯ СТРОКА</strong>
 		<p>Полотенце, <a name="42"></a>возможно, <span> необходимый предмет ! </span>для межзвездного путешественника.</p> &nbsp; <br /> &nbsp;
-		<br>&nbsp;&nbsp;<p>Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника.</p>
-			<meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
-			<font color="red">empty text</font>
-			<div>div'ed text</div><p>p test</p>
+<br>&nbsp;&nbsp;<p>Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника.</p>
+<meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+<font color="red">empty text</font>
+<div>div'ed text</div><p>p test</p>
 			
-			<table width="100%" style="border:1px solid #111">
-				<tr>
-					<td>1</td>
-					<td style="background:#eee url(../images/marvin.jpg);padding:5px">2</td>
-				</tr>
-			</table>
-	<!-- <iframe src="http://player.vimeo.com/video/15025289?color=ffffff" width="400" height="225" frameborder="0"></iframe> -->
-		<!-- my comment -->
-		<!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/yksg5lL6D_U?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385" wmode="transparent"></embed></object> -->
-		<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
-				DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
+<h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
+DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
 
 				<!-- pagebreak -->
 				<script type="text/javascript" charset="utf-8">
 					// alert('a')
 				</script>
-				<img src="../images/marvin.jpg" width="93" height="150" alt="Marvin">
+				<img src="elrte/images/media-director.png" alt="Marvin">
 				<!-- pagebreak -->
-				Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку,лежа на мраморном песке пляжей Сантрагинуса V и вдыхая пьянящий морской воздух;  спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 
-				<b>Вот что сообщает <a href="http://google.com">Галактический Путеводитель</a> на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</b>
+Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку,лежа на мраморном песке пляжей Сантрагинуса V и вдыхая пьянящий морской воздух;  спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 
+<b>Вот что сообщает <a href="http://google.com">Галактический Путеводитель</a> на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</b>
 	</div>
-	
 	<input type="submit" name="" value="go" id="">
-	
 	</form>
-	
-	<!-- <object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/YQuYcGm9qLg?fs=1&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/YQuYcGm9qLg?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed></object> -->
+	<div id="dialog" class="button">dialog</div>
 </body>
 </html>

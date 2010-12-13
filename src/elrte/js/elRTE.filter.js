@@ -757,7 +757,7 @@
 		 * @return String
 		 **/
 		restore : function(html) {
-			var self =this, r = this.rte.options.restore|[];
+			var self =this, r = this.rte.options.restore||[];
 
 			// custom restore if set
 			if (r.length) {

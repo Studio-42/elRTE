@@ -1,3 +1,32 @@
+2010-12-12  Troex Nevelin  <troex@fury.scancode.ru>
+
+	* elRTE (1.2):
+		- [feature] jQuery 1.4.4, jQuery UI 1.8.7
+		- [feature] iframe handle in code
+		- [feature] move images with drag & drop
+		- [feature] text nodes allowed
+		- [feature] structured mode highlighted
+		- [feature] width support in options
+		- [feature] compressed CSS
+		- [feature] source moved to github
+		- [feature] more usage examples, docs updated
+		- [bugfix] text cut on paste (better paste support)
+		- [bugfix] <br> between paragraphs
+		- [bugfix] Vimeo embed code
+		- [bugfix] anchor cannot be moved
+		- [bugfix] IE cannot init on empty node
+		- [bugfix] IE table problem
+		- [bugfix] IE link error
+		- [bugfix] IE context menu
+		- [bugfix] IE <hr>
+		- [bugfix] <meta http-equiv...> in body
+		- [translation] Brazillian Portuguese, Jairo Moreno <master.zion@gmail.com>
+		- [translation] Korean, DominicKesler <DominicKesler@gmail.com>
+		- [translation] Simplified Chinese, Lee Chenhwa <leechenhwa@gmail.com> 
+		- [translation] Thai, Anusuk Sangubon <jaideejung007@gmail.com>, http://www.thzaa.com
+		- [translation] Turkish, Özgür Çakırca <dijitalartist@gmail.com>
+
+
 2010-09-20  Troex Nevelin  <troex@fury.scancode.ru>
 
 	* elRTE (1.1):
@@ -20,7 +49,6 @@
 		- [translation] Persian (Farsi), Saleh soozanchi <info@soozanchi.ir>
 		- [translation] Italian, Ugo Punzolo <sadraczerouno@gmail.com>
 		- [translation] Czech, Michal Marek <mich.marek@gmail.com>
-
 
 
 2010-08-25  Troex Nevelin  <troex@fury.scancode.ru>
