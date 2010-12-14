@@ -16,214 +16,24 @@
 	 * @param DOMElement  
 	 * @param Object  editor options
 	 */
-	elRTE = function(node, o) {
+	elRTE = function(o, node) {
 		
-		if (!node || node.nodeType != 1) {
-			return alert("Unable create elRTE editor!\n DOM element required, but "+typeof(node)+" given.");
-		}
+		// if (!node || node.nodeType != 1) {
+		// 	return alert("Unable create elRTE editor!\n DOM element required, but "+typeof(node)+" given.");
+		// }
 		
 		var self = this,
+			state = '',
 			$node = $(node), //.hide(),
-			o    = $.extend(true, {}, this.options, o),
+			o    = $.extend(true, {}, this.options, o || {}),
 			// store resizable state to avoid double bindings event 
-			resizable = false;
-		
-		this.time('load');
-		/**
-		 * elRTE version number.
-		 * @type String
-		 */
-		this.version = '1.1 dev';
-		/**
-		 * elRTE build date.
-		 * @type String
-		 */
-		this.build = '20100906';
-		/**
-		 * Editor options
-		 * @type Object
-		 */
-		this.options = o;
-		
-		/**
-		 * Editor instance id
-		 * Used for viewport id and as base part for documents ids
-		 * @type String
-		 */
-		this.id = 'elrte-'+(node.id || node.name)+'-'+Math.round(Math.random()*1000000);
-		
-		/**
-		 * Editor minimum width
-		 * @type Number
-		 */
-		this.minWidth  = parseInt(o.minWidth)  || 300;
-		
-		/**
-		 * Editor minimum height
-		 * @type Number
-		 */
-		this.minHeight = parseInt(o.minHeight) || 250;
-		
-		/**
-		 * Editor width in css format
-		 * @type String
-		 */
-		this.width = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto';
-		
-		/**
-		 * Editor height in css format
-		 * @type String
-		 */
-		this.height = (parseInt(o.height) || 400)+'px';
-		
-		/**
-		 * Editor ui and messages language
-		 * If set to "auto", editor try to detect browser language.
-		 * If messages with required language does no exists - set to "en"
-		 * @type String
-		 * @default "auto"
-		 */
-		this.lang = (function() {
-			var l = o.lang == 'auto' ? window.navigator.userLanguage || window.navigator.language : o.lang, 
-				i = l.indexOf('-');
-			
-			if (i > 1) {
-				l = l.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
-			}
-			return self.i18Messages[l] ? l : 'en';
-		})();
-		
-		/**
-		 * Editor localized messages
-		 * 
-		 * @type Object
-		 */
-		this.messages = this.i18Messages[this.lang] || {};
-		
-		/**
-		 * Is browser on Mac OS?
-		 * 
-		 * @type Boolean
-		 */
-		this.macos = navigator.userAgent.indexOf('Mac') != -1;
-		
-		/**
-		 * Editor parent form
-		 * 
-		 * @type jQuery
-		 */
-		this.form = $node.parents('form');
-		
-		/**
-		 * Is xhtml doctype used for editable iframe?
-		 * 
-		 * @type Boolean
-		 */
-		this.xhtml = /xhtml/i.test(o.doctype);
-		
-		/**
-		 * Loaded commands
-		 * 
-		 * @type Object
-		 */
-		this._commands = {};
-		
-		/**
-		 * Loaded plugins
-		 * 
-		 * @type Object
-		 */
-		this._plugins = {};
-		
-		/**
-		 * Active shortcuts
-		 * 
-		 * @type Object
-		 */
-		this.shortcuts = {};
-
-		this.KEY_UNKNOWN = 0;
-		this.KEY_CHAR    = 1;
-		this.KEY_ENTER   = 2;
-		this.KEY_DEL     = 3;
-		this.KEY_TAB     = 4;
-		this.KEY_ARROW   = 5;
-		this.KEY_SERVICE = 6;
-
-		this.lastKey = 0;
-		this.typing  = false;
-		/* cached change on keydown to rise change event after keyup */
-		this.change = false;
-		/* last opened document number */
-		this.ndx = 0;
-		/* opened documents */
-		this.documents = { };
-		/* active(visible) document */
-		this.active    = null;
-		/* events listeners */
-		this.listeners = {
-			/* called once after elRTE init and load documents */
-			'load'      : [],
-			/* called before? editor will be set visible */
-			'show'      : [],
-			/* called before? editor will be set hidden */
-			'hide'      : [],
-			/* called on editor resize */
-			'resize'    : [],
-			/* called after new document added to editor */
-			'open'      : [], 
-			/* called after document switch to source mode */
-			'source'    : [],
-			/* called after document switch to wysiwyg mode */
-			'wysiwyg'   : [],
-			/* called before close document */
-			'close'     : [],
-			/* called before command will be executed */
-			'exec'      : [],
-			/* called after some changes was made in document. */
-			'change'    : [],
-			/* called after change carret position */
-			'chagePos'  : [],
-			/* called before send form */
-			'save'      : [],
-			/* called on mousedown on document */
-			'mousedown' : [],
-			/* called on mouseup on document */
-			'mouseup'   : [],
-			/* called on keydown on document */
-			'keydown'   : [],
-			/* called on keyup on document */
-			'keyup'     : [],
-			/* called on click on document */
-			'click'     : [],
-			/* called on double click on document */
-			'dblclick'  : [],
-			/* called before cut from document */
-			'cut'       : [],
-			/* called before paste in document */
-			'paste'     : [],
-			// called on window/editor resize
-			'resize'    : [],
-			'hideUI' : []
-			};
+			resizable = false,
+			minWidth  = parseInt(o.minWidth)  || 300,
+			minHeight = parseInt(o.minHeight) || 250,
+			width     = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto',
+			height    = (parseInt(o.height) || 400)+'px';
 		
 		
-		this.tabsbar   = $('<ul/>');
-		this.sidebar   = $('<div/>');
-		this.workzone  = $('<div class="elrte-workzone"/>');
-		this.statusbar = $('<div/>');
-		this.main      = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>').append(this.tabsbar).append(this.workzone);
-		this.container = $('<div class="ui-helper-clearfix elrte-container"/>').append(this.sidebar).append(this.main);
-		this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
-			.append(this.container)
-			.append(this.statusbar)
-			.css({
-				'min-width'  : this.minWidth+'px', 
-				'min-height' : this.minHeight+'px',
-				'width'      : this.width, 
-				'height'     : this.height
-			})
-			;
 			
 		/**
 		 * Initilize editor
@@ -234,6 +44,12 @@
 			var self = this, 
 				ids  = [], 
 				i, c, ui, p, id, tb, cnt, interval;
+			
+			if (state) {
+				return;
+			}
+			this.time('load');
+			state = 'loading';
 			
 			/**
 			 * Check target node is in DOM
@@ -250,13 +66,31 @@
 			 * @return void
 			 **/
 			function load() {
-				self.viewport.insertAfter(node);
-				// $node.hide()
+				self.viewport.insertAfter($node.hide());
+				// bind to parent form submit events 
+				self.form = $node.parents('form').bind('submit', $.proxy(self.save, self));
+
+				// bind to window.resize to update tabs view
+				$(window).resize(function() {
+					self.trigger('resize');
+				});
+				
+				// add target node as document if enabled 
+				o.loadTarget && o.documents.unshift(node);
+				// open documents
 				self.open(o.documents);
-				self.updateHeight();
+				// focus first/last document
 				if ((cnt = self.count()) > 0) {
 					self.focus(self.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
 				}
+				
+				// notify subscribers about editor loaded
+				self.trigger('load');
+				
+				// delete event "load" subscribers
+				delete(self.listeners.load);
+				
+				state = 'loaded';
 			}
 				
 			/* =============  init editor ui ============= */
@@ -307,9 +141,22 @@
 			});
 			
 			/* =============  open documents ============= */
-			// add target node as document if enabled 
-			o.loadTarget && o.documents.unshift(node);
 			
+			/* =============  bind events ============= */
+			// fix workzone height after open/close doc
+			this.bind('open close', this.updateHeight);
+			
+			// fix ff bug with carret position in textarea
+			if ($.browser.mozilla) {
+				this.bind('source', function(e) {
+					self.active.source[0].setSelectionRange(0,0);
+				});
+			}
+			
+			// set editor resizable if enabled
+			setTimeout(function() {
+				self.resizable(true);
+			}, 5);
 			
 			if (inDom()) {
 				// node is in dom - attach editor to page and open documents,
@@ -323,46 +170,13 @@
 					}
 				}, 200);
 			}
-			
-			/* =============  bind events ============= */
-			// bind to parent form submit events 
-			this.form.bind('submit', $.proxy(this.save, this));
-			
-			// bind to window.resize to update tabs view
-			$(window).resize(function() {
-				self.trigger('resize');
-			});
-			
-			// fix ff bug with carret position in textarea
-			if ($.browser.mozilla) {
-				this.bind('source', function(e) {
-					self.active.source[0].setSelectionRange(0,0);
-				});
-			}
-			
-			// $(document).mousedown(function() {
-			// 	self.trigger('hideUI');
-			// });
-			// this.bind('mousedown', function() {
-			// 	self.trigger('hideUI');
-			// });
-			
-			/* =============  complete loading ============= */
-			
-			// notify subscribers about editor loaded
-			this.trigger('load');
-			// delete event "load" subscribers
-			delete(this.listeners.load);
-			this.updateHeight()
-			// set editor resizable if enabled
-			setTimeout(function() {
-				self.resizable(true);
-			}, 5);
-			
-			// delete method to unable editor loaded detection
-			delete this.init;
+
 		}
 		
+
+		this.loaded = function() {
+			return state == 'loaded';
+		}
 		
 		
 		/*******************************************************/
@@ -1293,40 +1107,436 @@
 			return resizable;
 		}
 		
-		/*******************************************************/
-		/*                        Debug                        */
-		/*******************************************************/
+
+		
+		// this.init();
+		// this.timeEnd('load');
+		self.time('load');
+		
 		/**
-		 * send message to console log
-		 *
-		 * @param String  message
+		 * elRTE version number.
+		 * @type String
 		 */
-		this.log = function(m) {
-			window.console && window.console.log && window.console.log(m);
+		this.version = '1.1 dev';
+		/**
+		 * elRTE build date.
+		 * @type String
+		 */
+		this.build = '20100906';
+		/**
+		 * Editor options
+		 * @type Object
+		 */
+		this.options = o;
+		
+		/**
+		 * Editor instance id
+		 * Used for viewport id and as base part for documents ids
+		 * @type String
+		 */
+		this.id = 'elrte-'+/*(node.id || node.name)*/''+'-'+Math.round(Math.random()*1000000);
+		
+		/**
+		 * Editor minimum width
+		 * @type Number
+		 */
+		this.minWidth  = parseInt(o.minWidth)  || 300;
+		
+		/**
+		 * Editor minimum height
+		 * @type Number
+		 */
+		this.minHeight = parseInt(o.minHeight) || 250;
+		
+		/**
+		 * Editor width in css format
+		 * @type String
+		 */
+		this.width = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto';
+		
+		/**
+		 * Editor height in css format
+		 * @type String
+		 */
+		this.height = (parseInt(o.height) || 400)+'px';
+		
+		/**
+		 * Editor ui and messages language
+		 * If set to "auto", editor try to detect browser language.
+		 * If messages with required language does no exists - set to "en"
+		 * @type String
+		 * @default "auto"
+		 */
+		this.lang = (function() {
+			var l = o.lang == 'auto' ? window.navigator.userLanguage || window.navigator.language : o.lang, 
+				i = l.indexOf('-');
+			
+			if (i > 1) {
+				l = l.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
+			}
+			return self.i18Messages[l] ? l : 'en';
+		})();
+		
+		/**
+		 * Editor localized messages
+		 * 
+		 * @type Object
+		 */
+		this.messages = this.i18Messages[this.lang] || {};
+		
+		/**
+		 * Is browser on Mac OS?
+		 * 
+		 * @type Boolean
+		 */
+		this.macos = navigator.userAgent.indexOf('Mac') != -1;
+		
+		/**
+		 * Editor parent form
+		 * 
+		 * @type jQuery
+		 */
+		// this.form = $node.parents('form');
+		
+		/**
+		 * Is xhtml doctype used for editable iframe?
+		 * 
+		 * @type Boolean
+		 */
+		this.xhtml = /xhtml/i.test(o.doctype);
+		
+		/**
+		 * Loaded commands
+		 * 
+		 * @type Object
+		 */
+		this._commands = {};
+		
+		/**
+		 * Loaded plugins
+		 * 
+		 * @type Object
+		 */
+		this._plugins = {};
+		
+		/**
+		 * Active shortcuts
+		 * 
+		 * @type Object
+		 */
+		this.shortcuts = {};
+
+		this.KEY_UNKNOWN = 0;
+		this.KEY_CHAR    = 1;
+		this.KEY_ENTER   = 2;
+		this.KEY_DEL     = 3;
+		this.KEY_TAB     = 4;
+		this.KEY_ARROW   = 5;
+		this.KEY_SERVICE = 6;
+
+		this.lastKey = 0;
+		this.typing  = false;
+		/* cached change on keydown to rise change event after keyup */
+		this.change = false;
+		/* last opened document number */
+		this.ndx = 0;
+		/* opened documents */
+		this.documents = { };
+		/* active(visible) document */
+		this.active    = null;
+		/* events listeners */
+		this.listeners = {
+			/* called once after elRTE init and load documents */
+			'load'      : [],
+			/* called before? editor will be set visible */
+			'show'      : [],
+			/* called before? editor will be set hidden */
+			'hide'      : [],
+			/* called on editor resize */
+			'resize'    : [],
+			/* called after new document added to editor */
+			'open'      : [], 
+			/* called after document switch to source mode */
+			'source'    : [],
+			/* called after document switch to wysiwyg mode */
+			'wysiwyg'   : [],
+			/* called before close document */
+			'close'     : [],
+			/* called before command will be executed */
+			'exec'      : [],
+			/* called after some changes was made in document. */
+			'change'    : [],
+			/* called after change carret position */
+			'chagePos'  : [],
+			/* called before send form */
+			'save'      : [],
+			/* called on mousedown on document */
+			'mousedown' : [],
+			/* called on mouseup on document */
+			'mouseup'   : [],
+			/* called on keydown on document */
+			'keydown'   : [],
+			/* called on keyup on document */
+			'keyup'     : [],
+			/* called on click on document */
+			'click'     : [],
+			/* called on double click on document */
+			'dblclick'  : [],
+			/* called before cut from document */
+			'cut'       : [],
+			/* called before paste in document */
+			'paste'     : [],
+			// called on window/editor resize
+			'resize'    : [],
+			'hideUI' : []
+			};
+		
+		/**
+		 * Placeholders images base URL (see elRTE.filter.js)
+		 * 
+		 * @type String
+		 */
+		this.imgUrl = (function() {
+			var n = $('<span class="elrte-test-url">test</span>').prependTo('body'),
+			 	u = (n[0].currentStyle !== void(0) ? n[0].currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n[0], null).getPropertyValue('background-image'))
+					.replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
+			n.remove();
+			return u;
+		})();
+		
+		/**
+		 * Object contains various utilits
+		 * 
+		 * @type Object
+		 */	
+		this.utils = new this.utils(this)
+		/**
+		 * DOM manipulations object
+		 * 
+		 * @type Object
+		 */
+		this.dom = new this.dom(this);
+		/**
+		 * Selection/text range manipulations object
+		 * 
+		 * @type Object
+		 */
+		this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
+		/**
+		 * Ceaning content object
+		 * 
+		 * @type Object
+		 */
+		this.filter = new this.filter(this);
+		/**
+		 * History object
+		 * 
+		 * @type Object
+		 */
+		this.history = new this.history(this);
+		
+		/**
+		 * Loaded commands
+		 * 
+		 * @type Object
+		 */
+		this._commands = (function(cp) {
+			var _c = {}, c;
+
+			$.each(o.presets[o.preset]||[], function(i, g) {
+				$.each(o.commands[g]||[], function(i, n) {
+					if ((c = self.commands[n]) && typeof(c) == 'function' && !_c[n]) {
+						c.prototype = cp;
+						_c[n] = new c();
+						_c[n].name = n;
+						_c[n].init(o.commandsConf[n]||{});
+					}
+				});
+			});
+			return _c;
+		})(new this.command(this));
+		
+		this._plugins = (function() {
+			var _p = {}, p;
+			
+			$.browser.webkit && o.plugins.unshift('webkit');
+			$.each(o.plugins, function(i, n) {
+				if (typeof((p = self.plugins[n])) == 'function' && !_p[n]) {
+					_p[n] = new p(self);
+				}
+			});
+			return _p;
+		})();
+		
+		/**
+		 * Widget. Displays tabs with documents names
+		 * 
+		 * @type jQuery
+		 */
+		this.tabsbar   = this.ui.tabsbar(this);
+		/**
+		 * Widget. Displays various commands widgets
+		 * 
+		 * @type jQuery
+		 */
+		this.sidebar   = this.ui.sidebar(this);
+		/**
+		 * Widget. Displays status panel. Used by plugins (path etc.)
+		 * 
+		 * @type jQuery
+		 */
+		this.statusbar = this.ui.statusbar(this);
+		/**
+		 * Documents container
+		 * 
+		 * @type jQuery
+		 */
+		this.workzone  = $('<div class="elrte-workzone"/>');
+		/**
+		 * Container for tabsbar & workzone.
+		 * Required to correct display document and sidebar
+		 * 
+		 * @type jQuery
+		 */
+		this.main = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>')
+			.append(this.tabsbar.add(this.workzone));
+
+		/**
+		 * Container. Includes sidebar and main container
+		 * 
+		 * @type jQuery
+		 */
+		this.container = $('<div class="ui-helper-clearfix elrte-container"/>')
+			.append(this.sidebar.add(this.main));
+			
+		/**
+		 * Editor container.
+		 * 
+		 * @type jQuery
+		 */
+		this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
+			.append(this.container.add(this.statusbar))
+			.css({
+				'min-width'  : minWidth+'px', 
+				'min-height' : minHeight+'px',
+				'width'      : width, 
+				'height'     : height
+			});
+		
+		/**
+		 * Toolbar.
+		 * 
+		 * @type jQuery
+		 */
+		this.toolbar = typeof(tb = this.ui.toolbars[o.toolbar]) == 'function'
+			? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
+			: $('<div/>');
+			
+		
+		var 
+			ids  = [], 
+			i, c, ui, p, id, tb, cnt, interval;
+		
+		/**
+		 * Check target node is in DOM
+		 *
+		 * @return Boolean
+		 **/
+		function inDom() {
+			return !!$node.parents('body').length;
 		}
 		
 		/**
-		 * send message to console log if debug is enabled in config
+		 * Attach viewport to DOM, load documents and focus one
 		 *
-		 * @param String  message group name
-		 * @param String  message
-		 */
-		this.debug = function(n, m) {
-			if (this.options.debug == 'all') {
-				this.log(n+': '+m);
-			} else if (this.options.debug.length) {
-				var _n = n.split('.');
-				if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
-					this.log(n+': '+m);
+		 * @return void
+		 **/
+		function load() {
+			self.viewport.insertAfter($node.hide());
+			// bind to parent form submit events 
+			self.form = $node.parents('form').bind('submit', $.proxy(self.save, self));
+
+			// bind to window.resize to update tabs view
+			$(window).resize(function() {
+				self.trigger('resize');
+			});
+			
+			// add target node as document if enabled 
+			o.loadTarget && o.documents.unshift(node);
+			// open documents
+			self.open(o.documents);
+			// focus first/last document
+			if ((cnt = self.count()) > 0) {
+				self.focus(self.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
+			}
+			
+			// notify subscribers about editor loaded
+			self.trigger('load');
+			
+			// delete event "load" subscribers
+			delete(self.listeners.load);
+			
+			state = 'loaded';
+			self.timeEnd('load');
+		}
+		
+		
+		/* =============  bind events ============= */
+		// fix workzone height after open/close doc
+		this.bind('open close', this.updateHeight);
+		
+		// fix ff bug with carret position in textarea
+		if ($.browser.mozilla) {
+			this.bind('source', function(e) {
+				self.active.source[0].setSelectionRange(0,0);
+			});
+		}
+		
+		// set editor resizable if enabled
+		setTimeout(function() {
+			self.resizable(true);
+		}, 5);
+		
+		if (inDom()) {
+			// node is in dom - attach editor to page and open documents,
+			load();
+		} else {
+			// wait till node was attached to dom
+			interval = setInterval(function() {
+				if (inDom()) {
+					clearInterval(interval);
+					load();
 				}
+			}, 200);
+		}
+		
+
+	}
+
+	/**
+	 * send message to console log
+	 *
+	 * @param String  message
+	 */
+	elRTE.prototype.log = function(m) {
+		window.console && window.console.log && window.console.log(m);
+	}
+
+	/**
+	 * send message to console log if debug is enabled in config
+	 *
+	 * @param String  message group name
+	 * @param String  message
+	 */
+	elRTE.prototype.debug = function(n, m) {
+		if (this.options.debug == 'all') {
+			this.log(n+': '+m);
+		} else if (this.options.debug.length) {
+			var _n = n.split('.');
+			if ($.inArray(n, this.options.debug) != -1 || (_n[0] && $.inArray(_n[0], this.options.debug) != -1) || (_n[1] && $.inArray(_n[1], this.options.debug) != -1)) {
+				this.log(n+': '+m);
 			}
 		}
-		
-
-		
-		this.init();
-		this.timeEnd('load');
-
 	}
 
 	elRTE.prototype.time = function(l) {
@@ -1349,6 +1559,10 @@
 	 */
 	elRTE.prototype.commands = {};
 	
+	/**
+	 * elRTE commands mixins classes
+	 *
+	 */
 	elRTE.prototype.mixins = {};
 	
 	/**
@@ -1356,6 +1570,15 @@
 	 *
 	 */
 	elRTE.prototype.ui = {
+		tabsbar : function(rte) {
+			return $('<ul/>').elrtetabsbar(rte);
+		},
+		sidebar : function(rte) {
+			return $('<div/>').elrtesidebar(rte);
+		},
+		statusbar : function(rte) {
+			return $('<div/>').elrtestatusbar(rte);
+		},
 		toolbars : { }, 
 		buttons : {
 			normal : function(cmd) {
@@ -1413,7 +1636,7 @@
 				inst = p.data('elrte-editor');
 			} else {
 				// create new instance
-				inst = new elRTE(this, o);
+				inst = new elRTE(o, this);
 				if (inst.id) {
 					// store instance in editor container data
 					inst.viewport.data('elrte-editor', inst);

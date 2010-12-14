@@ -198,18 +198,18 @@
 				
 			}
 
-			// var rte = $('#editor').elrte(opts);
+			var rte = $('#editor').elrte(opts);
 			// window.console.log(rte)
 			// var inst = rte.getEditor();
 			
-			var rte = $('<div>editor</div>')
-			
-			rte.elrte(opts)
-			
-			setTimeout(function() {
-				rte.appendTo('body')
-				// $('<div/>').append(rte).dialog()
-			}, 3000)
+			// var rte = $('<div>editor</div>')
+			// 
+			// rte.elrte(opts)
+			// 
+			// setTimeout(function() {
+			// 	rte.appendTo('body')
+			// 	// $('<div/>').append(rte).dialog()
+			// }, 3000)
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')

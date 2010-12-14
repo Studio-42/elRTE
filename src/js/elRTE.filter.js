@@ -5,11 +5,9 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 */
 	elRTE.prototype.filter = function(rte) {
-		var self = this,
-			n = rte.workzone.addClass('elrte-test-url')[0];
+		var self = this;
 		// media replacement image base url
-		this.url = (typeof(n.currentStyle )!= "undefined" ? n.currentStyle['backgroundImage'] : document.defaultView.getComputedStyle(n, null).getPropertyValue('background-image')).replace(/^url\((['"]?)([\s\S]+\/)[\s\S]+\1\)$/i, "$2");
-		$(n).removeClass('elrte-test-url');
+		this.url = rte.imgUrl;
 
 		this.rte = rte;
 		// flag - return xhtml tags?
