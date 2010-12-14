@@ -198,10 +198,18 @@
 				
 			}
 
-			var rte = $('#editor,#editor33').elrte(opts);
-			
+			// var rte = $('#editor').elrte(opts);
+			// window.console.log(rte)
 			// var inst = rte.getEditor();
 			
+			var rte = $('<div>editor</div>')
+			
+			rte.elrte(opts)
+			
+			setTimeout(function() {
+				rte.appendTo('body')
+				// $('<div/>').append(rte).dialog()
+			}, 3000)
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')
@@ -238,9 +246,9 @@
 				$(this).text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable');
 			})
 			
-			setTimeout(function() {
-				// $('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
-			}, 50);
+			// setTimeout(function() {
+			// 	$('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
+			// }, 50);
 		})
 	</script>
 	

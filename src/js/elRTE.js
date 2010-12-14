@@ -23,7 +23,7 @@
 		}
 		
 		var self = this,
-			$node = $(node).hide(),
+			$node = $(node), //.hide(),
 			o    = $.extend(true, {}, this.options, o),
 			// store resizable state to avoid double bindings event 
 			resizable = false;
@@ -223,7 +223,7 @@
 				'width'      : this.width, 
 				'height'     : this.height
 			})
-			.insertAfter(node);
+			;
 			
 		/**
 		 * Initilize editor
@@ -233,7 +233,31 @@
 		this.init = function() {
 			var self = this, 
 				ids  = [], 
-				i, c, ui, p, id, tb, cnt;
+				i, c, ui, p, id, tb, cnt, interval;
+			
+			/**
+			 * Check target node is in DOM
+			 *
+			 * @return Boolean
+			 **/
+			function inDom() {
+				return !!$node.parents('body').length;
+			}
+			
+			/**
+			 * Attach viewport to DOM, load documents and focus one
+			 *
+			 * @return void
+			 **/
+			function load() {
+				self.viewport.insertAfter(node);
+				// $node.hide()
+				self.open(o.documents);
+				self.updateHeight();
+				if ((cnt = self.count()) > 0) {
+					self.focus(self.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
+				}
+			}
 				
 			/* =============  init editor ui ============= */
 			this.tabsbar.elrtetabsbar(this);
@@ -284,15 +308,22 @@
 			
 			/* =============  open documents ============= */
 			// add target node as document if enabled 
-			this.options.loadTarget && this.options.documents.unshift(node);
+			o.loadTarget && o.documents.unshift(node);
 			
-			/* load documents */
-			this.open(this.options.documents);
-			/* focus first/last document */
-			if ((cnt = this.count()) > 0) {
-				this.focus(this.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
+			
+			if (inDom()) {
+				// node is in dom - attach editor to page and open documents,
+				load();
+			} else {
+				// wait till node was attached to dom
+				interval = setInterval(function() {
+					if (inDom()) {
+						clearInterval(interval);
+						load();
+					}
+				}, 200);
 			}
-
+			
 			/* =============  bind events ============= */
 			// bind to parent form submit events 
 			this.form.bind('submit', $.proxy(this.save, this));
