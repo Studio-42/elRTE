@@ -33,10 +33,13 @@
 		
 		
 			
-		this.loaded = function() {
+		this.isLoaded = function() {
 			return loaded;
 		}
 		
+		this.isVisisble = function() {
+			return self.viewport.is(':visible');
+		}
 		
 		/*******************************************************/
 		/*                         Events                      */
@@ -211,7 +214,8 @@
 					content = $src.val() || $src.html();
 					// css files list store as node attribute separated by space
 					css  = ($src.attr('cssfiles')||'').split(/\n+/);
-					if ($src.parents('form')[0] === rte.form[0]) {
+					
+					if (rte.form && rte.form[0] === $src.parents('form')[0]) {
 						// if node belongs to the same form as editor -
 						// remove name attribute to prevent duplicate form data on submit
 						$src.removeAttr('name');
@@ -354,8 +358,9 @@
 					rte.typing = false;
 					// click on selection not collapse it at a moment
 					setTimeout(function() { rte.trigger('changePos', {event : e}); }, 1);
+					rte.trigger(e);
 				})
-				.bind('mousedown mouseup click dblclick', function(e) {
+				.bind('mousedown click dblclick', function(e) {
 					rte.trigger(e);
 				})
 				.bind('dragstart dragend drop', function(e) {
@@ -418,11 +423,7 @@
 			if ($src && o.hideDocSource) {
 				$src.hide();
 			}
-			
-			// after editor was loaded, focus opened document if requied
-			// if (!rte.init && o.focusOpenedDoc) {
-			// 	rte.focus(this.id);
-			// }
+
 		}
 		
 		/**
@@ -494,7 +495,6 @@
 					self.open(d);
 				});
 			}
-			// this.log(this.viewport.is(':visible'))
 
 			if (d.jquery || $.isArray(d)) {
 				$.each(d, function() {
@@ -783,8 +783,22 @@
 		 * @return mixed
 		 */
 		this.exec = function(cmd) {
+			var obj  = this,
+				args = arguments,
+				i, m, objName;
+			
+			if ((i = cmd.indexOf('.') > 0)) {
+				objName = cmd.substr(0, i);
+				obj = this[cmd.substr(0, i)]
+				cmd = cmd.substr(i+1);
+			}
+			
+			return this;
+			
 			var a = Array.prototype.slice.call(arguments);
-			a.shift();
+			this.log(a.shift());
+			
+			this.log(typeof(cmd))
 			
 			return this[cmd] ? this[cmd].apply(this, a) : false;
 			
@@ -882,9 +896,9 @@
 		 * @return elRTE
 		 */
 		this.show = function() {
-			if (this.viewport.is(':visible')) {
+			if (!this.isVisisble()) {
 				this.viewport.show();
-				this.trigger('show');
+				// this.trigger('show');
 			}
 			return this;
 		}
@@ -895,9 +909,9 @@
 		 * @return elRTE
 		 */
 		this.hide = function() {
-			if (this.viewport.is(':visible')) {
+			if (this.isVisisble()) {
 				this.viewport.hide();
-				this.trigger('hide');
+				// this.trigger('hide');
 			}
 			return this;
 		}
@@ -931,8 +945,8 @@
 			// trigger to update tabsbar
 			self.trigger('resize');
 
-			v -= ((self.toolbar.is(':visible') ? self.toolbar[o](true) : 0) 
-				+ (self.tabsbar.is(':visible') ? self.tabsbar[o](true) : 0)
+			v -= ((self.toolbar.is(':visible')   ? self.toolbar[o](true)   : 0) 
+				+ (self.tabsbar.is(':visible')   ? self.tabsbar[o](true)   : 0)
 				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
 				
 			self.workzone[h](v).find('.elrte-editor,.elrte-source')[h](v);
@@ -966,6 +980,8 @@
 					resizable = false;
 				}
 			}
+			// this.focus()
+			// return
 		}
 		
 		/**
@@ -981,16 +997,21 @@
 		
 		/**
 		 * elRTE version number.
+		 *
 		 * @type String
 		 */
 		this.version = '2.0 dev';
+		
 		/**
 		 * elRTE build date.
+		 *
 		 * @type String
 		 */
 		this.build = '20101215';
+		
 		/**
 		 * Editor options
+		 *
 		 * @type Object
 		 */
 		this.options = o;
@@ -998,6 +1019,7 @@
 		/**
 		 * Editor instance id
 		 * Used for viewport id and as base part for documents ids
+		 *
 		 * @type String
 		 */
 		this.id = o.id || 'elrte-'+Math.round(Math.random()*1000000);
@@ -1006,6 +1028,7 @@
 		 * Editor ui and messages language
 		 * If set to "auto", editor try to detect browser language.
 		 * If messages with required language does no exists - set to "en"
+		 *
 		 * @type String
 		 * @default "auto"
 		 */
@@ -1014,7 +1037,7 @@
 				i = l.indexOf('-');
 			
 			if (i > 1) {
-				l = l.substr(0, i)+'_'+lang.substr(i+1).toUpperCase();
+				l = l.substr(0, i)+'_'+l.substr(i+1).toUpperCase();
 			}
 			return self.i18Messages[l] ? l : 'en';
 		})();
@@ -1035,10 +1058,11 @@
 		
 		/**
 		 * Editor parent form
+		 * Defines in load() function
 		 * 
 		 * @type jQuery
 		 */
-		// this.form = $node.parents('form');
+		this.form;
 		
 		/**
 		 * Is xhtml doctype used for editable iframe?
@@ -1076,9 +1100,9 @@
 		this.listeners = {
 			/* called once after elRTE init and load documents */
 			'load'      : [],
-			/* called before? editor will be set visible */
+			/* called after editor will be set visible */
 			'show'      : [],
-			/* called before? editor will be set hidden */
+			/* called after editor will be set hidden */
 			'hide'      : [],
 			/* called on editor resize */
 			'resize'    : [],
@@ -1114,8 +1138,7 @@
 			'cut'       : [],
 			/* called before paste in document */
 			'paste'     : [],
-			// called on window/editor resize
-			'resize'    : [],
+			
 			'hideUI' : []
 			};
 		
@@ -1318,8 +1341,9 @@
 		this.bind('open', function(e) {
 			var c = self.count();
 			
-			(c == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
 			c < 3 && self.updateHeight();
+			(c == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
+			
 		});
 		
 		// fix ff bug with carret position in textarea
@@ -1328,6 +1352,8 @@
 				self.active.source[0].setSelectionRange(0, 0);
 			});
 		}
+		
+		this.resizable(true);
 		
 		if (inDom()) {
 			// node is in dom - attach editor to page and open documents,
@@ -1342,7 +1368,8 @@
 			}, 150);
 		}
 		
-		self.resizable(true);
+		
+		// this.focus
 	}
 
 	/**

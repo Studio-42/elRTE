@@ -204,34 +204,17 @@
 				return new elRTE(opts, n)
 			}
 
+			function elrteJQuery(n) {
+				return $(n).elrte(opts)
+			}
 			
-			var rte = elrteNoJQuery($('#editor')[0])
+			// var rte = elrteNoJQuery($('#editor')[0])
 			
-			// window.console.log(window)
-			// setTimeout(function() {
-			// 	$('#editor').after(rte.viewport)
-			// 	
-			// 	// setTimeout(function() {
-			// 		rte.open($('#editor')[0])
-			// 	// }, 1000)
-			// 	
-			// 	
-			// }, 1000)
-			// $('#editor').after(rte.viewport)
+			var rte = elrteJQuery($('#editor')[0]);
 			
-
-			// var rte = $('#editor').elrte(opts);
-			// window.console.log(rte)
-			// var inst = rte.getEditor();
+			// window.console.log($('#editor').getElrte())
 			
-			// var rte = $('<div>editor</div>')
-			// 
-			// rte.elrte(opts)
-			// 
-			// setTimeout(function() {
-			// 	rte.appendTo('body')
-			// 	// $('<div/>').append(rte).dialog()
-			// }, 3000)
+			var inst = $('#editor').getElrte();
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')
@@ -241,10 +224,14 @@
 			})
 			$('#hide').click(function(e) {
 				if ($(this).text() == 'Hide') {
-					rte.exec('hide')
+					// inst.hide()
+					// inst.exec('hide')
+					rte.elrte('hide')
 					$(this).text('Show')
 				} else {
-					rte.exec('show')
+					// inst.show()
+					// inst.exec('show')
+					rte.elrte('show')
 					$(this).text('Hide')
 				}
 			})
