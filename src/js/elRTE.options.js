@@ -1,6 +1,15 @@
 (function($) {
 	
 	elRTE.prototype.options = {
+		/**
+		 * Editor instance id
+		 * 
+		 * @type String
+		 * @default ""
+		 * @example
+		 * options.id = 'my-elrte-editor'
+		 */
+		id : '',
 		
 		/* ==================  UI OPTIONS ================= */
 		
