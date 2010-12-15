@@ -18,13 +18,10 @@
 	 */
 	elRTE = function(o, node) {
 		
-		// if (!node || node.nodeType != 1) {
-		// 	return alert("Unable create elRTE editor!\n DOM element required, but "+typeof(node)+" given.");
-		// }
-		
 		var self = this,
-			state = '',
-			$node = $(node), //.hide(),
+			loaded = false,
+			node = node && node.nodeType == 1 ? node : void(0),
+			$node = node ? $(node).hide() : void(0), //.hide(),
 			o    = $.extend(true, {}, this.options, o || {}),
 			// store resizable state to avoid double bindings event 
 			resizable = false,
@@ -35,147 +32,8 @@
 		
 		
 			
-		/**
-		 * Initilize editor
-		 *
-		 * @return void
-		 **/	
-		this.init = function() {
-			var self = this, 
-				ids  = [], 
-				i, c, ui, p, id, tb, cnt, interval;
-			
-			if (state) {
-				return;
-			}
-			this.time('load');
-			state = 'loading';
-			
-			/**
-			 * Check target node is in DOM
-			 *
-			 * @return Boolean
-			 **/
-			function inDom() {
-				return !!$node.parents('body').length;
-			}
-			
-			/**
-			 * Attach viewport to DOM, load documents and focus one
-			 *
-			 * @return void
-			 **/
-			function load() {
-				self.viewport.insertAfter($node.hide());
-				// bind to parent form submit events 
-				self.form = $node.parents('form').bind('submit', $.proxy(self.save, self));
-
-				// bind to window.resize to update tabs view
-				$(window).resize(function() {
-					self.trigger('resize');
-				});
-				
-				// add target node as document if enabled 
-				o.loadTarget && o.documents.unshift(node);
-				// open documents
-				self.open(o.documents);
-				// focus first/last document
-				if ((cnt = self.count()) > 0) {
-					self.focus(self.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
-				}
-				
-				// notify subscribers about editor loaded
-				self.trigger('load');
-				
-				// delete event "load" subscribers
-				delete(self.listeners.load);
-				
-				state = 'loaded';
-			}
-				
-			/* =============  init editor ui ============= */
-			this.tabsbar.elrtetabsbar(this);
-			this.sidebar.elrtesidebar(this);
-			this.statusbar.elrtestatusbar();
-			
-			/* =============  init objects ============= */	
-			/* object with various utilits */	
-			this.utils = new this.utils(this)
-			/* DOM manipulation */
-			this.dom = new this.dom(this);
-			/* selection and text range object */
-			this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
-			/* cleaning content object */
-			this.filter = new this.filter(this)
-			/* history object */
-			this.history = new this.history(this);
-			
-			
-			/* =============  load commands ============= */
-			// init commands prototype
-			this.command = new this.command(this);
-			/* load commands */
-			$.each(o.presets[o.preset]||[], function(i, g) {
-				
-				$.each(o.commands[g]||[], function(i, n) {
-					if ((c = self.commands[n]) && typeof(c) == 'function' && !self._commands[n]) {
-						c.prototype = self.command;
-						c = new c();
-						c.name = n;
-						self._commands[n] = c.init(o.commandsConf[n]||{});
-					}
-				});
-			});
-
-			// create toolbar if enabled
-			this.toolbar = typeof(tb = this.ui.toolbars[o.toolbar]) == 'function'
-				? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
-				: $('<div/>');
-
-			/* =============  load plugins ============= */
-			$.browser.webkit && this.options.plugins.unshift('webkit');
-			$.each(this.options.plugins, function(i, n) {
-				if (typeof((p = self.plugins[n])) == 'function' && !self._plugins[n]) {
-					self._plugins[n] = new p(self);
-				}
-			});
-			
-			/* =============  open documents ============= */
-			
-			/* =============  bind events ============= */
-			// fix workzone height after open/close doc
-			this.bind('open close', this.updateHeight);
-			
-			// fix ff bug with carret position in textarea
-			if ($.browser.mozilla) {
-				this.bind('source', function(e) {
-					self.active.source[0].setSelectionRange(0,0);
-				});
-			}
-			
-			// set editor resizable if enabled
-			setTimeout(function() {
-				self.resizable(true);
-			}, 5);
-			
-			if (inDom()) {
-				// node is in dom - attach editor to page and open documents,
-				load();
-			} else {
-				// wait till node was attached to dom
-				interval = setInterval(function() {
-					if (inDom()) {
-						clearInterval(interval);
-						load();
-					}
-				}, 200);
-			}
-
-		}
-		
-
 		this.loaded = function() {
-			return state == 'loaded';
+			return loaded;
 		}
 		
 		
@@ -561,9 +419,9 @@
 			}
 			
 			// after editor was loaded, focus opened document if requied
-			if (!rte.init && o.focusOpenedDoc) {
-				rte.focus(this.id);
-			}
+			// if (!rte.init && o.focusOpenedDoc) {
+			// 	rte.focus(this.id);
+			// }
 		}
 		
 		/**
@@ -629,6 +487,14 @@
 		this.open = function(d) {
 			var self = this;
 
+			// dont load docs utill editor will be loaded and visible
+			if (!loaded || !this.viewport.is(':visible')) {
+				return this.one(loaded ? 'show' : 'load', function() {
+					self.open(d);
+				});
+			}
+			// this.log(this.viewport.is(':visible'))
+
 			if (d.jquery || $.isArray(d)) {
 				$.each(d, function() {
 					if (this.jquery) {
@@ -662,6 +528,8 @@
 				this.trigger('close', {id : d.id});
 				// remove document view
 				d.view.remove();
+				// update workzone height if tabsbar hidden
+				this.tabsbar.is(':hidden') && this.updateHeight();
 				// if close active document - unset link to it
 				if (this.active.id == d.id) {
 					this.active = void(0); //null;
@@ -1052,7 +920,7 @@
 		 * Update workzone and iframes/textareas height.
 		 * resize/resizestop handler
 		 *
-		 * @return void
+		 * @return elRTE
 		 */
 		this.updateHeight = function() {
 			var h = 'height',
@@ -1067,6 +935,7 @@
 				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
 				
 			self.workzone[h](v).find('.elrte-editor,.elrte-source')[h](v);
+			return this;
 		}
 		
 		/**
@@ -1085,8 +954,8 @@
 						.resizable({
 							handles   : 'se', 
 							helper    : o.resizeHelper,
-							minWidth  : this.minWidth, 
-							minHeight : this.minHeight 
+							minWidth  : minWidth, 
+							minHeight : minHeight 
 						})
 						.bind(e, this.updateHeight);
 					resizable = true;
@@ -1134,31 +1003,7 @@
 		 * Used for viewport id and as base part for documents ids
 		 * @type String
 		 */
-		this.id = 'elrte-'+/*(node.id || node.name)*/''+'-'+Math.round(Math.random()*1000000);
-		
-		/**
-		 * Editor minimum width
-		 * @type Number
-		 */
-		this.minWidth  = parseInt(o.minWidth)  || 300;
-		
-		/**
-		 * Editor minimum height
-		 * @type Number
-		 */
-		this.minHeight = parseInt(o.minHeight) || 250;
-		
-		/**
-		 * Editor width in css format
-		 * @type String
-		 */
-		this.width = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto';
-		
-		/**
-		 * Editor height in css format
-		 * @type String
-		 */
-		this.height = (parseInt(o.height) || 400)+'px';
+		this.id = o.id || 'elrte-'+Math.round(Math.random()*1000000);
 		
 		/**
 		 * Editor ui and messages language
@@ -1443,18 +1288,27 @@
 		 * @return Boolean
 		 **/
 		function inDom() {
-			return !!$node.parents('body').length;
-		}
+			return !!($node || self.viewport).parents('body').length;
+ 		}
 		
 		/**
-		 * Attach viewport to DOM, load documents and focus one
+		 * Attach viewport to DOM and load documents
 		 *
 		 * @return void
 		 **/
 		function load() {
-			self.viewport.insertAfter($node.hide());
+			// if node is given - attach editor to DOM
+			node && self.viewport.insertAfter($node);
+			
 			// bind to parent form submit events 
-			self.form = $node.parents('form').bind('submit', $.proxy(self.save, self));
+			self.form = self.viewport.parents('form').bind('submit', $.proxy(self.save, self));
+			
+			loaded = true;
+			
+			self.trigger('load').trigger('show');
+				
+			// delete event "load" subscribers
+			delete(self.listeners.load);
 
 			// bind to window.resize to update tabs view
 			$(window).resize(function() {
@@ -1462,28 +1316,20 @@
 			});
 			
 			// add target node as document if enabled 
-			o.loadTarget && o.documents.unshift(node);
+			node && o.loadTarget && o.documents.unshift(node);
 			// open documents
 			self.open(o.documents);
-			// focus first/last document
-			if ((cnt = self.count()) > 0) {
-				self.focus(self.documentByIndex(o.focusOpenedDoc ? cnt : 1).id);
-			}
-			
-			// notify subscribers about editor loaded
-			self.trigger('load');
-			
-			// delete event "load" subscribers
-			delete(self.listeners.load);
-			
-			state = 'loaded';
+
 			self.timeEnd('load');
 		}
 		
-		
-		/* =============  bind events ============= */
-		// fix workzone height after open/close doc
-		this.bind('open close', this.updateHeight);
+		// focus opened doc and fix workzone height if required
+		this.bind('open', function(e) {
+			var c = self.count();
+			
+			(c == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
+			c < 3 && self.updateHeight();
+		});
 		
 		// fix ff bug with carret position in textarea
 		if ($.browser.mozilla) {
@@ -1491,11 +1337,6 @@
 				self.active.source[0].setSelectionRange(0,0);
 			});
 		}
-		
-		// set editor resizable if enabled
-		setTimeout(function() {
-			self.resizable(true);
-		}, 5);
 		
 		if (inDom()) {
 			// node is in dom - attach editor to page and open documents,
@@ -1507,10 +1348,10 @@
 					clearInterval(interval);
 					load();
 				}
-			}, 200);
+			}, 150);
 		}
 		
-
+		self.resizable(true);
 	}
 
 	/**

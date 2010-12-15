@@ -232,6 +232,7 @@ $.fn.elrtetabsbar = function(rte) {
 		})
 		.bind('wysiwyg source', function(e) {
 			// set tab active and visible
+
 			if (tabs.removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac).is(hs)) {
 				 showTab(e.data.id);
 			}

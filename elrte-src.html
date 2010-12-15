@@ -166,7 +166,7 @@
 				// width : '75%',
 				// height   : 500,
 				resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'event-'],
+				debug : ['error', 'histor', 'even'],
 				// toolbar  : 'default',
 				cssfiles : ['src/css/elrte-inner.css'],
 				documents : [
@@ -189,7 +189,8 @@
 						title : 'doc 2'
 					},
 					{
-						title : 'document 3'
+						title : 'document 3',
+						content : 'im doc 3'
 					}
 					// { }
 					// $('#editor3')[0]
@@ -198,7 +199,28 @@
 				
 			}
 
-			var rte = $('#editor').elrte(opts);
+
+			function elrteNoJQuery(n) {
+				return new elRTE(opts, n)
+			}
+
+			
+			var rte = elrteNoJQuery($('#editor')[0])
+			
+			
+			// setTimeout(function() {
+			// 	$('#editor').after(rte.viewport)
+			// 	
+			// 	// setTimeout(function() {
+			// 		rte.open($('#editor')[0])
+			// 	// }, 1000)
+			// 	
+			// 	
+			// }, 1000)
+			// $('#editor').after(rte.viewport)
+			
+
+			// var rte = $('#editor').elrte(opts);
 			// window.console.log(rte)
 			// var inst = rte.getEditor();
 			
