@@ -37,8 +37,8 @@
 			return loaded;
 		}
 		
-		this.isVisisble = function() {
-			return self.viewport.is(':visible');
+		this.isVisible = function() {
+			return self.viewport.is(':visible') && self.viewport.parents('body').length;
 		}
 		
 		/*******************************************************/
@@ -490,8 +490,8 @@
 			var self = this;
 
 			// dont load docs utill editor will be loaded and visible
-			if (!loaded || !this.viewport.is(':visible')) {
-				return this.one(loaded ? 'show' : 'load', function() {
+			if (!this.isVisible()) {
+				return this.one('show', function() {
 					self.open(d);
 				});
 			}
@@ -784,27 +784,15 @@
 		 */
 		this.exec = function(cmd) {
 			var obj  = this,
-				args = arguments,
-				i, m, objName;
+				args = Array.prototype.slice.call(arguments, 1),
+				i;
 			
-			if ((i = cmd.indexOf('.') > 0)) {
-				objName = cmd.substr(0, i);
+			if ((i = cmd.indexOf('.')) > 0) {
 				obj = this[cmd.substr(0, i)]
 				cmd = cmd.substr(i+1);
 			}
 			
-			return this;
-			
-			var a = Array.prototype.slice.call(arguments);
-			this.log(a.shift());
-			
-			this.log(typeof(cmd))
-			
-			return this[cmd] ? this[cmd].apply(this, a) : false;
-			
-			return this[cmd]
-				? this[cmd].apply(this, a)
-				: this._commands[cmd] ? this._commands[cmd].exec.apply(this._commands[cmd], a) : false;
+			return typeof(obj[cmd]) == 'function' ? obj[cmd].apply(obj, args) : false;
 		}
 		
 		/**
@@ -896,9 +884,9 @@
 		 * @return elRTE
 		 */
 		this.show = function() {
-			if (!this.isVisisble()) {
+			if (!this.isVisible()) {
 				this.viewport.show();
-				// this.trigger('show');
+				this.trigger('show');
 			}
 			return this;
 		}
@@ -909,9 +897,9 @@
 		 * @return elRTE
 		 */
 		this.hide = function() {
-			if (this.isVisisble()) {
+			if (this.isVisible()) {
 				this.viewport.hide();
-				// this.trigger('hide');
+				this.trigger('hide');
 			}
 			return this;
 		}
@@ -1379,6 +1367,7 @@
 	 */
 	elRTE.prototype.log = function(m) {
 		window.console && window.console.log && window.console.log(m);
+		return this;
 	}
 
 	/**

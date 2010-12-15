@@ -210,11 +210,19 @@
 			
 			// var rte = elrteNoJQuery($('#editor')[0])
 			
-			var rte = elrteJQuery($('#editor')[0]);
+			// var rte = elrteJQuery($('#editor')[0]);
+			
+			var n = $('<div/>')
+			var rte = elrteJQuery(n)
+			
+			setTimeout(function() {
+				n.appendTo('body')
+			}, 1000)
+			
 			
 			// window.console.log($('#editor').getElrte())
 			
-			var inst = $('#editor').getElrte();
+			// var inst = $('#editor').getElrte();
 			
 			$('#fullscreen').click(function(e) {
 				rte.exec('execCmd', 'fullscreen')
@@ -254,6 +262,10 @@
 				inst.resizable(!inst.isResizable());
 				$(this).text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable');
 			})
+			
+			$('#selectall').click(function(e) {
+				inst.exec('selection.selectAll')
+			});
 			
 			// setTimeout(function() {
 			// 	$('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
@@ -327,6 +339,7 @@
 	<div id="updsrc" class="button">Update source</div>
 	<div id="save" class="button">Save</div>
 	<div id="resizable" class="button"></div>
+	<div id="selectall" class="button">Select all</div>
 
 	
 	<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all" style="padding:2px;display:none">
