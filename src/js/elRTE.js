@@ -976,22 +976,18 @@
 			return resizable;
 		}
 		
-
-		
-		// this.init();
-		// this.timeEnd('load');
 		self.time('load');
 		
 		/**
 		 * elRTE version number.
 		 * @type String
 		 */
-		this.version = '1.1 dev';
+		this.version = '2.0 dev';
 		/**
 		 * elRTE build date.
 		 * @type String
 		 */
-		this.build = '20100906';
+		this.build = '20101215';
 		/**
 		 * Editor options
 		 * @type Object
