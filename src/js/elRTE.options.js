@@ -82,6 +82,30 @@
 		toolbarPosition : 'top',
 		
 		/**
+		 * Editor tabsbar. For now only "default" available.
+		 *
+		 * @type String
+		 * @default "default"
+		 */
+		tabsbar : 'default',
+		
+		/**
+		 * Editor sidebar. For now only "default" available.
+		 *
+		 * @type String
+		 * @default "default"
+		 */
+		sidebar : 'default',
+		
+		/**
+		 * Editor statusbar. For now only "default" available.
+		 *
+		 * @type String
+		 * @default "default"
+		 */
+		statusbar : 'default',
+		
+		/**
 		 * Enable editor resizable abillity
 		 * 
 		 * @type Boolean

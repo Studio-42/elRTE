@@ -28,7 +28,8 @@
 			minWidth  = parseInt(o.minWidth)  || 300,
 			minHeight = parseInt(o.minHeight) || 250,
 			width     = typeof(o.width) == 'number' ? o.width+'px' : o.width||'auto',
-			height    = (parseInt(o.height) || 400)+'px';
+			height    = (parseInt(o.height) || 400)+'px',
+			tb, intr;
 		
 		
 			
@@ -1047,20 +1048,6 @@
 		this.xhtml = /xhtml/i.test(o.doctype);
 		
 		/**
-		 * Loaded commands
-		 * 
-		 * @type Object
-		 */
-		this._commands = {};
-		
-		/**
-		 * Loaded plugins
-		 * 
-		 * @type Object
-		 */
-		this._plugins = {};
-		
-		/**
 		 * Active shortcuts
 		 * 
 		 * @type Object
@@ -1151,24 +1138,28 @@
 		 * @type Object
 		 */	
 		this.utils = new this.utils(this)
+		
 		/**
 		 * DOM manipulations object
 		 * 
 		 * @type Object
 		 */
 		this.dom = new this.dom(this);
+		
 		/**
 		 * Selection/text range manipulations object
 		 * 
 		 * @type Object
 		 */
 		this.selection = $.browser.msie ? new this.msSelection(this) : new this.selection(this);
+		
 		/**
 		 * Ceaning content object
 		 * 
 		 * @type Object
 		 */
 		this.filter = new this.filter(this);
+		
 		/**
 		 * History object
 		 * 
@@ -1197,6 +1188,11 @@
 			return _c;
 		})(new this.command(this));
 		
+		/**
+		 * Loaded plugins
+		 * 
+		 * @type Object
+		 */
 		this._plugins = (function() {
 			var _p = {}, p;
 			
@@ -1214,25 +1210,29 @@
 		 * 
 		 * @type jQuery
 		 */
-		this.tabsbar   = this.ui.tabsbar(this);
+		this.tabsbar = this.ui.tabsbars[this.ui.tabsbars[o.tabsbar] ? o.tabsbar : 'default'](this);
+		
 		/**
 		 * Widget. Displays various commands widgets
 		 * 
 		 * @type jQuery
 		 */
-		this.sidebar   = this.ui.sidebar(this);
+		this.sidebar = this.ui.sidebars[this.ui.sidebars[o.sidebar] ? o.sidebar : 'default'](this);
+		
 		/**
 		 * Widget. Displays status panel. Used by plugins (path etc.)
 		 * 
 		 * @type jQuery
 		 */
-		this.statusbar = this.ui.statusbar(this);
+		this.statusbar =  this.ui.statusbars[this.ui.statusbars[o.statusbar] ? o.statusbar : 'default'](this);
+		
 		/**
 		 * Documents container
 		 * 
 		 * @type jQuery
 		 */
 		this.workzone  = $('<div class="elrte-workzone"/>');
+		
 		/**
 		 * Container for tabsbar & workzone.
 		 * Required to correct display document and sidebar
@@ -1265,7 +1265,7 @@
 			});
 		
 		/**
-		 * Toolbar.
+		 * Toolbar widget.
 		 * 
 		 * @type jQuery
 		 */
@@ -1273,11 +1273,6 @@
 			? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
 			: $('<div/>');
 			
-		
-		var 
-			ids  = [], 
-			i, c, ui, p, id, tb, cnt, interval;
-		
 		/**
 		 * Check target node is in DOM
 		 *
@@ -1330,7 +1325,7 @@
 		// fix ff bug with carret position in textarea
 		if ($.browser.mozilla) {
 			this.bind('source', function(e) {
-				self.active.source[0].setSelectionRange(0,0);
+				self.active.source[0].setSelectionRange(0, 0);
 			});
 		}
 		
@@ -1339,9 +1334,9 @@
 			load();
 		} else {
 			// wait till node was attached to dom
-			interval = setInterval(function() {
+			intr = setInterval(function() {
 				if (inDom()) {
-					clearInterval(interval);
+					clearInterval(intr);
 					load();
 				}
 			}, 150);
@@ -1407,14 +1402,14 @@
 	 *
 	 */
 	elRTE.prototype.ui = {
-		tabsbar : function(rte) {
-			return $('<ul/>').elrtetabsbar(rte);
+		tabsbars : {
+			'default' : function(rte) { return $('<ul/>').elrtetabsbar(rte); }
 		},
-		sidebar : function(rte) {
-			return $('<div/>').elrtesidebar(rte);
-		},
-		statusbar : function(rte) {
-			return $('<div/>').elrtestatusbar(rte);
+		sidebars : {
+			'default' : function(rte) { return $('<div/>').elrtesidebar(rte); }
+		} ,
+		statusbars : {
+			'default' : function(rte) { return $('<div/>').elrtestatusbar(rte); }
 		},
 		toolbars : { }, 
 		buttons : {
