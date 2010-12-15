@@ -52,7 +52,7 @@ Requirements
 ============
 
 Modern browser. elRTE has been tested in Firefox 3.5+, Internet Explorer 7 & 8,
-Safari 4/5, Opera 10 and Chrome 4/5/6
+Safari 5, Opera 10 and Chrome 6+
 
 
 Documentation
@@ -67,12 +67,14 @@ Authors
 Chief developer: Dmitry "dio" Levashov <dio@std42.ru>
 Developer, tech support: Troex Nevelin <troex@fury.scancode.ru>
 Design: Valentin Razumnih
+RTL Support: Tawfek Daghistani <tawfekov@gmail.com>
 
 
 Translators
 ===========
 
-Arabic:               tawfek daghistani <tawfekov@gmail.com>
+Arabic:               Tawfek Daghistani <tawfekov@gmail.com>
+Brazilian Portuguese: Jairo Moreno <master.zion@gmail.com>
 Czech:                Michal Marek <mich.marek@gmail.com>
 Dutch:                Kurt Aerts http://ilabsolutions.net/
 English:              Dmitry "dio" Levashov <dio@std42.ru>
@@ -81,12 +83,17 @@ German:               Vasiliy Razumnyh <rvn@std42.ru>
 Hungarian:            Viktor Tamas <tamas.viktor@totalstudio.hu>
 Italian:              Ugo Punzolo <sadraczerouno@gmail.com>
 Japanese:             Tomoaki Yoshida <info@yoshida-studio.jp>
+Korean:               DominicKesler <DominicKesler@gmail.com>
 Latvian:              Uldis Plotiņš <uldis.plotins@gmail.com>
 Persian (Farsi):      Saleh soozanchi <info@soozanchi.ir>
 Polish:               Andrzej Borowicz http://borowicz.info/
-Spanish:              Ricardo Obregón <robregonm@gmail.com>
 Russian:              Dmitry "dio" Levashov <dio@std42.ru>
+Simplified Chinese:   Lee Chenhwa <leechenhwa@gmail.com>
+Spanish:              Ricardo Obregón <robregonm@gmail.com>
+Thai:                 Anusuk Sangubon <jaideejung007@gmail.com>
 Traditional Chinese:  Tad <tad0616@gmail.com>
+                      T.C. Chou <tcchou@tcchou.org>
+Turkish:              Özgür Çakırca <dijitalartist@gmail.com>
 Ukranian:             Artem Vasilyev
 
 
@@ -103,7 +110,7 @@ MIT and GPL licenses.
 
 This software is available under a 3 clauses BSD license:
 
-Copyright (c) 2009, Studio 42 Ltd.
+Copyright (c) 2009-2011, Studio 42 Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
