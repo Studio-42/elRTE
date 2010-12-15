@@ -17,7 +17,10 @@ $.fn.elrte = function(o) {
 		var $this = $(this);
 		
 		if (!$this.data('elrte') && !$this.data('_elrte_lock')) {
-			$this.data('_elrte_lock', 1).data('elrte', new elRTE(o, this)).removeData('_elrte_lock');
+			$this.data('_elrte_lock', 1)
+			// .data('elrte', new elRTE(o, this))
+			new elRTE(o, this)
+			$this.removeData('_elrte_lock');
 		}
 	});
 	

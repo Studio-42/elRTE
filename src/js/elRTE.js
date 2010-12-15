@@ -31,7 +31,9 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-		
+		if (node) {
+			$node.data('elrte', this)
+		}
 			
 		this.isLoaded = function() {
 			return loaded;
@@ -886,7 +888,7 @@
 		this.show = function() {
 			if (!this.isVisible()) {
 				this.viewport.show();
-				this.trigger('show');
+				this.focus().trigger('show');
 			}
 			return this;
 		}
