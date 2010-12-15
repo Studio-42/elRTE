@@ -5,6 +5,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.zh_CN = {
+	'_translator'    : 'Lee Chenhwa &lt;leechenhwa@gmail.com&gt;',
+	'_translation'   : 'Simplified Chinese translation',
 	'Editor' : '编辑器',
 	'Source' : '源代码',
 	// Panel Name

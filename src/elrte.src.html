@@ -114,9 +114,9 @@
 
 			var opts = {
 				cssClass : 'el-rte',
-				lang     : 'en',
+				// lang     : 'ru',
 				height   : 350,
-				// width : 500,
+				// width    : 500,
 				toolbar  : 'maxi',
 				cssfiles : ['elrte/css/elrte-inner.css', 'elrte/css/inner-example.css'],
 				// elfinder
@@ -136,7 +136,7 @@
 					return html.replace(/(<!--\s*BEGIN\s*([^>]+)\s*-->([\s\S]*?)<!--\s*END\s*(\2)\s*-->)/gi, function(t, a, b, c, d) {
 
 						if (b == d) {
-							self.rte.log([b, d]);
+							//self.rte.log([b, d]);
 							var id = 'MYTAG'+Math.random().toString().substring(2);
 							self.scripts[id] = t;
 							return '<img id="'+id+'" src="'+self.url+'pixel.gif" class="elrte-protected elrte-MYTAG">';
@@ -151,7 +151,7 @@
 						if (a.class['elrte-MYTAG']) {
 							return self.scripts[a.id] + "\n" || '';
 						}
-						//return t;
+						return t;
 					});
 				}]
 			};
@@ -169,8 +169,14 @@
 				var rteInDialog = $('<div>Content for editor in dialog</div>');
 				// put element inside dialog
 				dialog.append(rteInDialog);
-				// run elRTE on element
+				// create elRTE on element
 				rteInDialog.elrte(opts);
+			});
+			$('#getContent').click(function() {
+				alert($('#editor').elrte('val'));
+			});
+			$('#setContent').click(function() {
+				$('#editor').elrte('val', 'This is new <b>content</b> for editor');
 			});
 
 		});
@@ -214,7 +220,11 @@ here is my fancy code
 <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
 <font color="red">empty text</font>
 <div>div'ed text</div><p>p test</p>
-			
+<table>
+<tbody> {?foreach key=k value=v?}
+<tr><td>123</td></tr> {?/foreach?}
+</tbody>
+</table>
 <h2>ДУГЛАС АДАМС - Путеводитель "Автостопом по Галактике"<br>
 DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
 
@@ -224,11 +234,13 @@ DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
 				</script>
 				<img src="elrte/images/media-director.png" alt="Marvin">
 				<!-- pagebreak -->
-Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку,лежа на мраморном песке пляжей Сантрагинуса V и вдыхая пьянящий морской воздух;  спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 
 <b>Вот что сообщает <a href="http://google.com">Галактический Путеводитель</a> на предмет <span style="background-color: rgb(255, 255, 153);">полотенец</span>:</b>
+Полотенце, возможно, самый необходимый предмет ! для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку,лежа на мраморном песке пляжей Сантрагинуса V и вдыхая пьянящий морской воздух;  спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля 
 	</div>
 	<input type="submit" name="" value="go" id="">
 	</form>
 	<div id="dialog" class="button">dialog</div>
+	<div id="getContent" class="button">get content</div>
+	<div id="setContent" class="button">set content</div>
 </body>
 </html>

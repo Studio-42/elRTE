@@ -7,6 +7,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.zh_TW = {
+	'_translator'    : 'Tad &lt;tad0616@gmail.com&gt;<br>T.C. Chou &lt;tcchou@tcchou.org&gt;',
+	'_translation'   : 'Traditional Chinese translation',
 	'Editor' : '編輯',
 	'Source' : '原始碼',
 	// panels names

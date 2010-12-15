@@ -5,6 +5,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.tr = {
+	'_translator'    : 'Özgür Çakırca &lt;dijitalartist@gmail.com&gt;',
+	'_translation'   : 'Turkish translation',
 	'Editor' : 'Editör',
 	'Source' : 'Kaynak Kodu',
 	// panels names
