@@ -157,123 +157,180 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
-
 			var opts = {
-				// cssClass : 'cupertino',
-				// active : 1,
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				// lang     : 'ru',
 				// width : '75%',
 				// height   : 500,
+				// resizable : false,
+				load : function(e) {
+					$('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled')
+				},
+				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
 				debug : ['error', 'histor', 'even'],
-				// toolbar  : 'default',
-				cssfiles : ['src/css/elrte-inner.css'],
-				documents : [
-					// $('#editor22'),
-					// $('#editor3')[0],
-					// $('#editor3'),
-					{
-						title : 'Автостопом по галактике',
-						content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
-						name : 'doc-2',
-						url : 'post.php',
-						cssfiles : ['dummy.css']
-						// type : 'post'
-					},
-					// "Im a string",
-					{
-						title : 'doc'
-					},
-					{
-						title : 'doc 2'
-					},
-					{
-						title : 'document 3',
-						content : 'im doc 3'
-					}
-					// { }
-					// $('#editor3')[0]
-					// {label : 'doc3', selector : '#editor2'}
-				]
+				cssfiles : ['src/css/elrte-inner.css']
 				
-			}
+			},
+			
+			docs = {
+				div               : [$('#editor')],
+				textarea          : [$('#editor2')],
+				div_textarea      : [$('#editor'), $('#editor2')],
+				div_textarea_data : [$('#editor'), $('#editor2'), {
+					title : 'Автостопом по галактике',
+					content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
+					name : 'doc-3',
+				}]
+			},
+			methods = {
+				construct : function(d) {
+					opts.documents = d;
+					var e = new elRTE(opts);
+					e.viewport.insertBefore($('#editor'))
+					return e;
+				},
+				construct_wait : function(d) {
+					opts.documents = d;
+					var e = new elRTE(opts);
+					
+					setTimeout(function() {
+						e.viewport.insertBefore($('#editor'))
+					}, 3000);
+					return e;
+				},
+				jquery : function(d) {
+					opts.documents = d;
+					return $('<div/>').insertBefore($('#editor')).elrte(opts)
+				},
+				jquery_wait : function(d) {
+					opts.documents = d;
+					var e = $('<div/>').elrte(opts);
+					setTimeout(function() {
+						e.insertBefore($('#editor'));
+					}, 3000);
+					return e;
+				}
+			},
+			method = '',
+			open = 'div', 
+			url = window.location.href,
+			i, rte;
+			
 
 
-			function elrteNoJQuery(n) {
-				return new elRTE(opts, n)
-			}
+			$('#documents').change(function() {
+				var v = $(this).val();
+				
+				$('#examples a').each(function() {
+					var href = $(this).attr('href');
+					href = href.replace(/&.*$/, '&'+v);
+					$(this).attr('href', href);
+				});
+			});
 
-			function elrteJQuery(n) {
-				return $(n).elrte(opts)
-			}
+
+		
+
+			var buttons = {
+				toggle : {
+					title : 'Hide',
+					click : function() {
+						var v = rte.jquery ? rte.elrte('visible') : rte.visible();
+						if (v) {
+							rte.jquery ? rte.elrte('hide') : rte.hide();
+							$(this).text('Show');
+						} else {
+							rte.jquery ? rte.elrte('show') : rte.show();
+							$(this).text('Hide');
+						}
+					}
+				},
+				resize : {
+					title : 'Resizable',
+					click : function() {
+						var v = rte.jquery ? rte.elrte('resizable') : rte.resizable();
+						v = rte.jquery ? rte.elrte('resizable', !v) : rte.resizable(!v);
+						$(this).text(v ? 'Resizable off' : 'Resizable on');
+					},
+					load : function(e, elrte) {
+						$(this).text(elrte.resizable() ? 'Resizable off' : 'Resizable on');
+					}
+				},
+				selectall : {
+					title : 'Select All',
+					click : function() {
+						rte.jquery ? rte.elrte('selection.selectAll') : rte.selection.selectAll();
+					},
+					load : function(e, elrte) {
+						elrte.bind('wysiwyg', function() { $(this).removeClass('disabled') })
+							.bind('source', function() { $(this).addClass('disabled') })
+					}
+				}
+				
+			};
 			
-			// var rte = elrteNoJQuery($('#editor')[0])
-			
-			var rte = elrteJQuery($('#editor')[0]);
-			
-			// var n = $('<div/>')
-			// var rte = elrteJQuery(n)
-			// 
-			// setTimeout(function() {
-			// 	n.appendTo('body')
-			// }, 1000)
-			
-			
-			window.console.log($('#editor').getElrte())
-			
-			var inst = $('#editor').getElrte();
-			
-			$('#fullscreen').click(function(e) {
-				rte.exec('execCmd', 'fullscreen')
-			})
-			$('#toggle').click(function(e) {
-				rte.elrte('destroy')
-			})
-			$('#hide').click(function(e) {
-				if ($(this).text() == 'Hide') {
-					// inst.hide()
-					// inst.exec('hide')
-					rte.elrte('hide')
-					$(this).text('Show')
-				} else {
-					// inst.show()
-					// inst.exec('show')
-					rte.elrte('show')
-					$(this).text('Hide')
+			$.each(buttons, function(n, button) {
+				var b = $('<div class="button disabled">'+this.title+'</div>').appendTo('#api');
+				
+				b.mousedown(function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					if (!$(this).hasClass('disabled')) {
+						button.click.apply(b[0]);
+					}
+					return false;
+				}).click(function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+				});
+				
+				if (button.load) {
+					b.load(function(e) {
+						button.load.apply(b[0], arguments)
+					})
 				}
 			})
-			$('#prev').click(function(e) {
-				rte.exec('prev')
-			})
-			$('#next').click(function(e) {
-				rte.exec('next')
-			})
-			$('#updsrc').click(function() {
-				rte.exec('updateSource')
-				window.console.log(rte.exec('val', 'elrte-editor-document-1'))
-				window.console.log(rte.exec('val', 'elrte-editor-document-2'))
-			})
-			$('#save').click(function(e) {
-				rte.exec('save')
-			});
 			
-			$('#resizable').click(function(e) {
-				inst.resizable(!inst.isResizable());
-				$(this).text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable');
-			})
+			if ((i = url.indexOf('?')) != -1) {
+				url = url.substr(i+1);
+				
+				if ((i = url.indexOf('&')) != -1) {
+					method = url.substr(0, i);
+					open   = url.substr(i+1);
+					
+				} else {
+					method = url;
+				}
+			}
 			
-			$('#selectall').click(function(e) {
-				inst.exec('selection.selectAll')
-			});
 			
-			// setTimeout(function() {
-			// 	$('#resizable').text(inst.isResizable() ? 'Disable resizable' : 'Enable resizable')
-			// }, 50);
+			method = methods[method] ? method : 'jquery';
+			open   = docs[open] ? open : 'div';
+
+			rte = methods[method](docs[open]);
+			
 		})
 	</script>
 	
 	<style type="text/css" media="screen">
+		
+		#examples {
+			border-bottom:1px solid #aaa;
+			padding:5px 12px;
+		}
+		
+		#examples a {
+			margin:0 7px;
+		}
+		
+		.docs-select {
+			float:right;
+		}
+		
+		#api {
+			margin:7px;	
+		}
 		
 		.button {
 			display: -moz-inline-stack;
@@ -281,7 +338,8 @@
 			zoom: 1;
 			*display: inline;
 			border:1px solid #ccc;
-			padding:3px;
+			padding:1px 3px;
+			margin:0 2px;
 			-moz-border-radius:5px;
 			-webkit-border-radius:5px;
 			border-radius:5px;
@@ -289,40 +347,11 @@
 			cursor:default;
 		}
 		
-		.btn {
-			width:20px;
-			height:20px;
-			margin: 0 2px 0 0;
-			padding: 0;
-/*			border: 1px solid #ccc;*/
-			cursor:default;
-			position:relative;
-			background:transparent url(./src/images/elrte-toolbar.png) -200px 0 no-repeat;
+		.disabled {
+			background:#eee;
+			color:#ccc;
 		}
-		.btn-specialchars { background-position:-480px -20px; }
 		
-		.btn-menu {
-			width:auto;
-			min-width:32px;
-			max-width:120px;
-		}
-		.btn-control {
-			float:right;
-			height:20px;
-			width:10px;
-			border-left:1px solid #ccc;
-			background:#eee url(./src/images/elrte-toolbar.png) -778px -22px no-repeat;
-		}
-		.btn-menu-label {
-			width:90px;
-			float:left;
-			font-size:12px;
-			line-height:20px;
-			height:20px;
-			padding: 0 5px;
-			overflow:hidden;
-			background:#fff;
-		}
 		.elrte {
 			margin:3px 0;
 		}
@@ -331,7 +360,28 @@
 </head>
 <body>
 
-	<div id="fullscreen" class="button">Fullscreen</div>
+	<div id="examples">
+		<div class="docs-select">
+			Load as document(s):
+			<select id="documents">
+				<option value="div">div</option>
+				<option value="textarea">textarea</option>
+				<option value="div_textarea">div + textarea</option>
+				<option value="div_textarea_data">div + textarea + data</option>
+			</select>
+		</div>
+		Create editor by:
+		<a href="?construct&" class="construct">Class constructor</a> |
+		<a href="?construct_wait&" class="construct-wait">Class constructor (3sec delay)</a> |
+		<a href="?jquery&" class="jquery">jQuery plugin</a> |
+		<a href="?jquery_wait&" class="jquery-wait">jQuery plugin (3sec delay)</a> |
+	</div>
+
+	<div id="api">
+		
+	</div>
+
+	<!-- <div id="fullscreen" class="button">Fullscreen</div>
 	<div id="toggle" class="button">Toggle</div>
 	<div id="hide" class="button">Hide</div>
 	<div id="prev" class="button">&laquo;Prev</div>
@@ -339,60 +389,9 @@
 	<div id="updsrc" class="button">Update source</div>
 	<div id="save" class="button">Save</div>
 	<div id="resizable" class="button"></div>
-	<div id="selectall" class="button">Select all</div>
+	<div id="selectall" class="button">Select all</div> -->
 
 	
-	<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all" style="padding:2px;display:none">
-		<div class=" ui-widget-header ui-corner-all" style="padding:3px;margin-bottom:3px">
-			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
-				<div class="btn">
-					
-				</div>
-			</div>
-			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
-				<div class="btn btn-specialchars btn-menu">
-					<div class="btn-control">
-						
-					</div>
-					<div class="btn-menu-label">
-						size
-					</div>
-				</div>
-			</div>
-			<!-- <br/> -->
-			<div class="ui-helper-reset ui-state-default ui-corner-all elrte-ib  ui-state-hover-">
-				<div class="btn">
-					
-				</div>
-			</div>
-		</div>
-		
-		<div  class="ui-helper-clearfix" style="border:0px solid #222;padding:3px">
-			<div style="width:100px;height:300px;border:1px solid #111;float:left;display:none">
-				sidebar
-			</div>
-			<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="height:300px;margin-left:0">
-				<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" style="height:20px;display:non">
-					<!-- <li style="width:20px; height:18px;border:1px solid #111;float:right">btns</li> -->
-					<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">Tab 1</li>
-					<li class="ui-state-default ui-corner-top">Tab 2</li>
-				</ul>
-				<div class="elrte-workzone">
-				<iframe style="width:100%;height:250px;border:0px solid #111" frameborder="0"></iframe>	
-				</div>
-				
-			</div>
-		</div>
-		
-		
-		<!-- <div class="ui-helper-clearfix">
-			
-		</div> -->
-		<div class=" ui-widget-content ui-state-default ui-corner-all" style="margin-top:3px">
-			statusbar
-		</div>
-		
-	</div>
 	<form method="post" action="post.php" >
 	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
 		<h2>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><p>
@@ -402,11 +401,9 @@
 		<img src="http://localhost/git/elrte-master/images/hhgttg.jpg" style="float:left;margin-right:10px;margin-top:5px" height="208" width="200">
 		</p><p style="color:#003366">"And the wheel," <span style="color:#000000">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p><br><p style="color:#993333">"Ah," <span style="color:#000000">said the marketing girl, </span>"Well, we're having a little difficulty there."</p><br><p style="color:#003366">"Difficulty?" <span style="color:#000000">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p><br><p>The marketing girl soured him with a look.</p><br><p><span style="color:#993333">"Alright, Mr. Wiseguy,"</span> she said, <span style="color:#993333">"if you're so clever, you tell us what colour it should be."</span></p><br><br><br><hr style="border:5px ridge #cc6633;width:98%;height:30px;background-color:#ffff99">
 	</div>
-
-	<input type="submit" name="" value="go" id="">
+	<textarea id="editor2" name="doc-2">Editor 2</textarea>
 	
-	<div id="editor2">Editor 2</div>
-	<textarea id="editor3" name="ta">Editor 3</textarea>
+	<input type="submit" name="" value="go" id="">
 	</form>
 </body>
 </html>

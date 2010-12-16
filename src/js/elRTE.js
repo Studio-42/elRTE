@@ -21,7 +21,7 @@
 		var self = this,
 			loaded = false,
 			node = node && node.nodeType == 1 ? node : void(0),
-			$node = node ? $(node).hide() : void(0), //.hide(),
+			$node = node ? $(node).data('elrte', this).hide() : void(0), //.hide(),
 			o    = $.extend(true, {}, this.options, o || {}),
 			// store resizable state to avoid double bindings event 
 			resizable = false,
@@ -31,18 +31,19 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-		if (node) {
-			$node.data('elrte', this)
-		}
 			
-		this.isLoaded = function() {
-			return loaded;
-		}
-		
-		this.isVisible = function() {
+		/**
+		 * Return true if editor in DOM and visible
+		 *
+		 * @return Boolean
+		 */
+		this.enabled = function() {
 			return self.viewport.is(':visible') && self.viewport.parents('body').length;
 		}
 		
+		this.visible = function() {
+			return self.viewport.is(':visible');
+		}
 		/*******************************************************/
 		/*                         Events                      */
 		/*******************************************************/
@@ -210,6 +211,7 @@
 				id    = src.id;
 				title = src.title;
 				name  = src.name;
+
 				if (src.nodeType == 1) {
 					// content is node value or inner html
 					$src    = $(src);
@@ -492,7 +494,7 @@
 			var self = this;
 
 			// dont load docs utill editor will be loaded and visible
-			if (!this.isVisible()) {
+			if (!this.enabled()) {
 				return this.one('show', function() {
 					self.open(d);
 				});
@@ -582,7 +584,7 @@
 		 */
 		this.toggle = function() {
 			this.active && this.active.toggle();
-			return this;
+			return this.focus();
 		}
 		
 		/**
@@ -591,6 +593,11 @@
 		 * @return Boolean
 		 **/
 		this.isWysiwyg = function() {
+			this.log('isWysiwyg() depricated!')
+			return this.wysiwyg();
+		}
+		
+		this.wysiwyg = function() {
 			return this.active && this.active.wysiwyg();
 		}
 		
@@ -886,11 +893,20 @@
 		 * @return elRTE
 		 */
 		this.show = function() {
-			if (!this.isVisible()) {
+			if (!this.enabled()) {
 				this.viewport.show();
 				this.focus().trigger('show');
 			}
 			return this;
+		}
+		
+		this.fixMozillaCarret = function() {
+			if ($.browser && this.active) {
+				this.active.editor.add(this.active.source).toggle();
+				this.active.source.focus();
+				this.active.editor.add(this.active.source).toggle();
+				this.focus();
+			}
 		}
 		
 		/**
@@ -899,7 +915,7 @@
 		 * @return elRTE
 		 */
 		this.hide = function() {
-			if (this.isVisible()) {
+			if (this.enabled()) {
 				this.viewport.hide();
 				this.trigger('hide');
 			}
@@ -951,29 +967,32 @@
 		 * @param  Boolean  switch on/off resizable
 		 * @return void
 		 */
-		this.resizable = function(enbl) {
+		this.resizable = function(state) {
 			var o = this.options,
 				e = o.resizeHelper ? 'resizestop' : 'resize';
-				
-			if (o.resizable && $.fn.resizable) {
-				if (enbl && !resizable) {
-					this.viewport
-						.resizable({
-							handles   : 'se', 
-							helper    : o.resizeHelper,
-							minWidth  : minWidth, 
-							minHeight : minHeight 
-						})
-						.bind(e, this.updateHeight);
-					resizable = true;
-					
-				} else if (!enbl && resizable) {
-					this.viewport.resizable('destroy').unbind(e);
-					resizable = false;
+			
+			if (state !== void(0)) {
+				if (o.resizable && $.fn.resizable) {
+					if (state && !resizable) {
+						this.viewport
+							.resizable({
+								handles   : 'se', 
+								helper    : o.resizeHelper,
+								minWidth  : minWidth, 
+								minHeight : minHeight 
+							})
+							.bind(e, this.updateHeight);
+						resizable = true;
+
+					} else if (!state && resizable) {
+						this.viewport.resizable('destroy').unbind(e);
+						resizable = false;
+					}
 				}
-			}
-			// this.focus()
-			// return
+				this.focus();
+			}	
+			
+			return resizable;
 		}
 		
 		/**
@@ -1106,6 +1125,8 @@
 			'wysiwyg'   : [],
 			/* called before close document */
 			'close'     : [],
+			/* called before destroy editor instance */
+			'destroy'   : [],
 			/* called before command will be executed */
 			'exec'      : [],
 			/* called after some changes was made in document. */
@@ -1308,10 +1329,8 @@
 			
 			// bind to parent form submit events 
 			self.form = self.viewport.parents('form').bind('submit', $.proxy(self.save, self));
-			
-			loaded = true;
-			
-			self.trigger('load').trigger('show');
+
+			self.trigger('load', { elrte : self }).trigger('show');
 				
 			// delete event "load" subscribers
 			delete(self.listeners.load);
@@ -1329,6 +1348,10 @@
 			self.timeEnd('load');
 		}
 		
+		if (typeof(o.load) == 'function') {
+			this.bind('load', o.load)
+		}
+		
 		// focus opened doc and fix workzone height if required
 		this.bind('open', function(e) {
 			var c = self.count();
@@ -1338,10 +1361,14 @@
 			
 		});
 		
-		// fix ff bug with carret position in textarea
+		// fix ff bug with carret position in textarea and curret visibility in iframe
 		if ($.browser.mozilla) {
 			this.bind('source', function(e) {
 				self.active.source[0].setSelectionRange(0, 0);
+			}).bind('show', function() {
+				if (self.active) {
+					self.wysiwyg() ? self.fixMozillaCarret() : self.active.source[0].setSelectionRange(0, 0);
+				}
 			});
 		}
 		

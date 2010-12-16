@@ -139,6 +139,8 @@
 		/* send debug to log? variants: "all" - for all messages, ["source[.type]", ...] - for debug from only required objects/methods */
 		debug    : false,
 		
+		load : null,
+		
 		/* --- editor documents options --- */
 		/* load target element as document */
 		loadTarget : true,
