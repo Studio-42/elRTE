@@ -918,7 +918,9 @@
 				self.close(this.id);
 			});
 			
-			this.viewport.detach();
+			this.trigger('destroy').viewport.remove();
+			node && $node.removeData('elrte').show();
+			delete this;
 		}
 		
 		/**

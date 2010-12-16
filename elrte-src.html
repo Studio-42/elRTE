@@ -228,7 +228,7 @@
 				rte.exec('execCmd', 'fullscreen')
 			})
 			$('#toggle').click(function(e) {
-				rte.exec('toggle')
+				rte.elrte('destroy')
 			})
 			$('#hide').click(function(e) {
 				if ($(this).text() == 'Hide') {
