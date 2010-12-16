@@ -164,9 +164,16 @@
 				// height   : 500,
 				// resizable : false,
 				callbacks : {
-					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); }
+					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
+					// open : function(e) {
+					// 	var d = rte.jquery ? rte.elrte('document', e.data.id) : rte.document(e.data.id)
+					// 	$('#opened-docs').append('<li id="od-'+e.data.id+'">'+d.title+' ('+d.id+')</li>')
+					// },
+					// close : function(e) {
+					// 
+					// 	$('#opened-docs').children('#od-'+e.data.id).remove()
+					// }
 				},
-				// load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
 				debug : ['error', 'histor', 'event.open'],
@@ -188,7 +195,7 @@
 				construct : function(d) {
 					opts.documents = d;
 					var e = new elRTE(opts);
-					e.viewport.insertBefore($('#editor'))
+					e.workzone.insertBefore($('#editor'))
 					return e;
 				},
 				construct_wait : function(d) {
@@ -196,7 +203,7 @@
 					var e = new elRTE(opts);
 					
 					setTimeout(function() {
-						e.viewport.insertBefore($('#editor'))
+						e.workzone.insertBefore($('#editor'))
 					}, 3000);
 					return e;
 				},
@@ -383,16 +390,6 @@
 		
 	</div>
 
-	<!-- <div id="fullscreen" class="button">Fullscreen</div>
-	<div id="toggle" class="button">Toggle</div>
-	<div id="hide" class="button">Hide</div>
-	<div id="prev" class="button">&laquo;Prev</div>
-	<div id="next" class="button">Next&raquo;</div>
-	<div id="updsrc" class="button">Update source</div>
-	<div id="save" class="button">Save</div>
-	<div id="resizable" class="button"></div>
-	<div id="selectall" class="button">Select all</div> -->
-
 	
 	<form method="post" action="post.php" >
 	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
@@ -407,5 +404,10 @@
 	
 	<input type="submit" name="" value="go" id="">
 	</form>
+	
+	<ul id="opened-docs">
+		
+	</ul>
+	
 </body>
 </html>

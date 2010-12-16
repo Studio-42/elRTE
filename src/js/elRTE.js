@@ -8,6 +8,8 @@
 			return -1;
 		};
 	}
+	
+
 		
 	/**
 	 * @Class elRTE editor
@@ -19,7 +21,7 @@
 	elRTE = function(o, node) {
 		
 		var self = this,
-			loaded = false,
+			// loaded = false,
 			node = node && node.nodeType == 1 ? node : void(0),
 			$node = node ? $(node).data('elrte', this).hide() : void(0), //.hide(),
 			o    = $.extend(true, {}, this.options, o || {}),
@@ -31,7 +33,7 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-			
+		// this.log(elRTEDocument)	
 		/**
 		 * Return true if editor in DOM and visible
 		 *
@@ -520,11 +522,12 @@
 		/**
 		 * Close document
 		 *
+		 * @todo check options allowCloseDocs
 		 * @param String  document id
 		 * @return elRTE
 		 */
 		this.close = function(id) {
-			var d = this.document(id);
+			var d = this.documentById(id);
 
 			if (d) {
 				// switch to next/first document before close active one
@@ -552,7 +555,7 @@
 		 * @return elRTE
 		 **/
 		this.focus = function(id) {
-			var d = this.document(id), 
+			var d = this.documentById(id), 
 				a = this.active;
 
 			if (d) {
@@ -604,6 +607,7 @@
 		/**
 		 * Return number of loaded documents
 		 *
+		 * @todo - static counter ?
 		 * @return Number
 		 **/
 		this.count = function() {
@@ -621,7 +625,11 @@
 		 * @param  String  document id (or undefined for active document)
 		 * @return Object
 		 **/
-		this.document = function(id) {
+		// this.document = function(id) {
+		// 	this.log('document called')
+		// 	return this.documents[id]||this.active;
+		// }
+		this.documentById = function(id) {
 			return this.documents[id]||this.active;
 		}
 		
@@ -990,7 +998,7 @@
 						resizable = false;
 					}
 				}
-				this.focus();
+				// this.focus();
 			}	
 			
 			return resizable;

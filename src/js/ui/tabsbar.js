@@ -31,7 +31,7 @@ $.fn.elrtetabsbar = function(rte) {
 	this.getNext = function() {
 		var d, t, n;
 		
-		if ((d = rte.document())) {
+		if ((d = rte.documentById())) {
 			t = this.children('[rel="'+d.id+'"]');
 			return ((n = t.next(ts)).length ? n : this.children(ts+fs)).attr('rel');
 		}
@@ -46,7 +46,7 @@ $.fn.elrtetabsbar = function(rte) {
 	this.getPrev = function() {
 		var d, t, n;
 		
-		if ((d = rte.document())) {
+		if ((d = rte.documentById())) {
 			t = this.children('[rel="'+d.id+'"]');
 			return ((n = t.prev(ts)).length ? n : this.children(ts+ls)).attr('rel');
 		}
@@ -200,7 +200,7 @@ $.fn.elrtetabsbar = function(rte) {
 		}
 				
 		rte.bind('open', function(e) {
-			var d = rte.document(e.data.id), title, tab;
+			var d = rte.documentById(e.data.id), title, tab;
 
 			// create tab if document exists and has not tab yet
 			if (d && d.id && !tabs.filter('[rel="'+d.id+'"]').length) {
