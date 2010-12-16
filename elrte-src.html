@@ -163,9 +163,10 @@
 				// width : '75%',
 				// height   : 500,
 				// resizable : false,
-				load : function(e) {
-					$('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled')
+				callbacks : {
+					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); }
 				},
+				// load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
 				debug : ['error', 'histor', 'even'],
@@ -263,8 +264,9 @@
 						rte.jquery ? rte.elrte('selection.selectAll') : rte.selection.selectAll();
 					},
 					load : function(e, elrte) {
-						elrte.bind('wysiwyg', function() { $(this).removeClass('disabled') })
-							.bind('source', function() { $(this).addClass('disabled') })
+						var $this = $(this);
+						elrte.bind('wysiwyg', function() { $this.removeClass('disabled') })
+							.bind('source', function() {  $this.addClass('disabled') })
 					}
 				}
 				

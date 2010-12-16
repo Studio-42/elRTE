@@ -1348,9 +1348,9 @@
 			self.timeEnd('load');
 		}
 		
-		if (typeof(o.load) == 'function') {
-			this.bind('load', o.load)
-		}
+		$.each(o.callbacks || {}, function(e, c) {
+			self.bind(e, c);
+		});
 		
 		// focus opened doc and fix workzone height if required
 		this.bind('open', function(e) {

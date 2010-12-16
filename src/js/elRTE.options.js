@@ -141,6 +141,8 @@
 		
 		load : null,
 		
+		callbacks : {},
+		
 		/* --- editor documents options --- */
 		/* load target element as document */
 		loadTarget : true,
