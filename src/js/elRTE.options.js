@@ -131,7 +131,7 @@
 		/* switch current doc from source to editor when switching to another doc */
 		autoToggle : true,
 		/* always show documents tabs, if false - tabs hide when only one doc opened */
-		alwaysShowTabs : false,
+		alwaysShowTabs : true,
 		sortableTabs : true,
 		sidebarPos : 'left',
 		/* max undo/redo steps, 0 - for disable history */

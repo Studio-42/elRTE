@@ -148,8 +148,9 @@ $.fn.elrtetabsbar = function(rte) {
 			if (l == 0 || (l == 1 && !o.alwaysShowTabs)) {
 				// if no tabs or only one tab - hide tabsbar
 				$this.hide();
-			} else if (l > 1) {
+			} else {
 				$this.show();
+
 				// calculate width available for visible tabs
 				w = barWidth();
 
@@ -243,7 +244,7 @@ $.fn.elrtetabsbar = function(rte) {
 			update();
 		})
 		.bind('resize', function() {
-			update();
+			// update();
 		})
 		;
 	}

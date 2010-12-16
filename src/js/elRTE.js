@@ -38,11 +38,11 @@
 		 * @return Boolean
 		 */
 		this.enabled = function() {
-			return self.viewport.is(':visible') && self.viewport.parents('body').length;
+			return self.workzone.is(':visible') && self.workzone.parents('body').length;
 		}
 		
 		this.visible = function() {
-			return self.viewport.is(':visible');
+			return self.workzone.is(':visible');
 		}
 		/*******************************************************/
 		/*                         Events                      */
@@ -191,7 +191,7 @@
 		 */
 		function doc(src, rte) {
 			var o = rte.options,
-				h = rte.workzone.height(),
+				h = rte.viewport.height(),
 				css = [],
 				id, name, title, content, html, $src;
 
@@ -260,10 +260,10 @@
 			
 			// create document view and attach to editor
 			this.view = $('<div id="'+this.id+'" class="elrte-document"/>')
-				.append(this.editor.height(h))
-				.append(this.source.height(h).hide())
+				.append(this.editor)
+				.append(this.source.hide())
 				.hide()
-				.appendTo(rte.workzone);
+				.appendTo(rte.viewport);
 			// after iframe attached to DOM - get its window/document
 			this.window   = this.editor[0].contentWindow;
 			this.document = this.window.document;
@@ -565,7 +565,7 @@
 					// set active doc in wysiwyg mode if required before hide it
 					a && !a.wysiwyg() && this.options.autoToggle && this.toggle();
 					// show doc
-					this.workzone.children('.elrte-document').hide().filter('#'+d.id).show();
+					this.viewport.children('.elrte-document').hide().filter('#'+d.id).show();
 					// set doc active
 					this.active = d;
 					// give focus to doc
@@ -894,7 +894,7 @@
 		 */
 		this.show = function() {
 			if (!this.enabled()) {
-				this.viewport.show();
+				this.workzone.show();
 				this.focus().trigger('show');
 			}
 			return this;
@@ -916,7 +916,7 @@
 		 */
 		this.hide = function() {
 			if (this.enabled()) {
-				this.viewport.hide();
+				this.workzone.hide();
 				this.trigger('hide');
 			}
 			return this;
@@ -934,7 +934,7 @@
 				self.close(this.id);
 			});
 			
-			this.trigger('destroy').viewport.remove();
+			this.trigger('destroy').workzone.remove();
 			node && $node.removeData('elrte').show();
 			delete this;
 		}
@@ -948,7 +948,7 @@
 		this.updateHeight = function() {
 			var h = 'height',
 				o = 'outerHeight',
-				v = self.viewport[h]() - (self.container[o](true) - self.main[h]());
+				v = self.workzone[h]() - (self.container[o](true) - self.main[h]());
 				
 			// trigger to update tabsbar
 			self.trigger('resize');
@@ -956,8 +956,9 @@
 			v -= ((self.toolbar.is(':visible')   ? self.toolbar[o](true)   : 0) 
 				+ (self.tabsbar.is(':visible')   ? self.tabsbar[o](true)   : 0)
 				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
-				
-			self.workzone[h](v).find('.elrte-editor,.elrte-source')[h](v);
+
+			self.viewport[h](v).find('iframe,textarea')[h](v);
+
 			return this;
 		}
 		
@@ -974,7 +975,7 @@
 			if (state !== void(0)) {
 				if (o.resizable && $.fn.resizable) {
 					if (state && !resizable) {
-						this.viewport
+						this.workzone
 							.resizable({
 								handles   : 'se', 
 								helper    : o.resizeHelper,
@@ -985,7 +986,7 @@
 						resizable = true;
 
 					} else if (!state && resizable) {
-						this.viewport.resizable('destroy').unbind(e);
+						this.workzone.resizable('destroy').unbind(e);
 						resizable = false;
 					}
 				}
@@ -1267,7 +1268,7 @@
 		 * 
 		 * @type jQuery
 		 */
-		this.workzone  = $('<div class="elrte-workzone"/>');
+		this.viewport  = $('<div class="elrte-workzone-"/>');
 		
 		/**
 		 * Container for tabsbar & workzone.
@@ -1276,7 +1277,7 @@
 		 * @type jQuery
 		 */
 		this.main = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all elrte-main"/>')
-			.append(this.tabsbar.add(this.workzone));
+			.append(this.tabsbar.add(this.viewport));
 
 		/**
 		 * Container. Includes sidebar and main container
@@ -1291,7 +1292,7 @@
 		 * 
 		 * @type jQuery
 		 */
-		this.viewport  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
+		this.workzone  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
 			.append(this.container.add(this.statusbar))
 			.css({
 				'min-width'  : minWidth+'px', 
@@ -1325,10 +1326,10 @@
 		 **/
 		function load() {
 			// if node is given - attach editor to DOM
-			node && self.viewport.insertAfter($node);
+			node && self.workzone.insertAfter($node);
 			
 			// bind to parent form submit events 
-			self.form = self.viewport.parents('form').bind('submit', $.proxy(self.save, self));
+			self.form = self.workzone.parents('form').bind('submit', $.proxy(self.save, self));
 
 			self.trigger('load', { elrte : self }).trigger('show');
 				
@@ -1344,7 +1345,7 @@
 			node && o.loadTarget && o.documents.unshift(node);
 			// open documents
 			self.open(o.documents);
-
+			// self.updateHeight()
 			self.timeEnd('load');
 		}
 		
