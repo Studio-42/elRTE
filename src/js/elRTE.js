@@ -49,6 +49,14 @@
 		/*                         Events                      */
 		/*******************************************************/
 		
+		this.event = function(type, data) {
+			var e = $.Event(type);
+			
+			e.data = data || {};
+			e.data.elrte = this;
+			return e;
+		}
+		
 		/**
 		 * Bind callback to event(s)
 		 * To bind multiply events at once, separate events names by space
@@ -59,11 +67,12 @@
 		 * @return elRTE
 		 */
 		this.bind = function(e, c, t) {
-			var l = this.listeners, e, i, n;
-
+			var l = this.listeners, 
+				e = $.trim(e.toLowerCase()).split(/\s+/), 
+				i = e.length, 
+				n;
+				
 			if (typeof(c) == 'function') {
-				e = $.trim(e).split(/\s+/);
-				i = e.length;
 				while (i--) {
 					n = e[i];
 					if (l[n] === void(0)) {
@@ -83,7 +92,7 @@
 		 * @return elRTE
 		 */
 		this.unbind = function(e, c) {
-			var l = this.listeners[e] || [],
+			var l = this.listeners[e.toLowerCase()] || [],
 				i = l.indexOf(c);
 
 			i>-1 && l.splice(i, 1);
@@ -232,7 +241,8 @@
 				}
 				
 				if (d.close()) {
-					this.trigger('close', { id : d.id });
+
+					this.trigger(this.event('close', {id : id}));
 					if (d == a) {
 						delete this.active;
 					}

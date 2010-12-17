@@ -24,9 +24,7 @@ elRTE.prototype.document = function(src, rte) {
 	}
 	
 	this.close = function() {
-		var e = $.Event('onclose');
-		
-		e.data = { id : this.id };
+		var e = this.rte.event('beforeclose', {id : id});
 		
 		this.rte.trigger(e);
 

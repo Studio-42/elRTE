@@ -167,7 +167,7 @@
 				// resizable : false,
 				callbacks : {
 					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
-					// onclose : function(e) { e.stopPropagation() }
+					beforeClose : function(e) { window.console.log(e.type); e.stopPropagation() }
 					// open : function(e) {
 					// 	var d = rte.jquery ? rte.elrte('documentById', e.data.id) : rte.documentById(e.data.id)
 					// 	$('#opened-docs').append('<li id="od-'+e.data.id+'">'+d.title+' ('+d.id+')</li>')
