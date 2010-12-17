@@ -16,13 +16,25 @@ elRTE.prototype.document = function(src, rte) {
 		css     = [],
 		content = '', 
 		html    = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />', 
-		$src;
+		$src, d;
 	
+	/**
+	 * Set document visible and hide others
+	 *
+	 * @return elRTE.document
+	 */
 	this.show = function() {
 		this.container.siblings().hide().end().show();
 		return this;
 	}
 	
+	/**
+	 * Fire beforclose event. If event is not stoped - 
+	 * remove document node from editor and remove from this.rte.documents
+	 * and fire close event
+	 *
+	 * @return Boolean
+	 */
 	this.close = function() {
 		var e = this.rte.event('beforeclose', {id : id});
 		
@@ -37,23 +49,44 @@ elRTE.prototype.document = function(src, rte) {
 		return false;
 	}
 	
+	/**
+	 * Return true if document iframe(editor) is not hide
+	 * Attension! wysiwyg() on not active document may return true
+ 	 *
+	 * @return Boolean
+	 */
 	this.wysiwyg = function() {
 		return this.editor.css('display') != 'none';
 	}
 	
+	/**
+	 * Set focus into document iframe/textarea
+	 *
+	 * @return elRTE.document
+	 */
 	this.focus = function() {
 		this.wysiwyg() ? this.window.focus() : this.source[0].focus();
 		return this;
 	}
 	
+	/**
+	 * Toggle document iframe/textarea
+	 *
+	 * @return elRTE.document
+	 */
 	this.toggle = function() {
-		if (this.container.is(':visible') && this._tgl) {
+		if (this.container.is(':visible') && o.allowSource) {
 			this.sync().editor.add(this.source).toggle();
 			this.rte.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
 		}
 		return this;
 	}
 	
+	/**
+	 * Sync data between iframe/textarea
+	 *
+	 * @return elRTE.document
+	 */
 	this.sync = function() {
 		var s = this.source,
 			b = $(this.body),
@@ -62,6 +95,11 @@ elRTE.prototype.document = function(src, rte) {
 		return this;
 	}
 	
+	/**
+	 * Return document iframe/textarea content
+	 *
+	 * @return String
+	 */
 	this.val = function(v) {
 		var w = this.wysiwyg(),
 			s = this.source,
@@ -77,17 +115,98 @@ elRTE.prototype.document = function(src, rte) {
 		w && this.rte.trigger('change');
 		return this;
 	}	
-		
-	this.rte       = rte;
-	this._tgl      = o.allowSource;
-	this.id        = '';
-	this.ndx       = ndx;
-	this.title     = '';
+	
+	/**
+	 * Set document content to initial value
+	 *
+	 * @return void
+	 */	
+	this.reload = function() {
+		switch (o.reloadDocs) {
+			case 'ask':
+				if (!confirm(rte.i18n('This document alreay opened. Do you want to reload it?'))) {
+					return
+				}
+				
+			case true:
+			case 'allow':
+				this.val(content);
+		}
+		return;
+	}
+	
+	/**
+	 * Editor instance
+	 * 
+	 * @type elRTE
+	 */
+	this.rte = rte;
+	
+	/**
+	 * Document id
+	 * If document create from DOMElement or Object, id = src.id || src.name || random id,
+	 * otherwise id = random id 
+	 * 
+	 * @type String
+	 */
+	this.id = '';
+	
+	/**
+	 * Document name (source textarea name attribute)
+	 * If document create from DOMElement or Object, name = src.name || this.id,
+	 * otherwise id = this.id 
+	 * 
+	 * @type String
+	 */
 	this.name      = '';
+	
+	/**
+	 * Document number
+	 * 
+	 * @type Number
+	 */
+	this.ndx       = ndx;
+	
+	/**
+	 * Document title, show in tab
+	 * 
+	 * @type String
+	 */
+	this.title     = '';
+	
+	/**
+	 * Source textarea
+	 * 
+	 * @type jQuery
+	 */
 	this.source    = $('<textarea class="elrte-source"/>');
+	
+	/**
+	 * Editable iframe
+	 * 
+	 * @type jQuery
+	 */
 	this.editor    = $('<iframe frameborder="0" class="elrte-editor"/>');
+	
+	/**
+	 * Iframe document
+	 * 
+	 * @type document
+	 */
 	this.document  = null;
+
+	/**
+	 * Iframe window
+	 * 
+	 * @type contentWindow
+	 */
 	this.window    = null;
+	
+	/**
+	 * Document container
+	 * 
+	 * @type jQuery
+	 */
 	this.container = $('<div class="elrte-document"/>');
 	
 	if (src && src.nodeType == 1) {
@@ -125,17 +244,8 @@ elRTE.prototype.document = function(src, rte) {
 	}
 	
 	// check if document already loaded
-	if (rte.documents[this.id]) {
-		if (o.reopenDoc === false || o.reopenDoc == 'deny') {
-			return alert(rte.i18n('This document alreay opened. Reload documents not allowed.'));
-		} else if (o.reopenDoc == 'ask') {
-			if (confirm(rte.i18n('This document alreay opened. Do you want to reload it?'))) {
-				// close document before reopen
-				rte.focus(this.id).close(this.id);
-			} else {
-				return;
-			}
-		}
+	if ((d = rte.documents[this.id])) {
+		return rte.documents[this.id].reload();
 	}
 	
 	// create document view and attach to editor

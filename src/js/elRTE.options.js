@@ -126,37 +126,86 @@
 		resizeHelper : '',
 		
 		/* --- editor options --- */
-		/* allow user view and edit source? required plugin or command */
+		/**
+		 * Allow user view and edit source?
+		 * To toggle between editor and source command or plugin required.
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
 		allowSource : true, 
-		/* switch current doc from source to editor when switching to another doc */
+		
+		/**
+		 * If true - switch current from source to wysisyg before switch to another document
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
 		autoToggle : true,
-		/* always show documents tabs, if false - tabs hide when only one doc opened */
+		
+		/**
+		 * Always show documents tabs? if set to false - tabsbar hide when only one documents opened 
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
 		alwaysShowTabs : true,
+		
+		/**
+		 * Allow sort tabs manually
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
 		sortableTabs : true,
+		
+		/**
+		 * Sidebar widget position (left|right)
+		 * 
+		 * @type String
+		 * @default "left"
+		 */
 		sidebarPos : 'left',
-		/* max undo/redo steps, 0 - for disable history */
+		
+		/**
+		 * Maximum undo/redo steps, 0 - for disable history
+		 * 
+		 * @type Number
+		 * @default 50
+		 */
 		historySize : 0,
-		/* send debug to log? variants: "all" - for all messages, ["source[.type]", ...] - for debug from only required objects/methods */
+		
+		/**
+		 * How to display debug message in console.log.
+		 * "all" - display all messages
+		 * ["source[.type]", ...] - display messages only from required objects.methods
+		 * false|[] = do not display
+		 * 
+		 * @type String|Number|Boolean
+		 * @default false
+		 */
 		debug    : false,
 		
-		load : null,
-		
+		/**
+		 * Event listeners to bind on editor initialization
+		 * 
+		 * @type Object
+		 * @default {}
+		 */
 		callbacks : {},
 		
 		/* --- editor documents options --- */
-		/* load target element as document */
-		loadTarget : true,
+		
 		/* additional nodes or js objects to load in editor as documents */
 		documents : [],
 		/* hide document source node after document loaded */
 		hideDocSource : true,
 		/* Loading documents rule. If true - opened document set active */
 		focusOpenedDoc : false,
-		
+		reloadDocs : 'ask',
 		/* allow close docuents? Closed document not saves, except autosave is enabled */
 		allowCloseDocs : true,
-		// allow reopen opened document (allow|ask|deny|true|false)
-		reopenDoc : false,
+		
 		
 		allowDragAndDrop : true,
 		/* --- options for every editor document --- */

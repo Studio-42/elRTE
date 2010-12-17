@@ -42,6 +42,11 @@
 			return self.workzone.is(':visible') && self.workzone.parents('body').length;
 		}
 		
+		/**
+		 * Return true visible
+		 *
+		 * @return Boolean
+		 */
 		this.visible = function() {
 			return self.workzone.is(':visible');
 		}
@@ -49,6 +54,13 @@
 		/*                         Events                      */
 		/*******************************************************/
 		
+		/**
+		 * Create/normalize event - add event.data object if not exists and
+		 * event.data.id - document id on wich event is fired
+		 * event.data.elrte - current editor instance
+		 * 
+		 * @return jQuery.Event
+		 */
 		this.event = function(e, data) {
 			if (!e.type) {
 				e = $.Event(e);
@@ -229,20 +241,14 @@
 		this.close = function(id) {
 			var d = this.documentById(id), 
 				a = this.active, 
-				next;
+				next = d === a ? this.tabsbar.getNext() : '';
 
 			if (d && this.options.allowCloseDocs) {
-				// switch to next/first document before close active one
-				if (d == a) {
-					next = this.tabsbar.getNext();
-				}
 				
 				if (d.close()) {
 
 					this.trigger(this.event('close', {id : id}));
-					if (d == a) {
-						delete this.active;
-					}
+					d === a && delete this.active;
 					this.focus(next);
 				}
 			}
@@ -1051,14 +1057,14 @@
 			// add target node as document if enabled 
 			node && o.loadTarget && o.documents.unshift(node);
 			
-			if (!self.count()) {
-				self.open(o.documents);
-			}
-			self.updateHeight()
-			self.timeEnd('load');
+			// open documents
+			self.open(o.documents)
+				.bind('open', function(e) {
+					self.counter < 3 && self.updateHeight();
+				})
+				.updateHeight()
+				.timeEnd('load');
 		}
-		
-		
 		
 		$.each(o.callbacks || {}, function(e, c) {
 			self.bind(e, c);
@@ -1066,13 +1072,11 @@
 
 		// focus opened doc and fix workzone height if required
 		this.bind('open', function(e) {
-			var c = self.count();
-
-			c < 3 && self.updateHeight();
-			(c == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
+			(self.counter == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
 			
 		});
 		
+		// @todo move into mozilla.js plugin
 		// fix ff bug with carret position in textarea and curret visibility in iframe
 		if ($.browser.mozilla) {
 			this.bind('source', function(e) {

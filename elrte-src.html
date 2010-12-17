@@ -167,7 +167,7 @@
 				// resizable : false,
 				callbacks : {
 					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
-					beforeClose : function(e) { window.console.log(e.type); e.stopPropagation() },
+					// beforeClose : function(e) { window.console.log(e.type); e.stopPropagation() },
 					// click : function(e) { window.console.log(e); }
 					// open : function(e) {
 					// 	var d = rte.jquery ? rte.elrte('documentById', e.data.id) : rte.documentById(e.data.id)
@@ -180,7 +180,7 @@
 				},
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'even'],
+				debug : ['error', 'histor', 'event.resize'],
 				cssfiles : ['src/css/elrte-inner.css']
 				
 			},
@@ -190,7 +190,7 @@
 				name : 'doc-3'
 			},
 			docs = {
-				div               : [$('#content-div')],
+				div               : [$('#content-div'), $('#content-div')],
 				textarea          : [$('#content-textarea')],
 				data              : [data],
 				all               : [$('#content-div'), $('#content-textarea'), data],
@@ -274,6 +274,14 @@
 						var $this = $(this);
 						elrte.bind('wysiwyg', function() { $this.removeClass('disabled') })
 							.bind('source', function() {  $this.addClass('disabled') })
+					}
+				},
+				reload : {
+					title : 'Reload',
+					click : function() {
+						var inst = rte.jquery ? rte.getElrte() : rte;
+						
+						inst.active.reload()
 					}
 				}
 				
