@@ -49,11 +49,11 @@
 		/*                         Events                      */
 		/*******************************************************/
 		
-		this.event = function(type, data) {
-			var e = $.Event(type);
-			
-			e.data = data || {};
-			e.data.elrte = this;
+		this.event = function(e, data) {
+			if (!e.type) {
+				e = $.Event(e);
+			}
+			e.data = $.extend({ id : this.active ? this.active.id : '' }, e.data, data, { elrte : this});
 			return e;
 		}
 		
@@ -154,32 +154,29 @@
 		/**
 		 * Send notification to all event subscribers
 		 *
-		 * @param  String event name
-		 * @param  Object extra parameters
+		 * @param  Event|String  event or event type
+		 * @param  Object        extra parameters
 		 * @return elRTE
 		 */
 		this.trigger = function(e, d) {
-			var self = this, l;
-			
-			if (!e.type) {
-				e = $.Event(''+e);
-			}
-			l = this.listeners[e.type]||[];
-			// this.log(e.type)
+			var self = this, 
+				e    = this.event(e, d),
+				l    = this.listeners[e.type]||[];
+
+			this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(l.length ? 'trigger' : 'no listeners'));
+
 			if (l.length) {
-				e.data = $.extend({ id :  this.active ? this.active.id : '0'}, e.data||{}, d||{});
-				this.debug('event.'+e.type,  (e.data.id||'no document')+' '+(l.length ? 'trigger' : 'no listeners'));
+
 				$.each(l, function(i, c) {
 					if (e.isPropagationStopped()) {
 						return false;
 					}
-					c(e, d);
-					// try {
-					// 	c(e, d);
-					// } catch (ex) {
-					// 	self.log('trigger exeption. event: '+e.type)
-					// }
 
+					try {
+						c(e, d);
+					} catch (ex) {
+						self.debug('error.trigger', e.type)
+					}
 				});
 			}
 			return this;
