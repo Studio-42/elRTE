@@ -70,7 +70,7 @@ $.fn.elrtetabsbar = function(rte) {
 						
 					!$(this).hasClass(dc) && tab.length && showTab(tab.attr('rel'));
 				}),
-			$this = $(n).addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header '+cc+'all '+tbc)
+			$this = $(n).hide().addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header '+cc+'all '+tbc)
 				.append($('<li class="elrte-tabs-btns"/>').append(btns)),
 			tabs  = $this.children()
 			;

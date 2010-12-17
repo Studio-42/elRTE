@@ -31,6 +31,8 @@
 	<!-- elRTE -->
 	<script src="src/js/jquery.elrte.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src/js/elRTE.document.js" type="text/javascript" charset="utf-8"></script>
+	
 	<script src="src/js/elRTE.options.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.DOM.js" type="text/javascript" charset="utf-8"></script>
 	<script src="src/js/elRTE.selection.js" type="text/javascript" charset="utf-8"></script>
@@ -165,8 +167,9 @@
 				// resizable : false,
 				callbacks : {
 					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
+					// onclose : function(e) { e.stopPropagation() }
 					// open : function(e) {
-					// 	var d = rte.jquery ? rte.elrte('document', e.data.id) : rte.document(e.data.id)
+					// 	var d = rte.jquery ? rte.elrte('documentById', e.data.id) : rte.documentById(e.data.id)
 					// 	$('#opened-docs').append('<li id="od-'+e.data.id+'">'+d.title+' ('+d.id+')</li>')
 					// },
 					// close : function(e) {
@@ -176,30 +179,27 @@
 				},
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'event.open'],
+				debug : ['error', 'histor', 'even'],
 				cssfiles : ['src/css/elrte-inner.css']
 				
 			},
-			
+			data = {
+				title : 'Автостопом по галактике',
+				content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
+				name : 'doc-3'
+			},
 			docs = {
-				div               : [$('#editor')],
-				textarea          : [$('#editor2')],
-				div_textarea      : [$('#editor'), $('#editor2')],
-				div_textarea_data : [$('#editor'), $('#editor2'), {
-					title : 'Автостопом по галактике',
-					content : '<img src="http://localhost/git/elrte-master/images/Hitchhikers_Guide.jpg" style="border:2px solid #ffcc00;float:left;margin-top:0px;margin-right:20px;margin-left:20px" height="229" width="140"></p><h3>Вот что сообщает Галактический Путеводитель на предмет <span style="background-color:#ffff99">полотенец</span>:</h3><br><div style="text-align:justify;padding-left:0px">&nbsp;&nbsp;<span style="background-color:#ffff99">Полотенце</span>, возможно, самый необходимый предмет для межзвездного путешественника. Оно имеет некоторую практическую ценность - вы можете: завернуться в него, чтобы согреться, прыгая по холодным лунам Джаглан-Беты; использовать его, как подстилку, лежа на мраморном песке пляжей Сантрагинуса V, и вдыхая пьянящий &nbsp;морской воздух; спать на нем под огненно-красными звездами на пустынной планете Какрафун; сделать из него парус, чтобы спуститься на плоту по ленивой реке Мотт; намочить его и завязать узлом, чтобы использовать, как оружие в рукопашной; обвязать им голову, чтобы избежать ядовитого дыма или взгляда Прожорного Заглотозавера с Трааля (умопомрачительно глупое животное: оно считает, что раз вы его не видите, то и оно вас не видит; тупое, как сапог от скафандра, но очень, очень прожорливое); <span style="background-color:#ffff99">полотенцем</span> можно размахивать, подавая сигнал бедствия; и, разумеется, вытираться, если оно все еще чистое.</div>', 
-					name : 'doc-3',
-				}]
+				div               : [$('#content-div')],
+				textarea          : [$('#content-textarea')],
+				data              : [data],
+				all               : [$('#content-div'), $('#content-textarea'), data],
+				none              : []
 			},
 			methods = {
-				construct : function(d) {
-					opts.documents = d;
-					var e = new elRTE(opts);
-					e.workzone.insertBefore($('#editor'))
-					return e;
+				construct : function() {
+					return new elRTE(opts, $('#editor')[0]);
 				},
-				construct_wait : function(d) {
-					opts.documents = d;
+				construct_wait : function() {
 					var e = new elRTE(opts);
 					
 					setTimeout(function() {
@@ -207,12 +207,11 @@
 					}, 3000);
 					return e;
 				},
-				jquery : function(d) {
-					opts.documents = d;
-					return $('<div/>').insertBefore($('#editor')).elrte(opts)
+				jquery : function() {
+					return $('#editor').elrte(opts)
+					// return $('<div/>').insertBefore($('#editor')).elrte(opts)
 				},
 				jquery_wait : function(d) {
-					opts.documents = d;
 					var e = $('<div/>').elrte(opts);
 					setTimeout(function() {
 						e.insertBefore($('#editor'));
@@ -316,8 +315,8 @@
 			
 			method = methods[method] ? method : 'jquery';
 			open   = docs[open] ? open : 'div';
-
-			rte = methods[method](docs[open]);
+			opts.documents = docs[open];
+			rte = methods[method]();
 			
 		})
 	</script>
@@ -375,8 +374,9 @@
 			<select id="documents">
 				<option value="div">div</option>
 				<option value="textarea">textarea</option>
-				<option value="div_textarea">div + textarea</option>
-				<option value="div_textarea_data">div + textarea + data</option>
+				<option value="data">data</option>
+				<option value="all">all</option>
+				<option value="none">none</option>
 			</select>
 		</div>
 		Create editor by:
@@ -392,7 +392,8 @@
 
 	
 	<form method="post" action="post.php" >
-	<div id="editor" name="doc-1" title="DOUGLAS ADAMS">
+		<div id="editor"></div>
+	<div id="content-div" name="doc-1" title="DOUGLAS ADAMS">
 		<h2>DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2><p>
 		<font color="red">font</font>
 		<img src="http://localhost/git/elrte-master/images/marvin.jpg" style="float:right" height="150" width="93">
@@ -400,7 +401,7 @@
 		<img src="http://localhost/git/elrte-master/images/hhgttg.jpg" style="float:left;margin-right:10px;margin-top:5px" height="208" width="200">
 		</p><p style="color:#003366">"And the wheel," <span style="color:#000000">said the Captain,</span> "What about this wheel thingy? It sounds a terribly interesting project."</p><br><p style="color:#993333">"Ah," <span style="color:#000000">said the marketing girl, </span>"Well, we're having a little difficulty there."</p><br><p style="color:#003366">"Difficulty?" <span style="color:#000000">exclaimed Ford.</span> "Difficulty? What do you mean, difficulty? It's the single simplest machine in the entire Universe!"</p><br><p>The marketing girl soured him with a look.</p><br><p><span style="color:#993333">"Alright, Mr. Wiseguy,"</span> she said, <span style="color:#993333">"if you're so clever, you tell us what colour it should be."</span></p><br><br><br><hr style="border:5px ridge #cc6633;width:98%;height:30px;background-color:#ffff99">
 	</div>
-	<textarea id="editor2" name="doc-2">Editor 2</textarea>
+	<textarea id="content-textarea" name="doc-2">Editor 2</textarea>
 	
 	<input type="submit" name="" value="go" id="">
 	</form>

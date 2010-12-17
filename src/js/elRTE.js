@@ -33,7 +33,6 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-		// this.log(elRTEDocument)	
 		/**
 		 * Return true if editor in DOM and visible
 		 *
@@ -182,312 +181,8 @@
 		/*******************************************************/
 		
 		/**
-		 * @class doc
-		 * Document constructor
-		 * As document source accept DOM Element or plain object or string, 
-		 * any other type will be treated as empty document
-		 *
-		 * @param  DOMElement|Object|String document source
-		 * @param  elRTE editor instance
-		 * @return void
-		 */
-		function doc(src, rte) {
-			var o = rte.options,
-				h = rte.viewport.height(),
-				css = [],
-				id, name, title, content, html, $src;
-
-			this.rte      = rte;
-			this.id       = '';
-			this.ndx      = ++rte.ndx;
-			this.title    = '';
-			this.name     = '';
-			this.source   = $('<textarea class="elrte-source"/>');
-			this.editor   = $('<iframe frameborder="0" class="elrte-editor"/>');
-			this.document = null;
-			this.window   = null;
-			this.view     = null;
-
-			if (src.nodeType == 1 || $.isPlainObject(src)) {
-				// document source is node or plain object
-				id    = src.id;
-				title = src.title;
-				name  = src.name;
-
-				if (src.nodeType == 1) {
-					// content is node value or inner html
-					$src    = $(src);
-					content = $src.val() || $src.html();
-					// css files list store as node attribute separated by space
-					css  = ($src.attr('cssfiles')||'').split(/\n+/);
-					
-					if (rte.form && rte.form[0] === $src.parents('form')[0]) {
-						// if node belongs to the same form as editor -
-						// remove name attribute to prevent duplicate form data on submit
-						$src.removeAttr('name');
-					}
-				} else {
-					content = src.content || '';
-					// css files list should be an array
-					css = $.isArray(src.cssfiles) ? src.cssfiles : [];
-				}
-			} else {
-				// source is string or something else
-				content = src instanceof String ? src : '';
-			}
-
-			this.id    = id || rte.id+'-'+this.ndx;
-			this.name  = name || this.id;
-			this.title = title || rte.i18n('Document')+' '+this.ndx;
-			this.source.attr('name', this.name).val(content);
-			
-			// check if document already loaded
-			if (rte.documents[this.id]) {
-				if (o.reopenDoc === false || o.reopenDoc == 'deny') {
-					return rte.debug('error', 'Reopen document not allowed '+this.id)
-				} else if (o.reopenDoc == 'ask') {
-					if (confirm(rte.i18n('This document alreay opened. Do you want to reload it?'))) {
-						// close document before reopen
-						rte.focus(this.id).close(this.id);
-					} else {
-						return;
-					}
-				}
-			}
-
-			// load document into editor
-			
-			// add to documents array
-			rte.documents[this.id] = this;
-			
-			// create document view and attach to editor
-			this.view = $('<div id="'+this.id+'" class="elrte-document"/>')
-				.append(this.editor)
-				.append(this.source.hide())
-				.hide()
-				.appendTo(rte.viewport);
-			// after iframe attached to DOM - get its window/document
-			this.window   = this.editor[0].contentWindow;
-			this.document = this.window.document;
-			
-			// create iframe html
-			html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />';
-			$.each(o.cssfiles.concat(css), function(i, url) {
-				if ((url = $.trim(url))) {
-					html += '<link rel="stylesheet" type="text/css" href="'+url+'"/>';
-				}
-			});
-			// write document body
-			this.document.open();
-			this.document.write(o.doctype+html+'</head><body>'+rte.filter.wysiwyg(this.source.val())+' </body></html>');
-			this.document.close();
-			this.body = this.document.body;
-			
-			// make iframe editable
-			if ($.browser.msie) {
-				this.document.body.contentEditable = true;
-			} else {
-				try { this.document.designMode = "on"; } 
-				catch(e) { }
-			}
-			
-			// bind events to document
-			
-			// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
-			// on mac opera think meta is a ctrl key
-			// i hope only a few nerds use opera on mac :)
-			// TODO test on linux/win
-			if ($.browser.opera && !this.macos) {
-				$(this.document).bind('keydown', function(e) {
-					if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
-						e.stopPropagation();
-						e.preventDefault();
-						if (e.keyCode == 86 && !o.allowPaste) {
-							return;
-						}
-						rte.trigger(e.keyCode == 88 ? 'cut' : 'paste');
-					}
-				});
-			}
-			
-			$(this.document)
-				.keydown(function(e) {
-					var p, c = e.keyCode;
-				
-					rte.change  = false;
-					rte.lastKey = rte.utils.keyType(e);
-				
-					// exec shortcut callback
-					$.each(rte.shortcuts, function(n, s){
-						p = s.pattern;
-						if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
-							e.stopPropagation();
-							e.preventDefault();
-							s.cmd && rte.trigger('exec', { cmd : s.cmd });
-							s.callback(e) && rte.trigger('change', { cmd : s.cmd });
-							return false;
-						}
-					});
-
-					if (!e.isPropagationStopped()) {
-						if (c == 9){
-							// on tab pressed insert spaces
-							// @todo - collapse before insertHtml?
-							e.preventDefault();
-							rte.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
-						} 
-					
-						if (rte.lastKey == rte.KEY_ENTER 
-						||  rte.lastKey == rte.KEY_TAB 
-						||  rte.lastKey == rte.KEY_DEL 
-						|| (rte.lastKey == rte.KEY_CHAR && !rte.selection.collapsed())) {
-							rte.trigger('exec');
-							rte.change = true;
-						} 
-						rte.trigger(e);
-					}
-				})
-				.keyup(function(e) {
-					rte.trigger(e);
-				
-					if (rte.change) {
-						rte.trigger('change', {event : e});
-					} else if (rte.lastKey == rte.KEY_ARROW) {
-						rte.trigger('changePos', {event : e});
-					}
-					rte.typing = rte.lastKey == rte.KEY_CHAR || rte.lastKey == rte.KEY_DEL;
-					rte.lastKey = 0;
-					rte.change = false;
-				})
-				.mouseup(function(e) {
-					rte.lastKey = 0;
-					rte.typing = false;
-					// click on selection not collapse it at a moment
-					setTimeout(function() { rte.trigger('changePos', {event : e}); }, 1);
-					rte.trigger(e);
-				})
-				.bind('mousedown click dblclick', function(e) {
-					rte.trigger(e);
-				})
-				.bind('dragstart dragend drop', function(e) {
-					// disable drag&drop
-					if (!o.allowDragAndDrop) {
-						e.preventDefault();
-						e.stopPropagation();
-					} else if (e.type == 'drop') {
-						rte.trigger('change');
-					}
-				})
-				.bind('cut', function(e) {
-					rte.trigger('cut')
-					setTimeout(function() { rte.trigger('change'); }, 5);
-				})
-				.bind('paste', function(e) {
-					// paste handler
-					if (!rte.options.allowPaste) {
-						// paste denied 
-						e.stopPropagation();
-						e.preventDefault();
-					} else {
-						// create sandbox for paste, clean it content and unwrap
-						var dom = rte.dom,
-							sel = rte.selection,
-							filter = rte.filter,
-							a   = rte.active,
-							n = dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
-							r = dom.createTextNode(' _ ')
-							;
-
-						rte.trigger('paste');
-						n.appendChild(r);
-						n = sel.deleteContents().insertNode(n);
-						sel.select(n.firstChild);
-						setTimeout(function() {
-							if (n.parentNode && !r.parentNode) {
-								// clean sandbox content
-								$(n).html(filter.proccess('paste', $(n).html()));
-								r = n.lastChild;
-								dom.unwrap(n);
-								if (r) {
-									sel.select(r).collapse(false);
-								}
-							} else {
-								// smth wrong - clean all doc
-								n.parentNode && n.parentNode.removeChild(n);
-								a.val(filter.wysiwyg(a.val()));
-								sel.select(a.document.body).collapse(true);
-							}
-							rte.trigger('change');
-						}, 15);
-					}
-				});
-			
-			// trigger event for this document
-			rte.trigger('open', { id : this.id });
-			
-			// hide doc source node if required
-			if ($src && o.hideDocSource) {
-				$src.hide();
-			}
-
-		}
-		
-		/**
-		 *
-		 */
-		doc.prototype.wysiwyg = function() {
-			return this.editor.css('display') != 'none';
-		}
-		
-		/**
-		 *
-		 */
-		doc.prototype.focus = function() {
-			this.wysiwyg() ? this.window.focus() : this.source[0].focus();
-		}
-		
-		/**
-		 *
-		 */
-		doc.prototype.toggle = function() {
-			if (this.view.is(':visible') && this.rte.options.allowSource) {
-				this.sync().editor.add(this.source).toggle();
-				this.rte.trigger(this.wysiwyg() ? 'wysiwyg' : 'source');
-			}
-			return this;
-		}
-
-		/**
-		 *
-		 */
-		doc.prototype.sync = function() {
-			this.wysiwyg()
-				? this.source.val(this.rte.filter.source($(this.body).html()))
-				: $(this.body).html(this.rte.filter.wysiwyg(this.source.val()));
-			return this;
-		}
-		
-		/**
-		 *
-		 */
-		doc.prototype.val = function(v) {
-			var w = this.wysiwyg();
-			
-			if (v === void(0)) {
-				return w 
-					? this.rte.filter.source($(this.body).html()) 
-					: this.rte.filter.source2source(this.source.val());
-			} 
-			
-			
-			w ? $(this.body).html(this.rte.filter.wysiwyg(v)) : this.source.val(this.rte.filter.source(v));
-			this.focus();
-			w && this.rte.trigger('change');
-			return this;
-		}
-		
-		/**
 		 * Open document[s]
+		 * Accept jQuery object, DOMElement, Object, String or array of this elements
 		 *
 		 * @param Array|Object|DOMElement|jQuery|String  document[s] source
 		 * @return elRTE
@@ -503,46 +198,46 @@
 			}
 
 			if (d.jquery || $.isArray(d)) {
-				$.each(d, function() {
-					if (this.jquery) {
-						this.each(function() {
-							new doc(this, self);
+				$.each(d, function(i, e) {
+					if (e.jquery) {
+						e.each(function(i, n) {
+							new self.document(n, self);
 						});
 					} else {
-						new doc(this, self);
+						new self.document(e, self);
 					}
-				})
+				});
 			} else {
-				
-				new doc(d, this);
+				new this.document(d, this);
 			}
+			
 			return this;
 		}
 		
 		/**
 		 * Close document
 		 *
-		 * @todo check options allowCloseDocs
 		 * @param String  document id
 		 * @return elRTE
 		 */
 		this.close = function(id) {
-			var d = this.documentById(id);
+			var d = this.documentById(id), 
+				a = this.active, 
+				next;
 
-			if (d) {
+			if (d && this.options.allowCloseDocs) {
 				// switch to next/first document before close active one
-				d == this.active && this.next();
-				// rize event for closing document
-				this.trigger('close', {id : d.id});
-				// remove document view
-				d.view.remove();
-				// update workzone height if tabsbar hidden
-				this.tabsbar.is(':hidden') && this.updateHeight();
-				// if close active document - unset link to it
-				if (this.active.id == d.id) {
-					this.active = void(0); //null;
+				if (d == a) {
+					next = this.tabsbar.getNext();
 				}
-				delete this.documents[d.id];
+				
+				if (d.close()) {
+					this.trigger('close', { id : d.id });
+					if (d == a) {
+						delete this.active;
+					}
+					this.focus(next);
+				}
 			}
 			return this;
 		}
@@ -560,19 +255,14 @@
 
 			if (d) {
 				if (d == a) { 
-					// document already active
-					// only give focus to it
+					// document already active - only set focus into it
 					d.focus();
 				} else { 
 					// switch to another document
 					// set active doc in wysiwyg mode if required before hide it
 					a && !a.wysiwyg() && this.options.autoToggle && this.toggle();
-					// show doc
-					this.viewport.children('.elrte-document').hide().filter('#'+d.id).show();
-					// set doc active
-					this.active = d;
-					// give focus to doc
-					d.focus();
+					// set doc active, show focus into it
+					this.active = d.show().focus();
 					// trigger event
 					this.trigger(d.wysiwyg() ? 'wysiwyg' : 'source');
 				}
@@ -1112,6 +802,7 @@
 		this.change = false;
 		/* last opened document number */
 		this.ndx = 0;
+		this.counter = 0;
 		/* opened documents */
 		this.documents = { };
 		/* active(visible) document */
@@ -1318,6 +1009,7 @@
 			? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
 			: $('<div/>');
 			
+		// self.updateHeight()
 		/**
 		 * Check target node is in DOM
 		 *
@@ -1334,7 +1026,7 @@
 		 **/
 		function load() {
 			// if node is given - attach editor to DOM
-			node && self.workzone.insertAfter($node);
+			node && self.workzone.insertAfter(node);
 			
 			// bind to parent form submit events 
 			self.form = self.workzone.parents('form').bind('submit', $.proxy(self.save, self));
@@ -1351,20 +1043,24 @@
 			
 			// add target node as document if enabled 
 			node && o.loadTarget && o.documents.unshift(node);
-			// open documents
-			self.open(o.documents);
-			// self.updateHeight()
+			
+			if (!self.count()) {
+				self.open(o.documents);
+			}
+			self.updateHeight()
 			self.timeEnd('load');
 		}
+		
+		
 		
 		$.each(o.callbacks || {}, function(e, c) {
 			self.bind(e, c);
 		});
-		
+
 		// focus opened doc and fix workzone height if required
 		this.bind('open', function(e) {
 			var c = self.count();
-			
+
 			c < 3 && self.updateHeight();
 			(c == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
 			
