@@ -15,6 +15,7 @@
 .elrte-btn-inner {
 	width:20px;
 	height:20px;
+	margin:0;
 	overflow:hidden;
 	background-image:url(../images/elrte-toolbar.png);
 	background-position: 0 0;

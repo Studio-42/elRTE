@@ -346,11 +346,11 @@
 		 * 
 		 * @return Boolean
 		 **/
-		update : function() {
+		value : function() {
 			var dom = this.dom,
 				n   = dom.closestParent(this.sel.node(), this.test, true);
 
-			this._val = this._parseVal(dom.css(n, this.css));
+			return this._parseVal(dom.css(n, this.css));
 		}
 		
 	}

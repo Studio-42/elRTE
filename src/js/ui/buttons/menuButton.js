@@ -8,7 +8,7 @@ $.fn.elrtemenubutton = function(cmd) {
 	return this.each(function() {
 		var self  = this,
 			$this = $(this),
-			c     = 'elrte-btn-menu',
+			c     = elRTE.MENU_BUTTON_CLASS,
 			ac    = 'elrte-active',
 			wc    = 'elrte-widget',
 			mc    = 'elrte-widget-menu',
@@ -21,18 +21,25 @@ $.fn.elrtemenubutton = function(cmd) {
 			
 		// update label text and menu selected item
 		cmd.change(function() {
-			label && label.text(cmd.opts[cmd.value()]||title);
+			label && label.text(cmd.opts[cmd.value]||title);
 		});
+			
+		cmd.rte.bind('editorfocus editorblur mousedown keydown', function(e) {
+			cmd.rte.log(e.type)
+			menu.hide()
+		})
 			
 		// append button content
 		$this.elrtebutton(cmd)
 			.addClass(c)
 			.append(menu.hide())
+			.unbind('mousedown')
 			.mousedown(function(e) {
+				cmd.rte.log(self.cmd.state)
 				e.preventDefault();
 				e.stopPropagation();
-				if (self.state) {
-					menu.is(':hidden') && items.removeClass(ac).filter('[name="'+cmd.value()+'"]').addClass(ac);
+				if (self.cmd.state) {
+					menu.is(':hidden') && items.removeClass(ac).filter('[name="'+cmd.value+'"]').addClass(ac);
 					menu.toggle(128);
 				}
 			})

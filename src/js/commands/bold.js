@@ -16,4 +16,5 @@ elRTE.prototype.commands.bold = function() {
 	this._init   = $.proxy(this.rte.mixins.textElement.init, this);
 	this._exec     = $.proxy(this.rte.mixins.textElement.exec, this);
 	this._state = $.proxy(this.rte.mixins.textElement.state, this);
+	
 }

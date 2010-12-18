@@ -5,7 +5,7 @@
  **/
 elRTE.prototype.commands.fontsize = function() {
 	this.title  = 'Font size';
-	this._val   = '';
+	this.value   = '';
 	this.conf   = { label : true, ui : 'menu', tpl : '<span style="font-size:{value}">{label}</span>' };
 	this.css    = 'font-size';
 	this.tpl    = '<span style="font-size:{value}">{label}</span>';
@@ -23,7 +23,7 @@ elRTE.prototype.commands.fontsize = function() {
 	this.test      = $.proxy(elRTE.prototype.mixins.font.test,   this);
 	this.unwrap    = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
 	this._exec     = $.proxy(elRTE.prototype.mixins.font.exec,   this);
-	this._updValue = $.proxy(elRTE.prototype.mixins.font.update, this);
+	this._value = $.proxy(elRTE.prototype.mixins.font.value, this);
 	
 	/**
 	 * Translate font-size in px|pt|% into absolute value
@@ -75,8 +75,8 @@ elRTE.prototype.commands.fontsize = function() {
 		return this.opts[v] ? v : size2abs(v);
 	}
 	
-	this._getState = function() {
-		return this.STATE_ENABLE;
+	this._state = function() {
+		return elRTE.CMD_STATE_ENABLED;
 	}
 }
 	

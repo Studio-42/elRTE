@@ -34,5 +34,12 @@ $.fn.elrtetoolbar = function(rte) {
 			pa && $this.prepend(p);
 		}
 		!$this.children().length && $this.hide();
+		
+		$this.delegate('.'+elRTE.BUTTON_CLASS, 'hover', function() {
+			if (!$(this).hasClass('.'+elRTE.CSS_CLASS_DISABLED)) {
+				$(this).toggleClass(elRTE.CSS_CLASS_HOVER);
+			}
+		});
+		
 	});
 }
