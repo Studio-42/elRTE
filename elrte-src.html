@@ -182,7 +182,7 @@
 				},
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'even'],
+				debug : ['error', 'histor', 'event'],
 				cssfiles : ['src/css/elrte-inner.css']
 				
 			},
@@ -227,14 +227,14 @@
 			url = window.location.href,
 			i, rte;
 			
-			$.each(['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste change changepos exec'], function(i, n){
-				opts.callbacks[n] = function(e) {
-					window.console.log(e.type)
-					if (e.type == 'exec') {
-						window.console.log(e)
-					}
-				}
-			})
+			// $.each(['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste change changepos exec'], function(i, n){
+			// 	opts.callbacks[n] = function(e) {
+			// 		window.console.log(e.type)
+			// 		if (e.type == 'exec') {
+			// 			window.console.log(e)
+			// 		}
+			// 	}
+			// })
 
 
 			$('#documents').change(function() {

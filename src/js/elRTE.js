@@ -1127,7 +1127,7 @@
 			})
 			.bind('cut', function(e) {
 				setTimeout(function() { self.trigger('change'); }, 5);
-			})
+			}, true)
 			.bind('paste', function(e) {
 				// paste handler
 				if (!o.allowPaste) {
@@ -1165,18 +1165,17 @@
 						self.trigger('change');
 					}, 15);
 				}
-				
-			})
+			}, true)
 			.bind('dragstart dragend drop', function(e) {
 				// disable drag&drop
 				if (!o.allowDragAndDrop) {
 					e.preventDefault();
 					e.stopPropagation();
 				} 
-			})
+			}, true)
 			.bind('drop', function(e) {
 				self.trigger('change');
-			});
+			}, true);
 		
 		// bind user events handlers
 		$.each(o.callbacks || {}, function(e, c) {

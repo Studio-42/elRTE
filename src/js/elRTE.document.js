@@ -42,9 +42,10 @@ elRTE.prototype.document = function(src, rte) {
 		this.rte.trigger(e);
 
 		if (!e.isPropagationStopped()) {
-			delete this.rte.documents[this.id];
+			
 			this.rte.counter--;
 			this.container.remove();
+			delete this.rte.documents[this.id];
 			return true;
 		}
 		return false;

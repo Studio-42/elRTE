@@ -70,8 +70,14 @@ $.fn.elrtetabsbar = function(rte) {
 						
 					!$(this).hasClass(dc) && tab.length && showTab(tab.attr('rel'));
 				}),
-			$this = $(n).hide().addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header '+cc+'all '+tbc)
-				.append($('<li class="elrte-tabs-btns"/>').append(btns)),
+			$this = $(n)
+				.hide()
+				.addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header '+cc+'all '+tbc)
+				.append($('<li class="elrte-tabs-btns"/>')
+				.append(btns))
+				.delegate('.'+tc, 'hover', function(e) {
+					$(this).toggleClass(hc);
+				}),
 			tabs  = $this.children()
 			;
 		
@@ -79,7 +85,7 @@ $.fn.elrtetabsbar = function(rte) {
 			// make tabs sortable
 			$this.sortable({ delay : 3, items : '>'+ts, helper : 'clone', axis : 'x' });
 		}
-		
+
 		/**
 		 * Return visible tabs total width
 		 *
@@ -199,6 +205,8 @@ $.fn.elrtetabsbar = function(rte) {
 			}
 		}
 				
+		
+				
 		rte.bind('open', function(e) {
 			var d = rte.documentById(e.data.id), title, tab;
 
@@ -207,10 +215,7 @@ $.fn.elrtetabsbar = function(rte) {
 				title = d.title;
 				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'" class="elrte-ellipsis">'+title+'</span></li>')
 					.hide()
-					.hover(function() {
-						$(this).toggleClass(hc);
-					})
-					.click(function(e) {
+					.mousedown(function(e) {
 						rte.focus($(this).attr('rel'));
 					});
 					
@@ -219,10 +224,10 @@ $.fn.elrtetabsbar = function(rte) {
 						$('<div class="'+ic+'close" title="'+rte.i18n('Close')+'"/>')
 							.mousedown(function(e) {
 								e.stopPropagation();
-	 							e.preventDefault();
-	 							if (confirm(rte.i18n('Close document')+' "'+title+'"?')) {
-	 								rte.close(d.id);
-	 							}
+		 							e.preventDefault();
+		 							if (confirm(rte.i18n('Close document')+' "'+title+'"?')) {
+		 								rte.close(d.id);
+		 							}
 							})
 					);
 				}
