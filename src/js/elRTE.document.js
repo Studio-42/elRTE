@@ -9,7 +9,8 @@
  */
 elRTE.prototype.document = function(src, rte) {
 	
-	var o       = rte.options,
+	var self   = this,
+		o       = rte.options,
 		ndx     = ++rte.ndx,
 		id      = rte.id+'-'+ndx,
 		title   = rte.i18n('Document')+' '+ndx,
@@ -266,7 +267,7 @@ elRTE.prototype.document = function(src, rte) {
 		}
 	});
 	
-	// write document body
+	// create document body
 	this.document.open();
 	this.document.write(o.doctype+html+'</head><body>'+rte.filter.wysiwyg(content)+' </body></html>');
 	this.document.close();
@@ -299,120 +300,14 @@ elRTE.prototype.document = function(src, rte) {
 			}
 		});
 	}
-	
-	$(this.document)
-		.keydown(function(e) {
-			var p, c = e.keyCode;
-		
-			rte.change  = false;
-			rte.lastKey = rte.utils.keyType(e);
-		
-			// exec shortcut callback
-			$.each(rte.shortcuts, function(n, s){
-				p = s.pattern;
-				if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
-					e.stopPropagation();
-					e.preventDefault();
-					s.cmd && rte.trigger('exec', { cmd : s.cmd });
-					s.callback(e) && rte.trigger('change', { cmd : s.cmd });
-					return false;
-				}
-			});
 
-			if (!e.isPropagationStopped()) {
-				if (c == 9){
-					// on tab pressed insert spaces
-					// @todo - collapse before insertHtml?
-					e.preventDefault();
-					rte.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
-				} 
-			
-				if (rte.lastKey == rte.KEY_ENTER 
-				||  rte.lastKey == rte.KEY_TAB 
-				||  rte.lastKey == rte.KEY_DEL 
-				|| (rte.lastKey == rte.KEY_CHAR && !rte.selection.collapsed())) {
-					rte.trigger('exec');
-					rte.change = true;
-				} 
-				rte.trigger(e);
-			}
-		})
-		.keyup(function(e) {
+	// bind events handlers to document
+	d = $(this.document);
+	$.each(['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste'], function(i, t) {
+		d.bind(t, function(e) {
 			rte.trigger(e);
-		
-			if (rte.change) {
-				rte.trigger('change', {event : e});
-			} else if (rte.lastKey == rte.KEY_ARROW) {
-				rte.trigger('changePos', {event : e});
-			}
-			rte.typing = rte.lastKey == rte.KEY_CHAR || rte.lastKey == rte.KEY_DEL;
-			rte.lastKey = 0;
-			rte.change = false;
-		})
-		.mouseup(function(e) {
-			rte.lastKey = 0;
-			rte.typing = false;
-			// click on selection not collapse it at a moment
-			setTimeout(function() { rte.trigger('changePos', {event : e}); }, 1);
-			rte.trigger(e);
-		})
-		.bind('mousedown click dblclick', function(e) {
-			rte.trigger(e);
-		})
-		.bind('dragstart dragend drop', function(e) {
-			// disable drag&drop
-			if (!o.allowDragAndDrop) {
-				e.preventDefault();
-				e.stopPropagation();
-			} else if (e.type == 'drop') {
-				rte.trigger('change');
-			}
-		})
-		.bind('cut', function(e) {
-			rte.trigger('cut')
-			setTimeout(function() { rte.trigger('change'); }, 5);
-		})
-		.bind('paste', function(e) {
-			// paste handler
-			if (!rte.options.allowPaste) {
-				// paste denied 
-				e.stopPropagation();
-				e.preventDefault();
-			} else {
-				// create sandbox for paste, clean it content and unwrap
-				var dom = rte.dom,
-					sel = rte.selection,
-					filter = rte.filter,
-					a   = rte.active,
-					n = dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
-					r = dom.createTextNode(' _ ')
-					;
-
-				rte.trigger('paste');
-				n.appendChild(r);
-				n = sel.deleteContents().insertNode(n);
-				sel.select(n.firstChild);
-				setTimeout(function() {
-					if (n.parentNode && !r.parentNode) {
-						// clean sandbox content
-						$(n).html(filter.proccess('paste', $(n).html()));
-						r = n.lastChild;
-						dom.unwrap(n);
-						if (r) {
-							sel.select(r).collapse(false);
-						}
-					} else {
-						// smth wrong - clean all doc
-						n.parentNode && n.parentNode.removeChild(n);
-						a.val(filter.wysiwyg(a.val()));
-						sel.select(a.document.body).collapse(true);
-					}
-					rte.trigger('change');
-				}, 15);
-			}
 		});
-	
-	
+	});
 	
 	// add to editor documents
 	rte.documents[this.id] = this;

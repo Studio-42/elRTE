@@ -33,6 +33,8 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
+		
+		
 		/**
 		 * Return true if editor in DOM and visible
 		 *
@@ -63,7 +65,7 @@
 		 */
 		this.event = function(e, data) {
 			if (!e.type) {
-				e = $.Event(e);
+				e = $.Event(e.toLowerCase());
 			}
 			e.data = $.extend({ id : this.active ? this.active.id : '' }, e.data, data, { elrte : this});
 			return e;
@@ -183,12 +185,12 @@
 					if (e.isPropagationStopped()) {
 						return false;
 					}
-
-					try {
-						c(e, d);
-					} catch (ex) {
-						self.debug('error.trigger', e.type)
-					}
+					c(e, d);
+					// try {
+					// 	c(e, d);
+					// } catch (ex) {
+					// 	self.debug('error.trigger', e.type)
+					// }
 				});
 			}
 			return this;
@@ -845,7 +847,7 @@
 			/* called after some changes was made in document. */
 			'change'    : [],
 			/* called after change carret position */
-			'chagePos'  : [],
+			'changepos'  : [],
 			/* called before send form */
 			'save'      : [],
 			/* called on mousedown on document */
@@ -1022,7 +1024,6 @@
 			? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
 			: $('<div/>');
 			
-		// self.updateHeight()
 		/**
 		 * Check target node is in DOM
 		 *
@@ -1066,14 +1067,120 @@
 				.timeEnd('load');
 		}
 		
+		// bind documents events handlers
+		this
+			.bind('open', function(e) {
+				// focus opened doc and fix workzone height if required
+				(self.counter == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
+			})
+			.bind('keydown', function(e) {
+				var p, c = e.keyCode;
+		
+				self.change  = false;
+				self.lastKey = self.utils.keyType(e);
+		
+				// exec shortcut callback
+				$.each(self.shortcuts, function(n, s){
+					p = s.pattern;
+					if (p.keyCode == c && p.ctrlKey == e.ctrlKey && p.altKey == e.altKey && p.shiftKey == e.shiftKey && (p.meta ? p.metaKey == e.metaKey : true)) {
+						e.stopPropagation();
+						e.preventDefault();
+						s.cmd && self.trigger('exec', { cmd : s.cmd });
+						s.callback(e) && self.trigger('change', { cmd : s.cmd });
+						return false;
+					}
+				});
+
+				if (!e.isPropagationStopped()) {
+					if (c == 9){
+						// on tab pressed insert spaces
+						// @todo - collapse before insertHtml?
+						e.preventDefault();
+						self.selection.insertHtml("&nbsp;&nbsp;&nbsp;");
+					} 
+			
+					if (self.lastKey == self.KEY_ENTER 
+					||  self.lastKey == self.KEY_TAB 
+					||  self.lastKey == self.KEY_DEL 
+					|| (self.lastKey == self.KEY_CHAR && !self.selection.collapsed())) {
+						self.trigger('exec');
+						self.change = true;
+					} 
+				}
+			}, true)
+			.bind('keyup', function(e) {
+				// e.stopPropagation()
+				if (self.change) {
+					self.trigger('change', {event : e});
+				} else if (self.lastKey == self.KEY_ARROW) {
+					self.trigger('changepos', {event : e});
+				}
+				self.typing  = self.lastKey == self.KEY_CHAR || self.lastKey == self.KEY_DEL;
+				self.lastKey = 0;
+				self.change  = false;
+			}, true)
+			.bind('mouseup', function(e) {
+				self.lastKey = 0;
+				self.typing = false;
+				// click on selection not collapse it at a moment
+				setTimeout(function() { self.trigger('changepos', {event : e}); }, 1);
+			})
+			.bind('cut', function(e) {
+				setTimeout(function() { self.trigger('change'); }, 5);
+			})
+			.bind('paste', function(e) {
+				// paste handler
+				if (!o.allowPaste) {
+					// paste denied 
+					e.stopPropagation();
+					e.preventDefault();
+				} else {
+					// create sandbox for paste, clean it content and unwrap
+					var dom = self.dom,
+						sel = self.selection,
+						filter = self.filter,
+						a   = self.active,
+						n = dom.create({name : 'div', css : {position : 'absolute', left : '-10000px',top : '0', width : '1px', height : '1px', overflow : 'hidden' }}),
+						r = dom.createTextNode(' _ ')
+						;
+
+					n.appendChild(r);
+					n = sel.deleteContents().insertNode(n);
+					sel.select(n.firstChild);
+					setTimeout(function() {
+						if (n.parentNode && !r.parentNode) {
+							// clean sandbox content
+							$(n).html(filter.proccess('paste', $(n).html()));
+							r = n.lastChild;
+							dom.unwrap(n);
+							if (r) {
+								sel.select(r).collapse(false);
+							}
+						} else {
+							// smth wrong - clean all doc
+							n.parentNode && n.parentNode.removeChild(n);
+							a.val(filter.wysiwyg(a.val()));
+							sel.select(a.document.body).collapse(true);
+						}
+						self.trigger('change');
+					}, 15);
+				}
+				
+			})
+			.bind('dragstart dragend drop', function(e) {
+				// disable drag&drop
+				if (!o.allowDragAndDrop) {
+					e.preventDefault();
+					e.stopPropagation();
+				} 
+			})
+			.bind('drop', function(e) {
+				self.trigger('change');
+			});
+		
+		// bind user events handlers
 		$.each(o.callbacks || {}, function(e, c) {
 			self.bind(e, c);
-		});
-
-		// focus opened doc and fix workzone height if required
-		this.bind('open', function(e) {
-			(self.counter == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
-			
 		});
 		
 		// @todo move into mozilla.js plugin
@@ -1192,7 +1299,6 @@
 	elRTE.prototype.i18Messages = {}
 
 
-	
 	
 
 })(jQuery);

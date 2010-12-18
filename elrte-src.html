@@ -167,6 +167,8 @@
 				// resizable : false,
 				callbacks : {
 					load : function(e) {  $('#api .button').trigger('load', [e.data.elrte]).removeClass('disabled'); },
+					// keyup : function(e) { window.console.log('keyup'); },
+					// changepos : function(e) { window.console.log('changepos'); }
 					// beforeClose : function(e) { window.console.log(e.type); e.stopPropagation() },
 					// click : function(e) { window.console.log(e); }
 					// open : function(e) {
@@ -180,7 +182,7 @@
 				},
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'event.resize'],
+				debug : ['error', 'histor', 'even'],
 				cssfiles : ['src/css/elrte-inner.css']
 				
 			},
@@ -190,7 +192,7 @@
 				name : 'doc-3'
 			},
 			docs = {
-				div               : [$('#content-div'), $('#content-div')],
+				div               : [$('#content-div')],
 				textarea          : [$('#content-textarea')],
 				data              : [data],
 				all               : [$('#content-div'), $('#content-textarea'), data],
@@ -225,6 +227,14 @@
 			url = window.location.href,
 			i, rte;
 			
+			$.each(['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste change changepos exec'], function(i, n){
+				opts.callbacks[n] = function(e) {
+					window.console.log(e.type)
+					if (e.type == 'exec') {
+						window.console.log(e)
+					}
+				}
+			})
 
 
 			$('#documents').change(function() {
@@ -327,7 +337,10 @@
 			opts.documents = docs[open];
 			rte = methods[method]();
 			
-			
+			// opts.documents = []
+			// opts.loadTarget = true;
+			// // opts.debug = ['event']
+			// rte2 = $('#content-textarea').elrte(opts)
 		})
 	</script>
 	
