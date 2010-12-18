@@ -25,7 +25,7 @@ $.fn.elrtetoolbar = function(rte) {
 			p  = $('<div class="elrte-ib '+pc+' '+pc+'-'+gn+'"/>');
 			pa = false
 			while (cl--) {
-				if ((cmd = rte._commands[cmdn[cl]]) && !ex[cmd.name] && (btn = rte.ui.buttons[cmd.conf.ui])) {
+				if ((cmd = rte._commands[cmdn[cl]]) && !ex[cmd.name] && (btn = rte.ui.cmdui[cmd.conf.ui])) {
 					p.prepend(btn(cmd));
 					ex[cmd.name] = true;
 					pa = true;
@@ -36,10 +36,3 @@ $.fn.elrtetoolbar = function(rte) {
 		!$this.children().length && $this.hide();
 	});
 }
-
-// register toolbar in editor ui object
-elRTE.prototype.ui.toolbars['default'] = function(rte) {
-	return $('<div/>').elrtetoolbar(rte);
-}
-
-

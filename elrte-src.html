@@ -8,6 +8,8 @@
 	<!-- jQuery and plugins -->
 	<script src="js/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <link rel="stylesheet" href="css/ui-themes/lightness/jquery-ui-1.8.7.custom.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
+	
 	<link rel="stylesheet" href="css/ui-themes/default/jquery-ui-1.8.6.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 
@@ -230,6 +232,7 @@
 			
 			var events = ['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste change changepos exec']; 
 			events = ['editorfocus', 'editorblur']
+			events = [];
 			$.each(events, function(i, n){
 				opts.callbacks[n] = function(e) {
 					window.console.log(e.type)
@@ -340,6 +343,7 @@
 			opts.documents = docs[open];
 			rte = methods[method]();
 			
+			// window.console.log(window)
 			// opts.documents = []
 			// opts.loadTarget = true;
 			// // opts.debug = ['event']

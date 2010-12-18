@@ -38,7 +38,7 @@
 		 * @return Number
 		 **/
 		state : function() {
-			return this.dom.testSelection(this.test) ? this.STATE_ACTIVE : this.STATE_ENABLE;
+			return this.dom.testSelection(this.test) ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
 		},
 		
 		/**
@@ -84,7 +84,7 @@
 				b = s.bookmark(),
 				n = s.node(), p, o;
 
-			if (this._state == this.STATE_ACTIVE) {
+			if (this.state == elRTE.CMD_STATE_ACTIVE) {
 				if (c) {
 					p = b[1].parentNode;
 					if (d.is(p, this.test) && d.is(b[1], 'last')) {
@@ -194,7 +194,7 @@
 		state : function() {
 			var dom = this.dom,
 				n = dom.closestParent(this.sel.node(), function(n) { return dom.is(n, 'blockText') && $(n).css('text-align'); }, true);
-			return $(n).css('text-align') == this._val ? this.STATE_ACTIVE : this.STATE_ENABLE;
+			return $(n).css('text-align') == this._val ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
 		},
 		
 		/**
@@ -370,7 +370,7 @@
 		
 		state : function() {
 			var self = this;
-			return this.dom.closestParent(this.sel.node(), function(n) { return n.nodeName == self.name.toUpperCase(); }, true) ? this.STATE_ACTIVE : this.STATE_ENABLE;
+			return this.dom.closestParent(this.sel.node(), function(n) { return n.nodeName == self.name.toUpperCase(); }, true) ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
 		}
 	}
 	

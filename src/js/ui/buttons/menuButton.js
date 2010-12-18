@@ -20,7 +20,7 @@ $.fn.elrtemenubutton = function(cmd) {
 			items;
 			
 		// update label text and menu selected item
-		cmd.bind(function() {
+		cmd.change(function() {
 			label && label.text(cmd.opts[cmd.value()]||title);
 		});
 			

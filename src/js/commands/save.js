@@ -1,19 +1,20 @@
 /**
- * @class elRTE command stopfloat
- * Insert br tag with style="clear:both"
+ * @class elRTE command save
+ * Call editor "save" command
  * @author Dmitry (dio) Levashov, dio@std42.ru
  *
  **/
 elRTE.prototype.commands.save = function() {
 	this.title = 'Save';
+	this.events = {
+		open  : function() { this.update(elRTE.CMD_STATE_ENABLED); },
+		close : function() { !this.rte.counter && this.update(elRTE.CMD_STATE_DISABLED); }
+	}
 	
 	this._exec = function() {
 		this.rte.save();
 	}
 	
-	this.events = {
-		'wysiwyg' : function() { this._setState(this.STATE_ENABLE); },
-		'close'   : function() { this.rte.count() == 1 && this._setState(this.STATE_DISABLE); }
-	}
+	
 }
 	

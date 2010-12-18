@@ -11,8 +11,8 @@ elRTE.prototype.commands.nbsp = function() {
 	}
 	
 	this.events = {
-		'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
-		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+		wysiwyg        : function()  { this.update(elRTE.CMD_STATE_ENABLED); },
+		'source close' : function(e) { this.update(e.data.id == this.rte.active.id ? elRTE.CMD_STATE_DISABLED : elRTE.CMD_STATE_ENABLED); }
 	}
 
 }

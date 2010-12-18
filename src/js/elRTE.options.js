@@ -267,7 +267,7 @@
 			links      : ['anchor', 'link', 'unlink'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test       : ['save', 'nbsp', 'bold', 'fontsize'],
+			test       : ['save', 'nbsp', 'bold'/*, 'fontsize'*/],
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
 			control    : ['docstructure', 'source'/* , 'fullscreen'*/]
@@ -307,9 +307,9 @@
 		styleWithCss : false,
 		/* commands configuration */
 		commandsConf : {
-			docstructure : {
+			// docstructure : {
 				// initActive : false
-			},
+			// },
 			fontstyle : {
 				opts : [
 					{ name : 'Blue header 3',     element : 'h3',   'class' : 'blue', style : 'color:blue' },

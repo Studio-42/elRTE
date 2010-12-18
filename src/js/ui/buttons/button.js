@@ -12,17 +12,17 @@ $.fn.elrtebutton = function(cmd) {
 			// base button class
 			c  = 'elrte-btn',
 			// active button class
-			ac = 'elrte-active',
+			ac = elRTE.CSS_CLASS_ACTIVE,
 			// disabled button class
-			dc = 'elrte-disable',
+			dc = elRTE.CSS_CLASS_DISABLED,
 			// hover button class
-			hc = 'elrte-hover';
+			hc = elRTE.CSS_CLASS_HOVER;
 
 		// cached command state
 		this.state = 0;
 		// command to which this button binded
 		this.cmd = cmd;
-		
+
 		/**
 		 * Button mousedown event handler
 		 * @return void
@@ -32,15 +32,16 @@ $.fn.elrtebutton = function(cmd) {
 		}
 		
 		// bind to command update event
-		this.cmd.bind(function() {
-			switch ((self.state = self.cmd.state())) {
-				case cmd.STATE_DISABLE : $this.removeClass(ac).addClass(dc); break;
-				case cmd.STATE_ENABLE  : $this.removeClass(ac+' '+dc);       break;
-				case cmd.STATE_ACTIVE  : $this.removeClass(dc).addClass(ac); 
+		this.cmd.change(function() {
+			switch ((self.state = self.cmd.state)) {
+				case elRTE.CMD_STATE_DISABLED : $this.removeClass(ac).addClass(dc); break;
+				case elRTE.CMD_STATE_ENABLED : $this.removeClass(ac+' '+dc);       break;
+				case elRTE.CMD_STATE_ACTIVE  : $this.removeClass(dc).addClass(ac); 
 			}
+			// cmd.rte.log($this.attr('class'))
 		});
 		
-		$this.addClass('elrte-ib elrte-rnd '+c+' '+c+'-'+cmd.name)
+		$this.addClass('elrte-ib ui-state-default ui-corner-all '+c+' '+c+'-'+cmd.name)
 			.mousedown(function(e) {
 				e.preventDefault();
 				self.click();

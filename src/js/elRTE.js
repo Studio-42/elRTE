@@ -560,7 +560,7 @@
 		}
 		
 		/**
-		 * Exec command method "exec" and return result
+		 * Call command method "exec" and return result
 		 *
 		 * @param  String  editor command name
 		 * @return mixed
@@ -1041,49 +1041,6 @@
 		this.toolbar = typeof(tb = this.ui.toolbars[o.toolbar]) == 'function'
 			? tb(this).insertBefore(o.toolbarPosition == 'bottom' ? this.statusbar : this.container)
 			: $('<div/>');
-			
-		/**
-		 * Check target node is in DOM
-		 *
-		 * @return Boolean
-		 **/
-		function inDom() {
-			return !!($node || self.viewport).parents('body').length;
- 		}
-		
-		/**
-		 * Attach viewport to DOM and load documents
-		 *
-		 * @return void
-		 **/
-		function load() {
-			// if node is given - attach editor to DOM
-			node && self.workzone.insertAfter(node);
-			
-			// bind to parent form submit events 
-			self.form = self.workzone.parents('form').bind('submit', $.proxy(self.save, self));
-
-			self.trigger('load', { elrte : self }).trigger('show');
-				
-			// delete event "load" subscribers
-			delete(self.listeners.load);
-
-			// bind to window.resize to update tabs view
-			$(window).resize(function() {
-				self.trigger('resize');
-			});
-			
-			// add target node as document if enabled 
-			node && o.loadTarget && o.documents.unshift(node);
-			
-			// open documents
-			self.open(o.documents)
-				.bind('open', function(e) {
-					self.counter < 3 && self.updateHeight();
-				})
-				.updateHeight()
-				.timeEnd('load');
-		}
 		
 		// bind documents events handlers
 		this
@@ -1199,18 +1156,49 @@
 		$.each(o.callbacks || {}, function(e, c) {
 			self.bind(e, c);
 		});
+			
+		/**
+		 * Check target node is in DOM
+		 *
+		 * @return Boolean
+		 **/
+		function inDom() {
+			return !!($node || self.viewport).parents('body').length;
+ 		}
 		
-		// @todo move into mozilla.js plugin
-		// fix ff bug with carret position in textarea and curret visibility in iframe
-		// if ($.browser.mozilla) {
-		// 	this.bind('source', function(e) {
-		// 		self.active.source[0].setSelectionRange(0, 0);
-		// 	}).bind('show', function() {
-		// 		if (self.active) {
-		// 			self.wysiwyg() ? self.fixMozillaCarret() : self.active.source[0].setSelectionRange(0, 0);
-		// 		}
-		// 	});
-		// }
+		/**
+		 * Attach viewport to DOM and load documents
+		 *
+		 * @return void
+		 **/
+		function load() {
+			// if node is given - attach editor to DOM
+			node && self.workzone.insertAfter(node);
+			
+			// bind to parent form submit events 
+			self.form = self.workzone.parents('form').bind('submit', $.proxy(self.save, self));
+
+			self.trigger('load', { elrte : self }).trigger('show');
+				
+			// delete event "load" subscribers
+			delete(self.listeners.load);
+
+			// bind to window.resize to update tabs view
+			$(window).resize(function() {
+				self.trigger('resize');
+			});
+			
+			// add target node as document if enabled 
+			node && o.loadTarget && o.documents.unshift(node);
+			
+			// open documents
+			self.open(o.documents)
+				.bind('open', function(e) {
+					self.counter < 3 && self.updateHeight();
+				})
+				.updateHeight()
+				.timeEnd('load');
+		}
 		
 		this.resizable(true);
 		
@@ -1226,9 +1214,6 @@
 				}
 			}, 150);
 		}
-		
-		
-		// this.focus
 	}
 
 	/**
@@ -1298,9 +1283,13 @@
 		statusbars : {
 			'default' : function(rte) { return $('<div/>').elrtestatusbar(rte); }
 		},
-		toolbars : { }, 
-		buttons : {
-			normal : function(cmd) {
+		toolbars : { 
+			'default' : function(rte) {
+				return $('<div/>').elrtetoolbar(rte);
+			}
+		}, 
+		cmdui : {
+			button : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);
 			},
 			menu : function(cmd) {
@@ -1309,6 +1298,13 @@
 		} 
 	};	
 
+	elRTE.CSS_CLASS_ACTIVE = 'ui-state-active';
+	elRTE.CSS_CLASS_DISABLED = 'ui-state-disabled'
+	elRTE.CSS_CLASS_HOVER = 'ui-state-hover';
+
+	elRTE.CMD_STATE_DISABLED = 0;
+	elRTE.CMD_STATE_ENABLED = 1;
+	elRTE.CMD_STATE_ACTIVE = 2;
 	/**
 	 * elRTE messages
 	 *
