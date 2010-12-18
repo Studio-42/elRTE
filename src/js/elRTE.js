@@ -830,6 +830,10 @@
 			'show'      : [],
 			/* called after editor will be set hidden */
 			'hide'      : [],
+			// called on mousedown on editor interface
+			editorfocus : [],
+			// called on mousedown outside editor
+			editorblur  : [],
 			/* called on editor resize */
 			'resize'    : [],
 			/* called after new document added to editor */
