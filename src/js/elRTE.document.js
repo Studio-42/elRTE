@@ -282,26 +282,6 @@ elRTE.prototype.document = function(src, rte) {
 		catch(e) { }
 	}
 	
-	// bind events to document
-	
-	// @todo - move into opera plugin
-	// rise cut/paste events on ctrl+x/v in opera, but not on mac :(
-	// on mac opera think meta is a ctrl key
-	// i hope only a few nerds use opera on mac :)
-	// TODO test on linux/win
-	if ($.browser.opera && !this.macos) {
-		$(this.document).bind('keydown', function(e) {
-			if ((e.keyCode == 88 || e.keyCode == 86) && e.ctrlKey) {
-				e.stopPropagation();
-				e.preventDefault();
-				if (e.keyCode == 86 && !o.allowPaste) {
-					return;
-				}
-				rte.trigger(e.keyCode == 88 ? 'cut' : 'paste');
-			}
-		});
-	}
-
 	// bind events handlers to document
 	d = $(this.document);
 	$.each(['keydown keyup mousedown mouseup click dblclick dragstart dragend drop cut paste'], function(i, t) {

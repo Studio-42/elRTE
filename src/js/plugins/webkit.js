@@ -15,7 +15,7 @@ elRTE.prototype.plugins.webkit = function(rte) {
 				// rte.selection.insertHtml('<br>');
 				rte.selection.insertNode(rte.dom.create('br'))
 			}
-		})
+		}, true)
 		.bind('click', function(e) {
 			var n = e.target;
 			if (n.nodeName == 'IMG' || n.nodeName == 'HR') {

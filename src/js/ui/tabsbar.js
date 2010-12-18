@@ -216,6 +216,8 @@ $.fn.elrtetabsbar = function(rte) {
 				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'" class="elrte-ellipsis">'+title+'</span></li>')
 					.hide()
 					.mousedown(function(e) {
+						e.stopPropagation();
+						e.preventDefault();
 						rte.focus($(this).attr('rel'));
 					});
 					
@@ -224,10 +226,12 @@ $.fn.elrtetabsbar = function(rte) {
 						$('<div class="'+ic+'close" title="'+rte.i18n('Close')+'"/>')
 							.mousedown(function(e) {
 								e.stopPropagation();
-		 							e.preventDefault();
-		 							if (confirm(rte.i18n('Close document')+' "'+title+'"?')) {
-		 								rte.close(d.id);
-		 							}
+	 							e.preventDefault();
+	 							if (confirm(rte.i18n('Close document')+' "'+title+'"?')) {
+	 								rte.close(d.id);
+	 							} else {
+									rte.focus();
+								}
 							})
 					);
 				}

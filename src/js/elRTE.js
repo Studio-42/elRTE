@@ -947,7 +947,13 @@
 		this._plugins = (function() {
 			var _p = {}, p;
 			
-			$.browser.webkit && o.plugins.unshift('webkit');
+			if ($.browser.mozilla) {
+				o.plugins.unshift('mozilla');
+			} else if ($.browser.webkit) {
+				o.plugins.unshift('webkit');
+			} else if ($.browser.opera) {
+				o.plugins.unshift('opera');
+			}
 			$.each(o.plugins, function(i, n) {
 				if (typeof((p = self.plugins[n])) == 'function' && !_p[n]) {
 					_p[n] = new p(self);
@@ -1013,8 +1019,16 @@
 				'min-height' : minHeight+'px',
 				'width'      : width, 
 				'height'     : height
+			})
+			.mousedown(function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				self.focus().trigger('editorfocus');
 			});
 		
+		$(document.body).mousedown(function(e) {
+			self.trigger('editorblur');
+		})
 		/**
 		 * Toolbar widget.
 		 * 
@@ -1184,15 +1198,15 @@
 		
 		// @todo move into mozilla.js plugin
 		// fix ff bug with carret position in textarea and curret visibility in iframe
-		if ($.browser.mozilla) {
-			this.bind('source', function(e) {
-				self.active.source[0].setSelectionRange(0, 0);
-			}).bind('show', function() {
-				if (self.active) {
-					self.wysiwyg() ? self.fixMozillaCarret() : self.active.source[0].setSelectionRange(0, 0);
-				}
-			});
-		}
+		// if ($.browser.mozilla) {
+		// 	this.bind('source', function(e) {
+		// 		self.active.source[0].setSelectionRange(0, 0);
+		// 	}).bind('show', function() {
+		// 		if (self.active) {
+		// 			self.wysiwyg() ? self.fixMozillaCarret() : self.active.source[0].setSelectionRange(0, 0);
+		// 		}
+		// 	});
+		// }
 		
 		this.resizable(true);
 		
