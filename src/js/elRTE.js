@@ -1298,9 +1298,10 @@
 		} 
 	};	
 
-	elRTE.CSS_CLASS_ACTIVE   = 'ui-state-active';
-	elRTE.CSS_CLASS_DISABLED = 'ui-state-disabled'
-	elRTE.CSS_CLASS_HOVER    = 'ui-state-hover';
+	elRTE.CSS_CLASS_ACTIVE    = 'ui-state-active';
+	elRTE.CSS_CLASS_DISABLED  = 'ui-state-disabled'
+	elRTE.CSS_CLASS_HOVER     = 'ui-state-hover';
+	elRTE.CSS_CLASS_HIGHLIGHT = 'ui-state-hover';
 
 	elRTE.CMD_STATE_DISABLED = 0;
 	elRTE.CMD_STATE_ENABLED  = 1;

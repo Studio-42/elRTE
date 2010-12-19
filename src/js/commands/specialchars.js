@@ -5,7 +5,11 @@
  **/
 elRTE.prototype.commands.specialchars = function() {
 	this.title = 'Insert special character';
-	this.conf  = { ui : 'menu', grid : true, tpl : '<span title="{label}">{value}</span>' };
+	this.conf  = { 
+		ui : 'menu', 
+		menu : 'grid', 
+		uitpl : '<span title="{label}">{value}</span>' 
+	};
 	this.opts  = {
 		// typoraphic
 		'&amp;'    : 'Ampersand',
@@ -148,8 +152,8 @@ elRTE.prototype.commands.specialchars = function() {
 	}
 	
 	this.events = {
-		'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
-		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+		'wysiwyg'      : function() { this.update(elRTE.CMD_STATE_ENABLED); },
+		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 	}
 
 }

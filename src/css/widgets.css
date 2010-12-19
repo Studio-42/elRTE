@@ -1,44 +1,78 @@
-/* elRTE widgets styles */
+/* elRTE widgets */
 
-/***************************************/
-/*        menu (for menuButton)        */
-/***************************************/
+/**********************************************************/
+/*                   common menu style                    */
+/**********************************************************/
 
-/* menu container */
+/* menu widget */
 .elrte-widget-menu {
-	position:absolute;
-	top:20px;
-	width:auto;
-	min-width:120px;
+	min-width:224px;
 	max-height:370px;
-	border:1px solid #ccc;
-	background:#fff;
-	overflow:auto;
-	z-index:1000;
-}
-/* inner wrapper */
-.elrte-widget-menu-inner {
-}
-/* menu element */
-.elrte-widget-menu-item {
-	white-space: nowrap;
-	font-size:.86em;
-	padding:2px 32px 2px 9px;
-	border-bottom:1px solid #eee;
+	width:auto; 
 }
 
-.elrte-widget-menu-item:first-child { 
-	border-top:0 solid; 
+/* fix ui-widget-header in menu */
+.elrte-widget-menu .ui-widget-header {
+	border-bottom:0 solid;
+	padding-left:9px;
+	font-size:.8em;
+	white-space:nowrap;
 }
-/* item states */
-.elrte-widget-menu-item.elrte-hover,
-.elrte-widget-menu-item.elrte-active {
-	border-color: #fff;
-	background-color:#c3dbef;
+
+/* menu content wrapper */
+.elrte-widget-menu .ui-widget-content {
+	padding:0;
+	padding-bottom:4px;
 }
-/* item content */
+
+/* remove background in ui-helper-clearfix on hover */
+.elrte-widget-menu .ui-helper-clearfix {
+	background:transparent;
+	border:0 solid;
+}
+
+/* menu item content */
 .elrte-widget-menu-item * {
 	padding:0;
 	margin:0;
+}
+
+/**********************************************************/
+/*                     default menu                       */
+/**********************************************************/
+
+/* remove border from menu items */
+.elrte-widget-menu-default .ui-state-hover, 
+.elrte-widget-menu-default .ui-state-highlight, 
+.elrte-widget-menu-default .ui-state-active { 
+	border:0 solid;
+}
+
+/* menu item */
+.elrte-widget-menu-default .elrte-widget-menu-item {
+	white-space: nowrap;
+	font-size:.9em;
+	padding:2px 32px 2px 9px;
+	border:0 solid;
+}
+
+/**********************************************************/
+/*                      grid menu                         */
+/**********************************************************/
+
+/* grid menu content wrapper */
+.elrte-widget-menu-grid .ui-widget-content {
+	padding:1px 1px 4px 1px;
+}
+
+/* default grid menu item */
+.elrte-widget-menu-grid .elrte-widget-menu-item {
+	width:14px;
+	height:14px;
+	margin: 1px;
+	padding:2px;
+	float:left;
+	text-align:center;
+	font: 14px/16px verdana sans-serif;
 }
 

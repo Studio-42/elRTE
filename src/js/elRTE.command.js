@@ -79,7 +79,7 @@ elRTE.prototype.command = function(rte) {
 	 * @type Object
 	 */
 	this.events = {
-		'wysiwyg change changepos' : function(e) { this.update() },
+		'wysiwyg change changepos' : function(e) { this.update(); },
 		'close source'             : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 	}
 	
@@ -136,10 +136,10 @@ elRTE.prototype.command = function(rte) {
 	this.update = function(state) {
 		var s = this.state, 
 			v = this.value;
-			
+		
 		this.state = state === void(0) ? this._state() : state;
 		
-		if (state != elRTE.CMD_STATE_DISABLE) {
+		if (this.state != elRTE.CMD_STATE_DISABLE) {
 			this.value = this._value();
 		}
 		

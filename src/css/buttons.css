@@ -4,11 +4,9 @@
 .elrte-btn {
 	margin: 0 2px 0 0;
 	padding: 0;
-/*	border: 1px solid #ccc;*/
+	float:left;
 	cursor:default;
 	position:relative;
-	
-/*	background:transparent url(../images/elrte-toolbar.png) 0 0 no-repeat;*/
 }
 
 /* button's inner container */
@@ -16,6 +14,7 @@
 	width:20px;
 	height:20px;
 	margin:0;
+	padding:0;
 	overflow:hidden;
 	background-image:url(../images/elrte-toolbar.png);
 	background-position: 0 0;
@@ -99,50 +98,46 @@
 
 /* panel control */
 .elrte-btn-docstructure .elrte-btn-inner { background-position:-620px -20px; }
-.elrte-btn-source  .elrte-btn-inner{ background-position:-640px -20px; }
-.elrte-btn-fullscreen .elrte-btn-inner { background-position:-660px -20px; }
+.elrte-btn-source       .elrte-btn-inner { background-position:-640px -20px; }
+.elrte-btn-fullscreen   .elrte-btn-inner { background-position:-660px -20px; }
 
 
 
-/* menu button */
-.elrte-btn-menu {
-	background-color:#fff;
-}
-
+/* menu button inner container */
 .elrte-btn-menu .elrte-btn-inner {
-	width:auto;
-	min-width:32px;
-	max-width:120px;
-		
+	float:left;
+	background-color:#fff;
 }
 
-.elrte-btn-menu.elrte-hover {
-	background-color:#fff;
+/* menu button with text inner container */
+.elrte-btn-menu-labeled .elrte-btn-inner {
+	width:90px;
+	background:#fff;
+	white-space:nowrap;
+	line-height:20px;
+	font-size:.76em;
+	padding-left: 5px;
 }
 
 /* arrow on menu button right side */
-.elrte-btn-menu-control {
+.elrte .elrte-btn-menu-control {
 	float:right;
 	height:20px;
 	width:10px;
-	border-left:1px solid #ccc;
-	background:#eee url(../images/elrte-toolbar.png) -778px -22px no-repeat;
+	border-top:0 solid;
+	border-right:0 solid;
+	border-bottom:0 solid;
+	background-image:url(../images/elrte-toolbar.png);
+	background-position:-778px -22px;
+	background-repeat:no-repeat;
 }
 
-.elrte-hover .elrte-btn-menu-control {
-	background-color:#ddd;
-}
-
-/* text on menu button */
-.elrte-btn-menu-label {
-	width:90px;
-	float:left;
-	font-size:12px;
-	line-height:20px;
-	height:20px;
-	padding: 0 5px;
-	overflow:hidden;
-	background:#fff;
+/* button's menu */
+.elrte-btn-menu .elrte-widget-menu {
+	position:absolute;
+	top:20px;
+	z-index:100;
+	width:auto;
 }
 
 

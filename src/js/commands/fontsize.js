@@ -4,12 +4,15 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.fontsize = function() {
-	this.title  = 'Font size';
-	this.value   = '';
-	this.conf   = { label : true, ui : 'menu', tpl : '<span style="font-size:{value}">{label}</span>' };
-	this.css    = 'font-size';
-	this.tpl    = '<span style="font-size:{value}">{label}</span>';
-	this.opts   = {
+	this.title = 'Font size';
+	this.value = '';
+	this.css   = 'font-size';
+	this.conf  = { 
+		ui      : 'menu', 
+		uilabel : true, 
+		uitpl   : '<span style="font-size:{value}">{label}</span>' 
+	};
+	this.opts  = {
 		'default'  : this.rte.i18n('Default'),
 		'xx-small' : this.rte.i18n('Small (8pt)'),
 		'x-small'  : this.rte.i18n('Small (10pt)'),
@@ -20,10 +23,10 @@ elRTE.prototype.commands.fontsize = function() {
 		'xx-large' : this.rte.i18n('Large (36pt)')
 	};
 	
-	this.test      = $.proxy(elRTE.prototype.mixins.font.test,   this);
-	this.unwrap    = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
-	this._exec     = $.proxy(elRTE.prototype.mixins.font.exec,   this);
-	this._value = $.proxy(elRTE.prototype.mixins.font.value, this);
+	this.test   = $.proxy(elRTE.prototype.mixins.font.test,   this);
+	this.unwrap = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
+	this._exec  = $.proxy(elRTE.prototype.mixins.font.exec,   this);
+	this._value = $.proxy(elRTE.prototype.mixins.font.value,  this);
 	
 	/**
 	 * Translate font-size in px|pt|% into absolute value

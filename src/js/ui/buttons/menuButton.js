@@ -6,69 +6,68 @@
 $.fn.elrtemenubutton = function(cmd) {
 
 	return this.each(function() {
-		var self  = this,
-			$this = $(this),
-			c     = elRTE.MENU_BUTTON_CLASS,
-			ac    = 'elrte-active',
-			wc    = 'elrte-widget',
-			mc    = 'elrte-widget-menu',
-			title = cmd.title,
+		var title = cmd.title,
 			conf  = cmd.conf,
-			label = conf.label ? $('<div class="'+c+'-label elrte-rnd-left">'+title+'</div>') : '',
-			menu  = $('<div class="'+mc+' '+(conf.grid ? wc+'-grid' : '')+'"/>'),
-			tmp   = '<div class="elrte-widget-header">'+title+'</div><div class="elrte-widget-menu-inner">',
+			grid  = cmd.conf.menu == 'grid',
+			ic    = 'elrte-widget-menu-item ' + (grid ? 'ui-state-default' : ''),
+			menu  = $('<div class="ui-widget ui-corner-all elrte-widget-menu elrte-widget-menu-'+(grid ? 'grid' : 'default')+'"/>'),
+			$this = $(this).elrtebutton(cmd)
+				.addClass('elrte-btn-menu')
+				.append(menu.hide())
+				.prepend('<div class="ui-state-default ui-corner-right elrte-btn-menu-control" />'),
+			inner = $this.children('.elrte-btn-inner').addClass('ui-corner-left'),
+			html  = '<div class="ui-widget-header">'+title+'</div><div class="ui-widget-content ui-corner-bottom">',
 			items;
-			
-		// update label text and menu selected item
-		cmd.change(function() {
-			label && label.text(cmd.opts[cmd.value]||title);
-		});
-			
-		cmd.rte.bind('editorfocus editorblur mousedown keydown', function(e) {
-			cmd.rte.log(e.type)
-			menu.hide()
-		})
-			
-		// append button content
-		$this.elrtebutton(cmd)
-			.addClass(c)
-			.append(menu.hide())
-			.unbind('mousedown')
-			.mousedown(function(e) {
-				cmd.rte.log(self.cmd.state)
-				e.preventDefault();
-				e.stopPropagation();
-				if (self.cmd.state) {
-					menu.is(':hidden') && items.removeClass(ac).filter('[name="'+cmd.value+'"]').addClass(ac);
-					menu.toggle(128);
-				}
-			})
-			.children().eq(0)
-			.append('<div class="'+c+'-control elrte-rnd-right" />')
-			.append(label);
-		
-		// set menu content and bind events
-		setTimeout(function() {
-			$.each(cmd.opts, function(v, l) {
-				tmp += '<div class="elrte-widget-menu-item" name="'+v+'">'+conf.tpl.replace(/\{value\}/g, v).replace(/\{label\}/g, l)+'</div>';
+				
+		if (conf.uilabel && !grid) {
+			$this.addClass('elrte-btn-menu-labeled');
+			inner.text(title);
+			cmd.change(function() {
+				inner.text(cmd.opts[cmd.value]||title);
 			});
-			
-			items = menu.attr('title', '')
-				.mousedown(function(e) {
-					e.preventDefault();
-					e.stopPropagation();
-				})
-				.append(tmp+'</div>')
-				.children().eq(1).children()
+		}
+		
+		setTimeout(function() {
+			$.each(cmd.opts||[], function(v, l) {
+				html += '<div class="'+ic+'" name="'+v+'">'+conf.uitpl.replace(/\{value\}/g, v).replace(/\{label\}/g, l)+'</div>';
+			});
+			items = menu.html(html+'<div class="ui-helper-clearfix"/></div>')
+				.children(':last')
+				.children()
 				.hover(function() {
-					$(this).toggleClass('elrte-hover');
+					$(this).toggleClass('ui-state-hover');
 				})
-				.mousedown(function() {
-					$this.mousedown();
+				.mousedown(function(e) {
 					cmd.exec($(this).attr('name'));
 				});
+		}, 50);
+		
+		cmd.rte.bind('editorfocus editorblur mousedown keydown', function(e) {
+			menu.hide();
+		});	
+
+		
+		this.click = function(e) {
+			var l = '', r = '';
 			
-		}, 20);
+			e.stopPropagation();
+			e.preventDefault();
+			
+			if (menu.is(':hidden')) {
+				cmd.rte.trigger('editorfocus');
+				if ($(window).width() - $this.offset().left - menu.outerWidth() < 0) {
+					r = '0';
+				} else {
+					l = '0';
+				}
+				menu.css({
+					left : l,
+					right : r
+				})
+				items.removeClass('ui-state-highlight').filter('[name="'+(cmd.value||'default')+'"]').addClass('ui-state-highlight');
+			}
+			menu.toggle(128);
+		}
 		
 	});
 }
