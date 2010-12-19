@@ -11,7 +11,9 @@
 		 */
 		id : '',
 		
-		/* ==================  UI OPTIONS ================= */
+		/*******************************************************/
+		/*                    UI OPTIONS                       */
+		/*******************************************************/		
 		
 		/**
 		 * Ui language
@@ -125,7 +127,9 @@
 		 */
 		resizeHelper : '',
 		
-		/* --- editor options --- */
+		/*******************************************************/
+		/*                  EDITOR OPTIONS                     */
+		/*******************************************************/
 		/**
 		 * Allow user view and edit source?
 		 * To toggle between editor and source command or plugin required.
@@ -194,26 +198,91 @@
 		 */
 		callbacks : {},
 		
-		/* --- editor documents options --- */
+		/*******************************************************/
+		/*               DOCUMENTS OPTIONS                     */
+		/*******************************************************/
 		
-		/* additional nodes or js objects to load in editor as documents */
+		/**
+		 * Content to load as documents in editor
+		 * Can contains jQuery objects, DOMElements, Objects or Strings
+		 * 
+		 * @type Array
+		 * @default []
+		 * @example
+		 * Load jQuery
+		 * options.documents = [$(selector)]
+		 * @example 
+		 * Load DOMElements
+		 * options.documents = [document.getElementById('my-id')]
+		 * @example
+		 * Load Object
+		 * options.documents = [ { id : 'myid', name : "myname", title : 'Document', content : "some text..." } ]
+		 * @example
+		 * Load string
+		 * options.documents = ["Here is document content ...."]
+		 */
 		documents : [],
-		/* hide document source node after document loaded */
+		
+		/**
+		 * If document source is DOMElements - hide it
+		 * 
+		 * @type Boolean
+		 * @default true
+		 */
 		hideDocSource : true,
-		/* Loading documents rule. If true - opened document set active */
+
+		/**
+		 * If true - last opened document set active (visible)
+		 * 
+		 * @type Boolean
+		 * @default false
+		 */
 		focusOpenedDoc : false,
+		
+		/**
+		 * Can be document be reloaded via api or command
+		 * true|"allow" - reload withot question
+		 * 'ask - ask user
+		 * false|"deny" - do not reload
+		 *
+		 * @type Boolean|String
+		 * @default 'ask
+		 */
 		reloadDocs : 'ask',
-		/* allow close docuents? Closed document not saves, except autosave is enabled */
+		
+		/**
+		 * If true - documents can be closed
+		 * 
+		 * @type Boolean
+		 * @default false
+		 */
 		allowCloseDocs : true,
 		
+		/*******************************************************/
+		/*                DOCUMENT OPTIONS                     */
+		/*******************************************************/
 		
-		allowDragAndDrop : true,
-		/* --- options for every editor document --- */
-		/* iframe doctype */
+		/**
+		 * Document doctype
+		 * 
+		 * @type String
+		 */
 		doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',
-		/* documents charset */
+		
+		/**
+		 * Document character set
+		 * 
+		 * @type String
+		 * @default 'UTF-8'
+		 */
 		charset : 'UTF-8',
-		/* css files to load in iframe */
+		
+		/**
+		 * Document css files
+		 * 
+		 * @type Array
+		 * @default  ['src/css/elrte-inner.css']
+		 */
 		cssfiles : ['src/css/elrte-inner.css'],
 		
 		/* --- filter(clean html) options --- */
@@ -231,7 +300,7 @@
 		replace : [ ],
 		/* user restore rules */
 		restore : [ ],
-		
+		allowDragAndDrop : true,
 		/* --- paste options --- */
 		/* allow/disallow paste text in editor */
 		allowPaste : true,

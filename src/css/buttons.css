@@ -106,13 +106,15 @@
 /* menu button inner container */
 .elrte-btn-menu .elrte-btn-inner {
 	float:left;
-	background-color:#fff;
+/*	background-color:#fff;*/
 }
 
 /* menu button with text inner container */
 .elrte-btn-menu-labeled .elrte-btn-inner {
 	width:90px;
-	background:#fff;
+/*	background:#fff;*/
+	background-image:none;
+/*	color:#222;*/
 	white-space:nowrap;
 	line-height:20px;
 	font-size:.76em;

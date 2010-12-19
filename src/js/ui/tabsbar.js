@@ -253,7 +253,7 @@ $.fn.elrtetabsbar = function(rte) {
 			update();
 		})
 		.bind('resize', function() {
-			// update();
+			update();
 		})
 		;
 	}

@@ -9,7 +9,7 @@ $.fn.elrtebutton = function(cmd) {
 	return this.each(function() {
 		var self  = this,
 			$this = $(this).addClass('ui-state-default ui-corner-all elrte-btn elrte-btn-'+cmd.name)
-				.append('<div class="elrte-btn-inner " title="'+cmd.title+'"/>')
+				.append('<div class="elrte-btn-inner" title="'+cmd.title+'"/>')
 				.mousedown(function(e) {
 					self.click(e);
 				});
@@ -19,6 +19,8 @@ $.fn.elrtebutton = function(cmd) {
 
 		/**
 		 * Button mousedown event handler
+		 * Call cmd.exec()
+		 *
 		 * @return void
 		 **/
 		this.click = function(e) {
