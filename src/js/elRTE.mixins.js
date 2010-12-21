@@ -255,6 +255,7 @@
 	
 	/**
 	 * Common methods for fontsize and fontfamily classes
+	 * @TODO  check children node
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.mixins.font = {
@@ -337,6 +338,7 @@
 				}
 			}
 			sel.toBookmark(b);
+			// this.update()
 			return true;
 		},
 		
@@ -349,7 +351,7 @@
 		value : function() {
 			var dom = this.dom,
 				n   = dom.closestParent(this.sel.node(), this.test, true);
-
+			// this.rte.log(this.sel.node())
 			return this._parseVal(dom.css(n, this.css));
 		}
 		

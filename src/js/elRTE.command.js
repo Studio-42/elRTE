@@ -139,7 +139,7 @@ elRTE.prototype.command = function(rte) {
 		
 		this.state = state === void(0) ? this._state() : state;
 		
-		if (this.state != elRTE.CMD_STATE_DISABLE) {
+		if (this.state != elRTE.CMD_STATE_DISABLED) {
 			this.value = this._value();
 		}
 		

@@ -1,5 +1,19 @@
 /* elRTE tollbar buttons styles */
 
+
+.elrte-icon {
+/*	display:block;*/
+	width:20px;
+	height:20px;
+	background-image:url(../images/elrte-toolbar.png);
+	background-position: 0 0;
+	background-repeat:no-repeat;	
+}
+
+.elrte-icon-bold {background-position:-200px 0;}
+
+.elrte-icon-aligncenter { background-position:-560px 0; }
+
 /* default button */
 .elrte-btn {
 	margin: 0 2px 0 0;
@@ -110,7 +124,7 @@
 }
 
 /* menu button with text inner container */
-.elrte-btn-menu-labeled .elrte-btn-inner {
+.elrte-btn-label {
 	width:90px;
 /*	background:#fff;*/
 	background-image:none;
@@ -142,4 +156,17 @@
 	width:auto;
 }
 
+.elrte-btn-specialchars .elrte-widget-menu-item {
+	width:14px;
+}
 
+.elrte-btn-formatblock .elrte-widget-menu-grid {
+	min-width: 168px;
+}
+
+.elrte-btn-formatblock .elrte-widget-menu-grid .elrte-widget-menu-item {
+	width:74px;
+	padding-top:7px;
+	height:30px;
+/*	vertical-align:bottom;*/
+}

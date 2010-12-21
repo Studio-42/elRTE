@@ -4,23 +4,29 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.fontsize = function() {
+	var s = this.rte.i18n('Small'),
+		l = this.rte.i18n('Large');
+		
 	this.title = 'Font size';
 	this.value = '';
 	this.css   = 'font-size';
 	this.conf  = { 
 		ui      : 'menu', 
-		uilabel : true, 
-		uitpl   : '<span style="font-size:{value}">{label}</span>' 
+		text : true,
+		grid : true, 
+		tpl   : '<span style="font-size:{value}">{label}</span>',
+		gridtpl : '{label}',
+		gridcols : 2
 	};
 	this.opts  = {
 		'default'  : this.rte.i18n('Default'),
-		'xx-small' : this.rte.i18n('Small (8pt)'),
-		'x-small'  : this.rte.i18n('Small (10pt)'),
-		'small'    : this.rte.i18n('Small (12pt)'),
+		'xx-small' : s + ' (8pt)',
+		'x-small'  : s + ' (10pt)',
+		'small'    : s + ' (12pt)',
 		'medium'   : this.rte.i18n('Normal (14pt)'),
-		'large'    : this.rte.i18n('Large (18pt)'),
-		'x-large'  : this.rte.i18n('Large (24pt)'),
-		'xx-large' : this.rte.i18n('Large (36pt)')
+		'large'    : l + ' (18pt)',
+		'x-large'  : l + ' (24pt)',
+		'xx-large' : l + ' (36pt)'
 	};
 	
 	this.test   = $.proxy(elRTE.prototype.mixins.font.test,   this);

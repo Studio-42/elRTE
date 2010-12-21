@@ -1,21 +1,159 @@
-/* elRTE buttons toolbar style */
-
 /* toolbar */
-.elrte .elrte-toolbar {
-	padding:0 .3em;
+.elrte-toolbar { padding:0 .3em; }
 
-}
-
-/* toolbar panel */
-.elrte .elrte-toolbar-panel { 
-/*	border:1px solid #111;*/
-	padding: 2px 0px 2px 7px; 
-	background:url(../images/elrte-toolbar.png) -780px 0 no-repeat;
+/* group of buttons */
+.elrte-buttonset {
 	float:left;
+	padding: 2px 2px 2px 7px;
+	background:url(../images/elrte-toolbar.png) -781px 1px no-repeat;
 }
 
-/* first toolbar panel */
-.elrte .elrte-toolbar-panel:first-child {
+.elrte .elrte-buttonset:first-child {
 	padding-left:0;
 	background:transparent;
 }
+
+.elrte-buttonset-ext { background:transparent; }
+
+.elrte-buttonset-ext .elrte-button { margin:0 -1px 0 0; }
+
+/* default button with icon only */
+.elrte-button {
+	float:left;
+	margin:0 1px 0 0;
+	width:22px;
+	height:22px;
+	line-height: 22px; 
+	font-size:12px;
+	position:relative;
+	cursor:default;
+}
+
+/* button with icon and arrow */
+.elrte-button-menu {
+	width:34px;
+}
+
+/* button with text and arrow */
+.elrte-button-menu-text {
+	width:auto;
+	padding:0 19px 0 5px;
+}
+
+/* text inside button */
+.elrte-button-text {
+	display:block;
+	width:70px;
+	white-space:nowrap;
+	font-size:12px;
+	overflow:hidden;
+}
+
+/* in text button hide icon */
+.elrte-button-menu-text .elrte-icon { display:none; }
+
+/* arrow to open menu */
+.elrte-button .elrte-menu-opener {
+	position:absolute;
+	width:12px;
+	height:100%;
+	top:0;
+	right:0;
+	border-top:0 solid;
+	border-right:0 solid;
+	border-bottom:0 solid;
+}
+
+.elrte-menu-opener .ui-icon {
+	margin:4px 0 0 -3px;
+	height:22px;
+}
+
+/* icon inside button */
+.elrte-icon {
+	position:absolute;
+	width:20px;
+	height:20px;
+	top:1px;
+	left:1px;
+	background-image:url(../images/elrte-toolbar.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+
+/* panel edit */
+.elrte-icon-selectall        { background-position:-60px 0; }
+.elrte-icon-removeformat     { background-position:-80px 0; }
+.elrte-icon-pastetext        { background-position:-160px 0; }
+.elrte-icon-pasteformattext  { background-position:-180px 0; }
+
+/* panel style */
+.elrte-icon-bold       { background-position:-200px 0; }
+.elrte-icon-italic     { background-position:-220px 0; }
+.elrte-icon-underline  { background-position:-240px 0; }
+.elrte-icon-strike     { background-position:-260px 0; }
+.elrte-icon-sup        { background-position:-300px 0; }
+.elrte-icon-sub        { background-position:-280px 0; }
+
+/* panel semantic */
+.elrte-icon-ins   { background-position:-320px 0; }
+.elrte-icon-del   { background-position:-340px 0; }
+.elrte-icon-abbr  { background-position:-360px 0; }
+.elrte-icon-cite  { background-position:-380px 0; }
+/*.elrte-ui-blockquote { background-position:-400px 0; }*/
+
+/* panel direction */
+.elrte-icon-dirltr  { background-position:-420px 0; }
+.elrte-icon-dirrtl  { background-position:-440px 0; }
+
+/* panel indent */
+.elrte-icon-outdent  { background-position:-460px 0; }
+.elrte-icon-indent   { background-position:-480px 0; }
+
+/* panel font */
+.elrte-icon-formatblock  { background-position:-520px -20px; }
+.elrte-icon-fontsize     { background-position:-540px -20px; }
+.elrte-icon-fontfamily   { background-position:-560px -20px; }
+.elrte-icon-fontstyle    { background-position:-580px -20px; }
+.elrte-icon-textcolor    { background-position:-660px 0 }
+.elrte-icon-textbg       { background-position:-680px 0 }
+
+/* panel lists */
+.elrte-icon-ul  { background-position:-500px 0; }
+.elrte-icon-ol  { background-position:-520px 0; }
+
+/* panel alignment */
+.elrte-icon-alignleft     { background-position:-540px 0; }
+.elrte-icon-aligncenter   { background-position:-560px 0; }
+.elrte-icon-alignright    { background-position:-580px 0; }
+.elrte-icon-alignjustify  { background-position:-600px 0; }
+
+/* panel history */
+.elrte-icon-undo  { background-position:-620px 0; }
+.elrte-icon-redo  { background-position:-640px 0; }
+
+/* panel links */
+.elrte-icon-anchor  { background-position:0 -20px; }
+.elrte-icon-link    { background-position:-20px -20px; }
+.elrte-icon-unlink  { background-position:-40px -20px; }
+
+/* panel misc */
+.elrte-icon-nbsp         { background-position:-60px -20px; }
+.elrte-icon-stopfloat    { background-position:-80px -20px; }
+.elrte-icon-hr           { background-position:-120px -20px; }
+.elrte-icon-pagebreak    { background-position:-600px -20px; }
+.elrte-icon-blockquote   { background-position:-400px 0; }
+.elrte-icon-div          { background-position:-440px -20px; }
+.elrte-icon-specialchars { background-position:-480px -20px; }
+
+/* panel table */
+.elrte-icon-table  { background-position:-200px -20px; }
+
+/* panel control */
+.elrte-icon-docstructure  { background-position:-620px -20px; }
+.elrte-icon-source        { background-position:-640px -20px; }
+.elrte-icon-fullscreen    { background-position:-660px -20px; }
+
+
+

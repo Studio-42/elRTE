@@ -7,11 +7,11 @@
 $.fn.elrtetoolbar = function(rte) {
 	
 	return this.each(function() {
-		var $this = $(this).addClass('ui-widget ui-state-default ui-corner-all ui-helper-clearfix elrte-toolbar'),
+		var $this = $(this).addClass('ui-helper-clearfix ui-widget-header ui-corner-all elrte-toolbar'),
 			o     = rte.options,
 			g     = o.presets[o.preset]||[], // commands groups names
 			gl    = g.length,
-			pc    = 'elrte-toolbar-panel',
+			pc    = 'elrte-buttonset',
 			ex    = {},
 			p, pa, gn, cmdn, cl, cmd, btn;
 			
@@ -22,7 +22,7 @@ $.fn.elrtetoolbar = function(rte) {
 			cmdn = o.commands[gn] || [];
 			cl   = cmdn.length;
 			// toolbar panel contains commands from group
-			p  = $('<div class="elrte-ib '+pc+' '+pc+'-'+gn+'"/>');
+			p  = $('<div class="ui-helper-clearfix '+pc+' '+pc+'-'+gn+'"/>');
 			pa = false
 			while (cl--) {
 				if ((cmd = rte._commands[cmdn[cl]]) && !ex[cmd.name] && (btn = rte.ui.cmdui[cmd.conf.ui])) {
@@ -35,10 +35,13 @@ $.fn.elrtetoolbar = function(rte) {
 		}
 		!$this.children().length && $this.hide();
 		
-		$this.delegate('.'+elRTE.BUTTON_CLASS, 'hover', function() {
+		$this.delegate('.elrte-button', 'hover', function() {
 			if (!$(this).hasClass('.'+elRTE.CSS_CLASS_DISABLED)) {
 				$(this).toggleClass(elRTE.CSS_CLASS_HOVER);
 			}
+		})
+		.delegate('.ui-menu-item a', 'hover', function() {
+			$(this).toggleClass('ui-state-hover')
 		});
 		
 	});

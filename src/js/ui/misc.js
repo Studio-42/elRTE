@@ -28,3 +28,33 @@ $.fn.sumWidth = function(o) {
 
 	return parseInt(w);
 }
+
+/**
+ * jQuery plugin
+ * Return maximum width for all elements in set
+ *
+ * @return Number
+ */
+$.fn.maxWidth = function() {
+	var w = 0;
+	
+	this.each(function() {
+		w = Math.max(w, $(this).width());
+	});
+	return Math.round(w);
+}
+
+/**
+ * jQuery plugin
+ * Return maximum height for all elements in set
+ *
+ * @return Number
+ */
+$.fn.maxHeight = function(m) {
+	var h = 0;
+	
+	this.each(function() {
+		h = Math.max(h, $(this).height());
+	});
+	return Math.round(h);
+}

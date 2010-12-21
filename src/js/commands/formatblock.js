@@ -4,10 +4,16 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.formatblock = function() {
-	this.title   = 'Format';
-	this.conf   = { label : true, ui : 'Menu', tpl : '<{value}>{label}</{value}>' };
+	this.title   = 'Format block';
+	this.conf   = { 
+		uilabel : true, 
+		ui : 'menu', 
+		menu : 'grid',
+		uitpl2 : '<{value}>{label}</{value}>', 
+		uitpl : '<{value}>AaBb</{value}>{label}' 
+	};
 	this._regExp = /^(H[1-6]|P|PRE|ADDRESS|DIV)$/;
-	this._val    = '';
+	this.value    = '';
 	this.opts    = {
 		'h1'      : this.rte.i18n('Heading')+' 1',
 		'h2'      : this.rte.i18n('Heading')+' 2',
@@ -20,6 +26,7 @@ elRTE.prototype.commands.formatblock = function() {
 		'pre'     : this.rte.i18n('Preformatted'),
 		'div'     : this.rte.i18n('Normal (div)')
 	};
+	
 	
 	this._exec = function(v) {
 		var dom = this.dom,
@@ -42,14 +49,14 @@ elRTE.prototype.commands.formatblock = function() {
 	}
 	
 	
-	this._updValue = function() {
+	this._value = function() {
 		var n = this.dom.closestParent(this.sel.node(), /^(H[1-6]|P|PRE|ADDRESS|DIV)$/, true);
-		this._val = n ? n.nodeName.toLowerCase() : false;
+		return n ? n.nodeName.toLowerCase() : false;
 
 	}
 	
-	this._getState = function() {
-		return this.STATE_ENABLE;
+	this._state = function() {
+		return elRTE.CMD_STATE_ENABLED;
 	}
 }
 

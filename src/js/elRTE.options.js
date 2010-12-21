@@ -336,7 +336,7 @@
 			links      : ['anchor', 'link', 'unlink'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test       : ['save', 'nbsp', 'bold', 'fontsize', 'specialchars'],
+			test       : ['save', 'nbsp', 'bold', 'fontsize'/*, 'formatblock', 'specialchars'*/],
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
 			control    : ['docstructure', 'source'/* , 'fullscreen'*/]

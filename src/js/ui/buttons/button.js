@@ -8,10 +8,10 @@ $.fn.elrtebutton = function(cmd) {
 	
 	return this.each(function() {
 		var self  = this,
-			$this = $(this).addClass('ui-state-default ui-corner-all elrte-btn elrte-btn-'+cmd.name)
-				.append('<div class="elrte-btn-inner" title="'+cmd.title+'"/>')
+			$this = $(this).addClass('ui-widget ui-state-default ui-corner-all elrte-button')
+				.append('<span class="elrte-icon elrte-icon-'+cmd.name+'" title="'+cmd.title+'"/>')
 				.mousedown(function(e) {
-					self.click(e);
+					!$this.hasClass('ui-state-disabled') && self.click(e);
 				});
 
 		// command to which this button binded

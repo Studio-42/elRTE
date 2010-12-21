@@ -1,78 +1,49 @@
-/* elRTE widgets */
-
-/**********************************************************/
-/*                   common menu style                    */
-/**********************************************************/
-
-/* menu widget */
-.elrte-widget-menu {
-	min-width:224px;
-	max-height:370px;
-	width:auto; 
+/* default menu widget based on ui-menu */
+.elrte-menu {
+	position:absolute;
+	z-index:1;
 }
 
-/* fix ui-widget-header in menu */
-.elrte-widget-menu .ui-widget-header {
-	border-bottom:0 solid;
-	padding-left:9px;
+/* menu header */
+.elrte-menu .ui-widget-header {
 	font-size:.8em;
-	white-space:nowrap;
-}
-
-/* menu content wrapper */
-.elrte-widget-menu .ui-widget-content {
-	padding:0;
-	padding-bottom:4px;
-}
-
-/* remove background in ui-helper-clearfix on hover */
-.elrte-widget-menu .ui-helper-clearfix {
-	background:transparent;
-	border:0 solid;
-}
-
-/* menu item content */
-.elrte-widget-menu-item * {
-	padding:0;
-	margin:0;
-}
-
-/**********************************************************/
-/*                     default menu                       */
-/**********************************************************/
-
-/* remove border from menu items */
-.elrte-widget-menu-default .ui-state-hover, 
-.elrte-widget-menu-default .ui-state-highlight, 
-.elrte-widget-menu-default .ui-state-active { 
-	border:0 solid;
+	padding:0 .4em;
+	margin-bottom:2px;
 }
 
 /* menu item */
-.elrte-widget-menu-default .elrte-widget-menu-item {
-	white-space: nowrap;
-	font-size:.9em;
-	padding:2px 32px 2px 9px;
-	border:0 solid;
+.elrte-menu .ui-menu-item a {
+	white-space:nowrap;
+	font-size:.8em;
+	padding:.1em .4em;
+	font-weight:normal;
 }
 
-/**********************************************************/
-/*                      grid menu                         */
-/**********************************************************/
-
-/* grid menu content wrapper */
-.elrte-widget-menu-grid .ui-widget-content {
-	padding:1px 1px 4px 1px;
+/* fix highlighted item margin */
+.elrte-menu .ui-menu-item a.ui-state-highlight {
+	margin:-1px;
 }
 
-/* default grid menu item */
-.elrte-widget-menu-grid .elrte-widget-menu-item {
-	width:14px;
-	height:14px;
-	margin: 1px;
-	padding:2px;
-	float:left;
-	text-align:center;
-	font: 14px/16px verdana sans-serif;
+/* grid menu item */
+.elrte-menu-grid .ui-menu-item {
+	width: auto;
+	clear:none;
 }
 
+.elrte-menu-grid .ui-menu-item a {
+	margin:1px;
+}
+
+.elrte-menu-grid .ui-menu-item a.ui-state-highlight,
+.elrte-menu-grid .ui-menu-item a.ui-state-hover {
+	margin:1px;
+}
+
+
+.elrte-menu-color {
+	
+}
+
+.elrte-contextmenu {
+	
+}
