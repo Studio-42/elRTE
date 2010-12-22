@@ -36,12 +36,12 @@ $.fn.elrtetoolbar = function(rte) {
 		!$this.children().length && $this.hide();
 		
 		$this.delegate('.elrte-button', 'hover', function() {
-			if (!$(this).hasClass('.'+elRTE.CSS_CLASS_DISABLED)) {
-				$(this).toggleClass(elRTE.CSS_CLASS_HOVER);
+			if (!$(this).hasClass('ui-state-disabled')) {
+				$(this).toggleClass('ui-state-hover');
 			}
 		})
 		.delegate('.ui-menu-item a', 'hover', function() {
-			$(this).toggleClass('ui-state-hover')
+			$(this).toggleClass('ui-state-hover');
 		});
 		
 	});

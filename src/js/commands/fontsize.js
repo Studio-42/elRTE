@@ -11,11 +11,11 @@ elRTE.prototype.commands.fontsize = function() {
 	this.value = '';
 	this.css   = 'font-size';
 	this.conf  = { 
-		ui      : 'menu', 
-		text : true,
-		grid : true, 
-		tpl   : '<span style="font-size:{value}">{label}</span>',
-		gridtpl : '{label}',
+		ui       : 'menu', 
+		text     : true,
+		grid     : true, 
+		tpl      : '<span style="font-size:{value}">{label}</span>',
+		gridtpl  : '{label}',
 		gridcols : 2
 	};
 	this.opts  = {

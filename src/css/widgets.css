@@ -19,6 +19,11 @@
 	font-weight:normal;
 }
 
+.elrte-menu .ui-menu-item a * {
+	padding:0;
+	margin:0;
+}
+
 /* fix highlighted item margin */
 .elrte-menu .ui-menu-item a.ui-state-highlight {
 	margin:-1px;
@@ -31,6 +36,7 @@
 }
 
 .elrte-menu-grid .ui-menu-item a {
+	text-align:center;
 	margin:1px;
 }
 
@@ -38,6 +44,7 @@
 .elrte-menu-grid .ui-menu-item a.ui-state-hover {
 	margin:1px;
 }
+
 
 
 .elrte-menu-color {

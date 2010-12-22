@@ -1,0 +1,10 @@
+.elrte-button-formatblock .elrte-menu-grid h1 { line-height:1; }
+.elrte-button-formatblock .elrte-menu-grid h2 { line-height:1.4; }
+.elrte-button-formatblock .elrte-menu-grid h3 { line-height:1.7; }
+.elrte-button-formatblock .elrte-menu-grid h4 { line-height:2; }
+.elrte-button-formatblock .elrte-menu-grid h5 { line-height:2.1; }
+.elrte-button-formatblock .elrte-menu-grid h6 { line-height:2.7; }
+.elrte-button-formatblock .elrte-menu-grid p,
+.elrte-button-formatblock .elrte-menu-grid div,
+.elrte-button-formatblock .elrte-menu-grid address { line-height:1.8; }
+.elrte-button-formatblock .elrte-menu-grid pre { line-height:2.2;}
