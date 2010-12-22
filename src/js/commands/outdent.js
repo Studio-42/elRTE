@@ -4,9 +4,9 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.outdent = function() {
-	this.title = 'Outdent';
-	
-	this._test = $.proxy(function(n) {
+	this.title  = 'Outdent';
+	this.author = 'Dmitry (dio) Levashov, dio@std42.ru';
+	this._test  = $.proxy(function(n) {
 		var css;
 		return /^(UL|OL)$/.test(n.nodeName) || parseInt((css = this.dom.css(n))['padding-left'])>0 || parseInt(css['margin-left'])>0;
 	}, this)
@@ -102,8 +102,8 @@ elRTE.prototype.commands.outdent = function() {
 		return true;
 	}
 	
-	this._getState = function() {
-		return this.dom.closestParent(this.sel.node(), this._test, true) ? this.STATE_ENABLE : this.STATE_DISABLE;
+	this._state = function() {
+		return this.dom.closestParent(this.sel.node(), this._test, true) ? elRTE.CMD_STATE_ENABLED : elRTE.CMD_STATE_DISABLED;
 	}
 	
 }

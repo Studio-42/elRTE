@@ -41,7 +41,7 @@ $.fn.maxWidth = function() {
 	this.each(function() {
 		w = Math.max(w, $(this).width());
 	});
-	return Math.round(w);
+	return Math.ceil(w);
 }
 
 /**

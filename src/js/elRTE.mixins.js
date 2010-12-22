@@ -134,8 +134,8 @@
 		 **/
 		state : function() {
 			return this.sel.collapsed() 
-				? this.dom.closestParent(this.sel.node(), this._regExp, true) ? this.STATE_ACTIVE : this.STATE_DISABLE
-				: this.STATE_ENABLE;
+				? this.dom.closestParent(this.sel.node(), this._regExp, true) ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_DISABLED
+				: elRTE.CMD_STATE_ENABLED;
 		},
 		
 		/**
@@ -182,76 +182,67 @@
 
 
 	/**
-	 * Common methods for align text commands
+	 * Common methods for align text commands and direction commands
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
-	elRTE.prototype.mixins.alignment = {
-		/**
-		 * Return current command state
-		 *
-		 * @return Number
-		 **/
-		state : function() {
-			var dom = this.dom,
-				n = dom.closestParent(this.sel.node(), function(n) { return dom.is(n, 'blockText') && $(n).css('text-align'); }, true);
-			return $(n).css('text-align') == this._val ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
+	elRTE.prototype.mixins.alignmentDirection = {
+		
+		init : function() {
+			var v = this.val,			
+				s = this.rte.options.styleWithCss,
+				m = s ? 'css' : 'attr',
+				n = s ? this.css : this.attr;
+
+			this.node[m][n] = v;
+			this._set = function(node) { $(node)[m](n, val).css('text-align', v == 'ltr' ? 'left' : 'right'); };
 		},
 		
-		/**
-		 * Align text
-		 *
-		 * @return Boolean
-		 **/
+		set : function(n) {
+			$(n).css(this.css, this.val);
+		},
+		
 		exec : function() {
-			var	sel  = this.sel,
-				dom  = this.dom,
-				b    = sel.bookmark(),
-				n    = sel.collapsed() ? [sel.node()] : sel.get(), 
-				v    = this._val,
-				f    = n[0], 
-				l    = n[n.length-1],
-				s, e, o;
-				
-			if (!(s = dom.closestParent(f, 'blockText', true))) {
-				s = dom.topParent(f, 'inline', true);
-				s = [s].concat(dom.prevUntil(s, 'any', 'block')).pop();
+			if (!this.state != elRTE.CMD_STATE_ACTIVE) {
+				var	sel   = this.sel,
+					dom   = this.dom,
+					css   = this.css,
+					attr  = this.attr;
+					val   = this.val,
+					wrap  = this.node,
+					b     = sel.bookmark()
+					nodes = dom.nodesForBlock(b[0], b[1]),
+					opts  = { 
+						accept  : 'any', 
+						wrap    : function(n) { dom.wrap(n, wrap ); }, 
+						inner   : false, 
+						testCss : 'blockText', 
+						setCss  : this._set
+					};
+					
+				this.rte.log(opts)						
+				$.each(nodes, function() {
+					$(this).find('*').css(css, '').removeAttr(attr);
+				})
+				dom.smartWrap(nodes, opts);
+				sel.toBookmark(b);
+				return true;
 			}
-
-			if (!(e = dom.closestParent(l, 'blockText', true))) {
-				e = dom.topParent(l, 'inline', true);
-				e = [e].concat(dom.nextUntil(e, 'any', 'block')).pop();
-			}
-			n = dom.traverse(s, e);
-			$.each(n, function() {
-				$(this).find('*').css('text-align', '');
-			});
-			o = { 
-				accept  : 'any', 
-				wrap    : function(n) { dom.wrap(n, { name : dom.topParent(n[0], 'blockText') ? 'div' : 'p', css : { 'text-align' : v } }); }, 
-				inner   : false, 
-				testCss : 'blockText', 
-				setCss  : function(n) { $(n).css('text-align', v); } 
-			};
-			dom.smartWrap(n, o);
-			sel.toBookmark(b);
-			return true;
-		}
-	}
-
-	/**
-	 * Common methods for ltr/rtl classes 
-	 * @author Dmitry (dio) Levashov, dio@std42.ru
-	 **/
-	elRTE.prototype.mixins.direction = {
-		test : function(n) {
-			return this.regExp.test(n.nodeName) && $(n).attr('dir') == this.node.attr.dir;
 		},
 		
-		wrap : function(n) {
-			var dom = this.dom;
-			$(dom.wrap(n, this.node)).find('bdo').each(function() { dom.unwrap(this); })
+		state : function() {
+			var dom  = this.dom,
+				css  = this.css,
+				attr = this.attr,
+				n    = dom.closestParent(this.sel.node(), function(n) {
+					return dom.is(n, 'blockText') && ($(n).css(css) || $(n).attr(attr)); 
+				}, true);
+				
+			return n && ($(n).css(css) == this.val || $(n).attr(attr) == this.val) ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
 		}
+		
+		
 	}
+
 	
 	/**
 	 * Common methods for fontsize and fontfamily classes
@@ -370,6 +361,7 @@
 			return true;
 		},
 		
+		// @todo check closest parent of other type
 		state : function() {
 			var self = this;
 			return this.dom.closestParent(this.sel.node(), function(n) { return n.nodeName == self.name.toUpperCase(); }, true) ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;

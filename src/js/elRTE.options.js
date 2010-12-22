@@ -336,7 +336,6 @@
 			links      : ['anchor', 'link', 'unlink'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
-			test       : ['save', 'nbsp', 'bold', 'fontsize', 'formatblock', 'fontfamily' /*, 'specialchars'*/],
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
 			control    : ['docstructure', 'source'/* , 'fullscreen'*/]
@@ -350,7 +349,7 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['test', 'control']
+			'test' : ['document', 'style', 'semantic', 'alignment', 'indents', 'lists', 'direction', 'misc', 'control']
 		},
 		/**
 		 * Commands preset to load in editor. Contains one of presets name.

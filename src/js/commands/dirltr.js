@@ -6,14 +6,15 @@
 	 * @author Dmitry (dio) Levashov, dio@std42.ru
 	 **/
 	elRTE.prototype.commands.dirltr = function() {
-		this.title     = 'Left to right';
-		this.node      = { name : 'bdo', attr : { dir : 'ltr' }}
-		this.regExp    = /^BDO$/;
-		this.test      = $.proxy(this.rte.mixins.direction.test, this);
-		this.unwrap    = $.proxy(this.rte.mixins.textElement.unwrap, this);
-		this.wrap      = $.proxy(this.rte.mixins.direction.wrap, this);
-		this._exec     = $.proxy(this.rte.mixins.textElement.exec, this);
-		this._getState = $.proxy(this.rte.mixins.textElement.state, this);
+		this.title     = 'Text direction frm left to right';
+		this.css    = 'direction';
+		this.val    = 'ltr';
+		this.attr   = 'dir';
+		this.node   = { name : 'p', css : {}, attr : {} };
+		
+		this._init  = $.proxy(this.rte.mixins.alignmentDirection.init,  this);
+		this._exec  = $.proxy(this.rte.mixins.alignmentDirection.exec,  this);
+		this._state = $.proxy(this.rte.mixins.alignmentDirection.state, this);
 	}
 	
 })(jQuery);

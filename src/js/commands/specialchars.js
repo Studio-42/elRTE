@@ -4,11 +4,14 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.specialchars = function() {
-	this.title = 'Insert special character';
-	this.conf  = { 
-		ui : 'menu', 
-		menu : 'grid', 
-		uitpl : '<span title="{label}">{value}</span>' 
+	this.title  = 'Insert special character';
+	this.author = 'Dmitry (dio) Levashov, dio@std42.ru';
+	this.conf   = { 
+		ui       : 'menu', 
+		grid     : true,
+		gridcols : 10,
+		tpl      : '{value} - {label}',
+		gridtpl  : '<span title="{label}">{value}</span>' 
 	};
 	this.opts  = {
 		// typoraphic
@@ -27,7 +30,7 @@ elRTE.prototype.commands.specialchars = function() {
 		'&ndash;'  : 'En dash',
 		'&mdash;'  : 'Em dash',
 		'&macr;'   : 'Macron',
-		'&oline'   : 'Overline',
+		'&oline;'   : 'Overline',
 		'&hellip;' : 'Tree dot leader',
 		'&middot;' : 'Middle dot',
 		'&bull;'   : 'Bullet',
@@ -77,7 +80,7 @@ elRTE.prototype.commands.specialchars = function() {
 		'&asymp;'  : 'Almost equal',
 		'&ne;'     : 'Not equal',
 		'&equiv;'  : 'Idential',
-		'&prod'    : 'N-ary product',			
+		'&prod;'    : 'N-ary product',			
 		'&not;'    : 'Not sign',
 		'&cap;'    : 'Intersection',
 		'&part;'   : 'Partial differential',

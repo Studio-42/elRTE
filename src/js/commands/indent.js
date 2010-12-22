@@ -4,8 +4,9 @@
  * @author Dmitry (dio) Levashov, dio@std42.ru
  **/
 elRTE.prototype.commands.indent = function() {
-	this.title = 'Indent';
-	this.conf  = { step : 20 };
+	this.title  = 'Indent';
+	this.author = 'Dmitry (dio) Levashov, dio@std42.ru';
+	this.conf   = { step : 20 };
 	
 	this._exec = function() {
 		var sel  = this.sel,
@@ -73,8 +74,8 @@ elRTE.prototype.commands.indent = function() {
 	}
 	
 	this.events = {
-		'wysiwyg'      : function() { this._setState(this.STATE_ENABLE); },
-		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+		'wysiwyg'      : function() { this.update(elRTE.CMD_STATE_ENABLED); },
+		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 	}
 	
 }

@@ -9,13 +9,14 @@
 	font-size:.8em;
 	padding:0 .4em;
 	margin-bottom:2px;
+/*	display:none;*/
 }
 
 /* menu item */
 .elrte-menu .ui-menu-item a {
 	white-space:nowrap;
 	font-size:.8em;
-	padding:.1em .4em;
+	padding:.1em .1em;
 	font-weight:normal;
 }
 

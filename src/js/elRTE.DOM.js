@@ -43,7 +43,7 @@ elRTE.prototype.dom = function(rte) {
 		list          : function(n) { return self.listRegExp.test(n.nodeName); },
 		li            : function(n) { return n.nodeName == 'LI'; },
 		anchor        : function(n) { return n.nodeName == 'A' && !n.href; },
-		link        : function(n) { return n.nodeName == 'A' && n.href; }
+		link          : function(n) { return n.nodeName == 'A' && n.href; }
 	};
 	
 	
@@ -470,6 +470,23 @@ elRTE.prototype.dom = function(rte) {
 		return r;
 	}
 	
+
+	this.nodesForBlock = function(s, e) {
+		var self = this, 
+			ret  = [];
+			
+		if (this.is(s, 'node') && this.is(e, 'node')) {
+			
+			$.each([s, e], function(i, n) {
+				if (!(ret[i] = self.closestParent(n, 'blockText', true))) {
+					ret[i] = [n].concat(self[i == 0 ? 'prevUntil' : 'nextUntil'](self.topParent(n, 'inline', true), 'any', 'block')).pop();
+				}
+			});
+
+			ret = this.traverse(ret[0], ret[1]);
+		}
+		return ret;
+	}
 
 	/********************************************************************************/
 	/*                                     CSS                                      */

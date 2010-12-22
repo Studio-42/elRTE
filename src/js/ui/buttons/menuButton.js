@@ -77,7 +77,7 @@ $.fn.elrtemenubutton = function(cmd) {
 			if (conf.grid && items.length) {
 				menu.addClass('elrte-menu-grid').css('left', '-10000px').show();
 				width = items.addClass('ui-state-default').width(items.maxWidth()).height(items.maxHeight()).eq(0).outerWidth(true);
-				menu.width(1 + width * (cols>0 ? cols : width < 51 ? 3 : 2)).hide();
+				menu.width(width * (cols>0 ? cols : width < 51 ? 3 : 2)).hide();
 			}
 		}, 50);
 			

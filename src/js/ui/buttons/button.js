@@ -8,7 +8,7 @@ $.fn.elrtebutton = function(cmd) {
 	
 	return this.each(function() {
 		var self  = this,
-			$this = $(this).addClass('ui-widget ui-state-default ui-corner-all elrte-button elrte-button-'+cmd.name)
+			$this = $(this).addClass('ui-widget ui-state-default ui-state-disabled ui-corner-all elrte-button elrte-button-'+cmd.name)
 				.append('<span class="elrte-icon elrte-icon-'+cmd.name+'" title="'+cmd.title+'"/>')
 				.mousedown(function(e) {
 					!$this.hasClass('ui-state-disabled') && self.click(e);
