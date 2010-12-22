@@ -5,9 +5,16 @@
  **/
 elRTE.prototype.commands.fontfamily = function() {
 	this.title  = 'Font family';
-	this._val   = '';
-	this.conf   = { label : true, ui : 'Menu', tpl : '<span style="font-family:{value}">{label}</span>' };
+	this.value  = '';
 	this.css    = 'font-family';
+	this.conf   = { 
+		ui       : 'menu', 
+		text     : true,
+		grid     : true,
+		gridcols : 3,
+		tpl      : '<span style="font-family:{value}">{label}</span>' 
+	};
+	
 	this.opts   = {
 		'default'                                       : this.rte.i18n('Default'),
 		'andale mono,sans-serif'                        : 'Andale Mono',
@@ -25,6 +32,7 @@ elRTE.prototype.commands.fontfamily = function() {
 		'times new roman,times,serif'                   : 'Times New Roman',
 		'trebuchet ms,lucida grande,verdana,sans-serif' : 'Trebuchet MS',
 		'verdana,geneva,sans-serif'                     : 'Verdana',
+		'monospace'                                     : 'monospace',
 		'fantasy'                                       : 'fantasy'
 	}
 	
@@ -48,15 +56,15 @@ elRTE.prototype.commands.fontfamily = function() {
 		{ regexp : /lucida grande/i,             name : 'trebuchet ms,lucida grande,verdana,sans-serif' },
 		{ regexp : /,serif/i,                    name : 'times new roman,times,serif' },
 		{ regexp : /sans-serif/i,                name : 'arial,helvetica,sans-serif' },
-		{ regexp : /monospace/i,                 name : 'courier new,courier,monospace' },
+		{ regexp : /monospace/i,                 name : 'monospace' },
 		{ regexp : /cursive/i,                   name : 'comic sans ms,cursive' },
 		{ regexp : /fantasy/i,                   name : 'fantasy' }
 	].reverse();
 	
-	this.test      = $.proxy(this.rte.mixins.font.test,   this);
-	this.unwrap    = $.proxy(this.rte.mixins.font.unwrap, this);
-	this._exec     = $.proxy(this.rte.mixins.font.exec,   this);
-	this._updValue = $.proxy(this.rte.mixins.font.update, this);
+	this.test   = $.proxy(elRTE.prototype.mixins.font.test,   this);
+	this.unwrap = $.proxy(elRTE.prototype.mixins.font.unwrap, this);
+	this._exec  = $.proxy(elRTE.prototype.mixins.font.exec,   this);
+	this._value = $.proxy(elRTE.prototype.mixins.font.value,  this);
 	
 	/**
 	 * Check given css font-family property for known fonts
@@ -82,7 +90,7 @@ elRTE.prototype.commands.fontfamily = function() {
 		return '';
 	}
 	
-	this._getState = function() {
+	this._state = function() {
 		return this.STATE_ENABLE;
 	}
 }
