@@ -33,6 +33,7 @@
 .elrte {
 /*	font-family: trebuchet ms, tahoma, sans-serif;*/
 	padding:3px;
+	overflow:hidden;
 }
 
 /* fullscreen editor */
@@ -40,15 +41,19 @@
 	position:absolute;
 	left:0;
 	top:0;
-	width:99%;
-	margin:0;
+
+	margin:0 !important;
+/*	border:0 solid;*/
 }
+
+/*.elrte.elrte-fullscreen { margin:0 !important;}*/
 
 /* editor content container */
 .elrte-container { 
-	position:relative;
+/*	position:relative;*/
 	margin:3px 0;
 /*	border:1px solid #111;*/
+	
 }
 
 /* tabs and workzone container */

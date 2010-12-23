@@ -181,8 +181,8 @@
 					// }
 				},
 				loadTarget : false,
-				// resizeHelper : 'ui-resizable-helper',
-				debug : ['error', 'histor', 'event.change'],
+				resizeHelper : 'ui-resizable-helper',
+				debug : ['error', 'histor', 'even'],
 				cssfiles : ['src/css/elrte-inner.css']
 				
 			},
@@ -296,6 +296,14 @@
 						
 						inst.active.reload()
 					}
+				},
+				fulscreen : {
+					title : 'Fullscreen',
+					click : function() {
+						var inst = rte.jquery ? rte.getElrte() : rte;
+						
+						inst.fullscreen()
+					}
 				}
 				
 			};
@@ -394,7 +402,9 @@
 	
 </head>
 <body>
-
+	<!-- <div style="width:100px;height:100px;border:2px solid #222;position:absolute">
+		
+	</div> -->
 	<div id="examples">
 		<div class="docs-select">
 			Load as document(s):
@@ -417,7 +427,7 @@
 		
 	</div>
 
-	
+	<div style="position:relative">
 	<form method="post" action="post.php" >
 		<div id="editor"></div>
 	<div id="content-div" name="doc-1" title="DOUGLAS ADAMS">
@@ -444,10 +454,8 @@
 	
 	<input type="submit" name="" value="go" id="">
 	</form>
+	</div>
 	
-	<ul id="opened-docs">
-		
-	</ul>
 	
 </body>
 </html>

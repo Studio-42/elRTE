@@ -29,6 +29,16 @@ $.fn.sumWidth = function(o) {
 	return parseInt(w);
 }
 
+$.fn.sumOuterHeight = function(m) {
+	var h = 0;
+	
+	this.each(function() {
+		h += $(this).outerHeight(m);
+	});
+	
+	return Math.ceil(h)
+}
+
 /**
  * jQuery plugin
  * Return maximum width for all elements in set
@@ -57,4 +67,16 @@ $.fn.maxHeight = function(m) {
 		h = Math.max(h, $(this).height());
 	});
 	return Math.round(h);
+}
+
+$.fn.maxZIndex = function() {
+	var i = 0;
+	
+	this.each(function() {
+		var z = $(this).css('z-index');
+		if (z > 0 && z > i) {
+			i = parseInt(z);
+		}
+	});
+	return i;
 }

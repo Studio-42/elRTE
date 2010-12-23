@@ -153,7 +153,7 @@
 		 * @type Boolean
 		 * @default true
 		 */
-		alwaysShowTabs : true,
+		alwaysShowTabs : false,
 		
 		/**
 		 * Allow sort tabs manually
@@ -338,7 +338,7 @@
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
 			direction  : ['dirltr', 'dirrtl'],
 			table      : ['table'],
-			control    : ['docstructure', 'source'/* , 'fullscreen'*/]
+			control    : ['docstructure', 'source' , 'fullscreen']
 		},
 		
 		/**

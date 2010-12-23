@@ -141,7 +141,7 @@ $.fn.elrtetabsbar = function(rte) {
 		 */
 		function update() {
 			var w, l, t;
-			
+
 			// cache tabs set
 			tabs = $this.children(ts);
 			l = tabs.length;
@@ -235,14 +235,13 @@ $.fn.elrtetabsbar = function(rte) {
 							})
 					);
 				}
-				
+
 				$this.append(tab);
 				update();
 			}
 		})
 		.bind('wysiwyg source', function(e) {
 			// set tab active and visible
-
 			if (tabs.removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac).is(hs)) {
 				 showTab(e.data.id);
 			}
@@ -252,10 +251,7 @@ $.fn.elrtetabsbar = function(rte) {
 			tabs.filter('[rel="'+e.data.id+'"]').remove();
 			update();
 		})
-		.bind('resize', function() {
-			update();
-		})
-		;
+		.bind('resize', update, true);
 	}
 	
 	return this.each(function() {

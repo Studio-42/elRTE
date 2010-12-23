@@ -219,7 +219,6 @@
 						setCss  : this._set
 					};
 					
-				this.rte.log(opts)						
 				$.each(nodes, function() {
 					$(this).find('*').css(css, '').removeAttr(attr);
 				})

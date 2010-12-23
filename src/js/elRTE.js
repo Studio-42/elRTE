@@ -25,6 +25,7 @@
 			node = node && node.nodeType == 1 ? node : void(0),
 			$node = node ? $(node).data('elrte', this).hide() : void(0), //.hide(),
 			o    = $.extend(true, {}, this.options, o || {}),
+			fullscreenClass = 'elrte-fullscreen',
 			// store resizable state to avoid double bindings event 
 			resizable = false,
 			minWidth  = parseInt(o.minWidth)  || 300,
@@ -33,7 +34,7 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-		
+		this.log(width)
 		
 		/**
 		 * Return true if editor in DOM and visible
@@ -582,6 +583,33 @@
 		/*******************************************************/
 		
 		/**
+		 * Return true if editor is visible
+		 *
+		 * @return Boolean
+		 */
+		this.isVisible = function() {
+			return this.workzone.is(':visible');
+		}
+		
+		/**
+		 * Return true if editor in fullscreen mode
+		 *
+		 * @return Boolean
+		 */
+		this.isFullscreen = function() {
+			return this.workzone.hasClass(fullscreenClass);
+		}
+		
+		/**
+		 * Return true if editor is resizable
+		 *
+		 * @return Boolean
+		 */
+		this.isResizable = function() {
+			return resizable;
+		}
+		
+		/**
 		 * Switch to next document after active one
 		 *
 		 * @TODO add cmd+arrows shortcut
@@ -663,9 +691,6 @@
 				o = 'outerHeight',
 				v = self.workzone[h]() - (self.container[o](true) - self.main[h]());
 				
-			// trigger to update tabsbar
-			self.trigger('resize');
-
 			v -= ((self.toolbar.is(':visible')   ? self.toolbar[o](true)   : 0) 
 				+ (self.tabsbar.is(':visible')   ? self.tabsbar[o](true)   : 0)
 				+ (self.statusbar.is(':visible') ? self.statusbar[o](true) : 0));
@@ -682,7 +707,8 @@
 		 * @return void
 		 */
 		this.resizable = function(state) {
-			var o = this.options,
+			var self = this,
+				o = this.options,
 				e = o.resizeHelper ? 'resizestop' : 'resize';
 			
 			if (state !== void(0)) {
@@ -695,7 +721,10 @@
 								minWidth  : minWidth, 
 								minHeight : minHeight 
 							})
-							.bind(e, this.updateHeight);
+							.bind(e, function() {
+								self.trigger('resize')
+							})
+							// .bind(e, this.updateHeight);
 						resizable = true;
 
 					} else if (!state && resizable) {
@@ -709,14 +738,63 @@
 			return resizable;
 		}
 		
-		/**
-		 * Return true if editor is resizable
-		 *
-		 * @return Boolean
-		 */
-		this.isResizable = function() {
-			return resizable;
+
+		
+		this.fullscreen = function() {
+			
+			var self = this,
+				c = fullscreenClass,
+				f = this.isFullscreen(),
+				p = 'elrtepos',
+				e = f ? 'fullscreenoff' : 'fullscreenon',
+				z = 'elrtezindex',
+				i = parseInt(this.workzone.css('z-index')) || 0,
+				m;
+			
+			if (this.isVisible()) {
+				if (f) {
+					this.workzone
+						.removeClass(c)
+						.css({
+							'width'   : width, 
+							'height'  : height,
+							'z-index' : this.workzone.data(z)
+						})
+						.removeData(z)
+						.parents().each(function(i, n) {
+							var $n = $(n), 
+								pos = $n.data(p);
+
+							pos && $n.css('position', pos).removeData(p);
+						});
+				} else {
+
+					m = $('body :visible:not(#'+this.id+'):not(#'+this.id+' *)').maxZIndex();
+
+					this.workzone
+						.addClass(c)
+						.data(z, this.workzone.css('z-index'))
+						.css('z-index', m > 0 ? m+1 : i || 'auto')
+
+						.parents().each(function(i, n) {
+							var $n = $(n),
+								pos = $n.css('position');
+
+							if (!/^(html|body)$/i.test(n.nodeName) && (pos == 'relative' || pos == 'absolute')) {
+								$n.css('position', '').data(p, pos);
+							}
+						});
+				}
+
+				$(window).resize()
+				this.trigger(f ? 'fullscreenoff' : 'fullscreenon').resizable(f);
+				this.fixMozillaCarret();
+
+			}
+			return this;
 		}
+		
+		
 		
 		self.time('load');
 		
@@ -1045,7 +1123,7 @@
 		// bind documents events handlers
 		this
 			.bind('open', function(e) {
-				// focus opened doc and fix workzone height if required
+				// focus opened doc if required
 				(self.counter == 1 || o.focusOpenedDoc) && self.focus(e.data.id);
 			})
 			.bind('keydown', function(e) {
@@ -1150,7 +1228,11 @@
 			}, true)
 			.bind('drop', function(e) {
 				self.trigger('change');
-			}, true);
+			}, true)
+			// .bind('open close resize', function(e) {
+			// 	// self.log('editor resize on '+e.type)
+			// 	self.updateHeight()
+			// });
 		
 		// bind user events handlers
 		$.each(o.callbacks || {}, function(e, c) {
@@ -1180,24 +1262,40 @@
 
 			self.trigger('load', { elrte : self }).trigger('show');
 				
+			// self.log(self.workzone.css('width'))
+			// self.log(self.workzone.width())
+				
 			// delete event "load" subscribers
 			delete(self.listeners.load);
 
 			// bind to window.resize to update tabs view
 			$(window).resize(function() {
+				// self.log('window resize')
+				if (self.workzone.hasClass('elrte-fullscreen')) {
+					var dw = self.workzone.outerWidth() - self.workzone.width(),
+						dh = self.workzone.outerHeight() - self.workzone.height();
+
+					self.workzone
+						.width($(window).width()   - dw)
+						.height($(window).height() - dh);
+				}
+				// fix viewport height on toolbar height change
 				self.trigger('resize');
 			});
 			
 			// add target node as document if enabled 
 			node && o.loadTarget && o.documents.unshift(node);
 			
+			
+			
 			// open documents
 			self.open(o.documents)
-				.bind('open', function(e) {
-					self.counter < 3 && self.updateHeight();
-				})
-				.updateHeight()
+				.bind('open close resize', function(e) {
+					self.updateHeight();
+				}).trigger('resize')
 				.timeEnd('load');
+				
+				
 		}
 		
 		this.resizable(true);
