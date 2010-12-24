@@ -14,14 +14,6 @@
 /* style to detect images url */
 .elrte-test-url { background-image:url(../images/pixel.gif);}
 
-/* cross-browser inline-block */
-.elrte-ib {
-/*	display: -moz-inline-stack;*/
-/*	display: inline-block;*/
-/*	zoom: 1;*/
-/*	*display: inline;*/
-	float:right;
-}
 /* resizable helper */
 .ui-resizable-helper { border: 2px dotted #555; }
 
@@ -33,7 +25,7 @@
 .elrte {
 /*	font-family: trebuchet ms, tahoma, sans-serif;*/
 	padding:3px;
-	overflow:hidden;
+/*	overflow:hidden;*/
 }
 
 /* fullscreen editor */

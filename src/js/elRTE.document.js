@@ -16,7 +16,7 @@ elRTE.prototype.document = function(src, rte) {
 		title   = rte.i18n('Document')+' '+ndx,
 		css     = [],
 		content = '', 
-		html    = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />', 
+		html    = '<html xmlns="http://www.w3.org/1999/xhtml" lang="'+rte.lang.code+'" dir="'+rte.lang.dir+'"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />', 
 		$src, d;
 	
 	/**
@@ -209,7 +209,7 @@ elRTE.prototype.document = function(src, rte) {
 	 * 
 	 * @type jQuery
 	 */
-	this.container = $('<div class="elrte-document"/>');
+	this.container = $('<div class="elrte-document" role="presentation"/>');
 	
 	if (src && src.nodeType == 1) {
 		// fetch data from dom elelemnt

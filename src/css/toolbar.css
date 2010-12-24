@@ -8,7 +8,10 @@
 	background:url(../images/elrte-toolbar.png) -781px 1px no-repeat;
 }
 
-.elrte .elrte-buttonset:first-child {
+.elrte-rtl .elrte-buttonset { float:right; }
+
+.elrte-ltr .elrte-buttonset:first-child,
+.elrte-rtl .elrte-buttonset:last-child {
 	padding-left:0;
 	background:transparent;
 }
@@ -28,6 +31,8 @@
 	position:relative;
 	cursor:default;
 }
+
+.elrte-rtl .elrte-button { float:right; }
 
 /* button with icon and arrow */
 .elrte-button-menu {

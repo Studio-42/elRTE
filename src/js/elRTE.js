@@ -842,7 +842,7 @@
 			if (i > 1) {
 				l = l.substr(0, i)+'_'+l.substr(i+1).toUpperCase();
 			}
-			return self.i18Messages[l] ? l : 'en';
+			return self.i18[l] || self.i18.en;
 		})();
 		
 		/**
@@ -850,8 +850,8 @@
 		 * 
 		 * @type Object
 		 */
-		this.messages = this.i18Messages[this.lang] || {};
-		
+		this.messages = this.lang.messages || {};
+
 		/**
 		 * Is browser on Mac OS?
 		 * 
@@ -1088,13 +1088,13 @@
 		 */
 		this.container = $('<div class="ui-helper-clearfix elrte-container"/>')
 			.append(this.sidebar.add(this.main));
-			
+
 		/**
 		 * Editor container.
 		 * 
 		 * @type jQuery
 		 */
-		this.workzone  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte '+(o.cssClass||'')+'" id="'+this.id+'" />')
+		this.workzone  = $('<div class="ui-helper-reset ui-helper-clearfix ui-widget ui-widget-content ui-corner-all elrte elrte-'+(this.lang.dir)+'" '+(o.cssClass||'')+'" id="'+this.id+'" role="application" />')
 			.append(this.container.add(this.statusbar))
 			.css({
 				'min-width'  : minWidth+'px', 
@@ -1407,13 +1407,20 @@
 	
 	elRTE.BUTTON_CLASS = 'elrte-btn';
 	elRTE.MENU_BUTTON_CLASS = 'elrte-btn-menu';
+	
 	/**
-	 * elRTE messages
+	 * elRTE i18n data
 	 *
+	 * @type Object
 	 */
-	elRTE.prototype.i18Messages = {}
-
-
+	elRTE.prototype.i18 = {
+		en : {
+			code     : 'en',
+			name     : 'English',
+			dir      : 'ltr',
+			messages : { }
+		}
+	}
 	
 
 })(jQuery);

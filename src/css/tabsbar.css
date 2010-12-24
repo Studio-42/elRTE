@@ -4,12 +4,13 @@
 }
 
 /* tab */
-/*.ui-tabs .ui-tabs-nav li.elrte-tab*/
 .elrte-tabsbar li.elrte-tab {
 	padding:0 17px;
 	margin-right:.1em;
 	cursor:default;
 }
+
+.elrte-rtl .ui-tabs .ui-tabs-nav li { float:right; }
 
 /* text container in tab */
 .elrte-tabsbar li.elrte-tab span {
@@ -27,15 +28,25 @@
 .elrte-tab .ui-icon {
 	position:absolute;
 	top:4px;
-	left:1px;
 }
+
+.elrte-ltr .elrte-tab .ui-icon { left:1px; }
+.elrte-rtl .elrte-tab .ui-icon { right:1px; }
 
 /* back/fwd buttons container */
 .elrte-tabsbar li.elrte-tabs-btns {
 	float:none;
 	position:absolute;
 	top:.4em;
+/*	right:.2em;*/
+}
+
+.elrte-ltr .elrte-tabsbar li.elrte-tabs-btns {
 	right:.2em;
+}
+
+.elrte-rtl .elrte-tabsbar li.elrte-tabs-btns {
+	left:.2em;
 }
 
 /* back/fwd button */
@@ -43,5 +54,6 @@
 	float:left;
 	padding:2px 0;
 }
-
+/*.elrte-ltr .elrte-tabs-btn { float:left; }*/
+/*.elrte-rtl .elrte-tabs-btn { float:right; }*/
 
