@@ -8,8 +8,8 @@ elRTE.prototype.commands.fullscreen = function() {
 	this.title  = 'Fullsreen';
 	this.author = 'Dmitry (dio) Levashov, dio@std42.ru';
 	this.events = {
-		load : function() { this.update(elRTE.CMD_STATE_ENABLED); },
-		fullscreenon : function() { this.update(elRTE.CMD_STATE_ACTIVE); },
+		load          : function() { this.update(elRTE.CMD_STATE_ENABLED); },
+		fullscreenon  : function() { this.update(elRTE.CMD_STATE_ACTIVE); },
 		fullscreenoff : function() { this.update(elRTE.CMD_STATE_ENABLED); }
 	}
 	

@@ -340,9 +340,9 @@
 		 **/
 		value : function() {
 			var dom = this.dom,
-				n   = dom.closestParent(this.sel.node(), this.test, true);
-			// this.rte.log(this.sel.node())
-			return this._parseVal(dom.css(n, this.css));
+				n   = dom.closestParent(this.sel.node(), this.test, true) || dom.find(this.sel.cloneContents(), this.test).shift();
+			
+			return n ? this._parseVal(dom.css(n, this.css)) : false;
 		}
 		
 	}

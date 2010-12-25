@@ -1,53 +1,60 @@
-(function($) {
-	/**
-	 * @class elRTE plugin
-	 * Count words/symbols in active document
-	 **/
-	elRTE.prototype.plugins.wordcount = function(rte) {
-		var self = this;
-		this.name        = 'wordcount';
-		this.description = 'Count words plugin';
-		this.author      = 'Dmitry (dio) Levashov, dio@std42.ru';
-		this.authorURL   = 'http://www.std42.ru';
-		this.docURL      = '';
-		this.count       = rte.pluginConf(this.name, 'count');
-		this.panel       = $('<div class="elrte-statusbar-wordcount"/>').prependTo(rte.view.statusbar.show());
-		
-		rte.bind('close', function(e) {
-			e.data.id == rte.active.id && self.panel.text('');
-		}).bind('source', function() {
-			self.panel.text('');
-		}).bind('wysiwyg change keyup', function(e) {
-			var text, str;
-			if (!rte.active || (e.type == 'keyup' && rte.utils.isKeyService(e.keyCode))) {
-				return;
-			}
-			text = rte.active.get().replace(/<\/?(p|div|br)[^>]*>/gi, ' ').replace(/<\/?\w+[^>]*>/gi, '').replace(/&nbsp;|&#160;/gi, ' ');
-
-			function words() {
-				var t = $.trim(text).replace(/[\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '');
-				return t.length ? t.split(/\s+/).length : 0;
-			}
-			
-			function chars() {
-				return $.trim(text).replace(/\r|\n|\t|\s/gi, '').length;
-			}
-			
-			switch (self.count) {
-				case 'chars':
-					str = rte.i18n('Symbols')+': '+chars();
-					break;
-				
-				case 'words':
-					str = rte.i18n('Words')+': '+words();
-					break;
-					
-				default:
-					str = rte.i18n('Words')+'/'+rte.i18n('Symbols')+': '+words()+'/'+chars();
-			}
-			self.panel.text(str);
-		});
-		
+/**
+ * @class elRTE plugin
+ * Count words/symbols in active document
+ **/
+elRTE.prototype.plugins.wordcount = function(rte) {
+	
+	var panel      = $('<div class="elrte-pl-wordcount"/>'),
+		type       = rte.pluginConf('wordcount', 'count'),
+		charsLabel = rte.i18n('Symbols'),
+		wordsLabel = rte.i18n('Words');
+	
+	rte.bind('load', function() {
+		rte.statusbar.append(panel, 'right')
+	})
+	.bind('source close', function(e) {
+		e.data.id == rte.active.id && panel.text('');
+	})
+	.bind('wysiwyg change', function(e) {
+		update();
+	})
+	.bind('keyup', function() {
+		rte.typing && update();
+	});
+	
+	
+	function words(text) {
+		var t = $.trim(text).replace(/[\.(){},;:!?%#$¿'"_+=\\\/\-]*/g, '');
+		return t.length ? t.split(/\s+/).length : 0;
 	}
 	
-})(jQuery);
+	function chars(text) {
+		return $.trim(text).replace(/\r|\n|\t|\s/gi, '').length;
+	}
+	
+	function update() {
+		var text = rte.active.raw().replace(/<\/?(p|div|br)[^>]*>/gi, ' ').replace(/<\/?\w+[^>]*>/gi, '').replace(/&nbsp;|&#160;/gi, ' ');
+		
+		switch (type) {
+			case 'chars':
+				text = charsLabel+': '+chars(text);
+				break;
+				
+			case 'words':
+				text = wordsLabel+': '+words(text);
+				break;
+				
+			default:
+				text = charsLabel+': '+chars(text)+' / '+wordsLabel+': '+words(text);
+		}
+		panel.text(text)
+	}
+	
+	this.info = {
+		name      : 'Count words/symbols',
+		author    : 'Dmitry (dio) Levashov, dio@std42.ru',
+		authorurl : 'http://www.std42.ru',
+		url       : 'http://elrte.org/redmine/projects/elrte/wiki/'
+	}
+	
+}

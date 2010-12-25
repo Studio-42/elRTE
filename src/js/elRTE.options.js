@@ -177,7 +177,7 @@
 		 * @type Number
 		 * @default 50
 		 */
-		historySize : 0,
+		historySize : 10,
 		
 		/**
 		 * How to display debug message in console.log.
@@ -312,7 +312,7 @@
 		fmOpen : function(cb) { },
 		
 		/* --- paste options --- */
-		plugins : [], // ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
+		plugins : ['path'/*, 'wordcount'*/], // ['source_', 'path', 'wordcount', 'webkit', 'autosave'],
 		
 
 		/* ==================  COMMANDS OPTIONS ================= */
@@ -329,7 +329,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', 'fontstyle', 'textcolor', 'textbg'] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', /*'fontstyle', 'textcolor', 'textbg'*/] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -349,7 +349,7 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['document', 'style', 'semantic', 'alignment', 'indents', 'lists', 'direction', 'misc', 'control']
+			'test' : ['document', 'history', 'style', 'semantic', 'alignment', 'font', 'indents', 'lists', 'direction', 'misc', 'control']
 		},
 		/**
 		 * Commands preset to load in editor. Contains one of presets name.
@@ -366,6 +366,7 @@
 		
 		/* --- plugins options --- */
 		pluginsConf : {
+			path      : { hover : true },
 			wordcount : { count : 'all'},
 			autosave  : { interval : 0 }
 		},

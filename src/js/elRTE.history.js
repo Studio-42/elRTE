@@ -25,7 +25,7 @@
 			doc    = rte.active;
 			level  = active.levels[active.index];
 			
-			if (!level || force || ((key == 0 || (curKey != 0 && curKey != key)) && $.trim(level.html.replace(reg, '')) != $.trim(doc.get()) ) ) {
+			if (!level || force || ((key == 0 || (curKey != 0 && curKey != key)) && $.trim(level.html.replace(reg, '')) != $.trim(doc.raw()) ) ) {
 				// remove levels after then current
 				if (active.index < active.levels.length-1) {
 					active.levels.splice(active.index+1, active.levels.length-active.index-1);
@@ -41,7 +41,7 @@
 				
 				active.levels.push({
 					bm     : [bm[0].id, bm[1].id],
-					html   : doc.get(),
+					html   : doc.raw(),
 					scroll : parseInt($(doc.document).scrollTop())
 				});
 				active.index = active.levels.length-1;
@@ -90,7 +90,7 @@
 				level = active.levels[--active.index];
 				doc   = rte.active;
 				
-				doc.set(level.html);
+				doc.raw(level.html);
 				sel.toBookmark(level.bm);
 				$(doc.document).scrollTop(level.scroll);
 				active.key = 0;
@@ -114,7 +114,7 @@
 				level = active.levels[++active.index];
 				doc   = rte.active;
 				
-				doc.set(level.html);
+				doc.raw(level.html);
 				sel.toBookmark(level.bm);
 				$(doc.document).scrollTop(level.scroll);
 				active.key = 0;

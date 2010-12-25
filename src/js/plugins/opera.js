@@ -7,7 +7,6 @@
  *
  **/
 elRTE.prototype.plugins.mozilla = function(rte) {
-	this.name        = 'opera';
 	this.description = 'Fired cut/paste events on ctrl+x/v in opera';
 	this.author      = 'Dmitry (dio) Levashov, dio@std42.ru';
 	

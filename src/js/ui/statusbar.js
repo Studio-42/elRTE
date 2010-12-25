@@ -16,7 +16,7 @@ $.fn.elrtestatusbar = function() {
 		
 		if (!$this.hasClass(c)) {
 			$(this).hide().addClass('ui-widget ui-state-default ui-corner-all '+c)
-				.append('<div class="'+ic+' '+ic+'-right"/><div class="'+ic+' '+ic+'-left"/><div class="'+ic+' '+ic+'-center"/><div class="ui-helper-clearfix"/>');
+				.append('<div class="'+ic+' '+ic+'-right"/><div class="'+ic+' '+ic+'-left"/><div class="'+ic+' '+ic+'-center">&nbsp;</div><div class="ui-helper-clearfix"/>');
 		}
 		
 	});

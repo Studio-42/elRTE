@@ -16,7 +16,7 @@ elRTE.prototype.document = function(src, rte) {
 		title   = rte.i18n('Document')+' '+ndx,
 		css     = [],
 		content = '', 
-		html    = '<html xmlns="http://www.w3.org/1999/xhtml" lang="'+rte.lang.code+'" dir="'+rte.lang.dir+'"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />', 
+		html    = '<html xmlns="http://www.w3.org/1999/xhtml" lang="'+rte.lang.code+'"><head><meta http-equiv="Content-Type" content="text/html; charset='+o.charset+'" />', 
 		$src, d;
 	
 	/**
@@ -117,6 +117,24 @@ elRTE.prototype.document = function(src, rte) {
 		w && this.rte.trigger('change');
 		return this;
 	}	
+	
+	/**
+	 * Return document iframe/textarea content without filtration
+	 *
+	 * @return String
+	 */
+	this.raw = function(v) {
+		var w = this.wysiwyg(),
+			s = this.source,
+			b = $(this.body);
+		
+		if (v === void(0)) {
+			return w ? b.html() : s.val();
+		}
+		
+		w ? b.html(v) : s.val(v);
+		return this.focus();
+	}
 	
 	/**
 	 * Set document content to initial value
@@ -270,7 +288,7 @@ elRTE.prototype.document = function(src, rte) {
 	
 	// create document body
 	this.document.open();
-	this.document.write(o.doctype+html+'</head><body>'+rte.filter.wysiwyg(content)+' </body></html>');
+	this.document.write(o.doctype+html+'</head><body dir="'+rte.lang.dir+'" spellcheck="false">'+rte.filter.wysiwyg(content)+' </body></html>');
 	this.document.close();
 	this.body = this.document.body;
 	

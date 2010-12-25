@@ -14,13 +14,13 @@
 			return this.rte.history.undo();
 		}
 		
-		this._getState = function() {
-			return this.rte.history.canUndo() ? this.STATE_ENABLE : this.STATE_DISABLE;
+		this._state = function() {
+			return this.rte.history.canUndo() ? elRTE.CMD_STATE_ENABLED : elRTE.CMD_STATE_DISABLED;
 		}
 		
 		this.events = {
-			'wysiwyg historyChange' : this.update,
-			'close source' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+			'wysiwyg historyChange' : function(e) { this.update(); },
+			'close source' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 		}
 		
 	}

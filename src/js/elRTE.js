@@ -34,7 +34,6 @@
 			height    = (parseInt(o.height) || 400)+'px',
 			tb, intr;
 		
-		this.log(width)
 		
 		/**
 		 * Return true if editor in DOM and visible
@@ -641,15 +640,6 @@
 			return this;
 		}
 		
-		this.fixMozillaCarret = function() {
-			if ($.browser && this.active) {
-				this.active.editor.add(this.active.source).toggle();
-				this.active.source.focus();
-				this.active.editor.add(this.active.source).toggle();
-				this.focus();
-			}
-		}
-		
 		/**
 		 * Hide editor if visible
 		 *
@@ -787,8 +777,9 @@
 				}
 
 				$(window).resize()
-				this.trigger(f ? 'fullscreenoff' : 'fullscreenon').resizable(f);
-				this.fixMozillaCarret();
+				this.resizable(f)
+				this.trigger(f ? 'fullscreenoff' : 'fullscreenon');
+				// this.fixMozillaCarret();
 
 			}
 			return this;
@@ -837,12 +828,13 @@
 		 */
 		this.lang = (function() {
 			var l = o.lang == 'auto' ? window.navigator.userLanguage || window.navigator.language : o.lang, 
-				i = l.indexOf('-');
+				i = l.indexOf('-'), _l;
 			
 			if (i > 1) {
 				l = l.substr(0, i)+'_'+l.substr(i+1).toUpperCase();
 			}
-			return self.i18[l] || self.i18.en;
+			i = self.i18[l];
+			return self.i18[i && i.dir && (i.dir == 'ltr' || i.dir == 'rtl') ? l : 'en'];
 		})();
 		
 		/**
@@ -1030,7 +1022,7 @@
 			var _p = {}, p;
 			
 			if ($.browser.mozilla) {
-				o.plugins.unshift('mozilla');
+				o.plugins.unshift('gecko');
 			} else if ($.browser.webkit) {
 				o.plugins.unshift('webkit');
 			} else if ($.browser.opera) {
@@ -1043,6 +1035,8 @@
 			});
 			return _p;
 		})();
+
+		// this.log(this._plugins)
 		
 		/**
 		 * Widget. Displays tabs with documents names

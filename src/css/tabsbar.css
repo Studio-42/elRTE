@@ -12,6 +12,8 @@
 
 .elrte-rtl .ui-tabs .ui-tabs-nav li { float:right; }
 
+.elrte-rtl .ui-tabs .ui-tabs-nav { padding-right:.7em; }
+
 /* text container in tab */
 .elrte-tabsbar li.elrte-tab span {
 	float:left;
@@ -38,16 +40,11 @@
 	float:none;
 	position:absolute;
 	top:.4em;
-/*	right:.2em;*/
 }
 
-.elrte-ltr .elrte-tabsbar li.elrte-tabs-btns {
-	right:.2em;
-}
+.elrte-ltr .elrte-tabsbar li.elrte-tabs-btns { right:.2em; }
 
-.elrte-rtl .elrte-tabsbar li.elrte-tabs-btns {
-	left:.2em;
-}
+.elrte-rtl .elrte-tabsbar li.elrte-tabs-btns { left:.2em; }
 
 /* back/fwd button */
 .elrte-tabs-btn {

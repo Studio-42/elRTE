@@ -20,7 +20,16 @@
 	padding-right:.5em;
 }
 
+.elrte-rtl .elrte-statusbar-inner-left { float:right; }
+.elrte-rtl .elrte-statusbar-inner-right { float: left;}
+
+
 .elrte-statusbar-inner-center {
 	text-align:center;
 }
+
+.elrte-pl-path * { float:left; }
+.elrte-pl-path-el {cursor: pointer;}
+.elrte-pl-path-sep { margin:0 .5em; }
+.elrte-rtl .elrte-pl-path * { float:right; }
 

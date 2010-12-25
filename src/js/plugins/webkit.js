@@ -4,7 +4,6 @@
  *
  **/
 elRTE.prototype.plugins.webkit = function(rte) {
-	this.name        = 'webkit';
 	this.description = 'Add support for Shift+Enter and image selection for Safari/Chrome';
 	this.author      = 'Dmitry Levashov, dio@std42.ru';
 	
@@ -17,10 +16,7 @@ elRTE.prototype.plugins.webkit = function(rte) {
 			}
 		}, true)
 		.bind('click', function(e) {
-			var n = e.target;
-			if (n.nodeName == 'IMG' || n.nodeName == 'HR') {
-				rte.selection.select(e.target)
-			}
+			/^(IMG|HR)$/.test(e.target.nodeName) && rte.selection.select(e.target);
 		});
 	}
 	

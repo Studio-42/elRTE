@@ -91,7 +91,7 @@ elRTE.prototype.commands.fontfamily = function() {
 	}
 	
 	this._state = function() {
-		return this.STATE_ENABLE;
+		return elRTE.CMD_STATE_ENABLED;
 	}
 }
 
