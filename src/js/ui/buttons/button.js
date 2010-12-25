@@ -23,8 +23,8 @@ $.fn.elrtebutton = function(cmd) {
 		 *
 		 * @return void
 		 **/
-		this.click = function(e) {
-			cmd.exec();
+		this.click = function(e, v) {
+			cmd.exec(v);
 		}
 
 		// bind to command update event

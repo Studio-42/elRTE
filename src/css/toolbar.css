@@ -160,5 +160,12 @@
 .elrte-icon-source        { background-position:-640px -20px; }
 .elrte-icon-fullscreen    { background-position:-660px -20px; }
 
+.elrte-button-color-indicator {
+	position:absolute;
+	width:14px;
+	height:4px;
+	left:5px;
+	bottom:1px;
+}
 
 

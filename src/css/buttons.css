@@ -149,11 +149,12 @@
 }
 
 /* button's menu */
-.elrte-btn-menu .elrte-widget-menu {
+.elrte-btn-menu .elrte-menu {
 	position:absolute;
 	top:20px;
 	z-index:100;
 	width:auto;
+	border:2px solid red;
 }
 
 .elrte-btn-specialchars .elrte-widget-menu-item {

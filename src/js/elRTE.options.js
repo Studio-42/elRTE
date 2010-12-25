@@ -329,7 +329,7 @@
 			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
-			font       : ['fontfamily', 'fontsize', 'formatblock', /*'fontstyle', 'textcolor', 'textbg'*/] ,
+			font       : ['fontfamily', 'fontsize', 'formatblock', 'textcolor' /*'fontstyle',  'textbg'*/] ,
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
@@ -349,7 +349,8 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['document', 'history', 'style', 'semantic', 'alignment', 'font', 'indents', 'lists', 'direction', 'misc', 'control']
+			'test' : ['font', 'control']
+			// 'test' : ['document', 'history', 'style', 'semantic', 'alignment', 'font', 'indents', 'lists', 'direction', 'misc', 'control']
 		},
 		/**
 		 * Commands preset to load in editor. Contains one of presets name.

@@ -9,6 +9,7 @@
 	font-size:.8em;
 	padding:0 .4em;
 	margin-bottom:2px;
+	white-space:nowrap;
 /*	display:none;*/
 }
 
@@ -49,7 +50,39 @@
 
 
 .elrte-menu-color {
-	
+	padding:2px;
+/*	width:136px;*/
+/*	position:absolute;*/
+}
+
+.elrte-menu-color-palete {
+/*	border:1px solid #111;*/
+	padding:2px;
+}
+
+.elrte-menu-color a {
+	float:left;
+	width:14px;
+	height:14px;
+	margin:2px;
+}
+
+.elrte-menu-color .elrte-menu-color-button {
+	position:relative;
+	padding:0;
+	text-align:center;
+	font-size:.8em;
+}
+
+
+.elrte-menu-color-auto {
+	position:absolute;
+	width:14px;
+	height:14px;
+	top:50%;
+	left:3px;
+	margin-top:-7px;
+/*	float:left;*/
 }
 
 .elrte-contextmenu {

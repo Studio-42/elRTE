@@ -157,8 +157,8 @@
 					add();
 				}
 			})
-			.bind('changePos', function() {
-				add()
+			.bind('changepos', function() {
+				add();
 			})
 			.shortcut((rte.macos ? 'meta' : 'ctrl')+'+z', 'undo', 'Undo (Ctrl+Z)', function(e) {
 				return self.undo();

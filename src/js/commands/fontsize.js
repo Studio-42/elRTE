@@ -12,8 +12,8 @@ elRTE.prototype.commands.fontsize = function() {
 	this.css   = 'font-size';
 	this.conf  = { 
 		ui       : 'menu', 
-		text     : true,
-		grid     : true, 
+		text     : false,
+		grid     : false, 
 		tpl      : '<span style="font-size:{value}">{label}</span>',
 		gridtpl  : '{label}',
 		gridcols : 2

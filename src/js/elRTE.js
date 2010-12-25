@@ -1380,27 +1380,39 @@
 				return $('<div/>').elrtetoolbar(rte);
 			}
 		}, 
+		dialog : function(n, o) {
+			return $(n).addClass('elrte-dialog').dialog(o)
+		},
+		dialogs : {
+			
+			color : function(rte, o) {
+				return $('<div/>').elrtecolordialog(rte, o).dialog(o);
+			}
+		},
 		cmdui : {
 			button : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);
 			},
 			menu : function(cmd) {
 				return $('<div/>').elrtemenubutton(cmd);
+			},
+			color : function(cmd) {
+				return $('<div/>').elrtecolorbutton(cmd);
 			}
 		} 
 	};	
 
-	elRTE.CSS_CLASS_ACTIVE    = 'ui-state-active';
-	elRTE.CSS_CLASS_DISABLED  = 'ui-state-disabled'
-	elRTE.CSS_CLASS_HOVER     = 'ui-state-hover';
-	elRTE.CSS_CLASS_HIGHLIGHT = 'ui-state-hover';
+	// elRTE.CSS_CLASS_ACTIVE    = 'ui-state-active';
+	// elRTE.CSS_CLASS_DISABLED  = 'ui-state-disabled'
+	// elRTE.CSS_CLASS_HOVER     = 'ui-state-hover';
+	// elRTE.CSS_CLASS_HIGHLIGHT = 'ui-state-hover';
 
 	elRTE.CMD_STATE_DISABLED = 0;
 	elRTE.CMD_STATE_ENABLED  = 1;
 	elRTE.CMD_STATE_ACTIVE   = 2;
 	
-	elRTE.BUTTON_CLASS = 'elrte-btn';
-	elRTE.MENU_BUTTON_CLASS = 'elrte-btn-menu';
+	// elRTE.BUTTON_CLASS = 'elrte-btn';
+	// elRTE.MENU_BUTTON_CLASS = 'elrte-btn-menu';
 	
 	/**
 	 * elRTE i18n data
