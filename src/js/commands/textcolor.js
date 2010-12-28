@@ -6,16 +6,11 @@
 elRTE.prototype.commands.textcolor = function() {
 	this.title   = 'Text color';
 	this.conf    = { ui : 'color' };
-	// this.defaultValue = '';
 	this.cssProp = 'color';
 	this.node    = { name : 'span', css :{ color : '' }}
 	
 	this.events = {
-		'wysiwyg'      : function() { 
-			this.value = ''; 
-			// this.defaultValue = this.utils.color2Hex($(this.rte.active.document.body).css('color'))||'#000';
-			this.update(); 
-		},
+		'wysiwyg'      : function() { this.value = ''; this.update(); },
 		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 	}
 	

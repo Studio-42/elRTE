@@ -85,6 +85,73 @@
 /*	float:left;*/
 }
 
+.elrte-dialog .ui-widget-header {
+	font-size:.9em;
+	padding:0 .4em;
+}
+
+.elrte-dialog .ui-dialog-buttonpane .ui-button {
+	font-size:.8em;
+	padding:0;
+	margin:.1em .2em;
+}
+
+.elrte-dialog .ui-button-text-only .ui-button-text {
+	padding:.2em .5em;
+}
+
+.elrte-dialog .ui-dialog-buttonpane {
+	padding: .2em .5em;
+}
+
+.elrte-dialog-color {
+	
+}
+
+.elrte-dialog-color-palete {
+/*	border:1px solid #111;*/
+/*	float:left;*/
+	width:288px;
+	margin:0 auto;
+/*	height:auto;*/
+/*	width:98px;*/
+/*	width:196px;*/
+}
+
+.elrte-dialog-color-palete-column {
+	float:left;
+	width:96px;
+/*	border:1px solid #111;*/
+}
+
+.elrte-dialog-color-palete a {
+	float:left;
+	width:16px;
+	height:16px;
+	outline:0 solid;
+}
+
+.elrte-dialog-color-info {
+/*	border:1px solid #111;*/
+	width:288px;
+	margin:.2em auto 0 auto;
+/*	margin-top:.2em;*/
+}
+
+.elrte-dialog-color-info input {
+	padding:0;
+	outline:0 solid;
+	font-size:.8em;
+}
+
+.elrte-dialog-color-selected,
+.elrte-dialog-color-hilighted {
+	width:42px;
+	height:1em;
+	float:right;
+	margin-left:.1em;
+}
+
 .elrte-contextmenu {
 	
 }

@@ -59,8 +59,85 @@ $.fn.elrtecolordialog = function(rte, o) {
 			"0033ff", "0033cc", "003399", "003366", "003333", "003300", 
 			"0000ff", "0000cc", "000099", "000066", "000033", "000000"
 			],
-			$this = $(this).addClass('elrte-dialog-color');
-		rte.log(o.color)
-		$this.elrtedialog(o)
-	})
+			hexcodes = [48,49,50,51,52,53,54,55,56,57,65,66,67,68,69,70],
+			srvcodes = [8,46,27,37,39],
+			cc = 'elrte-dialog-color-palete-column', 
+			hc = 'elrte-dialog-color-hilighted',
+			sc = 'elrte-dialog-color-selected',
+			$this = $(this).addClass('elrte-dialog-color'),
+			html = '<div class="elrte-dialog-color-palete ui-helper-clearfix ui-widget-content"><div class="elrte-dialog-color-palete-column">',
+			items, input, sl, hl, i;
+		
+
+		$.each(colors, function(i, c) {
+			if (i>0 && i%72 == 0) {
+				html += '</div><div class="'+cc+'">';
+			} 
+			html += '<a href="#'+c+'" style="background-color:#'+c+'" title="'+c+'"/>';
+		})
+		
+		html += '</div>'
+			+ '</div>'
+			+ '<div class="elrte-dialog-color-info">'
+			+ '<input type="text" size="10" value="'+o.color+'" class="ui-widget-content"/>'
+			+ '<div class="ui-state-default '+hc+'" style="background:transparent"/>'
+			+ '<div class="ui-state-default '+sc+'" style="background:'+o.color+'"/>'
+			+ '</div>';
+		
+
+		items = $this.html(html)
+			.find('a')
+			.hover(function(e) {
+				hl.css('background', e.type == 'mouseenter' ? $(this).attr('href') : 'transparent');
+			})
+			.click(function(e) {
+				var c = $(this).attr('href');
+				e.preventDefault();
+				sl.css('background', c);
+				input.val(c);
+			})
+			.dblclick(function(e) {
+				var c = $(this).attr('href');
+				e.preventDefault();
+				$this.dialog('close');
+				o.callback(c);
+			});
+			
+		i  = $this.children(':last');
+		sl = i.children('.'+sc);
+		hl = i.children('.'+hc);
+		input = i.children(':text')
+			.keydown(function(e) {
+				var l = $(this).val().length;
+
+				if ((l < 7 && !e.altKey && $.inArray(e.keyCode, hexcodes) != -1)
+				|| $.inArray(e.keyCode, srvcodes) != -1) {
+					return true;
+				}
+				e.preventDefault();
+			})
+			.keyup(function(e) {
+				var $this = $(this),
+					v = $this.val(),
+					l = v.length;
+					
+				if (l == 4 || l == 7) {
+					sl.css('background', v);
+					if (e.keyCode == 13) {
+						o.callback(v);
+					}
+				}
+			});
+		
+		o.buttons = {};
+		
+		o.buttons[rte.i18n('Apply')] = function() { 
+			var c = input.val();
+			$(this).dialog('close');
+			o.callback(c); 
+		};
+		o.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
+		
+		$this.elrtedialog(o);
+	});
 }

@@ -94,7 +94,12 @@ $.fn.elrtecolorbutton = function(cmd) {
 					var opts = {
 						title : cmd.title,
 						modal : true,
-						color : color
+						width : 320,
+						color : color,
+						callback : function(c) {
+							set(c);
+							self.click();
+						}
 					}
 					var d = cmd.rte.ui.dialogs.color(cmd.rte, opts)
 				});
@@ -111,6 +116,7 @@ $.fn.elrtecolorbutton = function(cmd) {
 		});
 		
 		this.click = function() {
+			cmd.rte.focus();
 			cmd.exec(color);
 		}
 		
