@@ -326,7 +326,7 @@
 		 */
 		commands : {
 			document   : ['save'],
-			edit       : ['pastetext', 'pasteformattext', 'selectall', 'removeformat'],
+			edit       : [/*'pastetext', 'pasteformattext', 'selectall',*/ 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			font       : ['fontfamily', 'fontsize', 'formatblock', 'textcolor', 'textbg' /*'fontstyle',  */] ,
@@ -349,7 +349,7 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['font', 'control']
+			'test' : ['edit', 'font', 'control']
 			// 'test' : ['document', 'history', 'style', 'semantic', 'alignment', 'font', 'indents', 'lists', 'direction', 'misc', 'control']
 		},
 		/**

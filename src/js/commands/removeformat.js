@@ -6,12 +6,12 @@
  **/
 elRTE.prototype.commands.removeformat = function() {
 	this.title  = 'Clean format';
-	this.regExp = /^(A|BR|EMBED|IMG|PARAM)$/;
+	this.regexp = /^(A|BR|EMBED|IMG|PARAM)$/;
 	
 	this._exec = function() {
 		var d = this.dom,
 			s = this.sel,
-			r = this.regExp,
+			r = this.regexp,
 			t = function(n) { return d.is(n, 'block') || d.is(n, r) || $(n).hasClass('elrtebm'); }
 			n = s.collapsed() ? this.rte.active.document.body.childNodes : s.get(),
 			b = s.bookmark();
@@ -30,7 +30,7 @@ elRTE.prototype.commands.removeformat = function() {
 		return true;
 	}
 	
-	this._getState = function() {
-		return this.STATE_ENABLE;
+	this._state = function() {
+		return elRTE.CMD_STATE_ENABLED;
 	}
 }
