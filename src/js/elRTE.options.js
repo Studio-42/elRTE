@@ -326,7 +326,7 @@
 		 */
 		commands : {
 			document   : ['save'],
-			edit       : [/*'pastetext', 'pasteformattext', 'selectall',*/ 'removeformat'],
+			edit       : [/*'pastetext', 'pasteformattext', */'selectall', 'removeformat'],
 			history    : ['undo', 'redo'],
 			style      : ['bold', 'italic', 'underline', 'strike', 'sup', 'sub'],
 			font       : ['fontfamily', 'fontsize', 'formatblock', 'textcolor', 'textbg' /*'fontstyle',  */] ,

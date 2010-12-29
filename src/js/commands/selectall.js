@@ -6,14 +6,15 @@
 elRTE.prototype.commands.selectall = function() {
 	this.title = 'Select all';
 	
+	this.events = {
+		wysiwyg        : function() { this.update(elRTE.CMD_STATE_ENABLED); },
+		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED) }
+	}
+	
 	this._exec = function() {
 		return this.sel.selectAll();
 	}
 	
-	this.events = {
-		wysiwyg      : function() { this._setState(this.STATE_ENABLE); },
-		source : function() { this._setState(this.STATE_DISABLE); },
-		close : function() { this.rte.count() == 1 && this._setState(this.STATE_DISABLE); }
-	}
+	
 }
 
