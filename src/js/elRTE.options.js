@@ -333,7 +333,7 @@
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
-			links      : ['anchor', 'link', 'unlink'],
+			links      : [/*'anchor', 'link',*/ 'unlink'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
 			direction  : ['dirltr', 'dirrtl'],
@@ -349,7 +349,7 @@
 		 * options.commands.mypreset = ['edit', 'mygroup', ...]
 		 */
 		presets : {
-			'test' : ['edit', 'font', 'control']
+			'test' : ['edit', 'links', 'font', 'control']
 			// 'test' : ['document', 'history', 'style', 'semantic', 'alignment', 'font', 'indents', 'lists', 'direction', 'misc', 'control']
 		},
 		/**

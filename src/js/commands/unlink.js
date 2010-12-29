@@ -61,8 +61,8 @@ elRTE.prototype.commands.unlink = function() {
 		}
 	}
 
-	this._getState = function() {
-		return this.dom.testSelection('link') ? this.STATE_ACTIVE : this.STATE_DISABLE;
+	this._state = function() {
+		return this.dom.testSelection('link') ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_DISABLED;
 	}
 
 }
