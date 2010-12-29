@@ -14,8 +14,6 @@ elRTE.prototype.commands.textcolor = function() {
 		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
 	}
 	
-
-	
 	/**
 	 * Set color for selected text
 	 *
@@ -107,9 +105,9 @@ elRTE.prototype.commands.textcolor = function() {
 	}
 	
 	/**
-	 * Store active document default color
+	 * Return active document default color
 	 *
-	 * @return void
+	 * @return String
 	 */
 	this._value = function() { 
 		return this.utils.color2Hex($(this.rte.active.document.body).css('color'))||'#000';
@@ -119,7 +117,5 @@ elRTE.prototype.commands.textcolor = function() {
 	this._state = function() {
 		return elRTE.CMD_STATE_ENABLED;
 	}
-
-
 
 }

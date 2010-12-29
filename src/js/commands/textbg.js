@@ -5,10 +5,13 @@
  **/
 elRTE.prototype.commands.textbg = function() {
 	this.title   = 'Text background';
-	this.conf    = { ui : 'Color' };
+	this.conf    = { ui : 'color' };
 	this.cssProp = 'background-color';
 	this.node    = { name : 'span', css :{ 'background-color' : '' }}
-	this._val = '';
+	this.events = {
+		'wysiwyg'      : function() { this.value = ''; this.update(); },
+		'source close' : function(e) { e.data.id == this.rte.active.id && this.update(elRTE.CMD_STATE_DISABLED); }
+	}
 
 	/**
 	 * Set color for selected text
@@ -102,22 +105,16 @@ elRTE.prototype.commands.textbg = function() {
 	
 
 	/**
-	 * Store active document default color
+	 * Return active document default color
 	 *
-	 * @return void
+	 * @return String
 	 */
-	this._updValue = function() { 
-		this._val = this.utils.color2Hex($(this.rte.active.document.body).css('background-color'))||'#fff';
-		// this.rte.log(this._val)
+	this._value = function() { 
+		return this.utils.color2Hex($(this.rte.active.document.body).css('background-color'))||'#fff';
 	}
 
-	this._getState = function() {
-		return this.STATE_ENABLE;
-	}
-	
-	this.events = {
-		'wysiwyg'      : function() { this._val = '';  var self = this; setTimeout(function() { self.update();}, 100)   },
-		'source close' : function(e) { e.data.id == this.rte.active.id && this._setState(this.STATE_DISABLE); }
+	this._state = function() {
+		return elRTE.CMD_STATE_ENABLED;
 	}
 	
 }
