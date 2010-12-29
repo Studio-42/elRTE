@@ -85,15 +85,21 @@
 /*	float:left;*/
 }
 
+.elrte-dialog { font-size:.8em;}
+
 .elrte-dialog .ui-widget-header {
-	font-size:.9em;
-	padding:0 .4em;
+/*	font-size:.9em;*/
+/*	padding:0 .4em;*/
+}
+
+.elrte-dialog .ui-dialog-content {
+/*	font-size:.8em;*/
 }
 
 .elrte-dialog .ui-dialog-buttonpane .ui-button {
-	font-size:.8em;
-	padding:0;
-	margin:.1em .2em;
+/*	font-size:.9em;*/
+/*	padding:0;*/
+/*	margin:.1em .2em;*/
 }
 
 .elrte-dialog .ui-button-text-only .ui-button-text {
@@ -101,7 +107,7 @@
 }
 
 .elrte-dialog .ui-dialog-buttonpane {
-	padding: .2em .5em;
+/*	padding: .2em .5em;*/
 }
 
 .elrte-dialog-color {
@@ -141,13 +147,13 @@
 .elrte-dialog-color-info input {
 	padding:0;
 	outline:0 solid;
-	font-size:.8em;
+/*	font-size:.8em;*/
 }
 
 .elrte-dialog-color-selected,
 .elrte-dialog-color-hilighted {
 	width:42px;
-	height:1em;
+	height:1.2em;
 	float:right;
 	margin-left:.1em;
 }

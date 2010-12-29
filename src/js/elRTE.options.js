@@ -333,7 +333,7 @@
 			indents    : ['outdent', 'indent'],
 			alignment  : ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
 			lists      : ['ul', 'ol'],
-			links      : [/*'anchor', 'link',*/ 'unlink'],
+			links      : ['anchor', /*'link',*/ 'unlink'],
 			semantic   : ['ins', 'del', 'abbr', 'cite'],
 			misc       : ['nbsp', 'stopfloat', 'hr', 'pagebreak', 'blockquote', 'div', 'specialchars'],
 			direction  : ['dirltr', 'dirrtl'],

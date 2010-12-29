@@ -1097,8 +1097,10 @@
 				'height'     : height
 			})
 			.mousedown(function(e) {
-				e.stopPropagation();
-				e.preventDefault();
+				if (e.target.nodeName != 'TEXTAREA') {
+					e.stopPropagation();
+					e.preventDefault();
+				}
 				self.focus().trigger('editorfocus');
 			});
 		

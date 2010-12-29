@@ -3,7 +3,7 @@ $.fn.elrtedialog = function(o) {
 	o = $.extend({}, $.fn.elrtedialog.defaults, o);
 	
 	return this.each(function() {
-		$(this).dialog(o)
+		$(this).dialog(o).find(':text').focus()
 	})
 }
 
@@ -14,7 +14,14 @@ $.fn.elrtedialog.defaults = {
 	width     : 400, 
 	// autoOpen  : false, 
 	position  : ['center', 100], 
-	buttons   : {}
+	buttons   : {},
+	close     : function() { $(this).dialog('destroy') },
+	open      : function() { 
+			var i = $(this).find(':text,textarea,select');
+			if (i.length) {
+				setTimeout(function() { i[0].focus() }, 20)
+			}
+		}
 }
 
 $.fn.elrtecolordialog = function(rte, o) {

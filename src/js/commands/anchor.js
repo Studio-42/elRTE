@@ -40,13 +40,13 @@ elRTE.prototype.commands.anchor = function() {
 		var self = this,
 			rte  = this.rte,
 			n    = this._find(),
-			name = $('<input type="text" size="22" />').val(n ? $(n).attr('name')||'' : ''),
-			tb   = new rte.ui.table().append(rte.i18n('Bookmark name')).append(name),
+			name = $('<input type="text" size="20" />').val(n ? $(n).attr('name')||'' : ''),
 			opts = { title : rte.i18n(this.title), buttons : {} };
 
 		opts.buttons[rte.i18n('Apply')]  = function() { self.exec(name.val()); $(this).dialog('close'); };
 		opts.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
-		new rte.ui.dialog(opts).append(tb.get()).open();
+
+		$('<div/>').append(rte.i18n('Bookmark name')+': ').append(name).elrtedialog(opts);
 	}
 
 	/**
@@ -69,8 +69,8 @@ elRTE.prototype.commands.anchor = function() {
 		return true;
 	}
 
-	this._getState = function() {
-		return this.dom.testSelection('anchor') ? this.STATE_ACTIVE : this.STATE_ENABLE;
+	this._state = function() {
+		return this.dom.testSelection('anchor') ? elRTE.CMD_STATE_ACTIVE : elRTE.CMD_STATE_ENABLED;
 	}
 
 }
