@@ -80,3 +80,57 @@ $.fn.maxZIndex = function() {
 	});
 	return i;
 }
+
+$.fn.elrtetable = function(o) {
+	
+	o = $.extend({ cellspacing : 0 }, o);
+	
+	function cell(v, a, h) {
+		var c;
+
+		if (v.nodeName == 'TD' || v.nodeName == 'TH' || (''+v).indexOf('<td') == 0 || (''+v).indexOf('<th') == 0) {
+			c = $(v);
+		} else if (v[0] && (v[0].nodeName == 'TD' || v[0].nodeName == 'TH')) {
+			c = v;
+		}  else {
+			c = $('<t'+(h ? 'h' : 'd')+'/>').append(v);
+		}
+		return c.attr(a||{});
+	}
+	
+	function table(n) {
+		return n && n[0] && n[0].nodeName == 'TABLE' ? $(n[0]) : false;
+	}
+	
+	this.cell = function(v, a, h) {
+		var tb, r;
+		
+		if ((tb = table(this))) {
+			if (!(r = tb.find('tr:last')).length) {
+				r = $('<tr/>').appendTo(tb);
+			}
+			r.append(cell(v, a, h))
+		}
+		return this;
+	}
+	
+	this.row = function(v, attr) {
+		var tb, r;
+		
+		if ((tb = table(this))) {
+			r = $('<tr/>').attr(attr||{});
+			$.each(v||[], function(i, n) {
+				r.append(cell(n));
+			});
+			r.appendTo(tb);
+		}
+		return this
+	}
+	
+	return this.each(function() {
+		if (this.nodeName == 'TABLE') {
+			$(this).attr(o||{}).css('border-collapse', 'collapse');
+		}
+	})
+	
+}

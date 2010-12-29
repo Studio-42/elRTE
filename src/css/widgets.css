@@ -110,6 +110,8 @@
 /*	padding: .2em .5em;*/
 }
 
+.elrte-dialog-table td { border:1px solid #222;}
+
 .elrte-dialog-color {
 	
 }

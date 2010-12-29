@@ -12,7 +12,21 @@ elRTE.prototype.commands.link = function() {
 	 * @return void
 	 **/
 	this.dialog = function() {
-		this.conf.simple ? this._simpleDialog() : this._fullDialog();
+		// this.conf.simple ? this._simpleDialog() : this._fullDialog();
+		var tb = $('<table/>').elrtetable({'class' : 'elrte-dialog-table'});
+		
+		this.rte.log(tb)
+		
+		// tb.cell('test')
+
+		tb.row(['first', $('<td>second</td>'), $('<td>third</td>')[0], '<td>four</td>'])
+		tb.row()
+		tb.cell('five')	
+		tb.cell('six')	
+		
+		this.rte.log(tb.html())
+		
+		$('<div/>').append(tb).elrtedialog()
 	}
 
 	/**
@@ -45,7 +59,7 @@ elRTE.prototype.commands.link = function() {
 	 *
 	 * @return void
 	 **/
-	this._init = function() {
+	this._init_ = function() {
 		var self  = this,
 			rte   = this.rte,
 			input = '<input type="text" />';
@@ -250,8 +264,8 @@ elRTE.prototype.commands.link = function() {
 		rte.trigger('change');
 	}
 
-	this._getState = function() {
-		return this.dom.testSelection('link') ? this.STATE_ACTIVE : (this.sel.collapsed() ? this.STATE_DISABLE: this.STATE_ENABLE);
+	this._state = function() {
+		return this.dom.testSelection('link') ? elRTE.CMD_STATE_ACTIVE : (this.sel.collapsed() ? elRTE.CMD_STATE_DISABLED: elRTE.CMD_STATE_ENABLED);
 	}
 
 }
