@@ -93,8 +93,11 @@
 }
 
 .elrte-dialog .ui-dialog-content {
+	padding:.5em .2em;
 /*	font-size:.8em;*/
 }
+
+/*.elrte-dialog tr td:first-child { width:40%; }*/
 
 .elrte-dialog .ui-dialog-buttonpane .ui-button {
 /*	font-size:.9em;*/
@@ -110,7 +113,14 @@
 /*	padding: .2em .5em;*/
 }
 
-.elrte-dialog-table td { border:1px solid #222;}
+.elrte-dialog .ui-tabs-panel {
+	padding:.5em;
+}
+
+.elrte-dialog-table td { 
+/*	border:1px solid #222; */
+	width:100%; 
+}
 
 .elrte-dialog-color {
 	

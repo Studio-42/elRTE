@@ -124,12 +124,12 @@ $.fn.elrtetable = function(o) {
 			});
 			r.appendTo(tb);
 		}
-		return this
+		return this;
 	}
 	
 	return this.each(function() {
 		if (this.nodeName == 'TABLE') {
-			$(this).attr(o||{}).css('border-collapse', 'collapse');
+			$(this).attr(o||{}).addClass('elrte-dialog-table').css('border-collapse', 'collapse');
 		}
 	})
 	

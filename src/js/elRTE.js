@@ -1391,6 +1391,26 @@
 				return $('<div/>').elrtecolordialog(rte, o).dialog(o);
 			}
 		},
+		tabs : function(content) {
+		
+			var nav = $('<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"/>'),
+				tabs = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all"/>').append(nav),
+				p;
+				
+			$.each(content, function(name, data) {
+				var id = 'tabs-'+name;
+				
+				if (data.label && data.element) {
+					nav.append('<li class="ui-state-default ui-corner-top"><a href="#'+id+'">'+data.label+'</a></li>')
+					tabs.append($('<div id="'+id+'" class="ui-tabs-panel ui-widget-content ui-corner-bottom" />').append(data.element).hide())
+				}
+			});
+			nav.children(':first').addClass('ui-tabs-selected ui-state-active ui-state-focus').end().next().show();
+			if (nav.children().length == 1) {
+				nav.hide()
+			}
+			return tabs;
+		},
 		cmdui : {
 			button : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);

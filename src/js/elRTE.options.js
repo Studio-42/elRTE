@@ -393,8 +393,13 @@
 				]
 			},
 			link : {
+				links : [
+					['http://std42.ru', 'Studio 42'],
+					['http://google.com', 'Google'],
+					['http://ya.ru', 'Yandex']
+				],
 				// simple : true,
-				// disableAdvanced : true,
+				// advanced : false,
 				// disableEvents : true
 			},
 			formatblock : {

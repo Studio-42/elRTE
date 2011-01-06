@@ -41,12 +41,12 @@ elRTE.prototype.commands.anchor = function() {
 			rte  = this.rte,
 			n    = this._find(),
 			name = $('<input type="text" size="20" />').val(n ? $(n).attr('name')||'' : ''),
-			opts = { title : rte.i18n(this.title), buttons : {} };
+			opts = { title : rte.i18n(this.title), width : 300, buttons : {} };
 
 		opts.buttons[rte.i18n('Apply')]  = function() { self.exec(name.val()); $(this).dialog('close'); };
 		opts.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
 
-		$('<div/>').append(rte.i18n('Bookmark name')+': ').append(name).elrtedialog(opts);
+		$('<div/>').append($('<table/>').elrtetable({style : 'margin-top:1em'}).row([rte.i18n('Bookmark name'), name])).elrtedialog(opts);
 	}
 
 	/**
