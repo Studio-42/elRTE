@@ -1,29 +1,4 @@
-
-$.fn.elrtedialog = function(o) {
-	o = $.extend({}, $.fn.elrtedialog.defaults, o);
-	
-	return this.each(function() {
-		$(this).dialog(o);
-	})
-}
-
-$.fn.elrtedialog.defaults = {
-	dialogClass  : 'elrte-dialog',
-	modal     : true, 
-	resizable : false,
-	width     : 400, 
-	// autoOpen  : false, 
-	position  : ['center', 100], 
-	buttons   : {},
-	close     : function() { $(this).dialog('destroy') },
-	open      : function() { 
-			var i = $(this).find(':text,textarea,select');
-			i.length &&	setTimeout(function() { i[0].focus() }, 20);
-		}
-}
-
 $.fn.elrtecolordialog = function(rte, o) {
-	
 	
 	return this.each(function() {
 		var colors = [
@@ -143,6 +118,6 @@ $.fn.elrtecolordialog = function(rte, o) {
 		};
 		o.buttons[rte.i18n('Cancel')] = function() { $(this).dialog('close'); };
 		
-		$this.elrtedialog(o);
+		rte.ui.dialog($this, o);
 	});
 }

@@ -1383,33 +1383,48 @@
 			}
 		}, 
 		dialog : function(n, o) {
-			return $(n).addClass('elrte-dialog').dialog(o)
+			var opts = {
+				dialogClass  : 'elrte-dialog',
+				modal        : true, 
+				resizable    : false,
+				width        : 400, 
+				autoOpen     : true, 
+				position     : ['center', 100], 
+				buttons      : {},
+				close        : function() { $(this).dialog('destroy') },
+				open         : function() { 
+						var $this = $(this),
+							i = $this.find(':text').keyup(function(e) {
+								if (e.keyCode == 13) {
+									$this.parent('.ui-dialog').find('.ui-dialog-buttonpane .ui-button').click();
+								}
+							});
+						i.length &&	setTimeout(function() { i[0].focus() }, 20);
+					}
+			}
+			
+			return $(n).dialog($.extend(opts, o));
 		},
 		dialogs : {
 			
 			color : function(rte, o) {
-				return $('<div/>').elrtecolordialog(rte, o).dialog(o);
+				return $('<div/>').elrtecolordialog(rte, o);
 			}
 		},
 		tabs : function(content) {
-		
-			var nav = $('<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"/>'),
-				tabs = $('<div class="ui-tabs ui-widget ui-widget-content ui-corner-all"/>').append(nav),
-				p;
-				
+			var nav  = $('<ul/>'),
+				tabs = $('<div/>').append(nav);
+			
 			$.each(content, function(name, data) {
 				var id = 'tabs-'+name;
 				
 				if (data.label && data.element) {
-					nav.append('<li class="ui-state-default ui-corner-top"><a href="#'+id+'">'+data.label+'</a></li>')
-					tabs.append($('<div id="'+id+'" class="ui-tabs-panel ui-widget-content ui-corner-bottom" />').append(data.element).hide())
+					nav.append('<li><a href="#'+id+'">'+data.label+'</a></li>');
+					tabs.append($('<div id="'+id+'"/>').append(data.element));
 				}
-			});
-			nav.children(':first').addClass('ui-tabs-selected ui-state-active ui-state-focus').end().next().show();
-			if (nav.children().length == 1) {
-				nav.hide()
-			}
-			return tabs;
+			})
+		
+			return tabs.elrtetabs();
 		},
 		cmdui : {
 			button : function(cmd) {
