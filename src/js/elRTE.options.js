@@ -399,8 +399,9 @@
 					['http://ya.ru', 'Yandex']
 				],
 				// simple : true,
-				advanced : false,
-				events : false
+				// advanced : false,
+				events : false,
+				target : true
 				// disableEvents : true
 			},
 			formatblock : {

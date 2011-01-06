@@ -19,7 +19,16 @@ elRTE.prototype.commands.link = function() {
 	 * 
 	 * @type Object
 	 */
-	this.conf = { advanced : true, events : true };
+	this.conf = { 
+		// allow edit popup window open parameters
+		popup    : true,
+		// allow edit advanced properies
+		advanced : true, 
+		// allow edit events
+		events   : true,
+		// force display link target options in xhtml mode
+		target   : false
+	};
 	
 	/**
 	 * Object contains link edit controls (see _prepare())
@@ -103,7 +112,7 @@ elRTE.prototype.commands.link = function() {
 				label : $('<select>'
 					+ '<option value="url">'+rte.i18n('Link URL')+'</option>'
 					+ '<option value="mailto">'+rte.i18n('Email address')+'</option>'
-					+ '<option value="link">'+rte.i18n('Link')+'</option>'
+					+ '<option value="link">'+rte.i18n('Link from list')+'</option>'
 					+ '<option value="bookmark">'+rte.i18n('Bookmark')+'</option>'
 					+ '</select>')
 					.change(function() {
@@ -147,17 +156,31 @@ elRTE.prototype.commands.link = function() {
 					+ '<option value="">'+rte.i18n('Same window')+'</option>'
 					+ '<option value="_blank">'+rte.i18n('New window')+'</option>'
 					+ '</select>')
-			},
-			'class' : {
-				label   : rte.i18n('Css class'),
-				element :  $('<input type="text" />')
 			}
+			
 		};
+		
+		if (rte.xhtml && !conf.target) {
+			delete this._attr.target
+		}
+		
+		if (conf.popup) {
+			tabs.popup = {
+				label   : rte.i18n('Popup window'),
+				element : $('<table/>').elrtetable()
+			}
+		}
 		
 		if (this.conf.advanced) {
 			this._attr.id = {
 				label   : 'ID',
 				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			
+			this._attr['class'] = {
+				label   : rte.i18n('Css class'),
+				element :  $('<input type="text" />'),
 				pos     : 'advanced'
 			};
 			this._attr.style = {
@@ -172,6 +195,41 @@ elRTE.prototype.commands.link = function() {
 					+ '<option value="ltr">'+rte.i18n('Left to right')+'</option>'
 					+ '<option value="rtl">'+rte.i18n('Right to left')+'</option>'
 					+ '</select>'),
+				pos     : 'advanced'
+			};
+			this._attr.language = {
+				label   : rte.i18n('Language'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.language = {
+				label   : rte.i18n('Charset'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.type = {
+				label   : rte.i18n('Target MIME type'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.rel = {
+				label   : rte.i18n('Relationship page to target (rel)'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.rev = {
+				label   : rte.i18n('Relationship target to page (rev)'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.tabindex = {
+				label   : rte.i18n('Tab index'),
+				element : $('<input type="text" />'),
+				pos     : 'advanced'
+			};
+			this._attr.accesskey = {
+				label   : rte.i18n('Access key'),
+				element : $('<input type="text" />'),
 				pos     : 'advanced'
 			};
 			
@@ -212,7 +270,7 @@ elRTE.prototype.commands.link = function() {
 			}
 		});
 		
-		this._content = conf.advanced || conf.events ? rte.ui.tabs(tabs) : tabs.main.element;
+		this._content = conf.advanced || conf.events || conf.popup ? rte.ui.tabs(tabs) : tabs.main.element;
 		
 		this._attr.href.element.after(links).after(bm);
 
