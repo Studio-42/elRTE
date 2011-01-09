@@ -27,7 +27,8 @@ elRTE.prototype.commands.link = function() {
 		// allow edit events
 		events   : true,
 		// force display link target options in xhtml mode
-		target   : false
+		target   : false,
+		classes  : []
 	};
 	
 	/**
@@ -58,6 +59,9 @@ elRTE.prototype.commands.link = function() {
 	 */
 	this._bookmarks = $('<select/>');
 
+	this._fm = $('<span class="ui-state-default ui-corner-all elrte-fm-button"><span class="ui-icon ui-icon-folder-collapsed"/></span>');
+	
+
 	/**
 	 * Dialog options
 	 * 
@@ -65,6 +69,7 @@ elRTE.prototype.commands.link = function() {
 	 */
 	this._opts = { 
 		title   : this.title, 
+		width : 500,
 		buttons : { } 
 	};
 
@@ -94,12 +99,28 @@ elRTE.prototype.commands.link = function() {
 	 * @return void
 	 */
 	this._prepare = function() {
-		var self = this,
-			rte  = this.rte,
-			conf = this.conf,
+		var self  = this,
+			rte   = this.rte,
+			fm    = rte.options.filemanager,
+			conf  = this.conf,
 			links = this._links,
-			bm   = this._bookmarks,
-			reg  = /^([a-z0-9]{3,}:\/\/)|#/i,
+			bm    = this._bookmarks,
+			inp   = '<input type="text" class="ui-widget-content ui-corner-all elrte-input-wide"/>',
+			reg   = /^([a-z0-9]{3,}:\/\/)|#/i,
+			adv   = {
+				id        : 'ID',
+				// 'class'   : 'Css class',
+				style     : 'Css style',
+				dir       : 'Script direction',
+				language  : 'Language',
+				charset   : 'Charset',
+				type      : 'Target MIME type',
+				rel       : 'Relationship page to target (rel)',
+				rev       : 'Relationship target to page (rev)',
+				tabindex  : 'Tab index',
+				accesskey : 'Access key'
+			},
+			evt  = ['click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseleave', 'keydown', 'keyup', 'keypress', 'blur', 'focus'],
 			tabs = {
 				main : {
 					label : rte.i18n('Properties'),
@@ -120,13 +141,14 @@ elRTE.prototype.commands.link = function() {
 							v = i.val(),
 							l = self._links.hide(),
 							b = self._bookmarks.hide();
-						
+						self._fm.hide()
 						switch ($(this).val()) {
 							case 'url':
 								if (!reg.test(v)) {
 									i.val('http://');
 								}
 								i.show().focus();
+								self._fm.show()
 								break;
 								
 							case 'mailto':
@@ -144,24 +166,34 @@ elRTE.prototype.commands.link = function() {
 								b.val(v).change().show();
 						}
 					}),
-				element : $('<input type="text" />')
+				element : $(inp)
 			},
 			title : {
 				label   : rte.i18n('Title'),
-				element :  $('<input type="text" />')
+				element :  $(inp)
 			},
 			target : {
 				label   : rte.i18n('Open link in'),
-				element : $('<select>'
+				element : $('<select  class="elrte-input-wide">'
 					+ '<option value="">'+rte.i18n('Same window')+'</option>'
 					+ '<option value="_blank">'+rte.i18n('New window')+'</option>'
 					+ '</select>')
+			},
+			'class' :{
+				label : rte.i18n('Css classes'),
+				element : $('<div/>').elrtedinamicselect()
 			}
 			
 		};
 		
+		// $.each(conf.classes||[], function(i, n) {
+		// 	self._attr['class'].element.append('<option value="'+n+'">'+n+'</option>')
+		// });
+		// 
+		// this._attr.classes.element.elrteadvselect()
+		
 		if (rte.xhtml && !conf.target) {
-			delete this._attr.target
+			delete this._attr.target;
 		}
 		
 		if (conf.popup) {
@@ -171,96 +203,46 @@ elRTE.prototype.commands.link = function() {
 			}
 		}
 		
+		// add Advanced tab if enabled
 		if (this.conf.advanced) {
-			this._attr.id = {
-				label   : 'ID',
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
 			
-			this._attr['class'] = {
-				label   : rte.i18n('Css class'),
-				element :  $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.style = {
-				label   : rte.i18n('Css style'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.dir = {
-				label   : rte.i18n('Script direction'),
-				element : $('<select>'
-					+ '<option value="">'+rte.i18n('Not set')+'</option>'
-					+ '<option value="ltr">'+rte.i18n('Left to right')+'</option>'
-					+ '<option value="rtl">'+rte.i18n('Right to left')+'</option>'
-					+ '</select>'),
-				pos     : 'advanced'
-			};
-			this._attr.language = {
-				label   : rte.i18n('Language'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.language = {
-				label   : rte.i18n('Charset'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.type = {
-				label   : rte.i18n('Target MIME type'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.rel = {
-				label   : rte.i18n('Relationship page to target (rel)'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.rev = {
-				label   : rte.i18n('Relationship target to page (rev)'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.tabindex = {
-				label   : rte.i18n('Tab index'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
-			this._attr.accesskey = {
-				label   : rte.i18n('Access key'),
-				element : $('<input type="text" />'),
-				pos     : 'advanced'
-			};
+			// append attributes
+			$.each(adv, function(i, n) {
+				self._attr[i] = {
+					label   : rte.i18n(n),
+					element : $(i == 'dir' ? '<select class="elrte-input-wide"><option value="">'+rte.i18n('Not set')+'</option><option value="ltr">'+rte.i18n('Left to right')+'</option><option value="rtl">'+rte.i18n('Right to left')+'</option></select>' : inp),
+					pos     : 'advanced'
+				};
+			});
 			
+			// add tab
 			tabs.advanced = {
 				label   : rte.i18n('Advanced'),
 				element : $('<table/>').elrtetable()
-			}
-			
+			};
 		}
 		
+		// add Events tab if enabled
 		if (conf.events) {
-			this._attr._onclick = {
-				label   : 'onclick',
-				element : $('<input type="text" />'),
-				pos     : 'events'
-			};
-			this._attr._ondblclick = {
-				label   : 'ondblclick',
-				element : $('<input type="text" />'),
-				pos     : 'events'
-			}
-			
+			// append attributes
+			$.each(evt, function(i, n) {
+				self._attr['_on'+n] = {
+					label   : n,
+					element : $(inp),
+					pos     : 'events'
+				};
+			});
+			// add tab
 			tabs.events = {
 				label   : rte.i18n('Events'),
 				element : $('<table/>').elrtetable(),
 				pos     : 'events'
-			}
+			};
 		}
 		
+		// add elements to tabs tables
 		$.each(this._attr, function(n, a) {
-			tabs[a.pos||'main'].element.row([a.label, a.element])
+			tabs[a.pos||'main'].element.row([a.label, a.element]);
 		});
 		
 		// fill links list from config
@@ -272,9 +254,31 @@ elRTE.prototype.commands.link = function() {
 		
 		this._content = conf.advanced || conf.events || conf.popup ? rte.ui.tabs(tabs) : tabs.main.element;
 		
+		// add links and bookmarks lists
 		this._attr.href.element.after(links).after(bm);
+		
+		// add button to open filemanager after url input field
+		if (fm) {
+			this._fm
+				.hover(function(e) {
+					$(this).toggleClass('ui-state-hover');
+				})
+				.click(function() {
+					fm(function(url) {
+						self._attr.href.label.val('url');
+						self._attr.href.element.val(url);
+					})
+				});
+			this._attr.href.element
+				.css('width', '85%')
+				.before(this._fm);
+		}
 
 		this._attr.href.label.children('[value="link"]')[links.children().length ? 'show' : 'hide']();
+		
+		if (!$.isArray(conf.classes)) {
+			this.conf.classes = [];
+		}
 		
 		delete this._prepare;
 	}
@@ -293,14 +297,28 @@ elRTE.prototype.commands.link = function() {
 			link  = $(this._find() || this.dom.create('a')),
 			href  = link.attr('href')||'',
 			bm    = this._bookmarks.empty(),
-			attr  = $.each(this._attr, function(n, a) { a.element.val(link.attr(n));	}),
-			label = attr.href.label;
+			attr  = $.each(this._attr, function(n, a) { a.element.val(link.attr(n)); }),
+			label = attr.href.label, 
+			val   = 'url';
+	
+		// this._attr['class'].element = $('<select class="elrte-input-wide" multiple="on" size="5"><option value="">'+rte.i18n('Not set')+'</option></select>')
+		// 
+		// $.each(conf.classes.concat(link.attr('class').split(/\s+/)), function(i, n) {
+		// 	rte.log(n)
+		// 	attr['class'].element.append('<option value="'+n+'">'+n+'</option>')
+		// });
+		
+		// if (attr.classes) {
+		// 		attr.classes.element.val(attr['class'].element.val().split(' '));
+		// 	}
+		// 	
+		
+		// attr['class'].element.val('ui-selectable')
 		
 		// find anchors and add to bookmarks list	
 		$(rte.active.document.body)
 			.find('a[name]')
 			.each(function(i, l) {
-				rte.log(l)
 				bm.append('<option value="#'+l.name+'">'+l.name+'</option>');
 			});
 			
@@ -308,13 +326,11 @@ elRTE.prototype.commands.link = function() {
 		
 		// sync href label with value
 		if (href.indexOf('mailto:') == 0) {
-			label.val('mailto');
+			val = 'mailto';
 		} else if (href.indexOf('#') == 0 && bm.children('[value="'+href+'"]').length) {
-			label.val('bookmark');
-		} else {
-			label.val('url');
-		}
-		label.change();
+			val = 'bookmark';
+		} 
+		label.val(val).change();
 		
 		// set first tab active
 		this._content.reset && this._content.reset();

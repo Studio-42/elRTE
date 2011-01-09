@@ -1394,11 +1394,13 @@
 				close        : function() { $(this).dialog('destroy') },
 				open         : function() { 
 						var $this = $(this),
-							i = $this.find(':text').keyup(function(e) {
+							i = $this.find(':text').keydown(function(e) {
 								if (e.keyCode == 13) {
+									window.console.log('here')
 									$this.parent('.ui-dialog').find('.ui-dialog-buttonpane .ui-button').click();
 								}
 							});
+						
 						i.length &&	setTimeout(function() { i[0].focus() }, 20);
 					}
 			}

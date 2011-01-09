@@ -400,8 +400,9 @@
 				],
 				// simple : true,
 				// advanced : false,
-				events : false,
-				target : true
+				// events : false,
+				target : true,
+				classes : [ 'one', 'two', 'three' ]
 				// disableEvents : true
 			},
 			formatblock : {

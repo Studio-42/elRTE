@@ -8,6 +8,10 @@
 	<!-- jQuery and plugins -->
 	<script src="js/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript" charset="utf-8"></script>
+	
+	<script src="js/elfinder.min.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="css/elfinder.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
 	<!-- <link rel="stylesheet" href="css/ui-themes/lightness/jquery-ui-1.8.7.custom.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
 	
 	<!-- <link rel="stylesheet" href="css/ui-themes/default/jquery-ui-1.8.6.custom.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
@@ -162,6 +166,10 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery().ready(function() {
 
+			// $('#elfinder').elfinder({
+			// 	url : 'elfinder/connectors/php/connector.php'
+			// })
+
 			var opts = {
 				doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				// lang     : 'fa',
@@ -186,7 +194,16 @@
 				loadTarget : false,
 				resizeHelper : 'ui-resizable-helper',
 				debug : ['error', 'histor', 'even'],
-				cssfiles : ['src/css/elrte-inner.css']
+				cssfiles : ['src/css/elrte-inner.css'],
+				filemanager : function(callback) {
+					$('<div/>').elfinder({
+						url : 'elfinder/connectors/php/connector.php',
+						lang : 'en',
+						dialog : { width : 900, modal : true, title : 'Files' }, // open in dialog
+						closeOnEditorCallback : true, // close elFinder after file select
+						editorCallback : callback // pass callback to editor
+					});
+				}
 				
 			},
 			data = {
@@ -445,7 +462,7 @@
 		</div>
 		<br>
 		<div style="text-align:justify">
-			&nbsp;&nbsp;In <a href="http://ya.ru">many of the more relaxed</a> civilizations on the Outer Eastern Rim of the Galaxy, the 
+			&nbsp;&nbsp;In <a href="http://ya.ru" class="one  three">many of the more relaxed</a> civilizations on the Outer Eastern Rim of the Galaxy, the 
 			<span style="text-decoration:underline">Hitch-Hiker's Guide</span> 
 			has already supplanted the great <a name="enc"></a>Encyclopaedia Galactica as the standard repository of all knowledge and wisdom, for though it has many omissions and contains much that is apocryphal, or at least wildly inaccurate, it scores over the older, more pedestrian work in two important respects. First, it is slightly cheaper; and secondly it has the words <em>DON'T PANIC</em> inscribed in large friendly letters on its cover.
 		</div>
@@ -460,6 +477,6 @@
 	</form>
 	</div>
 	
-	
+	<div id="elfinder"></div>
 </body>
 </html>

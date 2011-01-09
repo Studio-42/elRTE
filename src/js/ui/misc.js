@@ -167,3 +167,155 @@ $.fn.elrtetabs = function() {
 	
 }
 
+
+$.fn.elrtedinamicselect = function(o) {
+	
+	var self = this,
+		sc = 'elrte-mdselect',
+		lc = 'elrte-mdselect-list';
+		
+	o = $.extend({ notset : 'Not set', newval : 'Add value', split : /\s+/, size : 5 }, o);
+	
+	this.empty = function() {
+		this.eq(0).children('label').slice(1).remove();
+	}
+	
+	this.append = function(value) {
+		var list = this.eq(0);
+		
+		$.each($.trim(''+value).split(/\s+/), function(i, v) {
+			v && list.append('<label><input type="checkbox" value="'+v+'" checked="on" />'+v+'</label>');
+		});
+		return this;
+	}
+	
+	
+	
+
+	
+	this.val = function(v) {
+		var list, label, button;
+		return this
+		if (v === void(0)) {
+		
+		} else {
+			
+		}
+		return this
+	}
+	
+	return this.each(function() {
+		var 
+			input = $('<input type="text" class="ui-widget-content ui-rounded-all elrte-input-wide"/>')
+				.hide()
+				.blur(function() {
+					self.append($(this).val());
+					reset();
+				})
+				.keydown(function(e) {
+					if (e.keyCode == 13 || e.keyCode == 27) {
+						e.preventDefault();
+						e.stopImmediatePropagation();
+						e.stopPropagation();
+						e.keyCode == 13 && self.append($(this).val());
+						reset()
+					}
+				}),
+			button = $('<span class="ui-icon ui-icon-circle-plus elrte-mdselect-button" title="'+o.newval+'" />')
+				.mousedown(function(e) {
+					var l = $this.children('label');
+					e.stopPropagation();
+					e.preventDefault()
+					if (button.hasClass('ui-icon-circle-close')) {
+						input.hide().val('');
+						l.show()
+					} else {
+						l.hide();
+						input.show().focus();
+					
+					}
+					button.toggleClass('ui-icon-circle-close')
+				}),
+			option = $('<label>'+o.notset+'</label>')
+				.prepend(
+					$('<input type="checkbox" value="" checked="on" />')
+						.change(function() {
+							var ch = option.nextAll('label').children(':checkbox');
+							$(this).attr('checked') ? ch.attr('disabled', 'disabled') : ch.removeAttr('disabled');
+						})
+				),
+				
+			$this = $(this).addClass('elrte-mdselect').append(input).append(button).append(option),
+			reset = function() {
+				var l = $this.children('label').show(),
+					c = l.children(':checkbox');
+				
+				input.hide().val('');
+				
+				button.removeClass('ui-icon-circle-close');
+				
+				c.eq(0).attr('checked') ? c.slice(1).attr('disabled', 'disabled') : c.slice(1).removeAttr('disabled')
+				
+			}
+			;
+		
+		// $this.append(list).append(esc).append(input).append(button)
+		
+	})
+	
+	
+}
+
+$.fn.elrteadvselect = function(o) {
+	o = $.extend({ label : 'other', split : /\s+/ }, o);
+	
+	return this.each(function() {
+		if (this.nodeName == 'SELECT') {
+			var $this = $(this),
+				m     = !!$this.attr('multiple'),
+				v     = '_value_'+Math.random(),
+				opt   = $('<option value="'+v+'">'+o.label+'</option>');
+				
+			opt.mousedown(function(e) {
+				e.preventDefault();
+				e.stopPropagation()
+				
+				
+				var input = $('<input type="text"/>');
+				
+				function set() {
+					var v = $.trim(input.val()), i;
+					
+					if (v) {
+						v = m && o.split ? v.split(o.split) : [v];
+						for (i=0; i < v.length; i++) {
+							opt.before('<option value="'+v[i]+'">'+v[i]+'</option>');
+						}
+						$this.val(m ? v.concat($this.val()) : v[0]);
+					}
+					input.remove();
+					$this.show();
+				}
+				
+				$this.hide().after(input)
+				input.focus()
+					.blur(set)
+					.keyup(function(e) {
+						e.keyCode == 13 && set();
+					})
+					.keydown(function(e) {
+						if (e.keyCode == 27) {
+							e.stopPropagation();
+							input.remove();
+							$this.show();
+						}
+					});
+			})
+				
+			$(this).append(opt);
+		}
+	});
+	
+}
+
+

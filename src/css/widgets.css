@@ -114,13 +114,26 @@
 }
 
 .elrte-dialog .ui-tabs-panel {
-	padding:.5em;
+	padding:.5em 0;
 }
+
+
+.elrte-dialog-table {
+	width:100%;
+}
+
+/*.elrte-dialog-table input { width:99%; outline:none;}*/
 
 .elrte-dialog-table td { 
 /*	border:1px solid #222; */
-	width:100%; 
+	padding:.2em;
+	overflow:hidden;
+	 
 }
+
+.elrte-input-wide { width:100%; }
+
+.elrte-fm-button { float:right;padding:2px; cursor:pointer; }
 
 .elrte-dialog-color {
 	
@@ -168,6 +181,28 @@
 	height:1.2em;
 	float:right;
 	margin-left:.1em;
+}
+
+
+.elrte-mdselect {
+	position:relative;
+}
+
+.elrte-mdselect-button {
+	position:absolute;
+	width:16px;
+	height:16px;
+	top:0;
+	right:5px;
+}
+
+.elrte-mdselect-list { 
+	border:1px solid #111; 
+/*	overflow:auto;*/
+}
+
+.elrte-mdselect label { 
+	display:block; 
 }
 
 .elrte-contextmenu {
