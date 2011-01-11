@@ -181,21 +181,16 @@ elRTE.prototype.commands.link = function() {
 			},
 			'class' :{
 				label : rte.i18n('Css classes'),
-				element : $('<div/>').elrtedinamicselect()
+				element :  rte.ui.classSelect()
 			}
 			
 		};
-		
-		// $.each(conf.classes||[], function(i, n) {
-		// 	self._attr['class'].element.append('<option value="'+n+'">'+n+'</option>')
-		// });
-		// 
-		// this._attr.classes.element.elrteadvselect()
 		
 		if (rte.xhtml && !conf.target) {
 			delete this._attr.target;
 		}
 		
+		// add Popup window tab if enabled
 		if (conf.popup) {
 			tabs.popup = {
 				label   : rte.i18n('Popup window'),
@@ -276,10 +271,6 @@ elRTE.prototype.commands.link = function() {
 
 		this._attr.href.label.children('[value="link"]')[links.children().length ? 'show' : 'hide']();
 		
-		if (!$.isArray(conf.classes)) {
-			this.conf.classes = [];
-		}
-		
 		delete this._prepare;
 	}
 
@@ -297,23 +288,15 @@ elRTE.prototype.commands.link = function() {
 			link  = $(this._find() || this.dom.create('a')),
 			href  = link.attr('href')||'',
 			bm    = this._bookmarks.empty(),
-			attr  = $.each(this._attr, function(n, a) { a.element.val(link.attr(n)); }),
+			attr  = $.each(this._attr, function(n, a) { 
+				var v = link.attr(n);
+				
+				n == 'class' && a.element.empty().append(conf.classes+' '+v);
+				a.element.val(v); 
+			}),
 			label = attr.href.label, 
 			val   = 'url';
 	
-		// this._attr['class'].element = $('<select class="elrte-input-wide" multiple="on" size="5"><option value="">'+rte.i18n('Not set')+'</option></select>')
-		// 
-		// $.each(conf.classes.concat(link.attr('class').split(/\s+/)), function(i, n) {
-		// 	rte.log(n)
-		// 	attr['class'].element.append('<option value="'+n+'">'+n+'</option>')
-		// });
-		
-		// if (attr.classes) {
-		// 		attr.classes.element.val(attr['class'].element.val().split(' '));
-		// 	}
-		// 	
-		
-		// attr['class'].element.val('ui-selectable')
 		
 		// find anchors and add to bookmarks list	
 		$(rte.active.document.body)

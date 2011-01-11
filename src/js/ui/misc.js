@@ -167,155 +167,180 @@ $.fn.elrtetabs = function() {
 	
 }
 
-
-$.fn.elrtedinamicselect = function(o) {
-	
+/**
+ * jQuery plugin
+ * Create control to select/create css classes names
+ * Used by "link", "image" commands etc.
+ *
+ * @return jQuery
+ */
+$.fn.elrtecssclassselect = function(o) {
 	var self = this,
-		sc = 'elrte-mdselect',
-		lc = 'elrte-mdselect-list';
-		
-	o = $.extend({ notset : 'Not set', newval : 'Add value', split : /\s+/, size : 5 }, o);
+		/**
+		 * Split string by spaces, remove duplicates and empty elements 
+		 *
+		 * @param  String  css classes string
+		 * @return Array
+		 */
+		parse = function(v) {
+			v = $.trim(''+v).split(/\s+/);
+
+			return $.map(v, function(e, i) {
+				return e && $.inArray(e, v) == i ? e : null;
+			});
+		},
+		/**
+		 * plugin config
+		 *
+		 * @type  Object
+		 */
+		o = $.extend({ 
+			notsetText : 'Not set',
+			addText    : 'New css class',
+			escText    : 'Cancel',
+			size       : 4 
+		}, o);
 	
+	/**
+	 * Overload jQuery method for current set.
+	 * Remove all labels except first one.
+	 *
+	 * @return jQuery
+	 */
 	this.empty = function() {
 		this.eq(0).children('label').slice(1).remove();
-	}
-	
-	this.append = function(value) {
-		var list = this.eq(0);
-		
-		$.each($.trim(''+value).split(/\s+/), function(i, v) {
-			v && list.append('<label><input type="checkbox" value="'+v+'" checked="on" />'+v+'</label>');
-		});
 		return this;
 	}
 	
-	
-	
-
-	
-	this.val = function(v) {
-		var list, label, button;
-		return this
-		if (v === void(0)) {
+	/**
+	 * Overload jQuery method for current set.
+	 * Create label with checkbox for each css class declaration in first argument
+	 *
+	 * @param  String  css classes string
+	 * @return jQuery
+	 */
+	this.append = function(v) {
+		var l = this.eq(0),
+			c = l.children('label').children(':checkbox'),
+			d = l.children('div'), p;
 		
-		} else {
+		$.each(parse(v), function(i, cl) {
+			!c.filter('[value="'+cl+'"]').length && d.before('<label><input type="checkbox" value="'+cl+'" /> <a class="'+cl+'">'+cl+'</a></label>');
+		});
+		
+		if (!l.hasClass('elrte-cselect-fixed') && l.children('label').length >= o.size) {
 			
+			if (!l.parents('body').length) {
+				p = l.parent();
+				l.addClass('elrte-notvisible')
+					.appendTo('body')
+					.height(l.children('label:first').outerHeight(true)*o.size)
+					.addClass('elrte-cselect-fixed')
+					.scrollTop(0)
+					.appendTo(p)
+					.removeClass('elrte-notvisible');
+			}
 		}
-		return this
+		
+		return this;
+	}
+	
+	/**
+	 * Overload jQuery method for current set.
+	 * As setter: check all checkboxes for each css class declaration in first argument, if no one checkbox checked - check first one (not set)
+	 * As getter: Return all checkboxes values in string seperated by space (valid css classes declaration)
+	 *
+	 * @param  String|undefined  css classes string
+	 * @return jQuery|String
+	 */
+	this.val = function(v) {
+		var c = this.eq(0).children('label').children(':checkbox'), 
+			l;
+
+		if (v === void(0)) {
+			v = '';
+			c.filter(':checked:not([disabled])').each(function() {
+				v += $(this).val() + ' ';
+			});
+			return v;
+		} else {
+			c.removeAttr('checked');
+			v = parse(v);
+			l = v.length;
+			while (l--) {
+				v[l] && c.filter('[value="'+v[l]+'"]').attr('checked', 'checked');
+			}
+
+			if (!c.filter(':checked').length) {
+				c.eq(0).attr('checked', true).change();
+			} 
+		}
 	}
 	
 	return this.each(function() {
-		var 
-			input = $('<input type="text" class="ui-widget-content ui-rounded-all elrte-input-wide"/>')
-				.hide()
+		var $this = $(this).addClass('ui-widget-content ui-corner-all elrte-cselect'),
+			/**
+			 * "not set" checkbox
+			 *
+			 * @type  jQuery
+			 */
+			ch = $('<input type="checkbox" value="" checked="checked"/>')
+				.change(function() {
+					var c = ch.parent().nextAll('label').children(':checkbox');
+					ch.attr('checked') ? c.attr('disabled', 'disabled') : c.removeAttr('disabled');
+				}),
+			/**
+			 * "add new class" link
+			 *
+			 * @type  jQuery
+			 */
+			link = $('<a href="#"><span class="ui-state-default elrte-cselect-icon-plus"><span class="ui-icon ui-icon-circle-plus"/></span> '+o.addText+'</a>')
+				.click(function(e) {
+					e.preventDefault();
+					link.hide();
+					input.show().focus();
+					esc.show();
+					$this.scrollTop(1000);
+				}),
+			/**
+			 * text field for new class
+			 *
+			 * @type  jQuery
+			 */
+			input = $('<input type="text" class="ui-widget-content ui-corner-all elrte-input-wide"/>')
 				.blur(function() {
-					self.append($(this).val());
+					self.append(input.val()).val(self.val()+' '+input.val());
 					reset();
 				})
 				.keydown(function(e) {
 					if (e.keyCode == 13 || e.keyCode == 27) {
-						e.preventDefault();
 						e.stopImmediatePropagation();
-						e.stopPropagation();
-						e.keyCode == 13 && self.append($(this).val());
-						reset()
+						e.keyCode == 13 && self.append(input.val()).val(self.val()+' '+input.val());
+						reset();
 					}
 				}),
-			button = $('<span class="ui-icon ui-icon-circle-plus elrte-mdselect-button" title="'+o.newval+'" />')
+			/**
+			 * icon "inside" text field to cancel input 
+			 *
+			 * @type  jQuery
+			 */
+			esc = $('<a href="#" class="ui-state-default elrte-cselect-icon-close" title="'+o.escText+'"><span class="ui-icon ui-icon-circle-close"/></a>')
 				.mousedown(function(e) {
-					var l = $this.children('label');
-					e.stopPropagation();
-					e.preventDefault()
-					if (button.hasClass('ui-icon-circle-close')) {
-						input.hide().val('');
-						l.show()
-					} else {
-						l.hide();
-						input.show().focus();
-					
-					}
-					button.toggleClass('ui-icon-circle-close')
+					e.preventDefault();
+					reset();
 				}),
-			option = $('<label>'+o.notset+'</label>')
-				.prepend(
-					$('<input type="checkbox" value="" checked="on" />')
-						.change(function() {
-							var ch = option.nextAll('label').children(':checkbox');
-							$(this).attr('checked') ? ch.attr('disabled', 'disabled') : ch.removeAttr('disabled');
-						})
-				),
-				
-			$this = $(this).addClass('elrte-mdselect').append(input).append(button).append(option),
+			/**
+			 * Hide text field and show "add new class" link
+			 *
+			 * @return  void
+			 */
 			reset = function() {
-				var l = $this.children('label').show(),
-					c = l.children(':checkbox');
-				
+				link.show();
 				input.hide().val('');
-				
-				button.removeClass('ui-icon-circle-close');
-				
-				c.eq(0).attr('checked') ? c.slice(1).attr('disabled', 'disabled') : c.slice(1).removeAttr('disabled')
-				
-			}
-			;
-		
-		// $this.append(list).append(esc).append(input).append(button)
-		
-	})
-	
-	
-}
+				esc.hide();
+			};
 
-$.fn.elrteadvselect = function(o) {
-	o = $.extend({ label : 'other', split : /\s+/ }, o);
-	
-	return this.each(function() {
-		if (this.nodeName == 'SELECT') {
-			var $this = $(this),
-				m     = !!$this.attr('multiple'),
-				v     = '_value_'+Math.random(),
-				opt   = $('<option value="'+v+'">'+o.label+'</option>');
-				
-			opt.mousedown(function(e) {
-				e.preventDefault();
-				e.stopPropagation()
-				
-				
-				var input = $('<input type="text"/>');
-				
-				function set() {
-					var v = $.trim(input.val()), i;
-					
-					if (v) {
-						v = m && o.split ? v.split(o.split) : [v];
-						for (i=0; i < v.length; i++) {
-							opt.before('<option value="'+v[i]+'">'+v[i]+'</option>');
-						}
-						$this.val(m ? v.concat($this.val()) : v[0]);
-					}
-					input.remove();
-					$this.show();
-				}
-				
-				$this.hide().after(input)
-				input.focus()
-					.blur(set)
-					.keyup(function(e) {
-						e.keyCode == 13 && set();
-					})
-					.keydown(function(e) {
-						if (e.keyCode == 27) {
-							e.stopPropagation();
-							input.remove();
-							$this.show();
-						}
-					});
-			})
-				
-			$(this).append(opt);
-		}
+		$this.append($('<label> '+o.notsetText+'</label>').prepend(ch))
+			.append($('<div/>').append(link).append(input.hide()).append(esc.hide()));
 	});
-	
 }
-
-

@@ -1428,6 +1428,10 @@
 		
 			return tabs.elrtetabs();
 		},
+		
+		classSelect : function() {
+			return $('<div/>').elrtecssclassselect()
+		},
 		cmdui : {
 			button : function(cmd) {
 				return $('<div/>').elrtebutton(cmd);
