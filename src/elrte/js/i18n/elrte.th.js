@@ -1,10 +1,12 @@
 /*
- * Thailand translation
+ * Thai translation
  * @author Jaideejung007 (Anusuk Sangubon) <jaideejung007@gmail.com>, http://www.thzaa.com
  * @version 2010-10-27
  */
 (function($) {
 elRTE.prototype.i18Messages.th = {
+	'_translator'    : 'Anusuk Sangubon &lt;jaideejung007@gmail.com&gt;',
+	'_translation'   : 'Thai translation',
 	'Editor' : 'อิดิเตอร์',
 	'Source' : 'ซอร์ส',
 	// panels names

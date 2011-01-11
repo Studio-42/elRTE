@@ -11,6 +11,8 @@
 (function($) {
 // LANG_CODE can be 2-letter "en", "fr" or 5-letter "pt_BR", "zh_CN"
 elRTE.prototype.i18Messages.LANG_CODE = {
+	'_translator'    : 'YOUR_NAME &lt;YOUR_EMAIL&gt;',
+	'_translation'   : 'YOUR_TRANSLATION NAME', // will be seen in about dialog
 	'Editor' : '',
 	'Source' : '',
 	// panels names

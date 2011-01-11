@@ -5,6 +5,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.ar = {
+	'_translator'    : 'Tawfek Daghistani &lt;tawfekov@gmail.com&gt;',
+	'_translation'   : 'Arabic translation',
 	'Editor' : 'التصميم',
 	'Source' : 'المصدر',
 	// Panel Name

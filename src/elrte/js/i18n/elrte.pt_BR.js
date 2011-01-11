@@ -5,6 +5,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.pt_BR = {
+	'_translator'    : 'Jairo Moreno &lt;master.zion@gmail.com&gt;',
+	'_translation'   : 'Brazilian Portuguese translation',
 	'Editor' : 'Editor',
 	'Source' : 'Código Fonte',
 	// Panel Name

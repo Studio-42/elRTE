@@ -5,6 +5,8 @@
  */
 (function($) {
 elRTE.prototype.i18Messages.ko = {
+	'_translator'    : 'DominicKesler &lt;DominicKesler@gmail.com&gt;',
+	'_translation'   : 'Korean translation',
 	'Editor' : '편집기',
 	'Source' : '소스보기',
 	// panels names
