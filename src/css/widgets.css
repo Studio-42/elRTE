@@ -240,7 +240,13 @@
 
 a.one { color:red;}
 
-
+.elrte-widget-content-separator {
+	border-top:0 solid;
+	border-right:0 solid;
+	border-left:0 solid;
+	padding:0;
+	margin:.2em 0;
+}
 
 .elrte-contextmenu {
 	

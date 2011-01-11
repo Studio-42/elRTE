@@ -192,10 +192,46 @@ elRTE.prototype.commands.link = function() {
 		
 		// add Popup window tab if enabled
 		if (conf.popup) {
+			
+			this._popup = {
+				url        : $(inp),
+				name       : $(inp),
+				width      : $('<input type="text" size="5"/>'),
+				height     : $('<input type="text" size="5"/>'),
+				top        : $('<input type="text" size="5"/>'),
+				left       : $('<input type="text" size="5"/>'),
+				location   : $('<input type="checkbox"/>'),
+				menubar    : $('<input type="checkbox"/>'),
+				toolbar    : $('<input type="checkbox"/>'),
+				status     : $('<input type="checkbox"/>'),
+				scrollbars : $('<input type="checkbox"/>'),
+				resizable  : $('<input type="checkbox"/>'),
+				dependent  : $('<input type="checkbox"/>'),
+				retfalse   : $('<input type="checkbox"/>')
+			}
+			
 			tabs.popup = {
 				label   : rte.i18n('Popup window'),
 				element : $('<table/>').elrtetable()
 			}
+			var p = this._popup;
+			var l = $('<label style="display:block"/>');
+			var ch = $('<input type="checkbox"/>').change(function() {
+				var inputs = $(this).parents('tr').eq(0).nextAll('tr').find('input'); 
+
+				ch.attr('checked') 
+					? inputs.removeAttr('disabled').removeClass('ui-state-disabled').eq(0).focus() 
+					: inputs.attr('disabled', true).addClass('ui-state-disabled');
+			})
+			tabs.popup.element.cell($('<label/>').append(ch).append(' '+rte.i18n('Open link in popup window')), { colspan : 2 })
+				.row(['<div class="ui-widget-content elrte-widget-content-separator"/>'], { colspan : 2 })
+				.row(['URL', this._popup.url])
+				.row([rte.i18n('Window name'), this._popup.name])
+				.row([rte.i18n('Window size'), $('<div style="text-align:center"/>').append(this._popup.width).append(' x ').append(this._popup.height)])
+				.row([rte.i18n('Window position'), this._popup.top.add('<span> x </span>').add(this._popup.left)])
+				.row(['<div class="ui-widget-content elrte-widget-content-separator"/>'], { colspan : 2 })
+				.row([$('<div/>').append(l.clone().append(p.location).append(' '+rte.i18n('Location bar'))), $('<div/>')])
+			ch.change()
 		}
 		
 		// add Advanced tab if enabled

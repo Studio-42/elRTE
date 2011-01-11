@@ -114,13 +114,13 @@ $.fn.elrtetable = function(o) {
 		return this;
 	}
 	
-	this.row = function(v, attr) {
-		var tb, r;
+	this.row = function(v, ca, h, ra) {
+		var tb = table(this), r = $('<tr/>');
 		
-		if ((tb = table(this))) {
-			r = $('<tr/>').attr(attr||{});
+		if (tb) {
+			ra && r.attr(ra);
 			$.each(v||[], function(i, n) {
-				r.append(cell(n));
+				r.append(cell(n, ca, h));
 			});
 			r.appendTo(tb);
 		}
