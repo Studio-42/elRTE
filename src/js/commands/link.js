@@ -46,6 +46,8 @@ elRTE.prototype.commands.link = function() {
 	 */
 	this._content = '';
 	
+	this.popupOpts = 'location,status,menubar,resizable,toolbar,dependent,scrollbars'.split(',');
+	this.popupReg = /window\.open\((?:'|")([^,]+)(?:'|"),\s*(?:(?:'|")([^,]+)(?:'|"))?,\s*(?:'|")([^;]+)(?:'|")\s*\)/;
 	/**
 	 * Links list control
 	 * 
@@ -123,7 +125,7 @@ elRTE.prototype.commands.link = function() {
 					location   : 'Location bar',
 					menubar    : 'Menu bar',
 					toolbar    : 'Toolbar',
-					statusbar  : 'Status bar',
+					status     : 'Status bar',
 					scrollbars : 'Scrollbars',
 					resizable  : 'Resizable',
 					dependent  : 'Dependent',
@@ -143,6 +145,7 @@ elRTE.prototype.commands.link = function() {
 				},
 				events : 'click,dblclick,mousedown,mousedown,mouseover,mouseout,mouseleave,keydown,keyup,keypress,blur,focus'.split(',')
 			},
+			
 			textFull  = '<input type="text" class="ui-widget-content ui-corner-all elrte-input-wide"/>',
 			textSmall = '<input type="text" class="ui-widget-content ui-corner-all" size="5"/>',
 			checkbox  = '<input type="checkbox"/>',
@@ -226,7 +229,7 @@ elRTE.prototype.commands.link = function() {
 		// add Popup window tab if required
 		if (conf.popup) {
 			/**
-			 * Store "Popup window"tab inputs
+			 * "Popup window" tab inputs
 			 *
 			 * @type  Object
 			 */
@@ -246,7 +249,7 @@ elRTE.prototype.commands.link = function() {
 				top        : $(textSmall),
 				left       : $(textSmall),
 				location   : $(checkbox),
-				statusbar  : $(checkbox),
+				status     : $(checkbox),
 				menubar    : $(checkbox),
 				resizable  : $(checkbox),
 				toolbar    : $(checkbox),
@@ -271,10 +274,11 @@ elRTE.prototype.commands.link = function() {
 				.row([rte.i18n(names.popup.position), this._popup.top.add(x).add(this._popup.left)])
 				.row(separator, { colspan : 2 })
 				.row([(function() {
-					var p = 'location,statusbar,menubar,resizable,toolbar,dependent,scrollbars,retfalse'.split(','),
+					var p = self.popupOpts.concat(['retfalse']),
 						l = p.length,
 						r = [];
-						
+					// p.push('retfalse');	
+					// l = p.length
 					while (l--) {
 						r.unshift($('<label class="elrte-ib" style="width:50%"/>').append(self._popup[p[l]]).append(' '+rte.i18n(names.popup[p[l]])))
 					}
@@ -396,12 +400,47 @@ elRTE.prototype.commands.link = function() {
 		} 
 		label.val(val).change();
 		
+		if (this._popup) {
+			this.updatePopup(link);
+		}
+		
 		// set first tab active
 		this._content.reset && this._content.reset();
 		// create dialog
 		rte.ui.dialog($('<div/>').append(this._content), this._opts);
 	}
 
+	this.updatePopup = function(l) {
+		var popup = this._popup,
+			v = {}, 
+			onclick = l.attr('_onclick'),
+			opts, m;
+		
+		if ((m = onclick.match(this.popupReg))) {
+			opts = m[3];
+			this.rte.log(m[1]).log(m[2]).log(m[3])
+			this._popup.url.val(m[1]);
+			this._popup.name.val(m[2]);
+			
+			if ((m = opts.match(/width=([^,]+)/))) {
+				this._popup.width.val(parseInt(m[1]))
+			}
+			if ((m = opts.match(/height=([^,]+)/))) {
+				this._popup.height.val(parseInt(m[1]))
+			}
+			if ((m = opts.match(/left=([^,]+)/))) {
+				this._popup.left.val(m[1] >= 0 ? parseInt(m[1]) : 'c')
+			}
+			if ((m = opts.match(/top=([^,]+)/))) {
+				this._popup.top.val(m[1] >= 0 ? parseInt(m[1]) : 'c')
+			}
+			$.each(self.popupOpts, function(i, n) {
+				popup[n].attr('checked', opts.indexOf(n+'=yes') != -1);
+			});
+			popup.retfalse.attr('checked', /return\s+false;?\s*$/.test(onclick));
+			popup.allow.attr('checked', true).change();
+		}
+	}
 
 	/**
 	 * Return selected link if exists
