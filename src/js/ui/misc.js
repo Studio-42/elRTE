@@ -86,16 +86,25 @@ $.fn.elrtetable = function(o) {
 	o = $.extend({ cellspacing : 0 }, o);
 	
 	function cell(v, a, h) {
-		var c;
+		var c, l;
 
 		if (v.nodeName == 'TD' || v.nodeName == 'TH' || (''+v).indexOf('<td') == 0 || (''+v).indexOf('<th') == 0) {
 			c = $(v);
 		} else if (v[0] && (v[0].nodeName == 'TD' || v[0].nodeName == 'TH')) {
 			c = v;
 		}  else {
-			c = $('<t'+(h ? 'h' : 'd')+'/>').append(v);
+			c = $('<t'+(h ? 'h' : 'd')+'/>');
+			if ($.isArray(v)) {
+				l = v.length;
+				while (l--) {
+					c.prepend(v[l]);
+				}
+			} else {
+				c.append(v);
+			}
 		}
-		return c.attr(a||{});
+		a && c.attr(a);
+		return c;
 	}
 	
 	function table(n) {
@@ -103,9 +112,9 @@ $.fn.elrtetable = function(o) {
 	}
 	
 	this.cell = function(v, a, h) {
-		var tb, r;
+		var tb = table(this), r;
 		
-		if ((tb = table(this))) {
+		if (tb) {
 			if (!(r = tb.find('tr:last')).length) {
 				r = $('<tr/>').appendTo(tb);
 			}
@@ -115,14 +124,14 @@ $.fn.elrtetable = function(o) {
 	}
 	
 	this.row = function(v, ca, h, ra) {
-		var tb = table(this), r = $('<tr/>');
+		var tb = table(this), r = $('<tr/>'), v = $.isArray(v) ? v : [v];
 		
 		if (tb) {
 			ra && r.attr(ra);
-			$.each(v||[], function(i, n) {
+			$.each(v, function(i, n) {
 				r.append(cell(n, ca, h));
 			});
-			r.appendTo(tb);
+			tb.append(r);
 		}
 		return this;
 	}
