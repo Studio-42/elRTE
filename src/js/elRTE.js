@@ -1413,7 +1413,7 @@
 				return $('<div/>').elrtecolordialog(rte, o);
 			}
 		},
-		tabs : function(content) {
+		tabs : function(content, o) {
 			var nav  = $('<ul/>'),
 				tabs = $('<div/>').append(nav);
 			
@@ -1426,7 +1426,7 @@
 				}
 			})
 		
-			return tabs.elrtetabs();
+			return tabs.elrtetabs(o);
 		},
 		
 		classSelect : function() {

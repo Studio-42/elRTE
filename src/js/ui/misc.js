@@ -144,7 +144,7 @@ $.fn.elrtetable = function(o) {
 	
 }
 
-$.fn.elrtetabs = function() {
+$.fn.elrtetabs = function(o) {
 	
 	this.reset = function() {
 		return this.each(function() {
@@ -169,6 +169,10 @@ $.fn.elrtetabs = function() {
 				tabs.removeClass(a);
 				t.parent().addClass(a);
 				cont.addClass(h).filter(t.attr('href')).removeClass(h);
+				if (o.click) {
+					// var e = $.Event()
+					o.click(e)
+				}
 			})
 			.eq(0)
 			.click();

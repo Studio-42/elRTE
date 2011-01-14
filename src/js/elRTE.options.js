@@ -401,6 +401,7 @@
 				// simple : true,
 				// advanced : false,
 				// events : false,
+				// popup : false,
 				target : true,
 				classes : 'one two three four'
 				// classes : [ 'one', 'two', 'three' ]
