@@ -71,6 +71,9 @@ $.fn.elrtemenubutton = function(cmd) {
 				.children('a')
 				.mousedown(function() {
 					cmd.exec($(this).attr('href').substr(1));
+				})
+				.click(function(e) {
+					e.preventDefault();
 				});
 				
 			// if menu is grid set items and menu width
