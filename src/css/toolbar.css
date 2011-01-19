@@ -16,8 +16,8 @@
 	background:transparent;
 }
 
+/* buttonset with buttons wihout side margins */
 .elrte-buttonset-ext { background:transparent; }
-
 .elrte-buttonset-ext .elrte-button { margin:0 -1px 0 0; }
 
 /* default button with icon only */
@@ -86,7 +86,7 @@
 	background-repeat:no-repeat;
 }
 
-
+/* buttonsets */
 /* panel edit */
 .elrte-icon-selectall        { background-position:-60px 0; }
 .elrte-icon-removeformat     { background-position:-80px 0; }
@@ -160,6 +160,7 @@
 .elrte-icon-source        { background-position:-640px -20px; }
 .elrte-icon-fullscreen    { background-position:-660px -20px; }
 
+/* selected color in font/bg color buttons */
 .elrte-button-color-indicator {
 	position:absolute;
 	width:14px;

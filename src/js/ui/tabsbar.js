@@ -32,8 +32,8 @@ $.fn.elrtetabsbar = function(rte) {
 		var d, t, n;
 		
 		if ((d = rte.documentById())) {
-			t = this.children('[rel="'+d.id+'"]');
-			return ((n = t.next(ts)).length ? n : this.children(ts+fs)).attr('rel');
+			t = this.children('[data-doc="'+d.id+'"]');
+			return ((n = t.next(ts)).length ? n : this.children(ts+fs)).attr('data-doc');
 		}
 	}
 	
@@ -47,8 +47,8 @@ $.fn.elrtetabsbar = function(rte) {
 		var d, t, n;
 		
 		if ((d = rte.documentById())) {
-			t = this.children('[rel="'+d.id+'"]');
-			return ((n = t.prev(ts)).length ? n : this.children(ts+ls)).attr('rel');
+			t = this.children('[doc-doc="'+d.id+'"]');
+			return ((n = t.prev(ts)).length ? n : this.children(ts+ls)).attr('data-doc');
 		}
 	}
 	
@@ -68,7 +68,7 @@ $.fn.elrtetabsbar = function(rte) {
 					var b = this === back[0],
 						tab = b ? tabs.filter(vfs).prev(ts+hs) : tabs.filter(vls).next(ts+hs);
 						
-					!$(this).hasClass(dc) && tab.length && showTab(tab.attr('rel'));
+					!$(this).hasClass(dc) && tab.length && showTab(tab.attr('data-doc'));
 				}),
 			$this = $(n)
 				.hide()
@@ -110,7 +110,7 @@ $.fn.elrtetabsbar = function(rte) {
 		 * @return void
 		 */
 		function showTab(id) {
-			var tab = tabs.filter('[rel="'+id+'"]'), 
+			var tab = tabs.filter('[data-doc="'+id+'"]'), 
 				w   = barWidth(), 
 				t, next, prev;
 			
@@ -211,14 +211,14 @@ $.fn.elrtetabsbar = function(rte) {
 			var d = rte.documentById(e.data.id), title, tab;
 
 			// create tab if document exists and has not tab yet
-			if (d && d.id && !tabs.filter('[rel="'+d.id+'"]').length) {
+			if (d && d.id && !tabs.filter('[data-doc="'+d.id+'"]').length) {
 				title = d.title;
-				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" rel="'+d.id+'"><span title="'+title+'" class="elrte-ellipsis">'+title+'</span></li>')
+				tab = $('<li class="ui-state-default ui-corner-top '+tc+'" data-doc="'+d.id+'"><span title="'+title+'" class="elrte-ellipsis">'+title+'</span></li>')
 					.hide()
 					.mousedown(function(e) {
 						e.stopPropagation();
 						e.preventDefault();
-						rte.focus($(this).attr('rel'));
+						rte.focus($(this).attr('data-doc'));
 					});
 					
 				if (o.allowCloseDocs) {
@@ -242,13 +242,13 @@ $.fn.elrtetabsbar = function(rte) {
 		})
 		.bind('wysiwyg source', function(e) {
 			// set tab active and visible
-			if (tabs.removeClass(ac).filter('[rel="'+e.data.id+'"]').addClass(ac).is(hs)) {
+			if (tabs.removeClass(ac).filter('[data-doc="'+e.data.id+'"]').addClass(ac).is(hs)) {
 				 showTab(e.data.id);
 			}
 		})
 		.bind('close', function(e) {
 			// remove tab
-			tabs.filter('[rel="'+e.data.id+'"]').remove();
+			tabs.filter('[data-doc="'+e.data.id+'"]').remove();
 			update();
 		})
 		.bind('resize', update, true);

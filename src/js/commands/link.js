@@ -2,6 +2,7 @@
  * @class elRTE command.
  * Create/edit anchor
  * @author Dmitry (dio) Levashov, dio@std42.ru
+ * @TODO add class option - itemTpl to display link class in list
  **/
 elRTE.prototype.commands.link = function() {
 	var self = this,

@@ -184,72 +184,7 @@
 }
 
 
-
-/****************************/
-
-.elrte-cselect {
-
-}
-
-.elrte-cselect-fixed {
-	overflow-y: auto;
-	overflow-x:hidden;
-}
-
-.elrte-cselect label {
-	display:block;
-	padding:.1em .2em;
-}
-
-.elrte-cselect label a {
-	margin:0;
-	padding-top:0;
-	padding-bottom:0;
-}
-
-.elrte-cselect div {
-	padding:.1em .2em;
-	position:relative;
-}
-
-.elrte-cselect div a {
-	text-decoration:none;
-	outline:medium none;
-}
-
-.elrte-cselect-icon-plus {
-	float:left;
-	width:16px;
-	height:16px;
-	margin:0 .5em 0 .2em;
-}
-
-.elrte-cselect-icon-close {
-	position:absolute;
-	top:50%;
-	margin-top:-8px;
-	right:.2em;
-}
-
-.elrte-cselect .elrte-cselect-icon-plus,
-.elrte-cselect .elrte-cselect-icon-close {
-	background:transparent;
-	border:0 solid;
-}
-
-
-a.one { color:red;}
-
-.elrte-widget-content-separator {
-	border-top:0 solid;
-	border-right:0 solid;
-	border-left:0 solid;
-	padding:0;
-	margin:.2em 0;
-}
-
-/*----------------------------------*/
-
+/* multiselect widget */
 .elrtemselect {
 	position:relative;
 }
@@ -265,12 +200,7 @@ a.one { color:red;}
 }
 
 .elrtemselect-list .elrtemselect-list-item.ui-state-hover {
-	margin-top:-1px;
-	margin-bottom:-1px;
-	margin-left:-1px;
 	margin:-1px;
-/*	border-left:0 solid;*/
-/*	border-right:0 solid;*/
 	font-weight:normal;
 }
 
