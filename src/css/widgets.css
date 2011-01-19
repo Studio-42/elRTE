@@ -1,8 +1,7 @@
-/* default menu widget based on ui-menu */
-.elrte-menu {
-	position:absolute;
-	z-index:1;
-}
+/**********************************************************/
+/*             MENU WIDGET based on ui-menu               */
+/**********************************************************/
+.elrte-menu { position:absolute; z-index:1; }
 
 /* menu header */
 .elrte-menu .ui-widget-header {
@@ -10,7 +9,6 @@
 	padding:0 .4em;
 	margin-bottom:2px;
 	white-space:nowrap;
-/*	display:none;*/
 }
 
 /* menu item */
@@ -20,7 +18,7 @@
 	padding:.1em .1em;
 	font-weight:normal;
 }
-
+/* remove margin/padding inside menu item */
 .elrte-menu .ui-menu-item a * {
 	padding:0;
 	margin:0;
@@ -31,35 +29,23 @@
 	margin:-1px;
 }
 
-/* grid menu item */
-.elrte-menu-grid .ui-menu-item {
-	width: auto;
-	clear:none;
-}
+/**********************************************************/
+/*         GRID MENU WIDGET based on ui-menu              */
+/**********************************************************/
+.elrte-menu-grid .ui-menu-item { width: auto; clear:none; }
 
-.elrte-menu-grid .ui-menu-item a {
-	text-align:center;
-	margin:1px;
-}
+.elrte-menu-grid .ui-menu-item a { text-align:center; margin:1px; }
 
 .elrte-menu-grid .ui-menu-item a.ui-state-highlight,
-.elrte-menu-grid .ui-menu-item a.ui-state-hover {
-	margin:1px;
-}
+.elrte-menu-grid .ui-menu-item a.ui-state-hover { margin:1px; }
 
 
+/**********************************************************/
+/*                       COLOR MENU                       */
+/**********************************************************/
+.elrte-menu-color, .elrte-menu-color-palete { padding:2px; }
 
-.elrte-menu-color {
-	padding:2px;
-/*	width:136px;*/
-/*	position:absolute;*/
-}
-
-.elrte-menu-color-palete {
-/*	border:1px solid #111;*/
-	padding:2px;
-}
-
+/* one color inside palette */
 .elrte-menu-color a {
 	float:left;
 	width:14px;
@@ -67,14 +53,14 @@
 	margin:2px;
 }
 
+/* "open dialog" button */
 .elrte-menu-color .elrte-menu-color-button {
 	position:relative;
 	padding:0;
 	text-align:center;
 	font-size:.8em;
 }
-
-
+/* "Automatic" panel */
 .elrte-menu-color-auto {
 	position:absolute;
 	width:14px;
@@ -82,98 +68,46 @@
 	top:50%;
 	left:3px;
 	margin-top:-7px;
-/*	float:left;*/
 }
 
-.elrte-dialog { font-size:.8em;}
+/**********************************************************/
+/*                        DIALOG                          */
+/**********************************************************/
 
-.elrte-dialog .ui-widget-header {
-/*	font-size:.9em;*/
-/*	padding:0 .4em;*/
-}
+.elrte-dialog { font-size:.8em; }
 
-.elrte-dialog .ui-dialog-content {
-	padding:.5em .2em;
-/*	font-size:.8em;*/
-}
+.elrte-dialog .ui-dialog-content { padding:.5em .2em; }
 
-/*.elrte-dialog tr td:first-child { width:40%; }*/
+.elrte-dialog .ui-button-text-only .ui-button-text { padding:.2em .5em; }
 
-.elrte-dialog .ui-dialog-buttonpane .ui-button {
-/*	font-size:.9em;*/
-/*	padding:0;*/
-/*	margin:.1em .2em;*/
-}
+.elrte-dialog .ui-tabs-panel { padding:.5em 0; }
 
-.elrte-dialog .ui-button-text-only .ui-button-text {
-	padding:.2em .5em;
-}
+/**********************************************************/
+/*                     TABLE IN DIALOG                    */
+/**********************************************************/
+.elrte-dialog-table { width:100%; }
 
-.elrte-dialog .ui-dialog-buttonpane {
-/*	padding: .2em .5em;*/
-}
+.elrte-dialog-table td { padding:.2em; overflow:hidden; }
 
-.elrte-dialog .ui-tabs-panel {
-	padding:.5em 0;
-}
+/**********************************************************/
+/*                   COLOR DIALOG                         */
+/**********************************************************/
+/*.elrte-dialog-color { }*/
 
+.elrte-dialog-color-palete { width:288px; margin:0 auto; }
 
-.elrte-dialog-table {
-	width:100%;
-}
-
-/*.elrte-dialog-table input { width:99%; outline:none;}*/
-
-.elrte-dialog-table td { 
-/*	border:1px solid #222; */
-	padding:.2em;
-	overflow:hidden;
-	 
-}
-
-.elrte-input-wide { width:100%; }
-
-.elrte-fm-button { float:right;padding:2px; cursor:pointer; }
-
-.elrte-dialog-color {
-	
-}
-
-.elrte-dialog-color-palete {
-/*	border:1px solid #111;*/
-/*	float:left;*/
-	width:288px;
-	margin:0 auto;
-/*	height:auto;*/
-/*	width:98px;*/
-/*	width:196px;*/
-}
-
-.elrte-dialog-color-palete-column {
-	float:left;
-	width:96px;
-/*	border:1px solid #111;*/
-}
-
+.elrte-dialog-color-palete-column { float:left; width:96px; }
+/* one color in palete */
 .elrte-dialog-color-palete a {
 	float:left;
 	width:16px;
 	height:16px;
 	outline:0 solid;
 }
-
-.elrte-dialog-color-info {
-/*	border:1px solid #111;*/
-	width:288px;
-	margin:.2em auto 0 auto;
-/*	margin-top:.2em;*/
-}
-
-.elrte-dialog-color-info input {
-	padding:0;
-	outline:0 solid;
-/*	font-size:.8em;*/
-}
+/* panel with color info */
+.elrte-dialog-color-info { width:288px; margin:.2em auto 0 auto; }
+/* text field to input color value */
+.elrte-dialog-color-info input { padding:0; outline:0 solid; }
 
 .elrte-dialog-color-selected,
 .elrte-dialog-color-hilighted {
@@ -183,12 +117,11 @@
 	margin-left:.1em;
 }
 
-
-/* multiselect widget */
-.elrtemselect {
-	position:relative;
-}
-
+/**********************************************************/
+/*                  MULTISELECT WIDGET                    */
+/**********************************************************/
+.elrtemselect { position:relative; }
+/* add scroll */
 .elrtemselect-fixed {
 	overflow-x:hidden;
 	overflow-y:auto;

@@ -23,7 +23,11 @@
 	zoom: 1;
 	*display: inline;
 }
+/* input w width=100% */
+.elrte-input-wide { width:100%; }
 
+/* filemanager button in dialogs */
+.elrte-fm-button { float:right; padding:2px; cursor:pointer; }
 /******************************************************/
 /*                  EDITOR LAYOUT                     */
 /******************************************************/
