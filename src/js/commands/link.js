@@ -81,12 +81,13 @@ elRTE.prototype.commands.link = function() {
 	 */
 	this._opts.buttons[rte.i18n('Apply')] = function() { 
 			var attr = {};
-			
-			// if ()
 			self.updateOnclick();
 			$(this).dialog('close');
 			$.each(self._attr, function(n, a) {
-				attr[n] = a.element.val();
+				var v = a.element.val();
+				
+				v = n == 'class' && v ? v.join(' ') : v;
+				attr[n] = v;
 			});
 			self._exec(attr);
 		};
@@ -219,7 +220,12 @@ elRTE.prototype.commands.link = function() {
 			},
 			'class' :{
 				label   : rte.i18n('Css classes'),
-				element :  rte.ui.classSelect()
+				element : $('<select multiple="on" size="5"/>'),
+				opts    : {
+					addText : rte.i18n('New class(es)'),
+					cancelText : rte.i18n('Cancel'),
+					inputTitle : rte.i18n('Separate values by space')
+				}
 			}
 		};
 		
@@ -387,12 +393,23 @@ elRTE.prototype.commands.link = function() {
 			href  = link.attr('href')||'',
 			bm    = this._bookmarks.empty(),
 			attr  = $.each(this._attr, function(n, a) { 
-				var v = link.attr(n);
-				if (n == 'tabindex' && v == 0) {
-					v = '';
+				var v = link.attr(n), opts = [], html='';
+				
+				if (n == 'class') {
+					v = ''+v;
+					$.each((conf.classes+' '+v).split(/\s+/), function(i, v) {
+						if (v && $.inArray(v, opts) === -1) {
+							opts.push(v); 
+							html += '<option value="'+v+'">'+v+'</option>';
+						}
+					});
+					if (a.element.hasClass('elrtemselect-src')) {
+						a.element.elrtemselect('destroy');
+					}
+					a.element.html(html).val(v.split(/\s+/)).elrtemselect(a.opts);
+				} else {
+					a.element.val(n == 'tabindex' && v == 0 ? '' : v); 
 				}
-				n == 'class' && a.element.empty().append(conf.classes+' '+v);
-				a.element.val(v); 
 			}),
 			label = attr.href.label, 
 			val   = 'url';

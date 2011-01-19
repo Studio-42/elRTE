@@ -180,180 +180,210 @@ $.fn.elrtetabs = function(o) {
 	
 }
 
-/**
- * jQuery plugin
- * Create control to select/create css classes names
- * Used by "link", "image" commands etc.
+/*
+ * jQuery.elrtemselect plugin 
+ * modified jQuery.multiselect plugin http://www.std42.ru/jquery-multiselect/
+ * 
+ * Form control: allow select several values from list and add new value(s) to list
  *
- * @return jQuery
  */
-$.fn.elrtecssclassselect = function(o) {
-	var self = this,
-		/**
-		 * Split string by spaces, remove duplicates and empty elements 
-		 *
-		 * @param  String  css classes string
-		 * @return Array
-		 */
-		parse = function(v) {
-			v = $.trim(''+v).split(/\s+/);
-
-			return $.map(v, function(e, i) {
-				return e && $.inArray(e, v) == i ? e : null;
-			});
-		},
-		/**
-		 * plugin config
-		 *
-		 * @type  Object
-		 */
-		o = $.extend({ 
-			notsetText : 'Not set',
-			addText    : 'New css class',
-			escText    : 'Cancel',
-			size       : 4 
-		}, o);
+$.fn.elrtemselect = function(opts) {
+	var o = $.extend({}, $.fn.elrtemselect.defaults, opts||{});
 	
-	/**
-	 * Overload jQuery method for current set.
-	 * Remove all labels except first one.
-	 *
-	 * @return jQuery
-	 */
-	this.empty = function() {
-		this.eq(0).children('label').slice(1).remove();
-		return this;
-	}
-	
-	/**
-	 * Overload jQuery method for current set.
-	 * Create label with checkbox for each css class declaration in first argument
-	 *
-	 * @param  String  css classes string
-	 * @return jQuery
-	 */
-	this.append = function(v) {
-		var l = this.eq(0),
-			c = l.children('label').children(':checkbox'),
-			d = l.children('div'), p;
-		
-		$.each(parse(v), function(i, cl) {
-			!c.filter('[value="'+cl+'"]').length && d.before('<label><input type="checkbox" value="'+cl+'" /> <a class="'+cl+'">'+cl+'</a></label>');
-		});
-		
-		if (!l.hasClass('elrte-cselect-fixed') && l.children('label').length >= o.size) {
-			
-			if (!l.parents('body').length) {
-				p = l.parent();
-				l.addClass('elrte-notvisible')
-					.appendTo('body')
-					.height(l.children('label:first').outerHeight(true)*o.size)
-					.addClass('elrte-cselect-fixed')
-					.scrollTop(0)
-					.appendTo(p)
-					.removeClass('elrte-notvisible');
-			}
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Overload jQuery method for current set.
-	 * As setter: check all checkboxes for each css class declaration in first argument, if no one checkbox checked - check first one (not set)
-	 * As getter: Return all checkboxes values in string seperated by space (valid css classes declaration)
-	 *
-	 * @param  String|undefined  css classes string
-	 * @return jQuery|String
-	 */
-	this.val = function(v) {
-		var c = this.eq(0).children('label').children(':checkbox'), 
-			l;
-
-		if (v === void(0)) {
-			v = '';
-			c.filter(':checked:not([disabled])').each(function() {
-				v += $(this).val() + ' ';
-			});
-			return v;
-		} else {
-			c.removeAttr('checked');
-			v = parse(v);
-			l = v.length;
-			while (l--) {
-				v[l] && c.filter('[value="'+v[l]+'"]').attr('checked', 'checked');
-			}
-
-			if (!c.filter(':checked').length) {
-				c.eq(0).attr('checked', true).change();
-			} 
-		}
-	}
-	
-	return this.each(function() {
-		var $this = $(this).addClass('ui-widget-content ui-corner-all elrte-cselect'),
-			/**
-			 * "not set" checkbox
-			 *
-			 * @type  jQuery
-			 */
-			ch = $('<input type="checkbox" value="" checked="checked"/>')
-				.change(function() {
-					var c = ch.parent().nextAll('label').children(':checkbox');
-					ch.attr('checked') ? c.attr('disabled', 'disabled') : c.removeAttr('disabled');
-				}),
-			/**
-			 * "add new class" link
-			 *
-			 * @type  jQuery
-			 */
-			link = $('<a href="#"><span class="ui-state-default elrte-cselect-icon-plus"><span class="ui-icon ui-icon-circle-plus"/></span> '+o.addText+'</a>')
+	this.filter('select[multiple]:not(.elrtemselect-src)').each(function() {
+		var select = $(this).addClass('elrtemselect-src').hide(), 
+			size   = select.attr('size') > 0 ? select.attr('size') : o.size,
+			items  = (function() {
+				var str = '';
+				
+				select.children('option').each(function(i, option) {
+					option = $(option);
+					
+					str += o.item
+						.replace(/%value%/gi,  option.val())
+						.replace(/%checked%/i, option.attr('selected') ? 'checked="checked"' : '')
+						.replace(/%label%/gi,  option.html());
+				})
+				return str;
+			})(),
+			html = o.layout
+					.replace(/%items%/gi, items)
+					.replace(/%addText%/gi, o.addText)
+					.replace(/%cancelText%/gi, o.cancelText)
+					.replace(/%inputTitle%/gi, o.inputTitle),
+			widget = $(html)
+				.insertAfter(this)
+				.delegate(':checkbox', 'change', function() {
+					var checkbox = $(this);
+					select.children('option[value="'+checkbox.val()+'"]').attr('selected', !!checkbox.attr('checked'));
+				})
+				,
+			list = widget.is('.elrtemselect-list') ? widget : widget.find('.elrtemselect-list'),
+			buttonAdd = widget.find('.elrtemselect-button-add')
 				.click(function(e) {
 					e.preventDefault();
-					link.hide();
-					input.show().focus();
-					esc.show();
-					$this.scrollTop(1000);
+					o.toggleAddButton && buttonAdd.hide();
+					container.show();
+					input.focus();
+					if (input.parents('.elrtemselect-list').length) {
+						list.scrollTop(list.height());
+					}
+				})
+				.hover(function() {
+					buttonAdd.children('.elrtemselect-button-add-icon').toggleClass('ui-state-hover');
 				}),
-			/**
-			 * text field for new class
-			 *
-			 * @type  jQuery
-			 */
-			input = $('<input type="text" class="ui-widget-content ui-corner-all elrte-input-wide"/>')
+			container = widget.find('.elrtemselect-input-container'),
+			input  = container.find(':text.elrtemselect-input')
+				.change(function(e) {
+					append(input.val());
+				})
 				.blur(function() {
-					self.append(input.val()).val(self.val()+' '+input.val());
 					reset();
 				})
-				.keydown(function(e) {
-					if (e.keyCode == 13 || e.keyCode == 27) {
+				.bind($.browser.opera ? 'keypress' : 'keydown', function(e) {
+					var c = e.keyCode;
+					
+					if (c == 13 || c == 27) {
+						e.preventDefault();
 						e.stopImmediatePropagation();
-						e.keyCode == 13 && self.append(input.val()).val(self.val()+' '+input.val());
-						reset();
+						c == 13 ? input.change() : reset();
 					}
 				}),
-			/**
-			 * icon "inside" text field to cancel input 
-			 *
-			 * @type  jQuery
-			 */
-			esc = $('<a href="#" class="ui-state-default elrte-cselect-icon-close" title="'+o.escText+'"><span class="ui-icon ui-icon-circle-close"/></a>')
+			buttonCancel = container.find('.elrtemselect-button-cancel')
 				.mousedown(function(e) {
-					e.preventDefault();
-					reset();
+					input.val('');
+				})
+				.hover(function() {
+					buttonCancel.toggleClass('ui-state-hover');
 				}),
-			/**
-			 * Hide text field and show "add new class" link
-			 *
-			 * @return  void
-			 */
-			reset = function() {
-				link.show();
-				input.hide().val('');
-				esc.hide();
-			};
+			append = function(v) {
+				$.each(typeof(o.parse) == 'function' ? o.parse(v) : [$.trim(v)], function(i, v) {
+					var item;
+					
+					if (v && !select.children('[value="'+v+'"]').length) {
+						item = $(o.item.replace(/%value%|%label%/gi, v)).find(':checkbox').attr('checked', true).end();
 
-		$this.append($('<label> '+o.notsetText+'</label>').prepend(ch))
-			.append($('<div/>').append(link).append(input.hide()).append(esc.hide()));
+						list.children('.elrtemselect-list-item').length
+							? list.children('.elrtemselect-list-item:last').after(item)
+							: list.prepend(item);
+
+						select.append('<option value="'+v+'" selected="selected">'+v+'</option>');
+					}
+				});
+				reset();
+				list.scrollTop(list.height());
+			},
+			reset = function() {
+				var ch = select.children(), p;
+				
+				input.val('');
+				container.hide();
+				buttonAdd.show();
+				
+				list[list.children().length ? 'show' : 'hide']();
+				if (ch.length >= size && !list.hasClass('elrtemselect-fixed')) {
+					if (list.is(':visible')) {
+						list.height(list.children('.elrtemselect-list-item:first').outerHeight(true) * size);
+					} else {
+						p = list.parent();
+						list.addClass('elrte-notvisible')
+							.appendTo('body')
+							.height(list.children('.elrtemselect-list-item:first').outerHeight(true)*o.size)
+							.scrollTop(0)
+							.appendTo(p)
+							.removeClass('elrte-notvisible');
+					}
+					list.addClass('elrte-cselect-fixed');
+					if ($.browser.msie) {
+						container.css('margin-right', '1em');
+					}
+				}
+			};
+			
+			if (o.itemHoverClass) {
+				list.delegate('.elrtemselect-list-item', 'hover', function() {
+					$(this).toggleClass(o.itemHoverClass);
+				});
+			}
+			reset();
+
 	});
+	
+	if (opts == 'destroy') {
+		this.eq(0).removeClass('elrtemselect-src').next('.elrtemselect').remove();
+	}
+	
+	return this;
+	
+}
+
+/**
+ * jQuery.multiselect default options
+ *
+ * @type  Object
+ */
+$.fn.elrtemselect.defaults = {
+	/**
+	 * Default widget layout template
+	 *
+	 * @type  String
+	 */
+	layout : '<div class="ui-widget ui-widget-content ui-corner-all elrtemselect elrtemselect-list">'
+				+'%items%'
+				+'<a href="#" class="elrtemselect-button-add"><span class="ui-state-default elrtemselect-button-add-icon"><span class="ui-icon ui-icon-plusthick"/></span>%addText%</a>'
+				+'<div class="elrtemselect-input-container">'
+					+'<input type="text" class="ui-widget-content ui-corner-all elrtemselect-input" title="%inputTitle%"/>'
+					+'<a href="#" class="ui-state-default elrtemselect-button-cancel" title="%cancelText%"><span class="ui-icon ui-icon-closethick"/></a>'
+				+'</div>'
+			+'</div>',
+	/**
+	 * List item layout template
+	 *
+	 * @type  String
+	 */
+	item : '<div class="elrtemselect-list-item"><label><input type="checkbox" value="%value%" %checked%/>%label%</label></div>',
+	/**
+	 * Text for "New value" button/link
+	 *
+	 * @type  String
+	 */
+	addText : 'New value',
+	/**
+	 * Text for "Cancel" icon in text field
+	 *
+	 * @type  String
+	 */
+	cancelText : 'Cancel',
+	/**
+	 * Text for input tooltip
+	 *
+	 * @type  String
+	 */
+	inputTitle : 'Separate values by space',
+	/**
+	 * Widget height, owerwrited by select "size" attribute
+	 *
+	 * @type  Number
+	 */
+	size : 5,
+	/**
+	 * Hover class for list items
+	 *
+	 * @type  String
+	 */
+	itemHoverClass : 'ui-state-hover',
+	/**
+	 * Hide "New value" button when text field is visible
+	 *
+	 * @type  Boolean
+	 */
+	toggleAddButton : true,
+	/**
+	 * Parse new list value and return values array
+	 * By default - split value by space(s)
+	 *
+	 * @param   String  user input
+	 * @return  Array
+	 */
+	parse : function(v) { return v.split(/\s+/) }
 }

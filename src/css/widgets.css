@@ -248,6 +248,74 @@ a.one { color:red;}
 	margin:.2em 0;
 }
 
+/*----------------------------------*/
+
+.elrtemselect {
+	position:relative;
+}
+
+.elrtemselect-fixed {
+	overflow-x:hidden;
+	overflow-y:auto;
+}
+
+.elrtemselect-list-item label { 
+	width:100%; 
+	display:block;
+}
+
+.elrtemselect-list .elrtemselect-list-item.ui-state-hover {
+	margin-top:-1px;
+	margin-bottom:-1px;
+	margin-left:-1px;
+	margin:-1px;
+/*	border-left:0 solid;*/
+/*	border-right:0 solid;*/
+	font-weight:normal;
+}
+
+
+.elrtemselect-input-container { 
+	position:relative; 
+	padding:.2em; 
+	display:none;
+}
+
+.elrtemselect-input { width: 99%; margin:0; }
+
+.elrtemselect-button-add { 
+	display:block; 
+	zoom:1;
+	position:relative;
+	text-decoration:none; 
+	padding-left:24px;
+	padding:3px 2px 3px 24px;
+	cursor:pointer;
+}
+
+.elrtemselect .elrtemselect-button-cancel { 
+	right:.5em; 
+	margin-top:-8px;
+	cursor:pointer; 
+	border:0 solid;
+	background:transparent;
+}
+
+.elrtemselect .elrtemselect-button-add-icon,
+.elrtemselect .elrtemselect-button-cancel {
+	width: 17px;
+	height:17px;
+	position:absolute;
+	top:50%;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+	border-radius:8px;
+}
+
+.elrtemselect-button-add-icon { left:.2em; margin-top:-10px; }
+
+
+
 .elrte-contextmenu {
 	
 }
