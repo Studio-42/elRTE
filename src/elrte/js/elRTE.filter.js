@@ -840,7 +840,15 @@
 		 * return String
 		 **/
 		xhtmlTags : function(html) {
-			return this.xhtml ? html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />") : html;
+			if (!this.xhtml) return html;
+
+			return html.replace(this.tagRegExp, function(fullMatch, closingSlash, tagName, tagAttributes) {
+				if (/^(img|hr|br|embed|param|link)$/i.test(tagName)) {
+					return '<' + tagName + tagAttributes + ' />';
+				} else {
+					return fullMatch;
+				}
+			});
 		}
 	}
 	
