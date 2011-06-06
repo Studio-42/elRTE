@@ -840,7 +840,7 @@
 		 * return String
 		 **/
 		xhtmlTags : function(html) {
-			return this.xhtml ? html.replace(/<(img|hr|br|embed|param|link)([^>]*\/*)>/gi, "<$1$2 />") : html;
+			return this.xhtml ? html.replace(/<(img|hr|br|embed|param|link|area)([^>]*\/*)>/gi, "<$1$2 />") : html;
 		}
 	}
 	
