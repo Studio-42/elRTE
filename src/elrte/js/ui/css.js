@@ -3,9 +3,9 @@
 	elRTE.prototype.ui.prototype.buttons.css = function(rte, name) {
 		var self = this;
 		this.constructor.prototype.constructor.call(this, rte, name);
-		this.cssStyle = $('<input type="text" size="42" name="style" />');
-		this.cssClass = $('<input type="text" size="42" name="class" />');
-		
+		this.cssStyle  = $('<input type="text" size="42" name="style" />');
+		this.cssClass  = $('<input type="text" size="42" name="class" />');
+		this.elementID = $('<input type="text" size="42" name="id" />');
 		
 		this.command = function() {
 			var n = this.node(), opts;
@@ -23,9 +23,12 @@
 				}
 				this.cssStyle.val($(n).attr('style'));
 				this.cssClass.val($(n).attr('class'));
+				this.elementID.val($(n).attr('id'));
 				var d = new elDialogForm(opts);
-				d.append([this.rte.i18n('Css style'), this.cssStyle], null, true)
-				d.append([this.rte.i18n('Css class'), this.cssClass], null, true).open();
+				d.append([this.rte.i18n('Css style'), this.cssStyle],  null, true)
+				d.append([this.rte.i18n('Css class'), this.cssClass],  null, true)
+				d.append([this.rte.i18n('ID'),        this.elementID], null, true)
+				d.open();
 				setTimeout(function() { self.cssStyle.focus() }, 20)
 			}
 		}
@@ -36,6 +39,7 @@
 			if (n) {
 				$(n).attr('style', this.cssStyle.val());
 				$(n).attr('class', this.cssClass.val());
+				$(n).attr('id',    this.elementID.val());
 				this.rte.ui.update();
 			}
 		}
