@@ -118,6 +118,7 @@ elRTE.prototype.options   = {
 		'about'               : 'About this software'
 	},
 	panels      : {
+		eol        : [], // special panel, insert's a new line in toolbar
 		save       : ['save'],
 		copypaste  : ['copy', 'cut', 'paste', 'pastetext', 'pasteformattext', 'removeformat', 'docstructure'],
 		undoredo   : ['undo', 'redo'],

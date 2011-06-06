@@ -16,18 +16,28 @@ elRTE.prototype.ui = function(rte) {
 		tb        = this.rte.options.toolbars[rte.options.toolbar && rte.options.toolbars[rte.options.toolbar] ? rte.options.toolbar : 'normal'],
 		tbl       = tb.length,
 		p, pname, pl, n, c, b, i;
-	
+
 	// add prototype to all buttons
 	for (i in this.buttons) {
 		if (this.buttons.hasOwnProperty(i) && i != 'button') {
 			this.buttons[i].prototype = this.buttons.button.prototype;
 		}
 	}
-	
+
 	// create buttons and put on toolbar
 	while (tbl--) {
+		first = (tbl == 0 ? true : false);
+		if (tb[tbl - 1] == 'eol') { first = true; }
+
 		pname = tb[tbl];
-		p = $('<ul class="panel-'+pname+(tbl == 0 ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
+
+		// special 'end of line' panel, starts next panel on a new line
+		if (pname == 'eol') {
+			$('<br />').prependTo(this.rte.toolbar);
+			continue;
+		}
+
+		p = $('<ul class="panel-'+pname+(first ? ' first' : '')+'" />').prependTo(this.rte.toolbar);
 		p.bind('mousedown', function(e) {
 			e.preventDefault();
 		})
@@ -39,15 +49,15 @@ elRTE.prototype.ui = function(rte) {
 			p.prepend(b.domElem);
 		}
 	}
-	
+
 	this.update();
-	
+
 	this.disable = function() {
 		$.each(self._buttons, function() {
 			!this.active && this.domElem.addClass('disabled');
 		});
 	}
-	
+
 }
 
 /**
@@ -60,9 +70,9 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 	var n    = this.rte.selection.getNode(),
 		p    = this.rte.dom.parents(n, '*'),
 		rtl = this.rte.rtl,
-		sep  = rtl ? ' &laquo; ' : ' &raquo; ', 
+		sep  = rtl ? ' &laquo; ' : ' &raquo; ',
 		path = '', name, i;
-		
+
 	function _name(n) {
 		var name = n.nodeName.toLowerCase();
 		n = $(n)
@@ -79,19 +89,19 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 		}
 		return name;
 	}
-	
+
 	if (n && n.nodeType == 1 && n.nodeName != 'BODY') {
 		p.unshift(n);
 	}
-	
+
 	if (!rtl) {
 		p = p.reverse();
 	}
-	
+
 	for (i=0; i < p.length; i++) {
 		path += (i>0 ? sep : '')+_name(p[i]);
 	}
-	
+
 	this.rte.statusbar.html(path);
 	$.each(this._buttons, function() {
 		this.update();
@@ -102,9 +112,9 @@ elRTE.prototype.ui.prototype.update = function(cleanCache) {
 
 
 elRTE.prototype.ui.prototype.buttons = {
-	
+
 	/**
-	 * @class кнопка на toolbar редактора 
+	 * @class кнопка на toolbar редактора
 	 * реализует поведение по умолчанию и является родителем для других кнопок
 	 *
 	 * @param  elRTE  rte   объект-редактор
@@ -144,7 +154,7 @@ elRTE.prototype.ui.prototype.buttons.button.prototype.command = function() {
 	} catch(e) {
 		return this.rte.log('commands failed: '+this.name);
 	}
-	
+
 	this.rte.ui.update(true);
 }
 
