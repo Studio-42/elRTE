@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-   "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
 
 <html lang="en">
 <head>
@@ -46,6 +46,7 @@
 	<script src="elrte/js/i18n/elrte.es.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.fa.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.fr.js" type="text/javascript" charset="utf-8"></script>
+	<script src="elrte/js/i18n/elrte.hr.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.hu.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.it.js" type="text/javascript" charset="utf-8"></script>
 	<script src="elrte/js/i18n/elrte.jp.js" type="text/javascript" charset="utf-8"></script>
@@ -112,12 +113,19 @@
 			// Disable filtering chains
 			// elRTE.prototype.filter.prototype.chains = {	}
 
+			/* elRTE 'miplet' toolbar */
+			elRTE.prototype.options.panels.custom = [
+				'bold', 'italic', 'underline', 'forecolor',
+				'fontsize', 'formatblock', 'insertorderedlist', 'insertunorderedlist', 'docstructure'
+			];
+			elRTE.prototype.options.toolbars.custom = ['custom', 'eol', 'undoredo', 'alignment', 'eol', 'links', 'images'];
 			var opts = {
+				//doctype  : '<!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
 				cssClass : 'el-rte',
-				// lang     : 'ru',
+				//lang     : 'en',
 				height   : 350,
 
-				toolbar  : 'maxi',
+				toolbar  : 'maxi', // custom
 				cssfiles : ['elrte/css/elrte-inner.css', 'elrte/css/inner-example.css'],
 				// elfinder
 				fmOpen   : function(callback) {
