@@ -33,7 +33,7 @@ elRTE.prototype.ui = function(rte) {
 
 		// special 'end of line' panel, starts next panel on a new line
 		if (pname == 'eol') {
-			$('<br />').prependTo(this.rte.toolbar);
+			$(this.rte.doc.createElement('br')).prependTo(this.rte.toolbar);
 			continue;
 		}
 
