@@ -855,11 +855,11 @@
 	 * deniedTags is in the end of chain to protect google maps iframe from removed
 	 **/
 	elRTE.prototype.filter.prototype.chains = {
-		wysiwyg         : ['clean','allowedTags', 'replace', 'deniedTags', 'compactStyles'],
-		source          : ['clean','allowedTags', 'restore', 'compactStyles', 'xhtmlTags'],
-		paste           : ['clean','allowedTags', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles'],
-		wysiwyg2wysiwyg : ['clean','allowedTags', 'restore', 'replace', 'deniedTags', 'compactStyles'],
-		source2source   : ['clean','allowedTags', 'replace', 'deniedTags', 'restore', 'compactStyles', 'xhtmlTags']
+		wysiwyg         : ['replace', 'clean', 'allowedTags', 'deniedTags', 'compactStyles'],
+		source          : ['clean', 'allowedTags', 'restore', 'compactStyles', 'xhtmlTags'],
+		paste           : ['clean', 'allowedTags', 'cleanPaste', 'replace', 'deniedTags', 'compactStyles'],
+		wysiwyg2wysiwyg : ['clean', 'allowedTags', 'restore', 'replace', 'deniedTags', 'compactStyles'],
+		source2source   : ['clean', 'allowedTags', 'replace', 'deniedTags', 'restore', 'compactStyles', 'xhtmlTags']
 	}
 	
 
