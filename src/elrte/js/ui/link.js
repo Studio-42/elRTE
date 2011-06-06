@@ -209,7 +209,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 		if (this.src.main.anchor.children().length) {
 			d.append([this.rte.i18n('Bookmark'), this.src.main.anchor.val(href)], 'main', true)
 		}
-		if (!this.rte.options.doctype.match(/xhtml/)) {
+		if (!(this.rte.options.doctype.match(/xhtml/) && this.rte.options.doctype.match(/strict/))) {
 			d.append([this.rte.i18n('Target'), this.src.main.target.val(this.link.attr('target')||'')], 'main', true);
 		}
 		
