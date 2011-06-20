@@ -42,7 +42,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			},
 
 			popup : {
-				use        : $('<input type="checkbox />"'),
+				use        : $('<input type="checkbox" />'),
 				url        : $('<input type="text" />'    ).val('http://'),
 				name       : $('<input type="text" />'    ),
 				width      : $('<input type="text" />'    ).attr({size : 6, title : self.rte.i18n('Width')} ).css('text-align', 'right'),
@@ -167,7 +167,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			.append( $('<label />').append(this.src.popup.resizable).append(this.rte.i18n('Resizable')))
 			.append( $('<label />').append(this.src.popup.dependent).append(this.rte.i18n('Depedent')))				
 			.append( $('<label />').append(this.src.popup.retfalse).append(this.rte.i18n('Add return false')));
-		
+
 		d.tab('main', this.rte.i18n('Properies'))
 			.tab('popup',  this.rte.i18n('Popup'))
 			.tab('adv',    this.rte.i18n('Advanced'))
