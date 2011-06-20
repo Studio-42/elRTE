@@ -97,6 +97,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			rtl : this.rte.rtl,
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
+				autoOpen : true,
 				width    : 570,
 				position : 'top',
 				title    : this.rte.i18n('Image')
@@ -148,10 +149,11 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			}
 		};
 				
-		d.open();
+		
 		
 		var fs = $('<fieldset />').append($('<legend />').text(this.rte.i18n('Preview')))
 		d.append(fs, 'main');
+		d.open();
 		var frame = document.createElement('iframe');
 		$(frame).attr('src', '#').addClass('el-rte-preview').appendTo(fs);
 
@@ -212,10 +214,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	 **/
 	this.updateValues = function() {
 		
-		var i = this.prevImg.get(0);
-		
-		this.origW = this.prevImg.attr('width'); 
-		this.origH = this.prevImg.attr('height');
+		var i = this.prevImg.get(0), s;
+
+		this.origW = this.prevImg.width(); 
+		this.origH = this.prevImg.height();
 		
 		this.src.main.src.val(this.rte.dom.attr(i, 'src'));
 		this.src.main.title.val(this.rte.dom.attr(i, 'title'));		
@@ -226,7 +228,22 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		this.src.main.margin.val(this.prevImg)
 		var f = this.prevImg.css('float');
 		this.src.main.align.val(f == 'left' || f == 'right' ? f : (this.prevImg.css('vertical-align')||''));
-		this.src.main.border.val(this.prevImg)
+
+		s = this.rte.utils.parseStyle(this.prevImg.attr('style'));
+
+		var border = {}
+		if (s.border) {
+			var w = s.border.match(/(\d(px|em|%))/),
+				c = s.border.match(/(#[a-z0-9]+)/);
+			
+			border = {
+				width : w ? w[1] : s.border,
+				style : s.border,
+				color : this.rte.utils.color2Hex(c ? c[1] : s.border)
+			}
+		}
+
+		this.src.main.border.val(border)
 		this.src.adv.style.val(this.rte.dom.attr(i, 'style'));
 	}
 	
@@ -312,12 +329,12 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 					.attr('src',  this.rte.utils.absoluteURL(src))
 					.bind('load', function() {
 						setTimeout(function() {
-							self.updateValues();
+							self.updateValues();	
 						}, 50)
 						
 					})
 				this.preview.prepend(this.prevImg);
-				self.updateValues();
+				// self.updateValues();
 			}
 		} else { // update existsed image
 			this.updateImg();

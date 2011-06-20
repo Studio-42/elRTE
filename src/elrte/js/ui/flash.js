@@ -128,7 +128,7 @@
 			
 			
 			d.open();
-			setTimeout( function() {self.src.url.focus()}, 100)
+			// setTimeout( function() {self.src.url.focus()}, 100)
 			
 			
 			var fs = $('<fieldset />').append($('<legend />').text(this.rte.i18n('Preview')))

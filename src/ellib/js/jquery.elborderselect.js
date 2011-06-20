@@ -96,6 +96,7 @@
 		this.val = function(v) {
 			if (!v && v !== '') {
 				var w = parseInt(width.val());
+				
 				return {width : !isNaN(w) ? w+'px' : '', style : style.val(), color : color.val()};
 			} else {
 				var m, w, s, c, b = '';
@@ -103,7 +104,7 @@
 					if (!v.css) {
 						v = $(v);					
 					}
-					var b = v.css('border')
+					var b = v.css('border');
 					if ((b = v.css('border'))) {
 						w = s = c = b;
 					} else {
@@ -121,7 +122,7 @@
 				width.val(toPixels(w));
 				var m = s ? s.match(/(solid|dashed|dotted|double|groove|ridge|inset|outset)/i) :'';
 				style.val(m ? m[1] : '');
-				color.val(rgb2hex(c));
+				color.val(c.indexOf('#') === 0 ? c : rgb2hex(c));
 				return this;
 			}
 		}

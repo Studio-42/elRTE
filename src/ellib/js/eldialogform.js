@@ -52,6 +52,7 @@ function elDialogForm(o) {
 			autoOpen  : false,
 			modal     : true,
 			resizable : false,
+			closeOnEscape : true,
 			buttons  : {
 				Cancel : function() { self.close(); },
 				Ok     : function() { self.form.trigger('submit'); }
@@ -59,8 +60,13 @@ function elDialogForm(o) {
 		}
 	};
 
-	this.opts = jQuery.extend(true, defaults, o, {dialog : { autoOpen : false, close : function() { self.close(); } }});
+	this.opts = jQuery.extend(true, {}, defaults, o);
 	
+	this.opts.dialog.close = function() { 
+		self.close(); 
+	}
+	
+	// this.opts.dialog.autoOpen = true;
 	if (this.opts.rtl) {
 		this.opts['class'] += ' el-dialogform-rtl';
 	}
@@ -68,10 +74,12 @@ function elDialogForm(o) {
 	if (o && o.dialog && o.dialog.buttons && typeof(o.dialog.buttons) == 'object') {
 		this.opts.dialog.buttons = o.dialog.buttons;
 	}
+
 	this.ul     = null;
 	this.tabs   = {};
 	this._table = null;
 	this.dialog = jQuery('<div />').addClass(this.opts['class']).dialog(this.opts.dialog);
+	
 	this.message = jQuery('<div class="el-dialogform-message rounded-5" />').hide().appendTo(this.dialog);
 	this.error   = jQuery('<div class="el-dialogform-error rounded-5" />').hide().appendTo(this.dialog);
 	this.spinner = jQuery('<div class="spinner" />').hide().appendTo(this.dialog);
@@ -249,26 +257,23 @@ function elDialogForm(o) {
 	 * @return elDialogForm	
 	**/
 	this.open = function() {
-		this.ul && this.form.tabs(this.opts.tabs);
-		// this.form.find(':text').keyup(function(e) {
-		// 	if (e.keyCode == 13) {
-		// 		self.form.submit();
-		// 	}
-		// });
-		
-		this.form.find(':text').keydown(function(e) {
-			if (e.keyCode == 13) {
-				e.preventDefault()
-				self.form.submit();
-			}
-		});
-
-		this.dialog.attr('unselectable', 'on').dialog('open');
 		var self = this;
-		if (this.form && this.form.find(':text').length) {
-			setTimeout(function() { self.form.find(':text')[0].focus(); }, 20);
-		}
 		
+		this.ul && this.form.tabs(this.opts.tabs);
+
+		setTimeout(function() {
+			self.dialog.find(':text')
+				.keydown(function(e) {
+					if (e.keyCode == 13) {
+						e.preventDefault()
+						self.form.submit();
+					}
+				})
+				.filter(':first')[0].focus()
+		}, 100);
+
+		this.dialog.dialog('open');
+
 		return this;
 	}
 	
@@ -280,7 +285,7 @@ function elDialogForm(o) {
 		if (typeof(this.opts.close) == 'function') {
 			this.opts.close();
 		}
-		this.dialog.dialog('destroy').remove();
+		this.dialog.dialog('destroy')//.remove();
 	}
 	
 }
