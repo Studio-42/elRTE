@@ -160,7 +160,7 @@
 					var self = this;
 					return html.replace(this.serviceClassRegExp, function(t, n, a) {
 						a = self.parseAttrs(a);
-						if (a.class['elrte-MYTAG']) {
+						if (a["class"]['elrte-MYTAG']) {
 							return self.scripts[a.id] + "\n" || '';
 						}
 						return t;

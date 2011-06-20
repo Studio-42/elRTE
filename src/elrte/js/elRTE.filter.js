@@ -95,7 +95,7 @@
 				html = this.call(self, html);
 			});
 			html = html.replace(/\t/g, '  ').replace(/\r/g, '').replace(/\s*\n\s*\n+/g, "\n")+'  ';
-			return $.trim(html) ? html : '&nbsp;';
+			return $.trim(html) ? html : ' ';
 		}
 		
 		/**
