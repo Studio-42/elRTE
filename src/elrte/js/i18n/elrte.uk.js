@@ -4,7 +4,7 @@
  * @version 2010-09-18
  */
 (function($) {
-elRTE.prototype.i18Messages.ua = {
+elRTE.prototype.i18Messages.uk = {
 	'_translator'    : 'Artem Vasilyev',
 	'_translation'   : 'Ukranian translation',
 	'Editor' : 'Редактор',
