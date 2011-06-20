@@ -311,7 +311,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				this.prevImg = $(this.frame.createElement('img'))
 					.attr('src',  this.rte.utils.absoluteURL(src))
 					.bind('load', function() {
-						self.updateValues();
+						setTimeout(function() {
+							self.updateValues();
+						}, 50)
+						
 					})
 				this.preview.prepend(this.prevImg);
 				self.updateValues();
