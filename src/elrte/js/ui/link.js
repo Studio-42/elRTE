@@ -360,7 +360,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 				params = params.substring(0, params.length-1)
 			}
 			var retfalse = this.src.popup.retfalse.attr('checked') ? 'return false;' : '';
-			var onclick = 'window.open("'+url+'", "'+$.trim(this.src.popup.name.val())+'", "'+params+'");'+retfalse;
+			var onclick = "window.open('"+url+"', '"+$.trim(this.src.popup.name.val())+"', '"+params+"'); "+retfalse;
 			this.src.events.onclick.val(onclick);
 			if (!this.src.main.href.val()) {
 				this.src.main.href.val('#');
@@ -410,6 +410,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 						if (n != 'anchors') {
 							var v = $.trim(this.src[tab][n].val());
 							if (v) {
+								this.rte.log(n+' '+v)
 								this.link.attr(n, v);
 							} else {
 								this.link.removeAttr(n);
@@ -418,6 +419,8 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 					}
 				}
 			};
+			// alert('fuck')
+			this.rte.log(this.link)
 			this.img && this.rte.selection.select(this.img);
 		}
 		this.rte.ui.update(true);
