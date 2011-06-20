@@ -10,10 +10,20 @@
 (function($) {
 elRTE.prototype.ui.prototype.buttons.elfinder = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
-	var self = this;
+	var self = this,
+		rte = this.rte;
 	this.command = function() {
 		if (self.rte.options.fmAllow && typeof(self.rte.options.fmOpen) == 'function') {
-			self.rte.options.fmOpen( function(url) { self.rte.log(url) } );
+			self.rte.options.fmOpen( function(url) { 
+				var name = url.split('/').pop();
+				
+				if (rte.selection.collapsed()) {
+					rte.selection.insertHtml('<a href="'+url+'" >'+name+'</a>');
+				} else {
+					rte.doc.execCommand('createLink', false, url);
+				}
+				
+			} );
 		}
 	}
 	

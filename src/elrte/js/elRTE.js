@@ -208,7 +208,6 @@ elRTE = function(target, opts) {
 	
 	this.typing = false;
 	this.lastKey = null;
-	
 	/* update buttons on click and keyup */
 	this.$doc.bind('mouseup', function() {
 		self.typing = false;
