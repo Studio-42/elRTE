@@ -209,14 +209,14 @@ elRTE.prototype.utils = function(rte) {
 	 * @return  Object
 	 **/
 	this.parseStyle = function(s) {
-		var st = {}, a = this.rte.options.allowBrowsersSpecStyles, t, n, v;
+		var st = {}, a = this.rte.options.allowBrowsersSpecStyles, t, n, v, p;
 		
 		if (typeof(s) == 'string' && s.length) {
-			$.each(s.replace(/&quot;/gi, "'").split(';'), function() {
-				t = this.toString().split(':');
-				if (t[0] && t[1]) {
-					n = $.trim(t[0]).toLowerCase();
-					v = $.trim(t[1]);
+			
+			$.each(s.replace(/&quot;/gi, "'").split(';'), function(i, str) {
+				if ((p = str.indexOf(':')) !== -1) {
+					n = $.trim(str.substr(0, p));
+					v = $.trim(str.substr(p+1))
 					if (n == 'color' || n == 'background-color') {
 						v = v.toLowerCase();
 					}

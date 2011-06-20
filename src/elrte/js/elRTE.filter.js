@@ -164,6 +164,7 @@
 			});
 
 			a.style = this.rte.utils.parseStyle(a.style);
+			// rte.log(a.style)
 			a['class'] = this.rte.utils.parseClass(a['class']||'')
 			return a;
 		}
