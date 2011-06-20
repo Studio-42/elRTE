@@ -153,7 +153,7 @@
 			m && $.each(m, function(i, s) {
 				t = s.split('=');
 				n = $.trim(t[0]).toLowerCase();
-				
+
 				if (t.length>2) {
 					t.shift();
 					v = t.join('=');

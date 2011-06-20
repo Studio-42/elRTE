@@ -71,7 +71,7 @@ elRTE.prototype.dom = function(rte) {
 		var v = '';
 		if (n.nodeType == 1) {
 			v = $(n).attr(attr);
-			if (v && attr != 'src' && attr != 'href') {
+			if (v && attr != 'src' && attr != 'href' && attr != 'title' && attr != 'alt') {
 				v = v.toString().toLowerCase();
 			}
 		} 
