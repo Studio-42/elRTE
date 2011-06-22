@@ -36,7 +36,7 @@
 				+'<tr><td>Tawfek Daghistani &lt;tawfekov@gmail.com&gt;</td><td>'+this.rte.i18n('RTL support')+'</td></tr>'
 				+(this.rte.options.lang != 'en' ? '<tr><td>'+this.rte.i18n('_translator')+'</td><td>'+this.rte.i18n('_translation')+'</td></tr>' : '')
 				+'</table>'
-				+'<div class="elrte-copy">Copyright &copy; 2009-2011, <a href="http://www.std42.ru">Studio 42 LTD</a></div>'
+				+'<div class="elrte-copy">Copyright &copy; 2009-2011, <a href="http://www.std42.ru">Studio 42</a></div>'
 				+'<div class="elrte-copy">'+this.rte.i18n('For more information about this software visit the')+' <a href="http://elrte.org">'+this.rte.i18n('elRTE website')+'.</a></div>'
 				+'<div class="elrte-copy">Twitter: <a href="http://twitter.com/elrte_elfinder">elrte_elfinder</a></div>';
 			

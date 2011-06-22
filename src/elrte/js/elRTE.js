@@ -21,8 +21,8 @@ elRTE = function(target, opts) {
 		return alert('elRTE: argument "target" is not DOM Element');
 	}
 	var self       = this, html;
-	this.version   = '1.2';
-	this.build     = '2010-12-12';
+	this.version   = '1.3';
+	this.build     = '2011-06-22';
 	this.options   = $.extend(true, {}, this.options, opts);
 	this.browser   = $.browser;
 	this.target    = $(target);
@@ -36,6 +36,7 @@ elRTE = function(target, opts) {
 	}
 	this.toolbar   = $('<div class="toolbar"/>');
 	this.iframe    = document.createElement('iframe');
+	this.iframe.setAttribute('frameborder', 0); // fixes IE border
 
 	// this.source    = $('<textarea />').hide();
 	this.workzone  = $('<div class="workzone"/>').append(this.iframe).append(this.source);
@@ -381,9 +382,9 @@ elRTE.prototype.val = function(v) {
 		}
 	} else {
 		if (this.source.is(':visible')) {
-			return this.filter.source2source(this.source.val());
+			return this.filter.source2source(this.source.val()).trim();
 		} else {
-			return this.filter.source($(this.doc.body).html());
+			return this.filter.source($(this.doc.body).html()).trim();
 		}
 	}
 }

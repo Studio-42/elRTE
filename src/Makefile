@@ -14,10 +14,10 @@ IMG=  ${DST}/images
 
 # YUI Compressor
 COMPRESSOR=	1
-COMPRESSOR_JS=	java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+COMPRESSOR_JS=	java -jar ../../../_old/yuicompressor-2.4.6/build/yuicompressor-2.4.6.jar \
 			--charset utf8 --type js --line-break 500 \
 			-o ${elrte_js_min} ${elrte_js}
-COMPRESSOR_CSS=	java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar \
+COMPRESSOR_CSS=	java -jar ../../../_old/yuicompressor-2.4.6/build/yuicompressor-2.4.6.jar \
 			--charset utf8 --type css --line-break 1 \
 			-o ${elrte_css_min} ${elrte_css}
 
