@@ -261,10 +261,9 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	}
 	
 	this.updatePopup = function() {
-		var onclick = this.rte.dom.attr(this.link.get(0), 'onclick');
-		rte.log(this.link[0])
-		onclick = onclick ? $.trim(onclick.toString()) : ''
-		if ( onclick.length>0 && (m = onclick.match(/window.open\("([^"]+)",\s*"([^"]*)",\s*"([^"]*)"\s*.*\);\s*(return\s+false)?/))) {
+		var onclick = ''+this.link.attr('onclick');
+		// onclick = onclick ? $.trim(onclick.toString()) : ''
+		if ( onclick.length>0 && (m = onclick.match(/window.open\('([^']+)',\s*'([^']*)',\s*'([^']*)'\s*.*\);\s*(return\s+false)?/))) {
 			this.src.popup.use.attr('checked', 'on')
 			this.src.popup.url.val(m[1]);
 			this.src.popup.name.val(m[2]);
