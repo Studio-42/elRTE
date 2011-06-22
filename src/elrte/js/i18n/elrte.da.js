@@ -1,4 +1,4 @@
-/*8
+/*
  * Danish translation
  * @author Steen Rabol <steen.rabol@gmail.com>
  * @version 2011-01-05
