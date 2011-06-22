@@ -40,12 +40,12 @@ Features
  * Lightweight, fast and easy to integrate
  * Interface appearance is configured from one CSS file
  * No templates used
- * i18n. The editor can be easily localized into any language. Currently
-   available in English, German, Japanese, Latvian, Spanish, Russian and
-   Ukrainian languages
- * Designed to work with elFinder file manager (http://elrte.org/elfinder),
-   but also can be used with any other
+ * i18n. The editor can be easily localized into any language. More than 20
+   languages already included, check js/i18n directory
+ * Designed to work with elFinder (http://elrte.org/elfinder), but also can be
+   used with any other file manager
  * Flexible for extensions
+ * Community supported
 
 
 Requirements

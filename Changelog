@@ -1,8 +1,8 @@
-2011-06-20  Troex Nevelin  <troex@fury.scancode.ru>
+2011-06-22  Troex Nevelin  <troex@fury.scancode.ru>
 
 	* elRTE (1.3):
 		- [feature] jQuery 1.6.1, jQuery UI 1.8.13
-		- [feature] file anager callback now used to insert link
+		- [feature] file manager callback now used to insert link
 		- [feature] EOL in panels, next panel is started on new line
 		- [feature] better XHTML support
 		- [feature] ID attribute in class/style dialog
