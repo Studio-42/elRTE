@@ -389,7 +389,7 @@ elRTE.prototype.val = function(v) {
 }
 
 elRTE.prototype.beforeSave = function() {
-	this.source.val(this.val()||'');
+	this.source.val($.trim(this.val())||'');
 }
 
 /**

@@ -155,8 +155,9 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 				
 			}
 		}
+
 		d = new elDialogForm(opts);
-		
+
 		l = $('<div />')
 			.append( $('<label />').append(this.src.popup.location).append(this.rte.i18n('Location bar')))
 			.append( $('<label />').append(this.src.popup.menubar).append(this.rte.i18n('Menu bar')))
@@ -238,6 +239,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			})
 		});
 		this.src.popup.use.change();
+
 		d.open();
 	}
 	
@@ -260,6 +262,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 	
 	this.updatePopup = function() {
 		var onclick = this.rte.dom.attr(this.link.get(0), 'onclick');
+		rte.log(this.link[0])
 		onclick = onclick ? $.trim(onclick.toString()) : ''
 		if ( onclick.length>0 && (m = onclick.match(/window.open\("([^"]+)",\s*"([^"]*)",\s*"([^"]*)"\s*.*\);\s*(return\s+false)?/))) {
 			this.src.popup.use.attr('checked', 'on')
