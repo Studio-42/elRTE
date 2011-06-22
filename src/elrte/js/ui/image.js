@@ -189,7 +189,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		$.each(this.src, function() {
 			$.each(this, function() {
 				if (this === self.src.main.src) {
-					this.bind('change', function() { self.rte.log('before'); self.updatePreview(); self.rte.log('after'); });
+					this.bind('change', function() { self.updatePreview(); });
 				} else if (this == self.src.main.width || this == self.src.main.height) {
 					this.bind('change', function(e) {self.updateDimesions(e);});
 				} else {

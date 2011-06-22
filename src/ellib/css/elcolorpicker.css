@@ -13,7 +13,7 @@
 	border:1px solid #ccc;
 	background:#fff;
 	padding:3px 2px 3px 3px;
-	z-index:10000; /* fight with ui.dialog 0_o */
+	z-index:99000; /* fight with ui.dialog 0_o */
 	position:absolute;
 	top:16px;
 	left:0;

@@ -61,6 +61,8 @@
 	padding:0; /* Joomla 1.6 compat */
 	background:url('../images/elrte-toolbar.png') no-repeat; 
 	border:1px solid #ccc;	
+	z-index:100;
+
 }
 /* активная и подсвеченная и неактивная кнопка */
 .el-rte .toolbar ul li.hover    { border:1px solid #54b9bf; }

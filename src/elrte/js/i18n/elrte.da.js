@@ -1,4 +1,4 @@
-/*
+/*8
  * Danish translation
  * @author Steen Rabol <steen.rabol@gmail.com>
  * @version 2011-01-05
@@ -205,6 +205,6 @@ elRTE.prototype.i18Messages.da = {
 	'Italian localization'         : 'Italiensk oversættelse',
 	'Traditional Chinese localization' : 'Traditoinel kinesisk oversættelse',
 	'For more information about this software visit the' : 'For mere information, besøg ',
-	'elRTE website'                : 'elRTE\'s hjemmeside',
+	'elRTE website'                : 'elRTE\'s hjemmeside'
 }
 })(jQuery);
