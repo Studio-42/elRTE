@@ -36,6 +36,7 @@ elRTE = function(target, opts) {
 	}
 	this.toolbar   = $('<div class="toolbar"/>');
 	this.iframe    = document.createElement('iframe');
+	this.iframe.setAttribute('frameborder', 0); // fixes IE border
 
 	// this.source    = $('<textarea />').hide();
 	this.workzone  = $('<div class="workzone"/>').append(this.iframe).append(this.source);
