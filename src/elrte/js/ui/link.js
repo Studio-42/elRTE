@@ -86,7 +86,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 
 		$.each(self.src, function() {
 			for (var n in this) {
-				this[n].attr('name', n);
+				// this[n].attr('name', n);
 				var t = this[n].attr('type');
 				if (!t || (t == 'text'  && !this[n].attr('size')) ) {
 					this[n].css('width', '100%');

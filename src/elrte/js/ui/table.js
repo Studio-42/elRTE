@@ -93,7 +93,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		$.each(
 			['onblur', 'onfocus', 'onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmouseout', 'onmouseleave', 'onkeydown', 'onkeypress', 'onkeyup'], 
 			function() {
-				self.src.events[this] = $('<input type="text" />').attr('name', this).css('width', '100%');
+				self.src.events[this] = $('<input type="text" />').css('width', '100%');
 		});
 		
 		self.src.main.align.change(function() {

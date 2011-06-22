@@ -65,7 +65,7 @@ function elDialogForm(o) {
 	this.opts.dialog.close = function() { 
 		self.close(); 
 	}
-	
+
 	// this.opts.dialog.autoOpen = true;
 	if (this.opts.rtl) {
 		this.opts['class'] += ' el-dialogform-rtl';
@@ -78,8 +78,9 @@ function elDialogForm(o) {
 	this.ul     = null;
 	this.tabs   = {};
 	this._table = null;
+
 	this.dialog = jQuery('<div />').addClass(this.opts['class']).dialog(this.opts.dialog);
-	
+
 	this.message = jQuery('<div class="el-dialogform-message rounded-5" />').hide().appendTo(this.dialog);
 	this.error   = jQuery('<div class="el-dialogform-error rounded-5" />').hide().appendTo(this.dialog);
 	this.spinner = jQuery('<div class="spinner" />').hide().appendTo(this.dialog);
@@ -270,7 +271,7 @@ function elDialogForm(o) {
 					}
 				})
 				.filter(':first')[0].focus()
-		}, 100);
+		}, 200);
 
 		this.dialog.dialog('open');
 

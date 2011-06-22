@@ -64,11 +64,11 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				self.src.events[this] = $('<input type="text" />').css('width', '100%');
 		});
 		
-		$.each(self.src, function() {
-			for (var n in this) {
-				this[n].attr('name', n);
-			}
-		});
+		// $.each(self.src, function() {
+		// 	for (var n in this) {
+		// 		this[n].attr('name', n);
+		// 	}
+		// });
 		
 	}
 	
@@ -189,7 +189,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		$.each(this.src, function() {
 			$.each(this, function() {
 				if (this === self.src.main.src) {
-					this.bind('change', function() { self.updatePreview(); });
+					this.bind('change', function() { self.rte.log('before'); self.updatePreview(); self.rte.log('after'); });
 				} else if (this == self.src.main.width || this == self.src.main.height) {
 					this.bind('change', function(e) {self.updateDimesions(e);});
 				} else {
@@ -314,7 +314,6 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	 *
 	 **/
 	this.updatePreview = function() {
-		
 		var imgsrc = this.prevImg ? this.prevImg.attr('src') : '';
 		var src    = $.trim(this.src.main.src.val());
 		if (!src || src !=imgsrc) { // new image or empty src
@@ -332,8 +331,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 							self.updateValues();	
 						}, 50)
 						
-					})
+					});
+
 				this.preview.prepend(this.prevImg);
+
 				// self.updateValues();
 			}
 		} else { // update existsed image
