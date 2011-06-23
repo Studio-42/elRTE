@@ -6,6 +6,7 @@
 		- [feature] EOL in panels, next panel is started on new line
 		- [feature] better XHTML support
 		- [feature] ID attribute in class/style dialog
+		- [feature] .elrte('destroy') method to completely remove elRTE
 		- [bugfix] JavaScript code cut
 		- [bugfix] &nbsp; instead space in Opera 11+
 		- [bugfix] correctly return empty editor contents
@@ -15,6 +16,7 @@
 		- [bugfix] image dialog broken with jQuery 1.6+
 		- [bugfix] image dialog case not preserved in title and alt attributes
 		- [bugfix] CSS fixes for Drupal 7
+		- [bugfix] colorpicker hide in IE7
 		- [translation] Catalan, Maria Consuelo Bravo <consolbravo@gmail.com>
 		- [translation] Danish, Steen Rabol <steen.rabol@gmail.com>
 		- [translation] German, Daniel Holzmann <d@velopment.at>
