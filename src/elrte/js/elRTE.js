@@ -169,7 +169,7 @@ elRTE = function(target, opts) {
 	
 	
 	/* bind updateSource to parent form submit */
-	this.target.parents('form').bind('submit', function(e) {
+	this.target.parents('form').bind('submit.elfinder', function(e) {
 		self.source.parents('form').find('[name="el-select"]').remove()
 		self.beforeSave();
 	});
@@ -191,9 +191,6 @@ elRTE = function(target, opts) {
 			}
 		}
 	});
-	
-	// this.log(target)
-	// this.log(this.source)
 	
 	$(this.doc.body).bind('dragend', function(e) {
 		setTimeout(function() {
@@ -318,10 +315,16 @@ elRTE = function(target, opts) {
 		})
 	}
 	
-	// this.resizable(true)
 	this.window.focus();
-	// this.log(this.editor.parents('form').find('[name="el-select"]'))
 	
+	this.destroy = function() {
+		this.updateSource();
+		this.target.is('textarea')
+			? this.target.val($.trim(this.source.val()))
+			: this.target.html($.trim(this.source.val()));
+		this.editor.remove();
+		this.target.show().parents('form').unbind('submit.elfinder');
+	}
 	
 }
 
@@ -433,6 +436,8 @@ $.fn.elrte = function(o, v) {
 			case 'updateSource':
 				this.elrte.updateSource();
 				break;
+			case 'destroy':
+				this.elrte.destroy();
 		}
 	});
 	

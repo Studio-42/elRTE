@@ -192,6 +192,9 @@
 			$('#setContent').click(function() {
 				$('#editor').elrte('val', 'This is new <b>content</b> for editor');
 			});
+			$('#destroy').click(function() {
+				$('#editor').elrte('destroy');
+			});
 
 		});
 	</script>
@@ -257,5 +260,6 @@ DOUGLAS ADAMS - The Hitchhiker's Guide to the Galaxy</h2>
 	<div id="dialog" class="button">dialog</div>
 	<div id="getContent" class="button">get content</div>
 	<div id="setContent" class="button">set content</div>
+	<div id="destroy" class="button">destroy</div>
 </body>
 </html>
