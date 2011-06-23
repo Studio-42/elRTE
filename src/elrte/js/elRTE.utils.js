@@ -332,8 +332,11 @@ elRTE.prototype.utils = function(rte) {
 	this.serializeClass = function(c) {
 		// return c.join(' ')
 		var s = [];
+		// this.rte.log(c)
+		var rte = this.rte
 		$.each(c, function(n) {
 			s.push(n);
+			// rte.log(typeof(n))
 		});
 		return s.join(' ');
 	}

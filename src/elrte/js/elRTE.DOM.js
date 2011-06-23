@@ -309,9 +309,11 @@ elRTE.prototype.dom = function(rte) {
 	
 	this.is = function(n, f) {
 		if (n && n.nodeName) {
+
 			if (typeof(f) == 'string') {
 				f = this.regExp[f]||/.?/;
 			}
+
 			if (f instanceof RegExp && n.nodeName) {
 				return f.test(n.nodeName);
 			} else if (typeof(f) == 'function') {

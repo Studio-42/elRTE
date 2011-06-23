@@ -149,7 +149,8 @@
 				b = this.boolAttrs,
 				m = s.match(this.attrRegExp),
 				t, n, v;
-
+				// this.rte.log(s)
+			// this.rte.log(m)
 			m && $.each(m, function(i, s) {
 				t = s.split('=');
 				n = $.trim(t[0]).toLowerCase();
@@ -182,6 +183,8 @@
 				if (n=='style') {
 					v = self.rte.utils.serializeStyle(v, c);
 				} else if (n=='class') {
+					// self.rte.log(v)
+					// self.rte.log(self.rte.utils.serializeClass(v))
 					v = self.rte.utils.serializeClass(v);
 				} 
 				v && s.push(n+'="'+v+'"');
@@ -457,10 +460,10 @@
 					if (c) {
 						return '</'+(rt[n] ? rt[n].tag : n)+'>';
 					}
-					
+					// self.rte.log(t)
 					// create attributes hash and clean it
 					a = self.cleanAttrs(self.parseAttrs(a||''), n);
-					
+					// self.rte.log(a)
 					if (rt[n]) {
 						rt[n].style && $.extend(a.style, rt[n].style);
 						n = rt[n].tag;
@@ -472,6 +475,7 @@
 						}
 					});
 					a = self.serializeAttrs(a);
+					// self.rte.log(a)
 					return '<'+n+(a?' ':'')+a+'>';
 				});
 				
@@ -483,6 +487,7 @@
 				var t = $(this);
 				
 				if (!t.attr('style')) {
+					
 					$.trim(t.html()).length ? self.rte.dom.unwrap(this) : t.remove();
 					// t.children().length ? self.rte.dom.unwrap(this) : t.remove();
 				}
@@ -492,7 +497,7 @@
 					tid = t.attr('id'), 
 					pid = p.attr('id'), id, s, c;
 
-				if (self.rte.dom.is(this, 'onlyChild') && (!tid || !pid)) {
+				if (self.rte.dom.isOnlyNotEmpty(this) && (!tid || !pid)) {
 					c = $.trim(p.attr('class')+' '+t.attr('class'))
 					c && p.attr('class', c);
 					s = self.rte.utils.serializeStyle($.extend(self.rte.utils.parseStyle($(this).attr('style')||''), self.rte.utils.parseStyle($(p).attr('style')||'')));
