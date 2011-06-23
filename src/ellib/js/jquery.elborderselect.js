@@ -94,17 +94,26 @@
 		}
 		
 		this.val = function(v) {
+			var w, s, c, b, m;
+			
 			if (!v && v !== '') {
-				var w = parseInt(width.val());
-				
-				return {width : !isNaN(w) ? w+'px' : '', style : style.val(), color : color.val()};
+				w = parseInt(width.val());
+				w = !isNaN(w) ? w+'px' : '';
+				s = style.val();
+				c = color.val();
+				return {
+					width : w,
+					style : s,
+					color : c,
+					css   : $.trim(w+' '+s+' '+c)
+				}
 			} else {
-				var m, w, s, c, b = '';
+				b = '';
 				if (v.nodeName || v.css) {
 					if (!v.css) {
 						v = $(v);					
 					}
-					var b = v.css('border');
+					b = v.css('border');
 					if ((b = v.css('border'))) {
 						w = s = c = b;
 					} else {
@@ -120,7 +129,7 @@
 				}
 
 				width.val(toPixels(w));
-				var m = s ? s.match(/(solid|dashed|dotted|double|groove|ridge|inset|outset)/i) :'';
+				m = s ? s.match(/(solid|dashed|dotted|double|groove|ridge|inset|outset)/i) :'';
 				style.val(m ? m[1] : '');
 				color.val(c.indexOf('#') === 0 ? c : rgb2hex(c));
 				return this;

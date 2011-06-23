@@ -11,11 +11,131 @@
 elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var self = this,
-		rte  = self.rte;
-	this.img = null;
+		rte  = self.rte,
+		proportion = 0,
+		width = 0,
+		height = 0,
+		bookmarks = null,
+		reset = function(nosrc) {
+			$.each(self.src, function(i, elements) {
+				$.each(elements, function(n, el) {
+					if (n == 'src' && nosrc) {
+						return;
+					}
+					el.val('');
+				});
+			});
+		},
+		values = function(img) {
+			$.each(self.src, function(i, elements) {
+				$.each(elements, function(n, el) {
+					var val, w, c, s, border;
+					
+					if (n == 'width') {
+						val = img.width();
+					} else if (n == 'height') {
+						val = img.height();
+					} else if (n == 'border') {
+						val = '';
+						border = img.css('border') || rte.utils.parseStyle(img.attr('style')).border || '';
+
+						if (border) {
+							w = border.match(/(\d(px|em|%))/);
+							c = border.match(/(#[a-z0-9]+)/);
+							val = {
+								width : w ? w[1] : border,
+								style : border,
+								color : rte.utils.color2Hex(c ? c[1] : border)
+							}
+						} 
+					} else if (n == 'margin') {
+						val = img;
+					} else if (n == 'align') { 
+						val = img.css('float');
+
+						if (val != 'left' && val != 'right') {
+							val = img.css('vertical-align');
+						}
+					 }else {
+						val = img.attr(n)||'';
+					}
+					
+					if (i == 'events') {
+						val = rte.utils.trimEventCallback(val);
+					}
+
+					el.val(val);
+				});
+			});
+		},
+		preview = function() {
+			var src = self.src.main.src.val();
+			
+			reset(true);
+			
+			if (!src) {
+				self.preview.children('img').remove();
+				self.prevImg = null;
+			} else {
+				if (self.prevImg) {
+					self.prevImg
+						.removeAttr('src')
+						.removeAttr('style')
+						.removeAttr('class')
+						.removeAttr('id')
+						.removeAttr('title')
+						.removeAttr('alt')
+						.removeAttr('longdesc');
+						
+					$.each(self.src.events, function(name, input) {
+						self.prevImg.removeAttr(name);
+					});
+				} else {
+					self.prevImg = $('<img/>').prependTo(self.preview);
+				}
+				self.prevImg.load(function() {
+					self.prevImg.unbind('load');
+					setTimeout(function() {
+						width      = self.prevImg.width();
+						height     = self.prevImg.height();
+						proportion = (width/height).toFixed(2);
+						self.src.main.width.val(width);
+						self.src.main.height.val(height);
+						
+					}, 100);
+				})
+				.attr('src', src);
+			}
+			
+		},
+		size = function(e) {
+			var w = parseInt(self.src.main.width.val())||0,
+				h = parseInt(self.src.main.height.val())||0;
+				
+			if (self.prevImg) {
+				if (w && h) {
+					if (e.target === self.src.main.width[0]) {
+						h = parseInt(w/proportion);
+					} else {
+						w = parseInt(h*proportion);
+					}
+				} else {
+					w = width;
+					h = height;
+				}
+				self.src.main.height.val(h);
+				self.src.main.width.val(w);
+				self.prevImg.width(w).height(h);
+				self.src.adv.style.val(self.prevImg.attr('style'));
+			}
+		}
+		;
 	
-	this.init = function() {
-		
+	this.img     = null;
+	this.prevImg = null;
+	this.preview = $('<div class="elrte-image-preview"/>').text('Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin');
+	
+	this.init = function() {	
 		this.labels = {
 			main   : 'Properies',
 			link   : 'Link',
@@ -32,12 +152,30 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		
 		this.src = {
 			main : {
-				src    : $('<input type="text" />').css('width', '100%'),
+				src    : $('<input type="text" />').css('width', '100%').change(preview),
 				title  : $('<input type="text" />').css('width', '100%'),
 				alt    : $('<input type="text" />').css('width', '100%'),
-				width  : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
-				height : $('<input type="text" />').attr('size', 5).css('text-align', 'right'),
-				margin : $('<div />'),
+				width  : $('<input type="text" />').attr('size', 5).css('text-align', 'right').change(size),
+				height : $('<input type="text" />').attr('size', 5).css('text-align', 'right').change(size),
+				margin : $('<div />').elPaddingInput({
+					type : 'margin', 
+					change : function() {
+						var margin = self.src.main.margin.val();
+					
+						if (self.prevImg) {
+							if (margin.css) {
+								self.prevImg.css('margin', margin.css)
+							} else {
+								self.prevImg.css({
+									'margin-left'   : margin.left,
+									'margin-top'    : margin.top,
+									'margin-right'  : margin.right,
+									'margin-bottom' : margin.bottom
+								});
+							}
+						}
+					} 
+				}), 
 				align  : $('<select />').css('width', '100%')
 							.append($('<option />').val('').text(this.rte.i18n('Not set', 'dialogs')))
 							.append($('<option />').val('left'       ).text(this.rte.i18n('Left')))
@@ -47,81 +185,122 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 							.append($('<option />').val('middle'     ).text(this.rte.i18n('middle')))
 							.append($('<option />').val('baseline'   ).text(this.rte.i18n('Baseline')))
 							.append($('<option />').val('bottom'     ).text(this.rte.i18n('Bottom')))
-							.append($('<option />').val('text-bottom').text(this.rte.i18n('Text bottom'))),
-				border : $('<div />').elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' })
+							.append($('<option />').val('text-bottom').text(this.rte.i18n('Text bottom')))
+							.change(function() {
+								var val = $(this).val(),
+									css = {
+										'float' : '',
+										'vertical-align' : ''
+									};
+								if (self.prevImg) {
+									if (val == 'left' || val == 'right') {
+										css['float'] = val;
+										css['vertical-align'] = '';
+									} else if (val) {
+										css['float'] = '';
+										css['vertical-align'] = val;
+									} 
+									self.prevImg.css(css);
+								}
+							})
+						,
+				border : $('<div />').elBorderSelect({
+					name : 'border',
+					change : function() {
+						var border = self.src.main.border.val();
+						if (self.prevImg) {
+							self.prevImg.css('border', border.width ? border.width+' '+border.style+' '+border.color : '');
+						}
+					}
+				})
 			},
 
-			adv : {
-				// id       : $('<input type="text" />').css('width', '100%'),
-				// 'class'  : $('<input type="text" />').css('width', '100%'),
-				// style    : $('<input type="text" />').css('width', '100%'),
-				// longdesc : $('<input type="text" />').css('width', '100%')
-			},
+			adv : {},
 			events : {}
 		}
 		
 		$.each(['id', 'class', 'style', 'longdesc'], function(i, name) {
 			self.src.adv[name] = $('<input type="text" style="width:100%" />');
-		})
+		});
+		
+		this.src.adv['class'].change(function() {
+			if (self.prevImg) {
+				self.prevImg.attr('class', $(this).val());
+			}
+		});
+		
+		this.src.adv.style.change(function() {
+			if (self.prevImg) {
+				self.prevImg.attr('style', $(this).val());
+				values(self.prevImg);
+			}
+		});
 		
 		$.each(
 			['onblur', 'onfocus', 'onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmouseout', 'onmouseleave', 'onkeydown', 'onkeypress', 'onkeyup'], 
 			function() {
-				self.src.events[this] = $('<input type="text" />').css('width', '100%');
+				self.src.events[this] = $('<input type="text"  style="width:100%"/>');
 		});
 	}
 	
 	this.command = function() {
 		!this.src && this.init();
-		this.rte.selection.saveIERange();
-		// this.src.main.border.elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' });
-		this.src.main.margin.elPaddingInput({ type : 'margin' });
+		
+		var img, 
+			opts = {
+				rtl : rte.rtl,
+				submit : function(e, d) { 
+					e.stopPropagation(); 
+					e.preventDefault(); 
+					self.set(); 
 
-		this.cleanValues();
-		this.src.main.src.val('');
-		
-		var n = this.rte.selection.getEnd(),
-			$n = $(n);
-		this.preview = null;
-		this.prevImg = null;
-		this.link    = null;
-		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
-			this.img     = $(n);
-		} else {
-			this.img = $(this.rte.doc.createElement('img'));
+					dialog.close(); 
+				},
+				close : function() {
+
+					bookmarks && rte.selection.moveToBookmark(bookmarks)
+				},
+				dialog : {
+					autoOpen  : false,
+					width     : 500,
+					position  : 'top',
+					title     : rte.i18n('Image'),
+					resizable : true,
+					open      : function() {
+						$.fn.resizable && $(this).parents('.ui-dialog:first').resizable('option', 'alsoResize', '.elrte-image-preview');
+					}
+				}
+			},
+			dialog = new elDialogForm(opts),
+			fm = rte.options.fmAllow && rte.options.fmOpen,
+			src = fm
+				? $('<div class="elrte-image-src-fm"><span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-folder-open"/></span></div>').append(this.src.main.src.css('width', '87%'))
+				: this.src.main.src;
 			
+			;
+		
+		reset();
+		this.preview.children('img').remove();
+		this.prevImg = null;
+		img = rte.selection.getEnd();
+		
+		this.img = img.nodeName == 'IMG' && !$(img).is('.elrte-protected')
+			? $(img)
+			: $('<img/>');
+		
+		bookmarks = rte.selection.getBookmark();
+
+		if (fm) {
+			src.children(':last')
+				.click( function() {
+					rte.options.fmOpen( function(url) { self.src.main.src.val(url).change() } );
+				})
+				.hover(function() {
+					$(this).toggleClass('ui-state-hover');
+				});
 		}
 		
-		var opts = {
-			rtl : this.rte.rtl,
-			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
-			dialog : {
-				autoOpen : true,
-				width    : 'auto',
-				position : 'top',
-				title    : this.rte.i18n('Image'),
-				resizable : true
-			}
-		}
-		var d = new elDialogForm(opts);
-		
-		if (this.rte.options.fmAllow && this.rte.options.fmOpen) {
-			var src = $('<span />').append(this.src.main.src.css('width', '88%'))
-					.append(
-						$('<span />').addClass('ui-state-default ui-corner-all')
-							.css({'float' : 'right', 'margin-right' : '3px'})
-							.attr('title', self.rte.i18n('Open file manger'))
-							.append($('<span />').addClass('ui-icon ui-icon-folder-open'))
-								.click( function() {
-									self.rte.options.fmOpen( function(url) { self.src.main.src.val(url).change() } );
-								})
-								.hover(function() {$(this).addClass('ui-state-hover')}, function() { $(this).removeClass('ui-state-hover')})
-						);
-		} else {
-			var src = this.src.main.src;
-		}
-		
-		d.tab('main', this.rte.i18n('Properies'))
+		dialog.tab('main', this.rte.i18n('Properies'))
 			.append([this.rte.i18n('Image URL'), src],                 'main', true)
 			.append([this.rte.i18n('Title'),     this.src.main.title], 'main', true)
 			.append([this.rte.i18n('Alt text'),  this.src.main.alt],   'main', true)
@@ -129,288 +308,100 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			.append([this.rte.i18n('Alignment'), this.src.main.align],  'main', true)
 			.append([this.rte.i18n('Margins'),   this.src.main.margin], 'main', true)
 			.append([this.rte.i18n('Border'),    this.src.main.border], 'main', true)
-
-		for (var tab in this.src) {
-			if (tab != 'main') {
-				d.tab(tab, this.rte.i18n(this.labels[tab]));
-				for (var name in this.src[tab]) {
-					var l = this.rte.i18n(this.labels[name] ? this.labels[name] : name);
-					if (tab == 'events') {
-						this.src[tab][name].val(this.rte.utils.trimEventCallback(this.img.attr(name)));
-					} else if (tab == 'link') {
-						if (this.link) {
-							this.src[tab][name].val(name == 'href' ? this.rte.utils.absoluteURL(this.link.attr(name)) : this.link.attr(name));
-						}
-					} else {
-						this.src[tab][name].val(this.img.attr(name)||'');
-					}
-					d.append([l, this.src[tab][name]], tab, true);
-				}
+		
+		dialog.append($('<fieldset><legend>'+this.rte.i18n('Preview')+'</legend></fieldset>').append(this.preview), 'main');
+		
+		
+		
+		$.each(this.src, function(tabname, elements) {
+		
+			if (tabname == 'main') {
+				return;
 			}
-		};
-				
+			dialog.tab(tabname, rte.i18n(self.labels[tabname]));
+			
+			$.each(elements, function(name, el) {
+				self.src[tabname][name].val(tabname == 'events' ? rte.utils.trimEventCallback(self.img.attr(name)) : self.img.attr(name)||'');
+				dialog.append([rte.i18n(self.labels[name] || name), self.src[tabname][name]], tabname, true);
+			});
+		});
 		
-		
-		var fs = $('<fieldset><legend>'+this.rte.i18n('Preview')+'</legend></fieldset>');
-		d.append(fs, 'main');
-		d.open();
-		var preview = $('<div class="elrte-image-preview"/>')
-		// var frame = document.createElement('iframe');
-		// $(frame).attr('src', '#').addClass('el-rte-preview').appendTo(fs);
-		// 
-		// html = this.rte.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body style="padding:0;margin:0;font-size:9px"> </body></html>';
-		// frame.contentWindow.document.open();
-		// frame.contentWindow.document.write(html);
-		// frame.contentWindow.document.close();
-		// this.frame = frame.contentWindow.document
-		// this.preview = $(frame.contentWindow.document.body)
-		//  				 .text('Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin');
+		dialog.open();		
 		
 		if (this.img.attr('src')) {
-			
-			// this.prevImg = $(this.frame.createElement('img'))
-			// 	.attr('src',  this.rte.utils.absoluteURL(this.img.attr('src')))
-			// this.rte.log(this.img.attr('width'))
-			// 
-			// $.each(['width', 'height', 'title', 'alt', 'style'], function(i, attr) {
-			// 	self.rte.log(self.img.width())
-			// })
-			// this.prevImg.attr('width', this.img.attr('width'))
-			// 	// .attr('height', this.img.attr('height'))
-			// 	// .attr('title', this.img.attr('title')||'')
-			// 	// .attr('alt', this.img.attr('alt')||'')
-			// 	// .attr('style', this.img.attr('style')||'')
-			// for (var n in this.src.adv) {
-			// 	var a = this.img.attr(n);
-			// 	if (a) {
-			// 		this.prevImg.attr(n, a)
-			// 	}
-			// }	
-				
-			// this.preview.prepend(this.prevImg);
-			// this.updateValues();
-		}
-		
-		$.each(this.src, function() {
-			$.each(this, function() {
-				if (this === self.src.main.src) {
-					this.bind('change', function() { self.updatePreview(); });
-				} else if (this == self.src.main.width || this == self.src.main.height) {
-					this.bind('change', function(e) {self.updateDimesions(e);});
-				} else {
-					this.bind('change', function() { self.updateImg(); });
-				}
-			});
-		});
-		
-		// this.src.link.href.change(function() {
-		// 	var $this = $(this);
-		// 	$this.val(self.rte.utils.absoluteURL($this.val()));
-		// });
-		
-	}
-	
-
-	
-	/**
-	 * Устанавливает значения полей формы из аттрибутов prevImg
-	 * Вызывается после загрузки prevImg
-	 *
-	 **/
-	this.updateValues = function() {
-		
-		var i = this.prevImg.get(0), s;
-
-		this.origW = this.prevImg.width(); 
-		this.origH = this.prevImg.height();
-		
-		this.src.main.src.val(this.rte.dom.attr(i, 'src'));
-		this.src.main.title.val(this.rte.dom.attr(i, 'title'));		
-		this.src.main.alt.val(this.rte.dom.attr(i, 'alt'));
-		this.src.main.width.val(this.origW);
-		this.src.main.height.val(this.origH);
-		this.src.adv['class'].val(this.rte.dom.attr(i, 'class'));
-		this.src.main.margin.val(this.prevImg)
-		var f = this.prevImg.css('float');
-		this.src.main.align.val(f == 'left' || f == 'right' ? f : (this.prevImg.css('vertical-align')||''));
-
-		s = this.rte.utils.parseStyle(this.prevImg.attr('style'));
-
-		var border = {}
-		if (s.border) {
-			var w = s.border.match(/(\d(px|em|%))/),
-				c = s.border.match(/(#[a-z0-9]+)/);
-			
-			border = {
-				width : w ? w[1] : s.border,
-				style : s.border,
-				color : this.rte.utils.color2Hex(c ? c[1] : s.border)
-			}
-		}
-
-		this.src.main.border.val(border)
-		this.src.adv.style.val(this.rte.dom.attr(i, 'style'));
-	}
-	
-	/**
-	 * Очищает поля формы
-	 *
-	 **/
-	this.cleanValues = function() {
-		$.each(this.src, function() {
-			$.each(this, function() {
-				var $this = $(this);
-				if ($this.attr('name') != 'src') {
-					$this.val('');
-				}
-			});
-		});
-	}
-	
-	/**
-	 * Устанавливает аттрибуты prevImg из полей формы
-	 *
-	 **/
-	this.updateImg = function() {
-		this.prevImg.attr({
-				style  : $.trim(this.src.adv.style.val()),
-				title  : $.trim(this.src.main.title.val()),
-				alt    : $.trim(this.src.main.alt.val()),
-				width  : parseInt(this.src.main.width.val()),
-				height : parseInt(this.src.main.height.val())
-			});
-
-		var a = this.src.main.align.val();
-		var f = a == 'left' || a == 'right' ? a : '';
-		
-		var b = this.src.main.border.val(); 
-		var m = this.src.main.margin.val();
-		this.prevImg.css('float', f);
-		this.prevImg.css('vertical-align', f ? '' : a);
-		this.prevImg.css('border', $.trim(b.width+' '+b.style+' '+b.color));
-		if (m.css) {
-			this.prevImg.css('margin', m.css);
-		} else {
-			this.prevImg.css('margin-top', m.top);
-			this.prevImg.css('margin-right', m.right);
-			this.prevImg.css('margin-bottom', m.bottom);
-			this.prevImg.css('margin-left', m.left);						
-		}
-
-		$.each([this.src.events, this.src.adv], function() {
-			$.each(this, function() {
-				var $this = $(this);
-				var n = $this.attr('name');
-				if (n != 'style') {
-					var v = $.trim($this.val());
-					if (v) {
-						self.prevImg.attr(n, v);
-					} else {
-						self.prevImg.removeAttr(n);
-					}
-				}
-			});
-		});
-		
-	}
-	
-	/**
-	 * Обновляет форму выбора изображения
-	 *
-	 **/
-	this.updatePreview = function() {
-		var imgsrc = this.prevImg ? this.prevImg.attr('src') : '';
-		var src    = $.trim(this.src.main.src.val());
-		if (!src || src !=imgsrc) { // new image or empty src
-			if (this.prevImg) {
-				this.prevImg.remove();
-				this.prevImg = null;
-			}
-			this.cleanValues();
-			if (src) {  // new image
-				
-				this.prevImg = $(this.frame.createElement('img'))
-					.attr('src',  this.rte.utils.absoluteURL(src))
-					.bind('load', function() {
-						setTimeout(function() {
-							self.updateValues();	
-						}, 50)
-						
-					});
-
-				this.preview.prepend(this.prevImg);
-
-				// self.updateValues();
-			}
-		} else { // update existsed image
-			this.updateImg();
+			values(this.img);
+			this.prevImg = this.img.clone().prependTo(this.preview);
+			proportion   = (this.img.width()/this.img.height()).toFixed(2);
+			width        = parseInt(this.img.width());
+			height       = parseInt(this.img.height());
 		}
 	}
-	
-	this.updateDimesions = function(e) {
 		
-		var w = parseInt(this.src.main.width.val())  || 0;
-		var h = parseInt(this.src.main.height.val()) || 0;
-		if (w > 0 && h > 0) {
-			if (e.currentTarget == this.src.main.width.get(0)) {
-				
-				this.src.main.height.val(parseInt(w*this.origH/this.origW));
-			} else {
-				this.src.main.width.val(parseInt(h*this.origW/this.origH));
-			}	
-		} else {
-			this.src.main.width.val(this.origW);
-			this.src.main.height.val(this.origH);			
-		}
-
-		this.updateImg();
-
-	}
-	
 	this.set = function() {
+		var src = this.src.main.src.val(),
+			link;
+		
 		this.rte.history.add();
-		this.rte.selection.restoreIERange();
-		if (!this.prevImg || !this.prevImg.attr('width')) {
-			this.img  && this.img.remove();
-			this.link && this.rte.doc.execCommand('unlink', false, null);
-		} else {
-			if (!this.img[0].parentNode) {
-				this.img = $(this.rte.doc.createElement('img'));
-			} 
-			
-			this.img.attr({
-					src    : this.rte.utils.absoluteURL($.trim(this.src.main.src.val())),
-					style  : $.trim(this.rte.dom.attr(this.prevImg.get(0), 'style')),
-					title  : $.trim(this.src.main.title.val()),
-					alt    : $.trim(this.src.main.alt.val()),
-					width  : parseInt(this.src.main.width.val()),
-					height : parseInt(this.src.main.height.val())
-				});
-				
-			for (var _n in this.src.adv) {
-				if (_n != 'style') {
-					var val = this.src.adv[_n].val();
-					if (val) {
-						this.img.attr(_n, val);
-					} else {
-						this.img.removeAttr(_n)
-					}
-					
-				}
-			}
-			for (var _n in this.src.events) {
-				var val = this.src.events[_n].val();
-				if (val) {
-					this.img.attr(_n, val);
-				} else {
-					this.img.removeAttr(_n)
-				}
-			}
-				
-			if (!this.img[0].parentNode) {
-				this.rte.selection.insertNode(this.img.get(0))
-			}
+		bookmarks && rte.selection.moveToBookmark(bookmarks);
+		
+		if (!src) {
+			link = rte.dom.selfOrParentLink(this.img[0]);
+			link && link.remove();
+			return this.img.remove();
 		}
+		
+		!this.img[0].parentNode && (this.img = $(this.rte.doc.createElement('img')));
+		
+		this.img.attr('src', src)
+			.attr('style', this.src.adv.style.val());
+		
+		$.each(this.src, function(i, elements) {
+			$.each(elements, function(name, el) {
+				var val = el.val(), style;
+				
+				switch (name) {
+					case 'width':
+						self.img.css('width', val);
+						break;
+					case 'height':
+						self.img.css('height', val);
+						break;
+					case 'align':
+						self.img.css(val == 'left' || val == 'right' ? 'float' : 'vertical-align', val);
+						break;
+					case 'margin':
+						if (val.css) {
+							self.img.css('margin', val.css);
+						} else {
+							self.img.css({
+								'margin-left'   : val.left,
+								'margin-top'    : val.top,
+								'margin-right'  : val.right,
+								'margin-bottom' : val.bottom
+							});
+						}
+						break;
+					case 'border':
+						if (!val.width) {
+							val = '';
+						} else {
+							val = 'border:'+val.css+';'+$.trim((self.img.attr('style')||'').replace(/border\-[^;]+;?/ig, ''));
+							name = 'style';
+							self.img.attr('style', val)
+							return;
+						}
+
+						break;
+					case 'src':
+					case 'style':
+						return;
+					default:
+						val ? self.img.attr(name, val) : self.img.removeAttr(name);
+				}
+			});
+		});
+		
+		!this.img[0].parentNode && rte.selection.insertNode(this.img[0]);
 		this.rte.ui.update();
 	}
 

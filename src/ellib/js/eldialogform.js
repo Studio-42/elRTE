@@ -40,12 +40,12 @@ function elDialogForm(o) {
 	
 	var defaults = {
 		'class'   : 'el-dialogform',
-		submit    : function(e, d) { window.console && window.console.log && window.console.log('submit called'); d.close(); },
+		submit    : function(e, d) { d.close(); },
 		form      : { action : window.location.href,	method : 'post'	},
 		ajaxForm  : null,
 		validate  : null,
 		spinner   : 'Loading',
-		tabs      : { active: 0 },
+		tabs      : { active: 0, selected : 0 },
 		tabPrefix : 'el-df-tab-',
 		dialog    : {
 			title     : 'dialog',

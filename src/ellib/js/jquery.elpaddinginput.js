@@ -98,6 +98,8 @@
 
 				$.each(['left', 'top', 'right', 'bottom'], function() {
 					var name = this.toString();
+					self[name].val('');
+					self['u'+name].val();
 					if (typeof(v[name]) != 'undefined' && v[name] !== null) {
 						v[name] = v[name].toString();
 						var _v = parseNum(v[name]);
