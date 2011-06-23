@@ -118,13 +118,18 @@
 				self.palette.hide()
 					.appendTo(self.parents('body').eq(0))
 					.mouseleave(function() {
+						if (!self.palette.is(':animated')) {
 						$(this).slideUp();
 						self.val(self.val());
+					}
 					});
 				self.mouseleave(function(e) {
 					if (e.relatedTarget != self.palette.get(0)) {
-						self.palette.slideUp();
-						self.val(self.val());
+						if (!self.palette.is(':animated')) {
+							self.palette.slideUp();
+							self.val(self.val());
+						}
+						
 					}
 				})
 			} else {

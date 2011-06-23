@@ -192,6 +192,8 @@ elRTE = function(target, opts) {
 		}
 	});
 	
+	// this.log(target)
+	// this.log(this.source)
 	
 	$(this.doc.body).bind('dragend', function(e) {
 		setTimeout(function() {

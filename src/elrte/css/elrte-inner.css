@@ -2,7 +2,7 @@
 body.el-rte-rtl, body.el-rte-rtl * { direction:rtl; } 
 
 body.el-rte-structure blockquote   { border:1px dotted #ccc; }
-body.el-rte-structure span         { background-color:#f5f5f5; }
+body.el-rte-structure span         { outline:1px solid #ccc; }
 body.el-rte-structure table        { border:1px dotted #aaa; }
 body.el-rte-structure caption,
 body.el-rte-structure td, 

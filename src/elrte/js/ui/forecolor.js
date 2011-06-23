@@ -13,6 +13,7 @@ elRTE.prototype.ui.prototype.buttons.forecolor = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	var opts = {
 		'class' : '',
+		palettePosition : 'outer',
 		color   : this.defaultColor,
 		update  : function(c) { self.indicator.css('background-color', c); },
 		change  : function(c) { self.set(c) }
