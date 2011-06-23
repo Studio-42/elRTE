@@ -10,8 +10,10 @@
 (function($) {
 elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
-	var self = this;
-	this.img = null
+	var self = this,
+		rte  = self.rte;
+	this.img = null;
+	
 	this.init = function() {
 		
 		this.labels = {
@@ -46,36 +48,33 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 							.append($('<option />').val('baseline'   ).text(this.rte.i18n('Baseline')))
 							.append($('<option />').val('bottom'     ).text(this.rte.i18n('Bottom')))
 							.append($('<option />').val('text-bottom').text(this.rte.i18n('Text bottom'))),
-				border : $('<div />')
+				border : $('<div />').elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' })
 			},
 
 			adv : {
-				id       : $('<input type="text" />').css('width', '100%'),
-				'class'  : $('<input type="text" />').css('width', '100%'),
-				style    : $('<input type="text" />').css('width', '100%'),
-				longdesc : $('<input type="text" />').css('width', '100%')
+				// id       : $('<input type="text" />').css('width', '100%'),
+				// 'class'  : $('<input type="text" />').css('width', '100%'),
+				// style    : $('<input type="text" />').css('width', '100%'),
+				// longdesc : $('<input type="text" />').css('width', '100%')
 			},
 			events : {}
 		}
+		
+		$.each(['id', 'class', 'style', 'longdesc'], function(i, name) {
+			self.src.adv[name] = $('<input type="text" style="width:100%" />');
+		})
 		
 		$.each(
 			['onblur', 'onfocus', 'onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmouseout', 'onmouseleave', 'onkeydown', 'onkeypress', 'onkeyup'], 
 			function() {
 				self.src.events[this] = $('<input type="text" />').css('width', '100%');
 		});
-		
-		// $.each(self.src, function() {
-		// 	for (var n in this) {
-		// 		this[n].attr('name', n);
-		// 	}
-		// });
-		
 	}
 	
 	this.command = function() {
 		!this.src && this.init();
 		this.rte.selection.saveIERange();
-		this.src.main.border.elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' });
+		// this.src.main.border.elBorderSelect({ change : function() { self.updateImg(); }, name : 'border' });
 		this.src.main.margin.elPaddingInput({ type : 'margin' });
 
 		this.cleanValues();
@@ -98,9 +97,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 			submit : function(e, d) { e.stopPropagation(); e.preventDefault(); self.set(); d.close(); },
 			dialog : {
 				autoOpen : true,
-				width    : 570,
+				width    : 'auto',
 				position : 'top',
-				title    : this.rte.i18n('Image')
+				title    : this.rte.i18n('Image'),
+				resizable : true
 			}
 		}
 		var d = new elDialogForm(opts);
@@ -151,39 +151,44 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				
 		
 		
-		var fs = $('<fieldset />').append($('<legend />').text(this.rte.i18n('Preview')))
+		var fs = $('<fieldset><legend>'+this.rte.i18n('Preview')+'</legend></fieldset>');
 		d.append(fs, 'main');
 		d.open();
-		var frame = document.createElement('iframe');
-		$(frame).attr('src', '#').addClass('el-rte-preview').appendTo(fs);
-
-		html = this.rte.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body style="padding:0;margin:0;font-size:9px"> </body></html>';
-		frame.contentWindow.document.open();
-		frame.contentWindow.document.write(html);
-		frame.contentWindow.document.close();
-		this.frame = frame.contentWindow.document
-		this.preview = $(frame.contentWindow.document.body)
-		 				 .text('Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin');
+		var preview = $('<div class="elrte-image-preview"/>')
+		// var frame = document.createElement('iframe');
+		// $(frame).attr('src', '#').addClass('el-rte-preview').appendTo(fs);
+		// 
+		// html = this.rte.options.doctype+'<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body style="padding:0;margin:0;font-size:9px"> </body></html>';
+		// frame.contentWindow.document.open();
+		// frame.contentWindow.document.write(html);
+		// frame.contentWindow.document.close();
+		// this.frame = frame.contentWindow.document
+		// this.preview = $(frame.contentWindow.document.body)
+		//  				 .text('Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin');
 		
 		if (this.img.attr('src')) {
 			
-			this.prevImg = $(this.frame.createElement('img'))
-				.attr('src',  this.rte.utils.absoluteURL(this.img.attr('src')))
+			// this.prevImg = $(this.frame.createElement('img'))
+			// 	.attr('src',  this.rte.utils.absoluteURL(this.img.attr('src')))
+			// this.rte.log(this.img.attr('width'))
+			// 
+			// $.each(['width', 'height', 'title', 'alt', 'style'], function(i, attr) {
+			// 	self.rte.log(self.img.width())
+			// })
+			// this.prevImg.attr('width', this.img.attr('width'))
+			// 	// .attr('height', this.img.attr('height'))
+			// 	// .attr('title', this.img.attr('title')||'')
+			// 	// .attr('alt', this.img.attr('alt')||'')
+			// 	// .attr('style', this.img.attr('style')||'')
+			// for (var n in this.src.adv) {
+			// 	var a = this.img.attr(n);
+			// 	if (a) {
+			// 		this.prevImg.attr(n, a)
+			// 	}
+			// }	
 				
-			this.prevImg.attr('width', this.img.attr('width'))
-				.attr('height', this.img.attr('height'))
-				.attr('title', this.img.attr('title')||'')
-				.attr('alt', this.img.attr('alt')||'')
-				.attr('style', this.img.attr('style')||'')
-			for (var n in this.src.adv) {
-				var a = this.img.attr(n);
-				if (a) {
-					this.prevImg.attr(n, a)
-				}
-			}	
-				
-			this.preview.prepend(this.prevImg);
-			this.updateValues();
+			// this.preview.prepend(this.prevImg);
+			// this.updateValues();
 		}
 		
 		$.each(this.src, function() {
