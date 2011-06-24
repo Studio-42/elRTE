@@ -272,9 +272,10 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 				}
 			},
 			dialog = new elDialogForm(opts),
-			fm = rte.options.fmAllow && rte.options.fmOpen,
+			fm = !!rte.options.fmOpen,
 			src = fm
-				? $('<div class="elrte-image-src-fm"><span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-folder-open"/></span></div>').append(this.src.main.src.css('width', '87%'))
+				? $('<div class="elrte-image-src-fm"><span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-folder-open"/></span></div>')
+					.append(this.src.main.src.css('width', '87%'))
 				: this.src.main.src;
 			
 			;
@@ -291,7 +292,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		bookmarks = rte.selection.getBookmark();
 
 		if (fm) {
-			src.children(':last')
+			src.children('.ui-state-default')
 				.click( function() {
 					rte.options.fmOpen( function(url) { self.src.main.src.val(url).change() } );
 				})
