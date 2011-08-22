@@ -24,7 +24,7 @@
 				this.cssStyle.val($(n).attr('style'));
 				this.cssClass.val($(n).attr('class'));
 				this.elementID.val($(n).attr('id'));
-				var d = new elDialogForm(opts);
+				var d = new elDialogForm(opts, this.rte.getI18n());
 				d.append([this.rte.i18n('Css style'), this.cssStyle],  null, true)
 				d.append([this.rte.i18n('Css class'), this.cssClass],  null, true)
 				d.append([this.rte.i18n('ID'),        this.elementID], null, true)

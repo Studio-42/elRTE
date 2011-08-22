@@ -29,7 +29,7 @@ elRTE.prototype.ui.prototype.buttons.pasteformattext = function(rte, name) {
 				title : this.rte.i18n('Paste formatted text')
 			}
 		},
-		d = new elDialogForm(opts);
+		d = new elDialogForm(opts, this.rte.getI18n());
 		d.append(this.iframe).open();
 		this.doc = this.iframe.get(0).contentWindow.document;
 		html = this.rte.options.doctype

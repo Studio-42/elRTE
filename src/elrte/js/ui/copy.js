@@ -11,7 +11,7 @@
 (function($) {
 elRTE.prototype.ui.prototype.buttons.copy = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
-	
+
 	this.command = function() {
 		
 		if (this.rte.browser.mozilla) {
@@ -27,11 +27,16 @@ elRTE.prototype.ui.prototype.buttons.copy = function(rte, name) {
 				var opts = {
 					dialog : {
 						title   : this.rte.i18n('Warning'),
-						buttons : { Ok : function() { $(this).dialog('close'); } }
+						buttons : [
+							{
+								text : this.rte.i18n('Ok'),
+								click : function() { $(this).dialog('close'); }
+							}
+						]
 					}
 				}
 
-				var d = new elDialogForm(opts);
+				var d = new elDialogForm(opts, this.rte.getI18n());
 				d.append(this.rte.i18n('This operation is disabled in your browser on security reason. Use shortcut instead.')+': '+s).open();
 			}
 		} else {

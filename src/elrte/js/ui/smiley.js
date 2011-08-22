@@ -41,7 +41,7 @@ elRTE.prototype.ui.prototype.buttons.smiley = function(rte, name) {
 				buttons : {}
 			}
 		}
-		d = new elDialogForm(opts);
+		d = new elDialogForm(opts, this.rte.getI18n());
 		$.each(this.smileys, function(name, img) {
 			d.append($('<img src="'+url+img+'" title="'+name+'" id="'+name+'" class="el-rte-smiley"/>').click(function() { self.set(this.id, d);	}));
 		});

@@ -12,9 +12,12 @@
 				dialog : {
 					width : 560,
 					title : this.rte.i18n('About this software'),
-					buttons     : {
-						Ok : function() { $(this).dialog('destroy'); }
-					}
+					buttons     : [
+						{
+							text : this.rte.i18n('Ok'),
+							click : function() { $(this).dialog('destroy'); }
+						}
+					]
 				}
 			}
 
@@ -40,7 +43,7 @@
 				+'<div class="elrte-copy">'+this.rte.i18n('For more information about this software visit the')+' <a href="http://elrte.org">'+this.rte.i18n('elRTE website')+'.</a></div>'
 				+'<div class="elrte-copy">Twitter: <a href="http://twitter.com/elrte_elfinder">elrte_elfinder</a></div>';
 			
-			d = new elDialogForm(opts);
+			d = new elDialogForm(opts, this.rte.getI18n());
 			d.append(txt);
 			d.open();
 		}

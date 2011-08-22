@@ -271,7 +271,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 					}
 				}
 			},
-			dialog = new elDialogForm(opts),
+			dialog = new elDialogForm(opts, this.rte.getI18n());
 			fm = !!rte.options.fmOpen,
 			src = fm
 				? $('<div class="elrte-image-src-fm"><span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-folder-open"/></span></div>')
