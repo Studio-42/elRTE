@@ -387,9 +387,9 @@ elRTE.prototype.val = function(v) {
 		}
 	} else {
 		if (this.source.is(':visible')) {
-			return this.filter.source2source(this.source.val()).trim();
+			return $.trim(this.filter.source2source(this.source.val()));
 		} else {
-			return this.filter.source($(this.doc.body).html()).trim();
+			return $.trim(this.filter.source($(this.doc.body).html()));
 		}
 	}
 }
