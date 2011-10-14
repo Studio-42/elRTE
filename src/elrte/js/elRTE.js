@@ -445,7 +445,7 @@ $.fn.elrte = function(o, v) {
 		if (!this.length) {
 			return '';
 		} else if (this.length == 1) {
-			return v ? this[0].elrte.val(v) : this[0].elrte.val();
+			return v || v === '' ? this[0].elrte.val(v) : this[0].elrte.val();
 		} else {
 			ret = {}
 			this.each(function() {
