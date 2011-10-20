@@ -156,7 +156,9 @@ elRTE.prototype.w3cRange = function(rte) {
 		var r = this.r.duplicate();
 		r.collapse(true);
 		var s = r.parentElement();
-		return s && s.nodeName == 'BODY' ? s.firstChild : s;
+		return s && s.nodeName == 'BODY'
+			? (s.firstChild ? s.firstChild : s.parentNode.parentNode)
+			: s;
 	}
 	
 	
@@ -168,7 +170,9 @@ elRTE.prototype.w3cRange = function(rte) {
 		var r = this.r.duplicate();
 		r.collapse(false);
 		var e = r.parentElement();
-		return e && e.nodeName == 'BODY' ? e.lastChild : e;
+		return e && e.nodeName == 'BODY'
+			? (e.lastChild ? e.lastChild : e.parentNode.parentNode)
+			: e;
 	}
 
 	
