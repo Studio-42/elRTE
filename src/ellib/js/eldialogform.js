@@ -289,5 +289,5 @@ function elDialogForm(o) {
 		this.dialog.dialog('destroy')//.remove();
 	}
 	
-}
+};
 
