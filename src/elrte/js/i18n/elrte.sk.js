@@ -4,7 +4,7 @@
  * @version 2010-09-19
  */
 (function($) {
-elRTE.prototype.i18Messages.cs = {
+elRTE.prototype.i18Messages.sk = {
 	'_translator'    : 'Lubos Voros &lt;lubos@simpledevelopment.sk&gt;',
 	'_translation'   : 'Slovak translation',
 	'Editor' : 'Editor',
