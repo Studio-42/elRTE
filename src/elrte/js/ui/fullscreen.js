@@ -65,6 +65,9 @@ elRTE.prototype.ui.prototype.buttons.fullscreen = function(rte, name) {
 		
 		if (f) {
 			e.removeClass(c);
+			if (rte.options.width > 0) {
+				rte.editor.width(rte.options.width);
+			}
 			wz.height(this.height);
 			w.unbind('resize', resize);
 			this.domElem.removeClass('active');
