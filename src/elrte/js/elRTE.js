@@ -247,11 +247,7 @@ elRTE = function(target, opts) {
 			self.lastKey = e.keyCode;
 			self.typing = false;
 		}
-		
-		if (e.keyCode == 32 && $.browser.opera) {
-			self.selection.insertNode(self.doc.createTextNode(" "));
-			return false
-		}
+
 	})
 	.bind('paste', function(e) {
 		if (!self.options.allowPaste) {
