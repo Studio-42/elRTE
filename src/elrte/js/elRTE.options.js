@@ -28,6 +28,7 @@ elRTE.prototype.options   = {
 	cssfiles        : [],
 	height          : null,
 	resizable       : true,
+	resizeHandle    : 'se',
 	lang            : 'en',
 	toolbar         : 'normal',
 	absoluteURLs    : true,

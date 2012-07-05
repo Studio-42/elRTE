@@ -71,7 +71,7 @@ elRTE = function(target, opts) {
 		var self = this;
 		if (this.options.resizable && $.fn.resizable) {
 			if (r) {
-				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);
+				this.editor.resizable({handles : this.options.resizeHandle, alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);
 			} else {
 				this.editor.resizable('destroy').unbind('resize', self.updateHeight);
 			}
