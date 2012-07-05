@@ -1,6 +1,5 @@
 /* container for elselect */
 .el-select {
-	height:17px;
 	width : 110px;
 	border:1px solid #ccc;
 	cursor: default;
@@ -12,10 +11,7 @@
 
 /* selected element */
 .el-select label {
-	height:17px;
-	line-height:17px;
-/*	font-size:.92em;*/
-	padding: 0 5px;
+	padding: 4px 5px;
 	margin: 0 12px 0 0;
 	display:block;
 	white-space:nowrap;
