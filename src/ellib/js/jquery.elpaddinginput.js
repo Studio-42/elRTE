@@ -36,13 +36,13 @@
 				self[this].append('<option value="%">%</option>');
 			}
 		});
-		
+
 		this.empty().addClass(opts['class'])
-			.append(this.left).append(this.uleft).append(' x ')
-			.append(this.top).append(this.utop).append(' x ')
-			.append(this.right).append(this.uright).append(' x ')
+			.append(this.left).append(this.uleft).append(' ')
+			.append(this.top).append(this.utop).append(' ')
+			.append(this.right).append(this.uright).append(' ')
 			.append(this.bottom).append(this.ubottom);
-			
+
 		this.val = function(v) {
 			if (!v && v!=='') {
 				var l = parseNum(this.left.val());
