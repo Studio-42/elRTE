@@ -156,7 +156,7 @@ elRTE.prototype.ui.prototype.buttons.link = function(rte, name) {
 			}
 		}
 
-		d = new elDialogForm(opts);
+		d = new elDialogForm(opts, this.rte.getI18n());
 
 		l = $('<div />')
 			.append( $('<label />').append(this.src.popup.location).append(this.rte.i18n('Location bar')))

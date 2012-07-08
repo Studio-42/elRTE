@@ -26,7 +26,7 @@ elRTE.prototype.ui.prototype.buttons.anchor = function(rte, name) {
 		!this.rte.selection.collapsed() && this.rte.selection.collapse(false);
 		this.input.val($(this.anchor).addClass('elrte-anchor').attr('name'));
 		this.rte.selection.saveIERange();
-		var d = new elDialogForm(opts);
+		var d = new elDialogForm(opts, this.rte.getI18n());
 		d.append([this.rte.i18n('Bookmark name'), this.input], null, true).open();
 		setTimeout(function() { self.input.focus()}, 20);
 	}

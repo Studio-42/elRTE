@@ -35,9 +35,9 @@
  *
  **/
 
-function elDialogForm(o) {
+function elDialogForm(o, i18n) {
 	var self = this;
-	
+
 	var defaults = {
 		'class'   : 'el-dialogform',
 		submit    : function(e, d) { d.close(); },
@@ -53,10 +53,16 @@ function elDialogForm(o) {
 			modal     : true,
 			resizable : false,
 			closeOnEscape : true,
-			buttons  : {
-				Cancel : function() { self.close(); },
-				Ok     : function() { self.form.trigger('submit'); }
-			}
+			buttons  : [
+				{
+					text: i18n ? i18n.translate('Cancel') : 'Cancel',
+					click: function() { self.close(); }
+				},
+				{
+					text: i18n ? i18n.translate('Ok') : 'Ok',
+					click: function() { self.form.trigger('submit'); }
+				}
+			]
 		}
 	};
 

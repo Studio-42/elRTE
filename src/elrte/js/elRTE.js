@@ -325,6 +325,15 @@ elRTE = function(target, opts) {
 }
 
 /**
+ * Return localization
+ *
+ * @return eli18n
+ **/
+elRTE.prototype.getI18n = function() {
+	return this._i18n;
+}
+
+/**
  * Return message translated to selected language
  *
  * @param  string  msg  message text in english

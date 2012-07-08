@@ -100,7 +100,7 @@
 					title    : this.rte.i18n('Flash')
 				}
 			}
-			var d = new elDialogForm(opts);
+			var d = new elDialogForm(opts, this.rte.getI18n());
 			
 			if (this.rte.options.fmAllow && this.rte.options.fmOpen) {
 				var src = $('<span />').append(this.src.url.css('width', '85%'))

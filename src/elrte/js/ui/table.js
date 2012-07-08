@@ -173,7 +173,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 				title : this.rte.i18n('Table')
 			}
 		}
-		var d = new elDialogForm(opts);
+		var d = new elDialogForm(opts, this.rte.getI18n());
 		
 		for (var tab in this.src) {
 			d.tab(tab, this.rte.i18n(this.labels[tab]));

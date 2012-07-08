@@ -27,7 +27,7 @@ elRTE.prototype.ui.prototype.buttons.pastetext = function(rte, name) {
 				title : this.rte.i18n('Paste only text')
 			}
 		}
-		var d = new elDialogForm(opts);
+		var d = new elDialogForm(opts, this.rte.getI18n());
 		d.append(this.input).open();
 	}
 	

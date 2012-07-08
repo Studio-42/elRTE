@@ -49,7 +49,7 @@ elRTE.prototype.ui.prototype.buttons.horizontalrule = function(rte, name) {
 			}
 		}
 
-		var d = new elDialogForm(opts);
+		var d = new elDialogForm(opts, this.rte.getI18n());
 		d.append([this.rte.i18n('Width'),          $('<span />').append(this.src.width).append(this.src.wunit) ], null, true)
 			.append([this.rte.i18n('Height'),      $('<span />').append(this.src.height).append(' px')], null, true)
 			.append([this.rte.i18n('Border'),      this.src.border], null, true)
