@@ -101,4 +101,4 @@ eli18n.prototype = new function() {
 		}
 		return msg;
 	}
-}
+};
