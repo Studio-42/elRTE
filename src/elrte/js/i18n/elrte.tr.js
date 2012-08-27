@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.tr = {
 	'Superscript'             : 'Üst simge',
 	'Subscript'               : 'Alt simge',
 	'Align left'              : 'Sola hizala',
-	'Ailgn right'             : 'Sağa hizala',
+	'Align right'             : 'Sağa hizala',
 	'Align center'            : 'Ortala',
 	'Align full'              : 'İki yana yasla',
 	'Font color'              : 'Yazı tipi rengi',

@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.hu = {
     'Superscript'             : 'Felső index',
     'Subscript'               : 'Alsó index',
     'Align left'              : 'Balra igazítás',
-    'Ailgn right'             : 'Jobbra igazítás',
+    'Align right'             : 'Jobbra igazítás',
     'Align center'            : 'Középre igazítás',
     'Align full'              : 'Sórkizárt igazítás',
     'Font color'              : 'Betűszín',

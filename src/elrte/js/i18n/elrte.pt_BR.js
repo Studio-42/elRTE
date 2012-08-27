@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.pt_BR = {
 	'Superscript'             : 'Superíndice',
 	'Subscript'               : 'Subíndice',
 	'Align left'              : 'Alinhar à esquerda',
-	'Ailgn right'             : 'Alinhar à direita',
+	'Align right'             : 'Alinhar à direita',
 	'Align center'            : 'Centralizar',
 	'Align full'              : 'Justificado',
 	'Font color'              : 'Cor de texto',

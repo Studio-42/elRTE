@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.sk = {
 	'Superscript'             : 'Horný index',
 	'Subscript'               : 'Dolný index',
 	'Align left'              : 'Zarovnať vľavo',
-	'Ailgn right'             : 'Zarovnať vpravo',
+	'Align right'             : 'Zarovnať vpravo',
 	'Align center'            : 'Zarovnať na stred',
 	'Align full'              : 'Do bloku',
 	'Font color'              : 'Farba písma',

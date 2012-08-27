@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.th = {
 	'Superscript'             : 'ตัวยก',
 	'Subscript'               : 'ตัวห้อย',
 	'Align left'              : 'ชิดซ้าย',
-	'Ailgn right'             : 'ชิดขวา',
+	'Align right'             : 'ชิดขวา',
 	'Align center'            : 'กึ่งกลาง',
 	'Align full'              : 'จัดเต็ม',
 	'Font color'              : 'สีตัวอักษร',

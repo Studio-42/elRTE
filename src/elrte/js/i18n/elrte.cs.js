@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.cs = {
 	'Superscript'             : 'Horní index',
 	'Subscript'               : 'Dolní index',
 	'Align left'              : 'Zarovnat vlevo',
-	'Ailgn right'             : 'Zarovna vpravo',
+	'Align right'             : 'Zarovna vpravo',
 	'Align center'            : 'Zarovnat na střed',
 	'Align full'              : 'Do bloku',
 	'Font color'              : 'Barva písma',

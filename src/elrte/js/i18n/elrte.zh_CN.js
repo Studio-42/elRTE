@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.zh_CN = {
 	'Superscript'             : '上标',
 	'Subscript'               : '下标',
 	'Align left'              : '靠左',
-	'Ailgn right'             : '靠右',
+	'Align right'             : '靠右',
 	'Align center'            : '居中',
 	'Align full'              : '左右对齐',
 	'Font color'              : '文字颜色',

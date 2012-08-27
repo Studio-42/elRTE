@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.fa = {
 	'Superscript'             : 'بالانویس',
 	'Subscript'               : 'زیرنویس',
 	'Align left'              : 'چپ چین',
-	'Ailgn right'             : 'راست چین',
+	'Align right'             : 'راست چین',
 	'Align center'            : 'وسط چین',
 	'Align full'              : 'به صورت کشده و کامل',
 	'Font color'              : 'رنگ قلم ها',

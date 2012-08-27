@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.lv = {
 	'Superscript'             : 'Augšraksts',
 	'Subscript'               : 'Apakšraksts',
 	'Align left'              : 'Izlīdzināt pa kreiso malu',
-	'Ailgn right'             : 'Izlīdzināt pa labo malu',
+	'Align right'             : 'Izlīdzināt pa labo malu',
 	'Align center'            : 'Centrēt',
 	'Align full'              : 'Izlīdzināt pa malām',
 	'Font color'              : 'Šrifta krāsa',

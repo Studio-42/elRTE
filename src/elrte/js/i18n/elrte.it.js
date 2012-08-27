@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.it = {
 	'Superscript'             : 'Indice',
 	'Subscript'               : 'Pedice/Deponente',
 	'Align left'              : 'Allinea a sinistra',
-	'Ailgn right'             : 'Allinea a destra',
+	'Align right'             : 'Allinea a destra',
 	'Align center'            : 'Centra',
 	'Align full'              : 'Giustifica',
 	'Font color'              : 'Colore del testo',

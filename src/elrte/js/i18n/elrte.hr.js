@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.hr = {
 	'Superscript'             : 'Natpis',
 	'Subscript'               : 'Potpis',
 	'Align left'              : 'Poravnaj lijevo',
-	'Ailgn right'             : 'Poravnaj desno',
+	'Align right'             : 'Poravnaj desno',
 	'Align center'            : 'Poravnaj u sredinu',
 	'Align full'              : 'Poravnaj potpuno',
 	'Font color'              : 'Boja fonta',

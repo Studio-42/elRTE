@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.jp = {
 	'Superscript'             : '上付き文字',
 	'Subscript'               : '添え字',
 	'Align left'              : '左揃え',
-	'Ailgn right'             : '右揃え',
+	'Align right'             : '右揃え',
 	'Align center'            : '中央揃え',
 	'Align full'              : '両端揃え',
 	'Font color'              : 'テキスト色',

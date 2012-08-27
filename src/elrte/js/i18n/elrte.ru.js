@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.ru = {
 	'Superscript'             : 'Надстрочный текст',
 	'Subscript'               : 'Подстрочный текст',
 	'Align left'              : 'Выровнять налево',
-	'Ailgn right'             : 'Выровнять направо',
+	'Align right'             : 'Выровнять направо',
 	'Align center'            : 'Выровнять по центру',
 	'Align full'              : 'Выровнять по краям',
 	'Font color'              : 'Цвет шрифта',

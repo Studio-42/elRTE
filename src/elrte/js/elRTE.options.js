@@ -74,7 +74,7 @@ elRTE.prototype.options   = {
 		'superscript'         : 'Superscript',
 		'subscript'           : 'Subscript',
 		'justifyleft'         : 'Align left',
-		'justifyright'        : 'Ailgn right',
+		'justifyright'        : 'Align right',
 		'justifycenter'       : 'Align center',
 		'justifyfull'         : 'Align full',
 		'indent'              : 'Indent',
