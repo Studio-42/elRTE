@@ -123,7 +123,9 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		} else {
 			this.table = n ? $(n) : $(this.rte.doc.createElement('table'));					
 		}
-		
+
+		var t = this.table.get(0);
+
 		!this.src && init();
 		this.src.main.border.elBorderSelect({styleHeight : 117});
 		this.src.main.bg.elColorPicker({palettePosition : 'outer', 'class' : 'el-colorpicker ui-icon ui-icon-pencil'});
@@ -137,21 +139,21 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 			this.src.main.cols.val(2).removeAttr('disabled');
 		}
 		
-		var w = this.table.css('width') || this.table.attr('width');
+		var w = t.style.width || this.table.attr('width') || '';
 		this.src.main.width.val(parseInt(w)||'');
 		this.src.main.wunit.val(w.indexOf('px') != -1 ? 'px' : '%');
 		
-		var h = this.table.css('height') || this.table.attr('height');	
+		var h = t.style.height || this.table.attr('height') || '';
 		this.src.main.height.val(parseInt(h)||'');
 		this.src.main.hunit.val(h && h.indexOf('px') != -1 ? 'px' : '%');
 
-		var f = this.table.css('float');
+		var f = t.style['float'] || '';
 		this.src.main.align.val('');
 		if (f == 'left' || f == 'right') {
 			this.src.main.align.val(f);
 		} else {
-			var ml = this.table.css('margin-left');
-			var mr = this.table.css('margin-right');
+			var ml = t.style.marginLeft||'';
+			var mr = t.style.marginRight||'';
 			if (ml == 'auto' && mr == 'auto') {
 				this.src.main.align.val('center');
 			}
@@ -161,8 +163,8 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 		//this.src.main.frame.val(this.table.attr('frame'));
 		this.src.main.rules.val(this.rte.dom.attr(this.table.get(0), 'rules'));
 
-		this.src.main.bg.val(this.table.css('background-color'));
-		var bgimg = (this.table.css('background-image')||'').replace(/url\(([^\)]+)\)/i, "$1");
+		this.src.main.bg.val(t.style.backgroundColor||'');
+		var bgimg = (t.style.backgroundImage||'').replace(/url\(([^\)]+)\)/i, "$1");
 		this.src.main.bgimg.val(bgimg!='none' ? bgimg : '');
 
 		var opts = {
@@ -200,7 +202,7 @@ elRTE.prototype.ui.prototype.buttons.table = function(rte, name) {
 					.append([this.rte.i18n('Background'),    $('<span />').append($('<span />').css({'float' : 'left', 'margin-right' : '3px'}).append(this.src.main.bg)).append(this.src.main.bgimg)], 'main', true)
 			} else {
 				for (var name in this.src[tab]) {
-					var v = this.rte.dom.attr(this.table, name);
+					var v = this.rte.dom.attr(t, name);
 					if (tab == 'events') {
 						v = this.rte.utils.trimEventCallback(v);
 					} 
