@@ -411,7 +411,7 @@ elRTE.prototype.ui.prototype.buttons.image = function(rte, name) {
 		this.domElem.removeClass('disabled');
 		var n = this.rte.selection.getEnd(),
 			$n = $(n);
-		if (n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
+		if ($n.is('img') && !$n.hasClass('elrte-protected')) {
 			this.domElem.addClass('active');
 		} else {
 			this.domElem.removeClass('active');
