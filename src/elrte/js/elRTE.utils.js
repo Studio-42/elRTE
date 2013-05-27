@@ -262,7 +262,7 @@ elRTE.prototype.utils = function(rte) {
 		
 		if (s['background-image']) {
 			s.background = (s['background-color']+' ')||''+s['background-image']+' '+s['background-position']||'0 0'+' '+s['background-repeat']||'repeat';
-			delete s['background-image'];
+			delete s['background-color'];
 			delete s['background-image'];
 			delete s['background-position'];
 			delete s['background-repeat'];
