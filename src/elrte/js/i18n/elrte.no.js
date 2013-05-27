@@ -48,7 +48,7 @@ elRTE.prototype.i18Messages.no = {
 	'Superscript'             : 'Hevet skrift',
 	'Subscript'               : 'Senket skrift',
 	'Align left'              : 'Venstrejuster',
-	'Ailgn right'             : 'Høyrejuster',
+	'Align right'             : 'Høyrejuster',
 	'Align center'            : 'Sentrer tekst',
 	'Align full'              : 'Like marger',
 	'Font color'              : 'Tekstfarge',

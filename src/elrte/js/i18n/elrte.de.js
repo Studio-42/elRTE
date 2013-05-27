@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.de = {
 	'Superscript'             : 'Hochgestellt',
 	'Subscript'               : 'Tiefgestellt',
 	'Align left'              : 'Linksbündig',
-	'Ailgn right'             : 'Rechtsbündig',
+	'Align right'             : 'Rechtsbündig',
 	'Align center'            : 'Zentriert',
 	'Align full'              : 'Blocksatz',
 	'Font color'              : 'Textfarbe',

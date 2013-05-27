@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.ko = {
 	'Superscript'             : '위 첨자',
 	'Subscript'               : '아래 첨자',
 	'Align left'              : '왼쪽 정렬',
-	'Ailgn right'             : '오른쪽 정렬',
+	'Align right'             : '오른쪽 정렬',
 	'Align center'            : '가운데 정렬',
 	'Align full'              : '양쪽 정렬',
 	'Font color'              : '글꼴 색',
