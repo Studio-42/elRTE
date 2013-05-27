@@ -128,6 +128,9 @@ elRTE = function(target, opts) {
 	this.window = this.iframe.contentWindow;
 	this.doc    = this.iframe.contentWindow.document;
 	this.$doc   = $(this.doc);
+	if(!this.doc.body.firstChild) {
+		this.doc.body.appendChild(document.createTextNode(''));
+	}
 	
 	/* put content into iframe */
 	html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
@@ -376,6 +379,9 @@ elRTE.prototype.val = function(v) {
 			if ($.browser.msie) {
 				this.doc.body.innerHTML = '<br />'+this.filter.wysiwyg(v);
 				this.doc.body.removeChild(this.doc.body.firstChild);
+				if(!this.doc.body.firstChild) {
+					this.doc.body.appendChild(document.createTextNode(''));
+				}
 			} else {
 				this.doc.body.innerHTML = this.filter.wysiwyg(v);
 			}
