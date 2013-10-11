@@ -35,34 +35,16 @@
 		}
 
 		this.set = function(url, w, h) {
-			var getTubeID = function(url, gkey) {
-				var returned = null;
-				if (url.indexOf("?") != -1) {
-					var list = url.split("?")[1].split("&"),
-						gets = [];
+			var youtubeID = (url.match(/youtu\.be\/(\w+)/) || url.match(/youtube.com\/watch\?(?:[^&]+&)*v=(\w+)/) || [])[1];
+			if (youtubeID) {
+				var toinsert = '<iframe width="'+w+'" height="'+h+'" src="http://www.youtube.com/embed/'+youtubeID+'?wmode=transparent" frameborder="0" allowfullscreen="true"> </iframe>';
+				var id = 'youtube-'+Math.random().toString().substring(2);
+				this.rte.filter.scripts[id] = toinsert;
+				var img = '<img id="'+id+'" src="'+this.rte.filter.url+'pixel.gif" class="elrte-protected elrte-iframe" style="width:'+w+'; height:'+h+'">';
 
-					for (var ind in list) {
-						var kv = list[ind].split("=");
-						if (kv.length>0)
-							gets[kv[0]] = kv[1];
-					}
-					returned = gets;
-
-					if (typeof gkey != "undefined")
-						if (typeof gets[gkey] != "undefined")
-							returned = gets[gkey];
-				}
-
-				return returned;
-			};
-
-			var toinsert = '<iframe width="'+w+'" height="'+h+'" src="http://www.youtube.com/embed/'+getTubeID(url, "v")+'?wmode=transparent" frameborder="0" allowfullscreen></iframe>';
-			var id = 'youtube-'+Math.random().toString().substring(2);
-			this.rte.filter.scripts[id] = toinsert;
-			var img = '<img id="'+id+'" src="'+this.rte.filter.url+'pixel.gif" class="elrte-protected elrte-iframe" style="width:'+w+'; height:'+h+'">';
-
-			this.rte.history.add();
-			this.rte.selection.insertHtml(img);
+				this.rte.history.add();
+				this.rte.selection.insertHtml(img);
+			}
 		}
 	}
 })(jQuery);
