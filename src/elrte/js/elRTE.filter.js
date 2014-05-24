@@ -610,7 +610,7 @@
 				.replace(this.cdataRegExp, "<!--[CDATA[$1]]-->")
 				.replace(this.scriptRegExp, function(t, a, s) {
 					var id;
-					if (self.denyTags.script) {
+					if (self.denyTags && self.denyTags.script) {
 						return '';
 					}
 					id = 'script'+Math.random().toString().substring(2);
