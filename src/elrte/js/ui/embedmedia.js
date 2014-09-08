@@ -10,6 +10,11 @@
 			return '//player.vimeo.com/video/'+vimeoID+'?wmode=transparent';
 		}
 
+		var rutubeId = (url.match(/rutube\.ru\/video\/(\w+)/) || [])[1];
+		if (rutubeId) {
+			return 'http://rutube.ru/play/embed/'+rutubeId;
+		}
+
 		var instagramID = (url.match(/instagram\.com\/p\/(\w+)/) || [])[1];
 		if (instagramID) {
 			return '//instagram.com/p/'+instagramID+'/embed/';
