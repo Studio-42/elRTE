@@ -1,8 +1,8 @@
 (function($) {
 	var _matchEmbedUrl = function(url) {
-		var embedmediaID = (url.match(/youtu\.be\/([^&\?]+)/) || url.match(/embedmedia.com\/watch\?(?:[^&]+&)*v=([^&\?]+)/) || [])[1];
-		if (embedmediaID) {
-			return '//www.embedmedia.com/embed/'+embedmediaID+'?wmode=transparent';
+		var youtubeID = (url.match(/youtu\.be\/([^&\?]+)/) || url.match(/youtube.com\/watch\?(?:[^&]+&)*v=([^&\?]+)/) || [])[1];
+		if (youtubeID) {
+			return '//www.youtube.com/embed/'+youtubeID+'?wmode=transparent';
 		}
 
 		var vimeoID = (url.match(/vimeo\.com\/(\w+)/) || [])[1];
@@ -12,7 +12,7 @@
 
 		var rutubeId = (url.match(/rutube\.ru\/video\/(\w+)/) || [])[1];
 		if (rutubeId) {
-			return 'http://rutube.ru/play/embed/'+rutubeId;
+			return '//rutube.ru/play/embed/'+rutubeId;
 		}
 
 		var instagramID = (url.match(/instagram\.com\/p\/(\w+)/) || [])[1];
