@@ -5,17 +5,17 @@
 			return '//www.youtube.com/embed/'+youtubeID+'?wmode=transparent';
 		}
 
-		var vimeoID = (url.match(/vimeo\.com\/(\w+)/) || [])[1];
+		var vimeoID = (url.match(/vimeo\.com\/([\w\-]+)/) || [])[1];
 		if (vimeoID) {
 			return '//player.vimeo.com/video/'+vimeoID+'?wmode=transparent';
 		}
 
-		var rutubeId = (url.match(/rutube\.ru\/video\/(\w+)/) || [])[1];
+		var rutubeId = (url.match(/rutube\.ru\/video\/([\w\-]+)/) || [])[1];
 		if (rutubeId) {
 			return '//rutube.ru/play/embed/'+rutubeId;
 		}
 
-		var instagramID = (url.match(/instagram\.com\/p\/(\w+)/) || [])[1];
+		var instagramID = (url.match(/instagram\.com\/p\/([\w\-]+)/) || [])[1];
 		if (instagramID) {
 			return '//instagram.com/p/'+instagramID+'/embed/';
 		}
