@@ -24,20 +24,44 @@ elRTE.prototype.ui.prototype.buttons.indent = function(rte, name) {
 			var val = self.rte.dom.attr(n, 'style').indexOf(css) != -1 ? parseInt($(n).css(css))||0 : 0;
 			$(n).css(css, val+40+'px');
 		}
-		
-		for (var i=0; i < nodes.length; i++) {
+
+		for (var i = 0; i < nodes.length; i++) {
+			if (nodes[i].nodeName == 'BR') {
+				nodes[i] = nodes[i].parentNode;
+			}
+
 			if (/^(TABLE|THEAD|TFOOT|TBODY|COL|COLGROUP|TR)$/.test(nodes[i].nodeName)) {
-				$(nodes[i]).find('td,th').each(function() {
+				$(nodes[i]).find('td,th').each(function () {
 					indent(this);
 				});
 			} else if (/^LI$/.test(nodes[i].nodeName)) {
-				var n = $(nodes[i]);
-				$(this.rte.dom.create(nodes[i].parentNode.nodeName))
-					.append($(this.rte.dom.create('li')).html(n.html()||'')).appendTo(n.html('&nbsp;'));
+				var $node = $(nodes[i]),
+					$prevLi = $node.prev('li'),
+					$listParent, $list, $newNode;
+
+				if ($prevLi.length) {
+					$listParent = $prevLi;
+					$newNode = $node;
+				} else {
+					$listParent = $node;
+					$newNode = $(this.rte.dom.create('li')).html('&nbsp;');
+				}
+
+				$list = $listParent.find('ul,ol').first();
+				if ($list.length) {
+					$list.append($newNode);
+				} else {
+					$list = $newNode.find('ul,ol').first();
+					$list.length || ($list = $(this.rte.dom.create(nodes[i].parentNode.nodeName)));
+					$list.appendTo($listParent);
+					$list.prepend($newNode);
+				}
+				this.rte.selection.selectContents($newNode[0]);
+				console.log(nodes[i].parentNode.nodeName);
 			} else {
 				indent(nodes[i]);
 			}
-		};
+		}
 		this.rte.ui.update();
 	}
 	

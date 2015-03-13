@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.ca = {
 	'Superscript'             : 'Superíndex',
 	'Subscript'               : 'Subíndex',
 	'Align left'              : 'Alinea a l\'esquerra',
-	'Ailgn right'             : 'Alinea a la dreta',
+	'Align right'             : 'Alinea a la dreta',
 	'Align center'            : 'Centra',
 	'Align full'              : 'Justifica',
 	'Font color'              : 'Color del text',

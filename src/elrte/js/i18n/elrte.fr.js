@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.fr = {
 	'Superscript'             : 'Exposant',
 	'Subscript'               : 'Indice',
 	'Align left'              : 'Aligner à gauche',
-	'Ailgn right'             : 'Aligner à droite',
+	'Align right'             : 'Aligner à droite',
 	'Align center'            : 'Centrer',
 	'Align full'              : 'Justifier',
 	'Font color'              : 'Couleur de texte',

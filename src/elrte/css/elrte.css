@@ -107,6 +107,7 @@
 .el-rte .toolbar ul li.anchor              {background-position:-296px -30px} 
 .el-rte .toolbar ul li.image               {background-position:-384px -2px}
 .el-rte .toolbar ul li.flash               {background-position:-410px -2px}
+.el-rte .toolbar ul li.embedmedia          {background-position:-410px -2px}
 .el-rte .toolbar ul li.file                {background-position:-436px -3px}
 .el-rte .toolbar ul li.table               {background-position:-421px -30px}
 .el-rte .toolbar ul li.tableprops          {background-position:-602px -29px}
@@ -188,7 +189,7 @@
 /* выпадающие меню */
 /* container for elselect */
 .el-rte .toolbar ul li.el-select {
-	height:22px;
+	height: 22px;
 	width : 120px;
 	border:1px solid #ccc;
 	font-size:.82em;
@@ -231,10 +232,7 @@
 /* colors palette */
 .el-palette { top:20px; }
 
-.el-dialogform, .el-dialogform td       { font-size:.9em; }
-.el-dialogform select                   { font-size:.9em;}
 .ui-dialog .ui-dialog-buttonpane        { padding: .4em, 1em;}
-.ui-dialog .ui-dialog-buttonpane button { margin: .3em .4em .1em 0; font-size:.9em;}
 .ui-dialog .ui-dialog-titlebar          { padding: .3em 1em .3em;   }
 /*.ui-dialog-buttonset { padding:0; background-color:#333;}*/
 /* диалоговые окна */
@@ -253,11 +251,13 @@
 	padding : 0;
 }
 .el-dialogform fieldset legend {
-	font-size:.9em;
+    font-size: 12px;
+    line-height: 1.2em;
 	padding: .1em .5em;
 	margin: 0 0 5px 1em;
 	border:1px solid #ccc;
 	background-color: #eee;
+    width: auto;
 }
 .el-dialogform p  { padding:.2em .3em;}
 .el-dialogform h3 { color:#555; padding:1.2em 0 0 0; margin:0; font-size:1.2em; }
@@ -296,6 +296,25 @@ table.elrte-authors td { border-bottom:1px solid #eee; }
 	font-size:.7em;
 	overflow:auto;
 	height:240px;
-	width:480px;
+	width:530px;
 }
 
+/* bootstrap fixes */
+.el-dialogform input,
+.el-palette input,
+.el-dialogform select,
+.el-palette select {
+    width: auto;
+    margin: 2px 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.el-paddinginput input,
+.el-borderselect input {
+    width: 3em;
+}
+
+.elrte-image-preview img {
+    max-width: none;
+}

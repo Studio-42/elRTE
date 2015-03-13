@@ -48,7 +48,7 @@ elRTE.prototype.i18Messages.LANG_CODE = {
 	'Superscript'             : '',
 	'Subscript'               : '',
 	'Align left'              : '',
-	'Ailgn right'             : '',
+	'Align right'             : '',
 	'Align center'            : '',
 	'Align full'              : '',
 	'Font color'              : '',

@@ -42,7 +42,7 @@ elRTE.prototype.i18Messages.da = {
 	'Superscript'             : 'Hævet skrift',
 	'Subscript'               : 'Sænket skrift',
 	'Align left'              : 'Venstrejusteret',
-	'Ailgn right'             : 'Højrejusteret',
+	'Align right'             : 'Højrejusteret',
 	'Align center'            : 'Centreret',
 	'Align full'              : 'Lige margner',
 	'Font color'              : 'Tekst farve',

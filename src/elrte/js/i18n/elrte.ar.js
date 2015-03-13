@@ -41,7 +41,7 @@ elRTE.prototype.i18Messages.ar = {
 	'Superscript'             : 'يعلوه خط',
 	'Subscript'               : 'تحته خط',
 	'Align left'              : 'محاذاة إلى اليسار',
-	'Ailgn right'             : 'محاذاة إلى اليمين ',
+	'Align right'             : 'محاذاة إلى اليمين ',
 	'Align center'            : 'محاذاة إلى المنتصف',
 	'Align full'              : 'محاذاة بعرض الصفحة',
 	'Font color'              : 'لون الخط',

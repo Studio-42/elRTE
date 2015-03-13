@@ -71,7 +71,7 @@ elRTE = function(target, opts) {
 		var self = this;
 		if (this.options.resizable && $.fn.resizable) {
 			if (r) {
-				this.editor.resizable({handles : 'se', alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);
+				this.editor.resizable({handles : this.options.resizeHandle, alsoResize : this.workzone, minWidth :300, minHeight : 200 }).bind('resize', self.updateHeight);
 			} else {
 				this.editor.resizable('destroy').unbind('resize', self.updateHeight);
 			}
@@ -128,6 +128,9 @@ elRTE = function(target, opts) {
 	this.window = this.iframe.contentWindow;
 	this.doc    = this.iframe.contentWindow.document;
 	this.$doc   = $(this.doc);
+	if(!this.doc.body.firstChild) {
+		this.doc.body.appendChild(document.createTextNode(''));
+	}
 	
 	/* put content into iframe */
 	html = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
@@ -376,6 +379,9 @@ elRTE.prototype.val = function(v) {
 			if ($.browser.msie) {
 				this.doc.body.innerHTML = '<br />'+this.filter.wysiwyg(v);
 				this.doc.body.removeChild(this.doc.body.firstChild);
+				if(!this.doc.body.firstChild) {
+					this.doc.body.appendChild(document.createTextNode(''));
+				}
 			} else {
 				this.doc.body.innerHTML = this.filter.wysiwyg(v);
 			}

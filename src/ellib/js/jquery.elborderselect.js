@@ -110,16 +110,16 @@
 			} else {
 				b = '';
 				if (v.nodeName || v.css) {
-					if (!v.css) {
-						v = $(v);					
+					if (v.css) {
+						v = v.get(0);
 					}
-					b = v.css('border');
-					if ((b = v.css('border'))) {
+					b = v.style.border;
+					if (b) {
 						w = s = c = b;
 					} else {
-						w = v.css('border-width');
-						s = v.css('border-style');
-						c = v.css('border-color');
+						w = v.style.borderWidth;
+						s = v.style.borderStyle;
+						c = v.style.borderColor;
 					}
 
 				} else {

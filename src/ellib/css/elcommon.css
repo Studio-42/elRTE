@@ -24,6 +24,3 @@ a { outline: none; }
 .rounded-bottom-7 { -moz-border-radius-bottomleft:7px; -moz-border-radius-bottomright:7px; -webkit-border-bottom-left-radius: 7px;-webkit-border-bottom-right-radius: 7px; border-bottom-left-radius: 7px; border-bottom-right-radius: 7px;}	
 
 
-.ui-widget { font-size:.9em;}
-.ui-dialog .ui-dialog-buttonpane button { padding: .1em .6em .2em .6em; }
-

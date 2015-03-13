@@ -18,7 +18,20 @@ elRTE.prototype.ui.prototype.buttons.outdent = function(rte, name) {
 		var v = this.find();
 		if (v.node) {
 			this.rte.history.add();
-			$(v.node).css(v.type, (v.val>40 ? v.val-40 : 0)+'px');
+			var $node = $(v.node);
+			if (v.type == "list") {
+				var $myPar = $node.parent();
+				var imFirst = !$node.prev().length;
+				$node.insertAfter($myPar.parent());
+				if (!$myPar.children().length) {
+					$myPar.remove();
+				} else if (imFirst) {
+					$myPar.appendTo($node);
+				}
+				this.rte.selection.selectContents(v.node);
+			} else {
+				$node.css(v.type, (v.val > 40 ? v.val - 40 : 0) + 'px');
+			}
 			this.rte.ui.update();
 		}
 	}
@@ -33,6 +46,10 @@ elRTE.prototype.ui.prototype.buttons.outdent = function(rte, name) {
 					: (s.indexOf('margin-left') != -1 ? 'margin-left' : '');
 				ret.val = ret.type ? parseInt($(n).css(ret.type))||0 : 0;
 			}
+			if (n.nodeName == "LI" && (!$(n).next().length || !$(n).prev().length) && (n.parentNode.nodeName == "UL" || n.parentNode.nodeName == "OL") && $(n.parentNode).parent().is('li')) {
+				ret.type = "list";
+				ret.val = 1;
+			}
 			return ret;
 		}
 		
@@ -45,8 +62,9 @@ elRTE.prototype.ui.prototype.buttons.outdent = function(rte, name) {
 				ret = checkNode(this);
 				if (ret.val) {
 					ret.node = this;
-					return ret;
+					return false;
 				}
+				return true;
 			})
 		}
 		return ret;

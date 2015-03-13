@@ -262,10 +262,10 @@ elRTE.prototype.utils = function(rte) {
 		
 		if (s['background-image']) {
 			s.background = (s['background-color']+' ')||''+s['background-image']+' '+s['background-position']||'0 0'+' '+s['background-repeat']||'repeat';
+			delete s['background-color'];
 			delete s['background-image'];
-			delete['background-image'];
-			delete['background-position'];
-			delete['background-repeat'];
+			delete s['background-position'];
+			delete s['background-repeat'];
 		}
 		
 		if (s['margin-top'] && s['margin-right'] && s['margin-bottom'] && s['margin-left']) {
