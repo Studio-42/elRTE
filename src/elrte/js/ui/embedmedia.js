@@ -20,6 +20,11 @@
 			return '//instagram.com/p/'+instagramID+'/embed/';
 		}
 
+		var vkMatch = url.match(/vk\.com\/video_ext\.php\?oid=(\w+)&id=(\w+)&hash=(\w+)/);
+		if (vkMatch) {
+			return '//vk.com/video_ext.php?oid='+vkMatch[1]+'&id='+vkMatch[2]+'&hash='+vkMatch[3]+'&hd=2';
+		}
+
 		return null;
 	};
 
@@ -50,13 +55,13 @@
 				},
 				dialog : {
 					width : 460,
-					title : this.rte.i18n('Insert Embedded Media (YouTube, Vimeo, Instagram)')
+					title : this.rte.i18n('Insert Embedded Media (YouTube, Vimeo, Rutube, Instagram, VK)')
 				}
 			};
 
 			this.rte.selection.saveIERange();
 			d = new elDialogForm(opts);
-			d.append([this.rte.i18n('Media URL'), this.embedmedia_url.val('')], null, true);
+			d.append([this.rte.i18n('Media URL/code'), this.embedmedia_url.val('')], null, true);
 			d.append([this.rte.i18n('Width'), $('<span />').append(this.embedmedia_w).append(' px')], null, true);
 			d.append([this.rte.i18n('Height'), $('<span />').append(this.embedmedia_h).append(' px')], null, true);
 			d.open();
